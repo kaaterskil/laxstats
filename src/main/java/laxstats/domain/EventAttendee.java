@@ -7,6 +7,9 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -16,8 +19,14 @@ import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 
 @Entity
-@Table(name = "people_events")
-public class PersonEvent {
+@Table(
+	name = "people_events",
+	indexes = {
+		@Index(name = "people_events_idx1", columnList = "role"),
+		@Index(name = "people_events_idx2", columnList = "status")
+	}
+)
+public class EventAttendee {
 	
 	public enum Status {
 		STARTED, PLAYED;
@@ -41,7 +50,7 @@ public class PersonEvent {
 		}
 		
 		public boolean equals(Object o) {
-			if(o != null && o instanceof PersonEvent.Id) {
+			if(o != null && o instanceof EventAttendee.Id) {
 				Id that = (Id) o;
 				return this.personId.equals(that.personId) && this.eventId.equals(that.eventId);
 			}
@@ -55,7 +64,7 @@ public class PersonEvent {
 	
 	@javax.persistence.Id
 	@Embedded
-	private PersonEvent.Id id = new Id();
+	private EventAttendee.Id id = new Id();
 	
 	@ManyToOne
 	@JoinColumn(name = "person_id", insertable = false, updatable = false)
@@ -69,9 +78,13 @@ public class PersonEvent {
 	private Team team;
 	
 	@NotNull
+	@Enumerated(EnumType.STRING)
+	@Column(length = 20, nullable = false)
 	private Role role;
 	
 	@NotNull
+	@Enumerated(EnumType.STRING)
+	@Column(length = 20, nullable = false)
 	private Status status;
 	
 	@Column(name = "created_at")
@@ -84,9 +97,9 @@ public class PersonEvent {
 	
 	//---------- Constructors ----------//
 	
-	public PersonEvent(){}
+	public EventAttendee(){}
 	
-	public PersonEvent(Person person, Event event){
+	public EventAttendee(Person person, Event event){
 		this.person = person;
 		this.event = event;
 		
@@ -94,12 +107,12 @@ public class PersonEvent {
 		this.id.eventId = event.getId();
 		
 		person.getAttendedEvents().add(this);
-		event.getAttendedEvents().add(this);
+		event.getEventAttendees().add(this);
 	}
 	
 	//---------- Getter/Setters ----------//
 
-	public PersonEvent.Id getId() {
+	public EventAttendee.Id getId() {
 		return id;
 	}
 

@@ -11,15 +11,18 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 
 @Entity
+@Table(indexes = {@Index(name = "affiliation_idx1", columnList = "level")})
 public class Affiliation {
 	
 	public enum Level {
@@ -31,9 +34,12 @@ public class Affiliation {
 	private UUID id;
 	
 	@NotNull
+	@Column(length = 50, nullable = false)
 	private String name;
 	
+	@NotNull
 	@Enumerated(EnumType.STRING)
+	@Column(length = 20, nullable = false)
 	private Affiliation.Level level;
 	
 	@ManyToOne
@@ -55,7 +61,7 @@ public class Affiliation {
 	@JoinColumn(name = "modified_by")
 	private User modifiedBy;
 	
-	@OneToMany
+	@OneToMany(mappedBy = "parent")
 	private Set<Affiliation> children = new HashSet<Affiliation>();
 	
 	@OneToMany(mappedBy = "affiliation")

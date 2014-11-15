@@ -7,14 +7,17 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
 @Entity
+@Table(indexes = {@Index(name = "team_affiliation_idx1", columnList = "starting_on")})
 public class TeamAffiliation {
 	
 	@Embeddable

@@ -9,14 +9,20 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
 @Entity
+@Table(
+	indexes = {@Index(name = "team_season_uk1", columnList = "starts_on, ends_on", unique = true)}
+)
 public class TeamSeason {
 	
 	public enum Status {
@@ -68,7 +74,8 @@ public class TeamSeason {
 	@ManyToOne
 	private Affiliation affiliation;
 	
-	@Column(name = "starts_on")
+	@NotNull
+	@Column(name = "starts_on", nullable = false)
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
 	private LocalDate startsOn;
 	
@@ -77,6 +84,7 @@ public class TeamSeason {
 	private LocalDate endsOn;
 	
 	@Enumerated(EnumType.STRING)
+	@Column(length = 20)
 	private TeamSeason.Status status;
 	
 	@Column(name = "created_at")

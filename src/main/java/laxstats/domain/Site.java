@@ -9,14 +9,23 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 
 @Entity
+@Table(
+	indexes = {
+		@Index(name = "site_idx1", columnList = "city"),
+		@Index(name = "site_idx2", columnList = "style"),
+		@Index(name = "site_idx3", columnList = "surface")
+	}
+)
 public class Site {
 	
 	public enum Style {
@@ -32,29 +41,34 @@ public class Site {
 	private UUID id;
 	
 	@NotNull
+	@Column(length = 100, nullable = false)
 	private String name;
 	
 	@Enumerated(EnumType.STRING)
+	@Column(length = 20)
 	private Site.Style style;
 	
 	@Enumerated(EnumType.STRING)
+	@Column(length = 20)
 	private Site.Surface surface;
 	
-	@Column(name = "address_1")
+	@Column(name = "address_1", length = 34)
 	private String address1;
 	
-	@Column(name = "address_2")
+	@Column(name = "address_2", length = 34)
 	private String address2;
 	
 	@NotNull
+	@Column(length = 30, nullable = false)
 	private String city;
 	
 	@ManyToOne
 	private Region region;
 	
-	@Column(name = "postal_code")
+	@Column(name = "postal_code", length = 10)
 	private String postalCode;
 	
+	@Column(columnDefinition = "text")
 	private String directions;
 	
 	@Column(name = "created_at")
@@ -72,6 +86,8 @@ public class Site {
 	@ManyToOne
 	@JoinColumn(name = "modified_by")
 	private User modifiedBy;
+	
+	//---------- Getter/Setters ----------//
 
 	public String getName() {
 		return name;

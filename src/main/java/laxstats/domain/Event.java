@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -11,15 +12,26 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 
 @Entity
+@Table(
+	indexes = {
+		@Index(name = "event_idx1", columnList = "schedule"),
+		@Index(name = "event_idx2", columnList = "starts_at"),
+		@Index(name = "event_idx3", columnList = "alignment"),
+		@Index(name = "event_idx4", columnList = "status"),
+		@Index(name = "event_idx5", columnList = "conditions")
+	}
+)
 public class Event {
 	
 	public enum Alignment {
@@ -47,6 +59,7 @@ public class Event {
 	private Site site;
 	
 	@Enumerated(EnumType.STRING)
+	@Column(length = 20)
 	private Alignment alignment;
 	
 	@Column(name = "starts_at")
@@ -54,16 +67,20 @@ public class Event {
 	
 	@NotNull
 	@Enumerated(EnumType.STRING)
+	@Column(length = 20, nullable = false)
 	private Schedule schedule;
 	
 	@NotNull
 	@Enumerated(EnumType.STRING)
+	@Column(length = 20, nullable = false)
 	private Status status;
 	
 	@Enumerated(EnumType.STRING)
+	@Column(length = 20)
 	private Conditions conditions;
 	
 	@NotNull
+	@Column(nullable = false)
 	private String description;
 	
 	@Column(name = "created_at")
@@ -82,11 +99,11 @@ public class Event {
 	@JoinColumn(name = "modified_by")
 	private User modifiedBy;
 	
-	@OneToMany(mappedBy = "event")
-	private Set<PersonEvent> attendedEvents = new HashSet<PersonEvent>();
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
+	private Set<EventAttendee> eventAttendees = new HashSet<EventAttendee>();
 	
-	@OneToMany(mappedBy = "event")
-	private Set<TeamEvent> teamEvents = new HashSet<TeamEvent>();
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
+	private Set<TeamEvent> eventTeams = new HashSet<TeamEvent>();
 	
 	//---------- Getter/Setters ----------//
 
@@ -182,11 +199,11 @@ public class Event {
 		this.modifiedBy = modifiedBy;
 	}
 
-	public Set<PersonEvent> getAttendedEvents() {
-		return attendedEvents;
+	public Set<EventAttendee> getEventAttendees() {
+		return eventAttendees;
 	}
 
-	public Set<TeamEvent> getTeamEvents() {
-		return teamEvents;
+	public Set<TeamEvent> getEventTeams() {
+		return eventTeams;
 	}
 }

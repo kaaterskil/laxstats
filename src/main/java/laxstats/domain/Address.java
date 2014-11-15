@@ -7,13 +7,22 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 
 @Entity
+@Table(
+	indexes = {
+		@Index(name = "address_idx1", columnList = "city"), 
+		@Index(name = "address_idx2", columnList = "primary_address"), 
+		@Index(name = "address_idx3", columnList = "do_not_use")
+	}
+)
 public class Address {
 
 	@Id
@@ -26,18 +35,19 @@ public class Address {
 	@ManyToOne
 	private Site site;
 	
-	@Column(name = "address_1")
+	@Column(name = "address_1", length = 34)
 	private String address1;
 	
-	@Column(name = "address_2")
+	@Column(name = "address_2", length = 34)
 	private String address2;
 	
+	@Column(length = 30)
 	private String city;
 	
 	@ManyToOne
 	private Region region;
 	
-	@Column(name = "postal_code")
+	@Column(name = "postal_code", length = 10)
 	private String postalCode;
 	
 	@Column(name = "primary_address")

@@ -9,14 +9,17 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 
 @Entity
+@Table(indexes = {@Index(name = "users_idx1", columnList = "email", unique = true)})
 public class User {
 	
 	public enum Role {
@@ -27,23 +30,27 @@ public class User {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
 	
+	@NotNull
 	@Enumerated(EnumType.STRING)
+	@Column(length = 20, nullable = false)
 	private User.Role role;
 	
 	@NotNull
+	@Column(nullable = false)
 	private String email;
 	
-	@Column(name = "encrypted_password")
+	@NotNull
+	@Column(name = "encrypted_password", length = 32, nullable = false)
 	private String encryptedPassword;
 	
-	@Column(name = "first_name")
+	@Column(name = "first_name", length = 20)
 	private String firstName;
 	
 	@NotNull
-	@Column(name = "last_name")
+	@Column(name = "last_name", length = 30, nullable = false)
 	private String lastName;
 	
-	@Column(name = "ip_address")
+	@Column(name = "ip_address", length = 50)
 	private String ipAddress;
 	
 	@Column(name = "created_at")

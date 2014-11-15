@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -13,15 +14,25 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 
 @Entity
+@Table(
+	indexes = {
+		@Index(name = "people_idx1", columnList = "last_name"),
+		@Index(name = "people_idx2", columnList = "parental_release"),
+		@Index(name = "people_idx3", columnList = "parent_release_sent_on"),
+		@Index(name = "people_idx4", columnList = "parent_release_received_on")
+	}
+)
 public class Person {
 	
 	public enum DominantHand {
@@ -32,30 +43,34 @@ public class Person {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
 	
+	@Column(length = 10)
 	private String prefix;
 	
-	@Column(name = "first_name")
+	@Column(name = "first_name", length = 20)
 	private String firstName;
 	
-	@Column(name = "middle_name")
+	@Column(name = "middle_name", length = 20)
 	private String middleName;
 	
 	@NotNull
-	@Column(name = "last_name")
+	@Column(name = "last_name", length = 30, nullable = false)
 	private String lastName;
 	
+	@Column(length = 10)
 	private String suffix;
 
+	@Column(length = 20)
 	private String nickname;
 	
-	@Column(name = "full_name")
+	@Column(name = "full_name", length = 100)
 	private String fullName;
 	
 	@Enumerated(EnumType.STRING)
+	@Column(length = 20)
 	private Gender gender;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(name = "dominant_hand")
+	@Column(name = "dominant_hand", length = 20)
 	private Person.DominantHand dominantHand;	
 	
 	@Column(name = "parental_release")
@@ -92,18 +107,22 @@ public class Person {
 	@JoinColumn(name = "modified_by")
 	private User modifiedBy;
 	
-	@OneToMany
-	@JoinColumn(name = "parent_id")
-	private Set<Relationship> childRelationships = new HashSet<Relationship>();
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "person")
+	private Set<Address> addresses = new HashSet<Address>();
 	
-	@OneToMany
-	@JoinColumn(name = "child_id")
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "person")
+	private Set<Contact> contacts = new HashSet<Contact>();
+	
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "parent")
+	private Set<Relationship> childRelationships = new HashSet<Relationship>();
+
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "child")
 	private Set<Relationship> parentRelationships = new HashSet<Relationship>();
 	
-	@OneToMany(mappedBy = "person")
-	private Set<PersonEvent> attendedEvents = new HashSet<PersonEvent>();
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "person")
+	private Set<EventAttendee> attendedEvents = new HashSet<EventAttendee>();
 	
-	@OneToMany(mappedBy = "person")
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "person")
 	private Set<PersonSeason> playedSeasons = new HashSet<PersonSeason>();
 	
 	//---------- Getter/Setters ----------//
@@ -271,8 +290,17 @@ public class Person {
 	public void setModifiedBy(User modifiedBy) {
 		this.modifiedBy = modifiedBy;
 	}
+	
+	public Set<Address> getAddresses() {
+		return addresses;
+	}
 
-	public Set<PersonEvent> getAttendedEvents() {
+	public boolean addAddress(Address address) {
+		address.setPerson(this);
+		return addresses.add(address);
+	}
+
+	public Set<EventAttendee> getAttendedEvents() {
 		return attendedEvents;
 	}
 

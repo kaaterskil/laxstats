@@ -77,15 +77,18 @@ public class PersonSeason {
 	private Team team;
 	
 	@Enumerated(EnumType.STRING)
+	@Column(length = 20)
 	private Role role;
 	
 	@Enumerated(EnumType.STRING)
+	@Column(length = 20)
 	private Status status;
 	
-	@Column(name = "jersey_number")
+	@Column(name = "jersey_number", length = 4)
 	private String jerseyNumber;
 	
 	@Enumerated(EnumType.STRING)
+	@Column(length = 20)
 	private Position position;
 	
 	@Column(name = "captain")

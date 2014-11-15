@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
@@ -13,11 +14,13 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
@@ -26,6 +29,17 @@ import org.joda.time.LocalTime;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "play_type", discriminatorType = DiscriminatorType.STRING)
+@Table(
+	indexes = {
+		@Index(name = "play_idx1", columnList = "play_type"),
+		@Index(name = "play_idx2", columnList = "event, play_type"),
+		@Index(name = "play_idx3", columnList = "period"),
+		@Index(name = "play_idx4", columnList = "strength"),
+		@Index(name = "play_idx5", columnList = "play_key"),
+		@Index(name = "play_idx6", columnList = "result"),
+		@Index(name = "play_idx7", columnList = "play_key, result")
+	}
+)
 abstract public class Play {
 	
 	public enum PlayKey {
@@ -63,14 +77,15 @@ abstract public class Play {
 	private LocalTime elapsedTime;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(name = "play_key")
+	@Column(name = "play_key", length = 20)
 	protected PlayKey playKey;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(name = "score_attmept_type")
+	@Column(name = "score_attempt_type", length = 20)
 	private ScoreAttemptType scoreAttemptType;
 	
 	@Enumerated(EnumType.STRING)
+	@Column(length = 20)
 	private Result result;
 	
 	@Column(name = "team_score")
@@ -80,6 +95,7 @@ abstract public class Play {
 	private int opponentScore;
 	
 	@Enumerated(EnumType.STRING)
+	@Column(length = 20)
 	private Strength strength;
 	
 	@Column(name = "man_up_advantage")
@@ -89,6 +105,7 @@ abstract public class Play {
 	@JoinColumn(name = "man_up_team_id")
 	private Team manUpTeam;
 	
+	@Column(columnDefinition = "text")
 	private String comment;
 	
 	@Column(name = "created_at")
@@ -107,7 +124,7 @@ abstract public class Play {
 	@JoinColumn(name = "modified_by")
 	private User modifiedBy;
 	
-	@OneToMany
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "play")
 	private Set<PlayParticipant> participants = new HashSet<PlayParticipant>();
 	
 	//---------- Getter/Setters ----------//

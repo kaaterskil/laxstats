@@ -9,13 +9,22 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 
 @Entity
+@Table(
+	indexes = {
+		@Index(name = "team_event_idx1", columnList = "outcome"),
+		@Index(name = "team_event_idx2", columnList = "alignment")
+	}
+)
 public class TeamEvent {
 	
 	public enum Alignment {
@@ -68,17 +77,21 @@ public class TeamEvent {
 	@JoinColumn(name = "event_id", insertable = false, updatable = false)
 	private Event event;
 	
+	@NotNull
 	@Enumerated(EnumType.STRING)
+	@Column(length = 20, nullable = false)
 	private Alignment alignment;
 	
 	private int score;
 	
 	@Enumerated(EnumType.STRING)
+	@Column(length = 20)
 	private Outcome outcome;
 	
+	@Column(length = 100)
 	private String scorekeeper;
 	
-	@Column(name = "penalty_timekeeper")
+	@Column(name = "penalty_timekeeper", length = 100)
 	private String timekeeper;
 	
 	@Column(name = "created_at")
@@ -109,7 +122,7 @@ public class TeamEvent {
 		this.id.eventId = team.getId();
 		
 		team.getTeamEvents().add(this);
-		event.getTeamEvents().add(this);
+		event.getEventTeams().add(this);
 	}
 	
 	//---------- Getter/Setters ----------//

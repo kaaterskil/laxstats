@@ -9,10 +9,13 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 @Entity
+@Table(indexes = {@Index(name = "relationship_idx1", columnList = "type")})
 public class Relationship {
 	
 	static Relationship create(Person parent, Person child, Relationship.Type type) {
@@ -79,6 +82,7 @@ public class Relationship {
 	private Person child;
 	
 	@Enumerated(EnumType.STRING)
+	@Column(length = 20)
 	private Relationship.Type type;
 	
 	private Relationship(Person parent, Person child, Relationship.Type type) {

@@ -9,13 +9,23 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 
 @Entity
+@Table(
+	indexes = {
+		@Index(name = "contact_idx1", columnList = "method"),
+		@Index(name = "contact_idx2", columnList = "primary_contact"),
+		@Index(name = "contact_idx3", columnList = "do_not_use")
+	}
+)
 public class Contact {
 	
 	public enum Method {
@@ -28,10 +38,14 @@ public class Contact {
 	
 	@ManyToOne
 	private Person person;
-	
+
+	@NotNull
 	@Enumerated(EnumType.STRING)
+	@Column(length = 20, nullable = false)
 	private Method method;
 	
+	@NotNull
+	@Column(nullable = false)
 	private String value;
 	
 	@Column(name = "primary_contact")
@@ -55,6 +69,8 @@ public class Contact {
 	@ManyToOne
 	@JoinColumn(name = "modified_by")
 	private User modifiedBy;
+	
+	//---------- Getter/Setters ----------//
 
 	public Person getPerson() {
 		return person;
