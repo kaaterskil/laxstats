@@ -1,2 +1,6 @@
 /target/
 /laxstats.bat
+/.gitignore
+/.classpath
+/.settings/*
+/.project
