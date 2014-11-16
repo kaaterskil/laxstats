@@ -1,7 +1,6 @@
 package laxstats.domain;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -9,6 +8,7 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -17,8 +17,15 @@ import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 
 @Entity
-@Table(name = "people_seasons")
-public class PersonSeason {
+@Table(
+	indexes = {
+		@Index(name = "player_idx1", columnList = "role"),
+		@Index(name = "player_idx2", columnList = "status"),
+		@Index(name = "player_idx3", columnList = "isCaptain"),
+		@Index(name = "player_idx4", columnList = "depth")
+	}
+)
+public class TeamMember {
 	
 	public enum Status {
 		ACTIVE, INJURED, TRYOUT, INACTIVE;
@@ -27,26 +34,26 @@ public class PersonSeason {
 	@Embeddable
 	public static class Id implements Serializable {
 		private static final long serialVersionUID = 4232283469443735627L;
-
-		@Column(name = "person_id")
-		private UUID personId;
 		
-		@Column(name = "season_id")
-		private UUID seasonId;
+		@Column(length = 36)
+		private String personId;
 		
-		@Column(name = "team_id")
-		private UUID teamId;
+		@Column(length = 36)
+		private String seasonId;
+		
+		@Column(length = 36)
+		private String teamId;
 		
 		public Id(){}
 		
-		public Id(UUID personId, UUID seasonId, UUID teamId){
+		public Id(String personId, String seasonId, String teamId){
 			this.personId = personId;
 			this.seasonId = seasonId;
 			this.teamId = teamId;
 		}
 		
 		public boolean equals(Object o) {
-			if(o != null && o instanceof PersonSeason.Id) {
+			if(o != null && o instanceof TeamMember.Id) {
 				Id that = (Id) o;
 				return this.personId.equals(that.personId) && 
 						this.seasonId.equals(that.seasonId) && 
@@ -56,24 +63,25 @@ public class PersonSeason {
 		}
 		
 		public int hashCode() {
-			return personId.hashCode() + seasonId.hashCode() + teamId.hashCode();
+			return personId.hashCode() + seasonId.hashCode() + 
+					teamId.hashCode();
 		}
 	}
 
 	@javax.persistence.Id
 	@Embedded
-	private PersonSeason.Id id = new Id();
+	private TeamMember.Id id = new Id();
 	
 	@ManyToOne
-	@JoinColumn(name = "person_id", insertable = false, updatable = false)
+	@JoinColumn(name = "personId", insertable = false, updatable = false)
 	private Person person;
 	
 	@ManyToOne
-	@JoinColumn(name = "season_id", insertable = false, updatable = false)
+	@JoinColumn(name = "seasonId", insertable = false, updatable = false)
 	private Season season;
 	
 	@ManyToOne
-	@JoinColumn(name = "team_id", insertable = false, updatable = false)
+	@JoinColumn(name = "teamId", insertable = false, updatable = false)
 	private Team team;
 	
 	@Enumerated(EnumType.STRING)
@@ -84,41 +92,36 @@ public class PersonSeason {
 	@Column(length = 20)
 	private Status status;
 	
-	@Column(name = "jersey_number", length = 4)
+	@Column(length = 4)
 	private String jerseyNumber;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20)
 	private Position position;
 	
-	@Column(name = "captain")
 	private boolean isCaptain;
 	
 	private int depth;
 	private int height;
 	private int weight;
 	
-	@Column(name = "created_at")
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime createdAt;
 	
-	@ManyToOne
-	@JoinColumn(name = "created_by")
-	private User createdBy;
+	@ManyToOne(targetEntity = User.class)
+	private String createdBy;
 	
-	@Column(name = "modified_at")
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime modifiedAt;
 	
-	@ManyToOne
-	@JoinColumn(name = "modified_by")
-	private User modifiedBy;
+	@ManyToOne(targetEntity = User.class)
+	private String modifiedBy;
 	
 	//---------- Constructors ----------//
 	
-	public PersonSeason(){}
+	public TeamMember(){}
 	
-	public PersonSeason(Person person, Season season, Team team) {
+	public TeamMember(Person person, Season season, Team team) {
 		this.person = person;
 		this.season = season;
 		this.team = team;
@@ -128,12 +131,11 @@ public class PersonSeason {
 		this.id.teamId = team.getId();
 		
 		person.getPlayedSeasons().add(this);
-		season.getSeasonPlayers().add(this);
 	}
 	
 	//---------- Getter/Setters ----------//
 
-	public PersonSeason.Id getId() {
+	public TeamMember.Id getId() {
 		return id;
 	}
 
@@ -221,11 +223,11 @@ public class PersonSeason {
 		this.createdAt = createdAt;
 	}
 
-	public User getCreatedBy() {
+	public String getCreatedBy() {
 		return createdBy;
 	}
 
-	public void setCreatedBy(User createdBy) {
+	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
 	}
 
@@ -237,11 +239,11 @@ public class PersonSeason {
 		this.modifiedAt = modifiedAt;
 	}
 
-	public User getModifiedBy() {
+	public String getModifiedBy() {
 		return modifiedBy;
 	}
 
-	public void setModifiedBy(User modifiedBy) {
+	public void setModifiedBy(String modifiedBy) {
 		this.modifiedBy = modifiedBy;
 	}
 }

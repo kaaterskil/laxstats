@@ -1,31 +1,30 @@
 package laxstats.domain;
 
-import java.util.UUID;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(
 	indexes = {
-		@Index(name = "region_idx1", columnList = "region_name"),
-		@Index(name = "region_idx2", columnList = "abbreviation")
+		@Index(name = "region_idx1", columnList = "name")
+	},
+	uniqueConstraints = {
+		@UniqueConstraint(name = "region_uk1", columnNames = {"abbreviation"})
 	}
 )
 public class Region {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private UUID id;
+	@Column(length = 36)
+	private String id;
 	
 	@NotNull
-	@Column(name = "region_name", length = 100, nullable = false)
+	@Column(length = 100, nullable = false)
 	private String name;
 	
 	@Column(length = 2)

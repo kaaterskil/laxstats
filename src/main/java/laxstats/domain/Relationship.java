@@ -1,7 +1,6 @@
 package laxstats.domain;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -42,16 +41,15 @@ public class Relationship {
 	@Embeddable
 	public static class Id implements Serializable {
 		private static final long serialVersionUID = -3172351527214214709L;
-
-		@Column(name = "parent_id")
-		private UUID parentId;
+		@Column(length = 36)
+		private String parentId;
 		
-		@Column(name = "child_id")
-		private UUID childId;
+		@Column(length = 36)
+		private String childId;
 		
 		public Id(){}
 		
-		public Id(UUID parentId, UUID childId) {
+		public Id(String parentId, String childId) {
 			this.parentId = parentId;
 			this.childId = childId;
 		}
@@ -59,7 +57,8 @@ public class Relationship {
 		public boolean equals(Object o) {
 			if(o != null && o instanceof Relationship.Id) {
 				Id that = (Id) o;
-				return this.parentId.equals(that.parentId) && this.childId.equals(that.childId);
+				return this.parentId.equals(that.parentId) && 
+						this.childId.equals(that.childId);
 			}
 			return false;
 		}
@@ -74,11 +73,11 @@ public class Relationship {
 	private Relationship.Id id = new Id();
 
 	@ManyToOne
-	@JoinColumn(name = "parent_id", insertable = false, updatable = false)
+	@JoinColumn(name = "parentId", insertable = false, updatable = false)
 	private Person parent;
 	
 	@ManyToOne
-	@JoinColumn(name = "child_id", insertable = false, updatable = false)
+	@JoinColumn(name = "childId", insertable = false, updatable = false)
 	private Person child;
 	
 	@Enumerated(EnumType.STRING)

@@ -2,18 +2,14 @@ package laxstats.domain;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -27,8 +23,8 @@ import org.joda.time.LocalDateTime;
 public class Team {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private UUID id;
+	@Column(length = 36)
+	private String id;
 	
 	@NotNull
 	@Column(length = 100, nullable = false)
@@ -38,28 +34,23 @@ public class Team {
 	@Column(length = 20)
 	private Gender gender;
 	
-	@ManyToOne
-	@JoinColumn(name = "home_site")
-	private Site homeSite;
+	@ManyToOne(targetEntity = Site.class)
+	private String homeSiteId;
 	
-	@Column(name = "encrypted_password", length = 30)
+	@Column(length = 30)
 	private String encryptedPassword;
 	
-	@Column(name = "created_at")
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime createdAt;
 	
-	@ManyToOne
-	@JoinColumn(name = "created_by")
-	private User createdBy;
+	@ManyToOne(targetEntity = User.class)
+	private String createdBy;
 	
-	@Column(name = "modified_at")
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime modifiedAt;
 	
-	@ManyToOne
-	@JoinColumn(name = "modified_by")
-	private User modifiedBy;
+	@ManyToOne(targetEntity = User.class)
+	private String modifiedBy;
 	
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "team")
 	private Set<TeamEvent> teamEvents = new HashSet<TeamEvent>();
@@ -72,7 +63,7 @@ public class Team {
 	
 	//---------- Getter/Setters ----------//
 
-	public UUID getId() {
+	public String getId() {
 		return id;
 	}
 
@@ -92,12 +83,12 @@ public class Team {
 		this.gender = gender;
 	}
 
-	public Site getHomeSite() {
-		return homeSite;
+	public String getHomeSiteId() {
+		return homeSiteId;
 	}
 
-	public void setHomeSite(Site homeSite) {
-		this.homeSite = homeSite;
+	public void setHomeSite(String homeSiteId) {
+		this.homeSiteId = homeSiteId;
 	}
 
 	public String getEncryptedPassword() {
@@ -116,11 +107,11 @@ public class Team {
 		this.createdAt = createdAt;
 	}
 
-	public User getCreatedBy() {
+	public String getCreatedBy() {
 		return createdBy;
 	}
 
-	public void setCreatedBy(User createdBy) {
+	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
 	}
 
@@ -132,11 +123,11 @@ public class Team {
 		this.modifiedAt = modifiedAt;
 	}
 
-	public User getModifiedBy() {
+	public String getModifiedBy() {
 		return modifiedBy;
 	}
 
-	public void setModifiedBy(User modifiedBy) {
+	public void setModifiedBy(String modifiedBy) {
 		this.modifiedBy = modifiedBy;
 	}
 

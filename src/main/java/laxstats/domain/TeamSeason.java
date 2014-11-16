@@ -1,7 +1,6 @@
 package laxstats.domain;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -13,6 +12,7 @@ import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.Type;
@@ -21,7 +21,12 @@ import org.joda.time.LocalDateTime;
 
 @Entity
 @Table(
-	indexes = {@Index(name = "team_season_uk1", columnList = "starts_on, ends_on", unique = true)}
+	indexes = {
+		@Index(name = "team_season_idx1", columnList = "affiliation")
+	},
+	uniqueConstraints = {
+		@UniqueConstraint(name = "team_season_uk1", columnNames = {"startsOn", "endsOn"})
+	}
 )
 public class TeamSeason {
 	
@@ -33,15 +38,15 @@ public class TeamSeason {
 	public static class Id implements Serializable {
 		private static final long serialVersionUID = 6990697052332076930L;
 
-		@Column(name = "team_id")
-		private UUID teamId;
+		@Column(length = 36)
+		private String teamId;
 		
-		@Column(name = "season_id")
-		private UUID seasonId;
+		@Column(length = 36)
+		private String seasonId;
 		
 		public Id(){}
 		
-		public Id(UUID teamId, UUID seasonId) {
+		public Id(String teamId, String seasonId) {
 			this.teamId = teamId;
 			this.seasonId = seasonId;
 		}
@@ -64,22 +69,21 @@ public class TeamSeason {
 	private TeamSeason.Id id = new Id();
 	
 	@ManyToOne
-	@JoinColumn(name = "team_id", insertable = false, updatable = false)
+	@JoinColumn(name = "teamId", insertable = false, updatable = false)
 	private Team team;
 	
 	@ManyToOne
-	@JoinColumn(name = "season_id", insertable = false, updatable = false)
+	@JoinColumn(name = "seasonId", insertable = false, updatable = false)
 	private Season season;
 	
 	@ManyToOne
 	private Affiliation affiliation;
 	
 	@NotNull
-	@Column(name = "starts_on", nullable = false)
+	@Column(nullable = false)
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
 	private LocalDate startsOn;
 	
-	@Column(name = "ends_on")
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
 	private LocalDate endsOn;
 	
@@ -87,21 +91,17 @@ public class TeamSeason {
 	@Column(length = 20)
 	private TeamSeason.Status status;
 	
-	@Column(name = "created_at")
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime createdAt;
 	
-	@ManyToOne
-	@JoinColumn(name = "created_by")
-	private User createdBy;
+	@ManyToOne(targetEntity = User.class)
+	private String createdBy;
 	
-	@Column(name = "modified_at")
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime modifiedAt;
 	
-	@ManyToOne
-	@JoinColumn(name = "modified_by")
-	private User modifiedBy;
+	@ManyToOne(targetEntity = User.class)
+	private String modifiedBy;
 	
 	//---------- Constructors ----------//
 	
@@ -115,7 +115,6 @@ public class TeamSeason {
 		this.id.seasonId = season.getId();
 		
 		team.getTeamSeasons().add(this);
-		season.getSeasonTeams().add(this);
 	}
 	
 	//---------- Getter/Setters ----------//
@@ -172,11 +171,11 @@ public class TeamSeason {
 		this.createdAt = createdAt;
 	}
 
-	public User getCreatedBy() {
+	public String getCreatedBy() {
 		return createdBy;
 	}
 
-	public void setCreatedBy(User createdBy) {
+	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
 	}
 
@@ -188,11 +187,11 @@ public class TeamSeason {
 		this.modifiedAt = modifiedAt;
 	}
 
-	public User getModifiedBy() {
+	public String getModifiedBy() {
 		return modifiedBy;
 	}
 
-	public void setModifiedBy(User modifiedBy) {
+	public void setModifiedBy(String modifiedBy) {
 		this.modifiedBy = modifiedBy;
 	}
 }

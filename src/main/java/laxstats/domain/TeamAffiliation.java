@@ -1,7 +1,6 @@
 package laxstats.domain;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -17,22 +16,22 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
 @Entity
-@Table(indexes = {@Index(name = "team_affiliation_idx1", columnList = "starting_on")})
+@Table(indexes = {@Index(name = "team_affiliation_idx1", columnList = "startingOn")})
 public class TeamAffiliation {
 	
 	@Embeddable
 	public static class Id implements Serializable {
 		private static final long serialVersionUID = 5408146241619855006L;
 
-		@Column(name = "team_id")
-		private UUID teamId;
+		@Column(length = 36)
+		private String teamId;
 		
-		@Column(name = "affiliation_id")
-		private UUID affiliationId;
+		@Column(length = 36)
+		private String affiliationId;
 		
 		public Id(){}
 		
-		public Id(UUID teamId, UUID affiliationId) {
+		public Id(String teamId, String affiliationId) {
 			this.teamId = teamId;
 			this.affiliationId = affiliationId;
 		}
@@ -40,7 +39,8 @@ public class TeamAffiliation {
 		public boolean equals(Object o) {
 			if(o != null && o instanceof TeamAffiliation.Id) {
 				Id that = (Id) o;
-				return this.teamId.equals(that.teamId) && this.affiliationId.equals(that.affiliationId);
+				return this.teamId.equals(that.teamId) && 
+						this.affiliationId.equals(that.affiliationId);
 			}
 			return false;
 		}
@@ -55,36 +55,30 @@ public class TeamAffiliation {
 	private TeamAffiliation.Id id = new Id();
 	
 	@ManyToOne
-	@JoinColumn(name = "team_id", insertable = false, updatable = false)
+	@JoinColumn(name = "teamId", insertable = false, updatable = false)
 	private Team team;
 	
 	@ManyToOne
-	@JoinColumn(name = "affiliation_id", insertable = false, updatable = false)
+	@JoinColumn(name = "affiliationId", insertable = false, updatable = false)
 	private Affiliation affiliation;
 
-	@Column(name = "starting_on")
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
 	private LocalDate startingOn;
 	
-	@Column(name = "ending_on")
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
 	private LocalDate endingOn;
 	
-	@Column(name = "created_at")
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime createdAt;
 	
-	@ManyToOne
-	@JoinColumn(name = "created_by")
-	private User createdBy;
+	@ManyToOne(targetEntity = User.class)
+	private String createdBy;
 	
-	@Column(name = "modified_at")
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime modifiedAt;
 	
-	@ManyToOne
-	@JoinColumn(name = "modified_by")
-	private User modifiedBy;
+	@ManyToOne(targetEntity = User.class)
+	private String modifiedBy;
 	
 	//---------- Constructors ----------//
 	
@@ -127,11 +121,11 @@ public class TeamAffiliation {
 		this.createdAt = createdAt;
 	}
 
-	public User getCreatedBy() {
+	public String getCreatedBy() {
 		return createdBy;
 	}
 
-	public void setCreatedBy(User createdBy) {
+	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
 	}
 
@@ -143,11 +137,11 @@ public class TeamAffiliation {
 		this.modifiedAt = modifiedAt;
 	}
 
-	public User getModifiedBy() {
+	public String getModifiedBy() {
 		return modifiedBy;
 	}
 
-	public void setModifiedBy(User modifiedBy) {
+	public void setModifiedBy(String modifiedBy) {
 		this.modifiedBy = modifiedBy;
 	}
 

@@ -1,7 +1,6 @@
 package laxstats.domain;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -39,15 +38,15 @@ public class TeamEvent {
 	public static class Id implements Serializable {
 		private static final long serialVersionUID = -3438452317292121148L;
 
-		@Column(name = "team_id")
-		private UUID teamId;
+		@Column(length = 36)
+		private String teamId;
 		
-		@Column(name = "event_id")
-		private UUID eventId;
+		@Column(length = 36)
+		private String eventId;
 		
 		public Id(){}
 		
-		public Id(UUID teamId, UUID eventID){
+		public Id(String teamId, String eventID){
 			this.teamId = teamId;
 			this.eventId = eventID;
 		}
@@ -70,11 +69,11 @@ public class TeamEvent {
 	private TeamEvent.Id id = new Id();
 	
 	@ManyToOne
-	@JoinColumn(name = "team_id", insertable = false, updatable = false)
+	@JoinColumn(name = "teamId", insertable = false, updatable = false)
 	private Team team;
 	
 	@ManyToOne
-	@JoinColumn(name = "event_id", insertable = false, updatable = false)
+	@JoinColumn(name = "eventId", insertable = false, updatable = false)
 	private Event event;
 	
 	@NotNull
@@ -91,24 +90,20 @@ public class TeamEvent {
 	@Column(length = 100)
 	private String scorekeeper;
 	
-	@Column(name = "penalty_timekeeper", length = 100)
+	@Column(length = 100)
 	private String timekeeper;
 	
-	@Column(name = "created_at")
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime createdAt;
 	
-	@ManyToOne
-	@JoinColumn(name = "created_by")
-	private User createdBy;
+	@ManyToOne(targetEntity = User.class)
+	private String createdBy;
 	
-	@Column(name = "modified_at")
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime modifiedAt;
 	
-	@ManyToOne
-	@JoinColumn(name = "modified_by")
-	private User modifiedBy;
+	@ManyToOne(targetEntity = User.class)
+	private String modifiedBy;
 	
 	//----------Constructor ----------//
 	
@@ -187,11 +182,11 @@ public class TeamEvent {
 		this.createdAt = createdAt;
 	}
 
-	public User getCreatedBy() {
+	public String getCreatedBy() {
 		return createdBy;
 	}
 
-	public void setCreatedBy(User createdBy) {
+	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
 	}
 
@@ -203,11 +198,11 @@ public class TeamEvent {
 		this.modifiedAt = modifiedAt;
 	}
 
-	public User getModifiedBy() {
+	public String getModifiedBy() {
 		return modifiedBy;
 	}
 
-	public void setModifiedBy(User modifiedBy) {
+	public void setModifiedBy(String modifiedBy) {
 		this.modifiedBy = modifiedBy;
 	}
 }

@@ -1,19 +1,12 @@
 package laxstats.domain;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.Type;
@@ -23,55 +16,46 @@ import org.joda.time.LocalDateTime;
 @Entity
 @Table(
 	indexes = {
-		@Index(name = "season_uk1", columnList = "starts_on, ends_on", unique = true),
-		@Index(name = "season_idx1", columnList = "starts_on"),
-		@Index(name = "season_idx2", columnList = "ends_on")
+		@Index(name = "season_idx1", columnList = "startsOn"),
+		@Index(name = "season_idx2", columnList = "endsOn")
+	},
+	uniqueConstraints = {
+		@UniqueConstraint(name = "season_uk1", columnNames = {"startsOn", "endsOn"})
 	}
 )
 public class Season {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private UUID id;
-	
+	@Column(length = 36)
+	private String id;
+
 	@NotNull
 	@Column(length = 100, nullable = false)
 	private String description;
-	
+
 	@NotNull
-	@Column(name = "starts_on", nullable = false)
+	@Column(nullable = false)
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
 	private LocalDate startsOn;
-	
-	@Column(name = "ends_on")
+
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
 	private LocalDate endsOn;
 
-	@Column(name = "created_at")
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime createdAt;
-	
-	@ManyToOne
-	@JoinColumn(name = "created_by")
-	private User createdBy;
-	
-	@Column(name = "modified_at")
+
+	@ManyToOne(targetEntity = User.class)
+	private String createdBy;
+
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime modifiedAt;
-	
-	@ManyToOne
-	@JoinColumn(name = "modified_by")
-	private User modifiedBy;
-	
-	@OneToMany(mappedBy = "season")
-	private Set<PersonSeason> seasonPlayers = new HashSet<PersonSeason>();
-	
-	@OneToMany(mappedBy = "season")
-	private Set<TeamSeason> seasonTeams = new HashSet<TeamSeason>();
-	
-	//---------- Getter/Setters ----------//
 
-	public UUID getId() {
+	@ManyToOne(targetEntity = User.class)
+	private String modifiedBy;
+
+	// ---------- Getter/Setters ----------//
+
+	public String getId() {
 		return id;
 	}
 
@@ -107,11 +91,11 @@ public class Season {
 		this.createdAt = createdAt;
 	}
 
-	public User getCreatedBy() {
+	public String getCreatedBy() {
 		return createdBy;
 	}
 
-	public void setCreatedBy(User createdBy) {
+	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
 	}
 
@@ -123,19 +107,11 @@ public class Season {
 		this.modifiedAt = modifiedAt;
 	}
 
-	public User getModifiedBy() {
+	public String getModifiedBy() {
 		return modifiedBy;
 	}
 
-	public void setModifiedBy(User modifiedBy) {
+	public void setModifiedBy(String modifiedBy) {
 		this.modifiedBy = modifiedBy;
-	}
-
-	public Set<PersonSeason> getSeasonPlayers() {
-		return seasonPlayers;
-	}
-
-	public Set<TeamSeason> getSeasonTeams() {
-		return seasonTeams;
 	}
 }

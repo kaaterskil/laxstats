@@ -1,7 +1,9 @@
-package laxstats.domain;
+package laxstats.infrastructure;
 
 import java.util.List;
 import java.util.UUID;
+
+import laxstats.domain.User;
 
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;

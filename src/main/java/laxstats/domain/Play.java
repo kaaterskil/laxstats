@@ -2,7 +2,6 @@ package laxstats.domain;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -11,16 +10,14 @@ import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
@@ -28,16 +25,24 @@ import org.joda.time.LocalTime;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "play_type", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorColumn(
+	name = "playType",
+	length = 20,
+	discriminatorType = DiscriminatorType.STRING
+)
 @Table(
 	indexes = {
-		@Index(name = "play_idx1", columnList = "play_type"),
-		@Index(name = "play_idx2", columnList = "event, play_type"),
+		@Index(name = "play_idx1", columnList = "playType"),
+		@Index(name = "play_idx2", columnList = "event, playType"),
 		@Index(name = "play_idx3", columnList = "period"),
 		@Index(name = "play_idx4", columnList = "strength"),
-		@Index(name = "play_idx5", columnList = "play_key"),
+		@Index(name = "play_idx5", columnList = "playKey"),
 		@Index(name = "play_idx6", columnList = "result"),
-		@Index(name = "play_idx7", columnList = "play_key, result")
+		@Index(name = "play_idx7", columnList = "playKey, result"),
+		@Index(name = "play_idx8", columnList = "period, elapsedTime")
+	},
+	uniqueConstraints = {
+		@UniqueConstraint(name = "play_uk1", columnNames = {"event", "sequenceNumber"})
 	}
 )
 abstract public class Play {
@@ -55,81 +60,73 @@ abstract public class Play {
 	}
 	
 	public enum Result {
-		GOAL, SHOT_MISSED, SHOT_SAVED, SHOT_BLOCKED, SHOT_OFF_POST, CLEAR_SUCCEEDED, CLEAR_FAILED;
+		GOAL, SHOT_MISSED, SHOT_SAVED, SHOT_BLOCKED, SHOT_OFF_POST, 
+		CLEAR_SUCCEEDED, CLEAR_FAILED;
 	}
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private UUID id;
+	@Column(length = 36)
+	private String id;
 
 	@ManyToOne
 	private Event event;
 	
 	private int sequenceNumber;
 	
-	@ManyToOne
-	private Team team;
+	@ManyToOne(targetEntity = Team.class, optional = false)
+	private String teamId;
 	
 	private int period;
 	
-	@Column(name = "elapsed_time")
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalTime")
 	private LocalTime elapsedTime;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(name = "play_key", length = 20)
+	@Column(length = 20)
 	protected PlayKey playKey;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(name = "score_attempt_type", length = 20)
+	@Column(length = 20)
 	private ScoreAttemptType scoreAttemptType;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20)
 	private Result result;
 	
-	@Column(name = "team_score")
 	private int teamScore;
 	
-	@Column(name = "opponent_score")
 	private int opponentScore;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20)
 	private Strength strength;
 	
-	@Column(name = "man_up_advantage")
 	private int manUpAdvantage;
 	
-	@ManyToOne
-	@JoinColumn(name = "man_up_team_id")
-	private Team manUpTeam;
+	@ManyToOne(targetEntity = Team.class)
+	private String manUpTeamId;
 	
 	@Column(columnDefinition = "text")
 	private String comment;
 	
-	@Column(name = "created_at")
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime createdAt;
 	
-	@ManyToOne
-	@JoinColumn(name = "created_by")
-	private User createdBy;
+	@ManyToOne(targetEntity = User.class)
+	private String createdBy;
 	
-	@Column(name = "modified_at")
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime modifiedAt;
 	
-	@ManyToOne
-	@JoinColumn(name = "modified_by")
-	private User modifiedBy;
+	@ManyToOne(targetEntity = User.class)
+	private String modifiedBy;
 	
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "play")
 	private Set<PlayParticipant> participants = new HashSet<PlayParticipant>();
 	
 	//---------- Getter/Setters ----------//
 
-	public UUID getId() {
+	public String getId() {
 		return id;
 	}
 
@@ -149,12 +146,12 @@ abstract public class Play {
 		this.sequenceNumber = sequenceNumber;
 	}
 
-	public Team getTeam() {
-		return team;
+	public String getTeamId() {
+		return teamId;
 	}
 
-	public void setTeam(Team team) {
-		this.team = team;
+	public void setTeam(String teamId) {
+		this.teamId = teamId;
 	}
 
 	public int getPeriod() {
@@ -229,12 +226,12 @@ abstract public class Play {
 		this.manUpAdvantage = manUpAdvantage;
 	}
 
-	public Team getManUpTeam() {
-		return manUpTeam;
+	public String getManUpTeamId() {
+		return manUpTeamId;
 	}
 
-	public void setManUpTeam(Team manUpTeam) {
-		this.manUpTeam = manUpTeam;
+	public void setManUpTeam(String manUpTeamId) {
+		this.manUpTeamId = manUpTeamId;
 	}
 
 	public String getComment() {
@@ -253,11 +250,11 @@ abstract public class Play {
 		this.createdAt = createdAt;
 	}
 
-	public User getCreatedBy() {
+	public String getCreatedBy() {
 		return createdBy;
 	}
 
-	public void setCreatedBy(User createdBy) {
+	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
 	}
 
@@ -269,20 +266,15 @@ abstract public class Play {
 		this.modifiedAt = modifiedAt;
 	}
 
-	public User getModifiedBy() {
+	public String getModifiedBy() {
 		return modifiedBy;
 	}
 
-	public void setModifiedBy(User modifiedBy) {
+	public void setModifiedBy(String modifiedBy) {
 		this.modifiedBy = modifiedBy;
 	}
 
 	public Set<PlayParticipant> getParticipants() {
 		return participants;
-	}
-	
-	public boolean addParticipant(PlayParticipant participant) {
-		participant.setPlay(this);
-		return participants.add(participant);
 	}
 }

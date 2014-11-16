@@ -1,7 +1,6 @@
 package laxstats.domain;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -20,7 +19,6 @@ import org.joda.time.LocalDateTime;
 
 @Entity
 @Table(
-	name = "people_events",
 	indexes = {
 		@Index(name = "people_events_idx1", columnList = "role"),
 		@Index(name = "people_events_idx2", columnList = "status")
@@ -36,15 +34,15 @@ public class EventAttendee {
 	public static class Id implements Serializable {
 		private static final long serialVersionUID = 1582104599083216078L;
 
-		@Column(name = "person_id")
-		private UUID personId;
+		@Column(length = 36)
+		private String personId;
 		
-		@Column(name = "event_id")
-		private UUID eventId;
+		@Column(length = 36)
+		private String eventId;
 		
 		public Id(){}
 		
-		public Id(UUID personId, UUID eventId){
+		public Id(String personId, String eventId){
 			this.personId = personId;
 			this.eventId = eventId;
 		}
@@ -52,7 +50,8 @@ public class EventAttendee {
 		public boolean equals(Object o) {
 			if(o != null && o instanceof EventAttendee.Id) {
 				Id that = (Id) o;
-				return this.personId.equals(that.personId) && this.eventId.equals(that.eventId);
+				return this.personId.equals(that.personId) && 
+						this.eventId.equals(that.eventId);
 			}
 			return false;
 		}
@@ -67,15 +66,15 @@ public class EventAttendee {
 	private EventAttendee.Id id = new Id();
 	
 	@ManyToOne
-	@JoinColumn(name = "person_id", insertable = false, updatable = false)
+	@JoinColumn(name = "personId", insertable = false, updatable = false)
 	private Person person;
 
 	@ManyToOne
-	@JoinColumn(name = "event_id", insertable = false, updatable = false)
+	@JoinColumn(name = "eventId", insertable = false, updatable = false)
 	private Event event;
 	
-	@ManyToOne
-	private Team team;
+	@ManyToOne(targetEntity = Team.class)
+	private String teamId;
 	
 	@NotNull
 	@Enumerated(EnumType.STRING)
@@ -87,13 +86,11 @@ public class EventAttendee {
 	@Column(length = 20, nullable = false)
 	private Status status;
 	
-	@Column(name = "created_at")
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime createdAt;
 	
-	@ManyToOne
-	@JoinColumn(name = "created_by")
-	private User createdBy;
+	@ManyToOne(targetEntity = User.class)
+	private String createdBy;
 	
 	//---------- Constructors ----------//
 	
@@ -132,12 +129,12 @@ public class EventAttendee {
 		this.event = event;
 	}
 
-	public Team getTeam() {
-		return team;
+	public String getTeamId() {
+		return teamId;
 	}
 
-	public void setTeam(Team team) {
-		this.team = team;
+	public void setTeamId(String teamId) {
+		this.teamId = teamId;
 	}
 
 	public Role getRole() {
@@ -164,11 +161,11 @@ public class EventAttendee {
 		this.createdAt = createdAt;
 	}
 
-	public User getCreatedBy() {
+	public String getCreatedBy() {
 		return createdBy;
 	}
 
-	public void setCreatedBy(User createdBy) {
+	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
 	}
 }

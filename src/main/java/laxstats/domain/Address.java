@@ -1,14 +1,9 @@
 package laxstats.domain;
 
-import java.util.UUID;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -19,26 +14,26 @@ import org.joda.time.LocalDateTime;
 @Table(
 	indexes = {
 		@Index(name = "address_idx1", columnList = "city"), 
-		@Index(name = "address_idx2", columnList = "primary_address"), 
-		@Index(name = "address_idx3", columnList = "do_not_use")
+		@Index(name = "address_idx2", columnList = "isPrimary"), 
+		@Index(name = "address_idx3", columnList = "doNotUse")
 	}
 )
 public class Address {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private UUID id;
+	@Column(length = 36)
+	private String id;
 	
 	@ManyToOne
 	private Person person;
 	
-	@ManyToOne
-	private Site site;
+	@ManyToOne(targetEntity = Site.class)
+	private String siteId;
 	
-	@Column(name = "address_1", length = 34)
+	@Column(length = 34)
 	private String address1;
 	
-	@Column(name = "address_2", length = 34)
+	@Column(length = 34)
 	private String address2;
 	
 	@Column(length = 30)
@@ -47,30 +42,54 @@ public class Address {
 	@ManyToOne
 	private Region region;
 	
-	@Column(name = "postal_code", length = 10)
+	@Column(length = 10)
 	private String postalCode;
 	
-	@Column(name = "primary_address")
 	private boolean isPrimary = false;
 	
-	@Column(name = "do_not_use")
 	private boolean doNotUse = false;
 	
-	@Column(name = "created_at")
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime createdAt;
+
+	@ManyToOne(targetEntity = User.class)
+	private String createdBy;
 	
-	@ManyToOne
-	@JoinColumn(name = "created_by")
-	private User createdBy;
-	
-	@Column(name = "modified_at")
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime modifiedAt;
 	
-	@ManyToOne
-	@JoinColumn(name = "modified_by")
-	private User modifiedBy;
+	@ManyToOne(targetEntity = User.class)
+	private String modifiedBy;
+	
+	//---------- Constructors ----------//
+	
+	protected Address(){}
+	
+	public Address(String id, Person person, String siteId, String address1,
+			String address2, String city, Region region, String postalCode,
+			boolean isPrimary, boolean doNotUse, LocalDateTime createdAt,
+			String createdBy, LocalDateTime modifiedAt, String modifiedBy) {
+		this.id = id;
+		this.person = person;
+		this.siteId = siteId;
+		this.address1 = address1;
+		this.address2 = address2;
+		this.city = city;
+		this.region = region;
+		this.postalCode = postalCode;
+		this.isPrimary = isPrimary;
+		this.doNotUse = doNotUse;
+		this.createdAt = createdAt;
+		this.createdBy = createdBy;
+		this.modifiedAt = modifiedAt;
+		this.modifiedBy = modifiedBy;
+	}
+
+	//---------- Getter/Setters ----------//
+
+	public String getId() {
+		return id;
+	}
 
 	public Person getPerson() {
 		return person;
@@ -80,12 +99,12 @@ public class Address {
 		this.person = person;
 	}
 
-	public Site getSite() {
-		return site;
+	public String getSiteId() {
+		return siteId;
 	}
 
-	public void setSite(Site site) {
-		this.site = site;
+	public void setSiteId(String siteId) {
+		this.siteId = siteId;
 	}
 
 	public String getAddress1() {
@@ -152,11 +171,11 @@ public class Address {
 		this.createdAt = createdAt;
 	}
 
-	public User getCreatedBy() {
+	public String getCreatedBy() {
 		return createdBy;
 	}
 
-	public void setCreatedBy(User createdBy) {
+	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
 	}
 
@@ -168,11 +187,11 @@ public class Address {
 		this.modifiedAt = modifiedAt;
 	}
 
-	public User getModifiedBy() {
+	public String getModifiedBy() {
 		return modifiedBy;
 	}
 
-	public void setModifiedBy(User modifiedBy) {
+	public void setModifiedBy(String modifiedBy) {
 		this.modifiedBy = modifiedBy;
 	}
 }
