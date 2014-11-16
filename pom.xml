@@ -22,10 +22,17 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
+		<!-- CQRS framework -->
 		<dependency>
 			<groupId>org.axonframework</groupId>
 			<artifactId>axon-core</artifactId>
 			<version>2.3.2</version>
+		</dependency>
+		
+		<!-- Security -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
 
 		<!-- Joda Time -->
@@ -39,7 +46,6 @@
 			<artifactId>usertype.core</artifactId>
 			<version>3.2.0.GA</version>
 		</dependency>
-
 
 		<!-- Hibernate and PostgreSQL -->
 		<dependency>
@@ -74,6 +80,11 @@
 			<groupId>net.wimpi</groupId>
 			<artifactId>telnetd-x</artifactId>
 			<version>2.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.neo4j</groupId>
+			<artifactId>neo4j-cypher-compiler-2.1</artifactId>
+			<version>2.1.2</version>
 		</dependency>
 	</dependencies>
 
