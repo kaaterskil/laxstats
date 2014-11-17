@@ -2,6 +2,8 @@ package laxstats;
 
 import java.util.Arrays;
 
+import laxstats.domain.seasons.Season;
+import laxstats.domain.seasons.SeasonCommandHandler;
 import laxstats.domain.users.User;
 import laxstats.domain.users.UserCommandHandler;
 
@@ -32,6 +34,11 @@ public class AxonConfiguration {
 		CommandGatewayFactoryBean<CommandGateway> factory = new CommandGatewayFactoryBean<CommandGateway>();
 		factory.setCommandBus(commandBus());
 		return factory;
+	}
+	
+	@Bean
+	public SeasonCommandHandler seasonCommandHandler() {
+		return new SeasonCommandHandler();
 	}
 	
 	@Bean
@@ -69,6 +76,13 @@ public class AxonConfiguration {
 		AnnotationEventListenerBeanPostProcessor processor = new AnnotationEventListenerBeanPostProcessor();
 		processor.setEventBus(eventBus());
 		return processor;
+	}
+	
+	@Bean
+	public Repository<Season> seasonRepository() {
+		EventSourcingRepository<Season> repository = new EventSourcingRepository<Season>(Season.class, eventStore());
+		repository.setEventBus(eventBus());
+		return repository;
 	}
 	
 	@Bean

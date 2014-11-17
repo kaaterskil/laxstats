@@ -7,7 +7,6 @@ import javax.persistence.Index;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-import javax.validation.constraints.NotNull;
 
 import laxstats.query.users.UserEntry;
 
@@ -31,11 +30,9 @@ public class Season {
 	@Column(length = 36)
 	private String id;
 
-	@NotNull
 	@Column(length = 100, nullable = false)
 	private String description;
 
-	@NotNull
 	@Column(nullable = false)
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
 	private LocalDate startsOn;
