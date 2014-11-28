@@ -1,6 +1,5 @@
 package laxstats.query.people;
 
-import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -17,12 +16,14 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import laxstats.domain.DominantHand;
 import laxstats.domain.Gender;
 import laxstats.query.teams.TeamMember;
 import laxstats.query.users.UserEntry;
 import laxstats.query.events.EventAttendee;
 
 import org.hibernate.annotations.Type;
+import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
 @Entity
@@ -35,10 +36,6 @@ import org.joda.time.LocalDateTime;
 	}
 )
 public class Person {
-	
-	public enum DominantHand {
-		RIGHT, LEFT, AMBIDEXTROUS;
-	}
 
 	@Id
 	@Column(length = 36)
@@ -72,7 +69,7 @@ public class Person {
 	
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20)
-	private Person.DominantHand dominantHand;	
+	private DominantHand dominantHand;	
 	
 	private boolean isParentReleased = false;
 
@@ -126,6 +123,10 @@ public class Person {
 	
 	public String getId() {
 		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	public String getPrefix() {
@@ -192,11 +193,11 @@ public class Person {
 		this.gender = gender;
 	}
 
-	public Person.DominantHand getDominantHand() {
+	public DominantHand getDominantHand() {
 		return dominantHand;
 	}
 
-	public void setDominantHand(Person.DominantHand dominantHand) {
+	public void setDominantHand(DominantHand dominantHand) {
 		this.dominantHand = dominantHand;
 	}
 

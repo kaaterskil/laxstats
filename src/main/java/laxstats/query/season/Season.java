@@ -58,6 +58,10 @@ public class Season {
 		return id;
 	}
 
+	public void setId(String id) {
+		this.id = id;
+	}
+
 	public String getDescription() {
 		return description;
 	}

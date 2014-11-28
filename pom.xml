@@ -22,20 +22,22 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
-		<!-- CQRS framework -->
+		<!-- tag::axon[] -->
 		<dependency>
 			<groupId>org.axonframework</groupId>
 			<artifactId>axon-core</artifactId>
 			<version>2.3.2</version>
 		</dependency>
+		<!-- end::axon[] -->
 		
-		<!-- Security -->
+		<!-- tag::security[] -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
+		<!-- end::security[] -->
 
-		<!-- Joda Time -->
+		<!-- tag::joda[] -->
 		<dependency>
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
@@ -46,8 +48,9 @@
 			<artifactId>usertype.core</artifactId>
 			<version>3.2.0.GA</version>
 		</dependency>
+		<!-- end::joda[] -->
 
-		<!-- Hibernate and PostgreSQL -->
+		<!-- tag::persistence[] -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-rest</artifactId>
@@ -65,16 +68,12 @@
 			<artifactId>postgresql</artifactId>
 			<version>9.3-1102-jdbc41</version>
 		</dependency>
+		<!-- end::persistence[] -->
 
-		<!-- Thymeleaf templating -->
+		<!-- tag::thymeleaf[] -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>net.wimpi</groupId>
@@ -86,6 +85,22 @@
 			<artifactId>neo4j-cypher-compiler-2.1</artifactId>
 			<version>2.1.2</version>
 		</dependency>
+		<dependency>
+			<groupId>org.thymeleaf.extras</groupId>
+			<artifactId>thymeleaf-extras-springsecurity3</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.github.mxab.thymeleaf.extras</groupId>
+			<artifactId>thymeleaf-extras-data-attribute</artifactId>
+		</dependency>
+		<!-- end::thymeleaf[] -->
+
+		<!-- tag::actuator[] -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<!-- end::actuator[] -->
 	</dependencies>
 
 	<properties>
@@ -104,7 +119,6 @@
 			</plugin>
 		</plugins>
 	</build>
-
 
 	<!-- Add Spring repositories -->
 	<!-- (you don't need this if you are using a .RELEASE version) -->

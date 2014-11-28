@@ -2,7 +2,7 @@ package laxstats.domain.teams;
 
 import java.io.Serializable;
 
-import laxstats.domain.Season;
+import laxstats.domain.seasons.Season;
 
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;

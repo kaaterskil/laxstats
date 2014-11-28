@@ -1,6 +1,9 @@
 /target/
-/laxstats.bat
-/.gitignore
-/.classpath
 /.settings/*
+/.idea/*
+/.classpath
+/.gitignore
 /.project
+/laxstats.bat
+/laxstats.eml
+/laxstats.iml
