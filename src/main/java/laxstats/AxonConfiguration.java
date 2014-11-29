@@ -3,17 +3,9 @@ package laxstats;
 import java.util.Arrays;
 
 import laxstats.domain.people.Person;
-import laxstats.domain.people.PersonCommandHandler;
 import laxstats.domain.seasons.Season;
-import laxstats.domain.seasons.SeasonCommandHandler;
 import laxstats.domain.teams.Team;
-import laxstats.domain.teams.TeamCommandHandler;
 import laxstats.domain.users.User;
-import laxstats.domain.users.UserCommandHandler;
-import laxstats.query.people.PersonListener;
-import laxstats.query.season.SeasonListener;
-import laxstats.query.teams.TeamListener;
-import laxstats.query.users.UserListener;
 
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.commandhandling.SimpleCommandBus;
