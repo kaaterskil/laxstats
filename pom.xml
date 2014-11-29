@@ -1,13 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+		http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>net.laxstats</groupId>
 	<artifactId>laxstats</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>laxstats</name>
-	<description>Lacrosse statistics</description>	
+	<description>Lacrosse statistics</description>
 	<packaging>jar</packaging>
 
 	<!-- Inherit defaults from Spring Boot -->
@@ -31,7 +32,7 @@
 			<version>2.3.2</version>
 		</dependency>
 		<!-- end::axon[] -->
-		
+
 		<!-- tag::security[] -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -80,7 +81,7 @@
 		<dependency>
 			<groupId>nz.net.ultraq.thymeleaf</groupId>
 			<artifactId>thymeleaf-layout-dialect</artifactId>
-			</dependency>
+		</dependency>
 		<dependency>
 			<groupId>net.wimpi</groupId>
 			<artifactId>telnetd-x</artifactId>

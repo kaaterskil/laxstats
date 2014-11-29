@@ -1,6 +1,7 @@
 /target/
 /.settings/*
-/.idea/*
+/.idea/**
+/.idea/dictionaries/*
 /.classpath
 /.gitignore
 /.project
