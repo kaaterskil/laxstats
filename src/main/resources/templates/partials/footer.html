@@ -1,31 +1,29 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
-<head lang="en">
-<link rel="stylesheet" type="text/css" media="all"
-	th:href="@{/css/bootstrap.min.css}" href="../css/bootstrap.min.css" />
+<head>
 </head>
 <body>
 	<div th:fragment="footer">
-		<div class="lax-footer-title">laxstats</div>
-		<nav class="navbar navbar-default" role="navigation">
-			<div class="collapse navbar-collapse">
-				<ul class="nav navbar-nav">
-					<li><a href="#">Contact Us</a></li>
-					<li class="divider"></li>
-					<li><a href="#">Site Map</a></li>
-					<li class="divider"></li>
-					<li><a href="#">Terms of Use</a></li>
-					<li class="divider"></li>
-					<li><a href="#">Privacy Policy</a></li>
-					<li class="divider"></li>
-					<li><a href="#">Subscription Information</a></li>
-					<li class="divider"></li>
-					<li>Copyright &copy; 2005-2014 Kaaterskil Management, LLC. All
-						rights reserved.</li>
-				</ul>
-			</div>
-		</nav>
+		<footer>
+			<nav class="navbar navbar-default navbar-fixed-bottom"
+				role="navigation">
+				<div class="container">
+					<div class="lax-footer-title">laxstats:</div>
+					<div class="collapse navbar-collapse">
+						<ul class="nav navbar-nav">
+							<li><a href="#">Contact Us</a></li>
+							<li><a href="#">Site Map</a></li>
+							<li><a href="#">Terms of Use</a></li>
+							<li><a href="#">Privacy Policy</a></li>
+							<li><a href="#">Subscription Information</a></li>
+						</ul>
+					</div>
+					<div class="lax-footer-copyright">Copyright &copy; 2005-2014 Kaaterskil Management, LLC.
+								All rights reserved.</div>
+				</div>
+			</nav>
+		</footer>
 	</div>
 </body>
 </html>

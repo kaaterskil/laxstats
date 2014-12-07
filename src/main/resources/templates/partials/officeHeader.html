@@ -19,16 +19,21 @@
 					</div>
 					<div class="collapse navbar-collapse">
 						<ul class="nav navbar-nav">
-							<li><a href="/home">HOME</a></li>
-							<li><a href="/teams">TEAMS</a></li>
-							<li><a href="#">SCOREBOARD</a></li>
-							<li><a href="#">SCHEDULE</a></li>
-							<li><a href="/people">PLAYERS</a></li>
-							<li><a href="#">FIELDS</a></li>
+							<li><a href="/home">NEW GAME</a></li>
+							<li><a href="/teams">TEAM</a></li>							<li><a href="/people">PLAYERS</a></li>
+							<li><a href="#">PLAYERS</a></li>
 							<li><a href="#">FANS</a></li>
-							<li><a href="/office">MANAGER'S OFFICE</a></li>
+							<li><a href="#">BLOG</a></li>
+							<li><a href="#">PLAYBOOK</a></li>
+							<li><a href="#">MEDIA</a></li>
+							<li>
+								<form th:action="@{/logout}" method="post">
+									<button type="submit" class="logout-btn">LOG OUT</button>
+								</form>
+							</li>
 						</ul>
 					</div>
+					<div th:inline="text">[[${#httpServletRequest.remoteUser}]]</div>
 				</div>
 			</nav>
 		</header>

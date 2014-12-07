@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class UserCommandHandler {
 
 	private Repository<User> repository;
-	
+
 	@SuppressWarnings("unused")
 	private UserQueryRepository userQueryRepository;
 
@@ -30,12 +30,10 @@ public class UserCommandHandler {
 	}
 
 	@CommandHandler
-	public UserId handleCreateUser(CreateUserCommand command) {
-		UserId id = command.getUserId();
-		User user = new User(id, command.getEmail(), command.getPassword(),
-				command.getFirstName(), command.getLastName(),
-				command.getRole(), command.getTeamId(), command.getIpAddress());
+	public UserId handle(CreateUserCommand command) {
+		final UserId identifier = command.getUserId();
+		final User user = new User(identifier, command.getUserDTO());
 		repository.add(user);
-		return id;
+		return identifier;
 	}
 }

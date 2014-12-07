@@ -108,6 +108,11 @@
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
 		<!-- end::actuator[] -->
+		<dependency>
+			<groupId>net.spy</groupId>
+			<artifactId>spymemcached</artifactId>
+			<version>2.11.4</version>
+		</dependency>
 	</dependencies>
 
 	<properties>

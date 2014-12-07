@@ -1,12 +1,14 @@
 package laxstats.api.users;
 
+import org.axonframework.commandhandling.annotation.TargetAggregateIdentifier;
 
-public class UserCreatedEvent {
+public class UpdateUserCommand {
 
+	@TargetAggregateIdentifier
 	private final UserId userId;
 	private final UserDTO userDTO;
 
-	public UserCreatedEvent(UserId userId, UserDTO userDTO) {
+	public UpdateUserCommand(UserId userId, UserDTO userDTO) {
 		this.userId = userId;
 		this.userDTO = userDTO;
 	}

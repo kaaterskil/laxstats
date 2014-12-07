@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-6">
+				<div class="lx-login-container">
+					<h2>Log In</h2>
+					<form action="#" 
+						th:action="@{/login}" 
+						method="post" 
+						role="form">
+						<div class="form-group">
+							<label for="email">Email</label>
+							<input type="text"
+								id="email" 
+								class="form-control" 
+								name = "username"
+								placeholder="Email" />
+						</div>
+						<div class="form-group">
+							<label for="password">Password</label>
+							<input type="password"
+								id="password"
+								class="form-control"
+								name="password" />
+						</div>
+						<input type="submit" 
+							class="btn btn-default" 
+							value="Submit"/>
+				        <div class="ls-error" th:if="${param.error}">
+				            Invalid username or password.
+				        </div>
+				        <div class="ls-logout" th:if="${param.logout}">
+				            You have been logged out.
+				        </div>
+					</form>
+				</div>
+			</div>
+			<div class="col-xs-6">
+				<h1>Manager's Office</h1>
+				<p class="">Let's face it, paperwork sucks. It's here in the
+					Manager's Office where much of the grunt work happens when it's not
+					happening on the field. Like keeping all the paperwork in order,
+					entering game data, maintaining team and player information,
+					writing letters, emails and notices, blah blah. C'mon, you know you
+					hate it: it's a little like taking out the trash, but it has to be
+					done. That's where we come in.</p>
+				<p class="">We've made this work as easy and straightforward as
+					we know how, and we've made it so the amount of the data you track
+					and the work you do is entirely up to you. So if you're a coach or
+					a team manager or just the one keeping the scorebook, it doesn't
+					matter whether you're a statistics nut or just a helping hand. Go
+					ahead, pop the hood of this baby and poke around inside. Your team
+					will be glad you did.</p>
+				<p class="">Just so no one comes around messing up your stuff,
+					we've protected this area so you'll need a username and password to
+					get into your private, team-specific office. If you haven't got
+					one, get one and get cracking. Your team is waiting!</p>
+				<p class="">You don't need to be a Laxstats subscriber to visit
+					the Manager's Office. Hit the "Register" button and fill out a
+					short form to log on. Visit all you want, but remember you won't be
+					able to save anything until you join up. When you're ready, click
+					the link below for information on how to subscribe.</p>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
