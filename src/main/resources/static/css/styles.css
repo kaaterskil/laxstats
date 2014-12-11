@@ -1,0 +1,91 @@
+@CHARSET "ISO-8859-1";
+
+@font-face {
+	font-family: 'Proxima Nova';
+	src: url('../fonts/proximanova-bold-webfont.eot');
+	src: url('../fonts/proximanova-bold-webfont.eot?#iefix')
+		format('embedded-opentype'),
+		url('../fonts/proximanova-bold-webfont.woff') format('woff'),
+		url('../fonts/proximanova-bold-webfont.ttf') format('truetype'),
+		url('../fonts/proximanova-bold-webfont.svg#ProximaNova') format('svg');
+	font-weight: 700;
+	font-style: normal;
+}
+
+/*---------- General styles ----------*/
+html, body {
+	background: rgb(255, 255, 255);
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	color: rgb(51, 51, 51);
+	direction: ltr;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-style: normal;
+	line-height: 1.428;
+	text-align: left;
+	text-decoration: none;
+}
+
+h1, h2 {
+	color: rgb(102, 102, 51);
+	font-family: 'Proxima Nova';
+	text-transform: uppercase;
+}
+
+h1 {
+	font-size: 18px;
+}
+
+h2 {
+	font-size: 13px;
+}
+
+.ls-error, ls-logout {
+	color: rgb(255, 51, 0);
+	padding: 5px 0;
+}
+
+/*---------- Navigation styles ----------*/
+.navbar {
+	border-radius: 0;
+}
+
+header .navbar-nav>li>a {
+	font-family: 'Proxima Nova';
+	font-size: 14px;
+	font-weight: normal;
+}
+
+.logout-btn {
+	background: rgb(255, 255, 255)
+	border: none;
+}
+
+footer .navbar-fixed-bottom {
+	background: rgb(204, 255, 153);
+	padding: 20px 0;
+}
+
+footer .navbar-nav>li>a {
+	padding: 0 15px;
+}
+
+/*---------- Home styles ----------*/
+.lede {
+	color: rgb(204, 102, 51);
+}
+
+.lax-footer-title {
+	color: rgb(51, 51, 51);
+	font-weight: bold;
+	padding-left: 15px;
+}
+
+.lax-footer-copyright {
+	color: rgb(119, 119, 119);
+	padding-left: 15px;
+}

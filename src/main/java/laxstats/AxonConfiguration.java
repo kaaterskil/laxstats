@@ -1,8 +1,10 @@
 package laxstats;
 
+import java.io.File;
 import java.util.Arrays;
 
 import laxstats.domain.people.Person;
+import laxstats.domain.plays.PenaltyType;
 import laxstats.domain.seasons.Season;
 import laxstats.domain.teams.Team;
 import laxstats.domain.users.User;
@@ -13,13 +15,13 @@ import org.axonframework.commandhandling.annotation.AnnotationCommandHandlerBean
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.commandhandling.gateway.CommandGatewayFactoryBean;
 import org.axonframework.commandhandling.interceptors.BeanValidationInterceptor;
-import org.axonframework.common.jpa.ContainerManagedEntityManagerProvider;
 import org.axonframework.eventhandling.EventBus;
 import org.axonframework.eventhandling.SimpleEventBus;
 import org.axonframework.eventhandling.annotation.AnnotationEventListenerBeanPostProcessor;
 import org.axonframework.eventsourcing.EventSourcingRepository;
 import org.axonframework.eventstore.EventStore;
-import org.axonframework.eventstore.jpa.JpaEventStore;
+import org.axonframework.eventstore.fs.FileSystemEventStore;
+import org.axonframework.eventstore.fs.SimpleEventFileResolver;
 import org.axonframework.repository.Repository;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -31,7 +33,7 @@ public class AxonConfiguration {
 
 	@Bean
 	public CommandBus commandBus() {
-		SimpleCommandBus commandBus = new SimpleCommandBus();
+		final SimpleCommandBus commandBus = new SimpleCommandBus();
 		commandBus.setHandlerInterceptors(Arrays
 				.asList(new BeanValidationInterceptor()));
 		return commandBus;
@@ -39,14 +41,15 @@ public class AxonConfiguration {
 
 	@Bean
 	public CommandGatewayFactoryBean<CommandGateway> commandGateway() {
-		CommandGatewayFactoryBean<CommandGateway> factory = new CommandGatewayFactoryBean<>();
+		final CommandGatewayFactoryBean<CommandGateway> factory = new CommandGatewayFactoryBean<>();
 		factory.setCommandBus(commandBus());
 		return factory;
 	}
 
 	@Bean
 	public EventStore eventStore() {
-		return new JpaEventStore(new ContainerManagedEntityManagerProvider());
+		return new FileSystemEventStore(new SimpleEventFileResolver(new File(
+				"./events")));
 	}
 
 	@Bean
@@ -58,25 +61,25 @@ public class AxonConfiguration {
 
 	@Bean
 	public AnnotationCommandHandlerBeanPostProcessor annotationCommandHandlerBeanPostProcessor() {
-		AnnotationCommandHandlerBeanPostProcessor processor = new AnnotationCommandHandlerBeanPostProcessor();
+		final AnnotationCommandHandlerBeanPostProcessor processor = new AnnotationCommandHandlerBeanPostProcessor();
 		processor.setCommandBus(commandBus());
 		return processor;
 	}
-	
-	//---------- Event Listeners ----------//
+
+	// ---------- Event Listeners ----------//
 
 	@Bean
 	public AnnotationEventListenerBeanPostProcessor annotationEventListenerBeanPostProcessor() {
-		AnnotationEventListenerBeanPostProcessor processor = new AnnotationEventListenerBeanPostProcessor();
+		final AnnotationEventListenerBeanPostProcessor processor = new AnnotationEventListenerBeanPostProcessor();
 		processor.setEventBus(eventBus());
 		return processor;
 	}
 
-	//---------- Repositories ----------//
+	// ---------- Repositories ----------//
 
 	@Bean
 	public Repository<Person> personRepository() {
-		EventSourcingRepository<Person> repository = new EventSourcingRepository<Person>(
+		final EventSourcingRepository<Person> repository = new EventSourcingRepository<Person>(
 				Person.class, eventStore());
 		repository.setEventBus(eventBus());
 		return repository;
@@ -84,7 +87,7 @@ public class AxonConfiguration {
 
 	@Bean
 	public Repository<Season> seasonRepository() {
-		EventSourcingRepository<Season> repository = new EventSourcingRepository<Season>(
+		final EventSourcingRepository<Season> repository = new EventSourcingRepository<Season>(
 				Season.class, eventStore());
 		repository.setEventBus(eventBus());
 		return repository;
@@ -92,7 +95,7 @@ public class AxonConfiguration {
 
 	@Bean
 	public Repository<Team> teamRepository() {
-		EventSourcingRepository<Team> repository = new EventSourcingRepository<Team>(
+		final EventSourcingRepository<Team> repository = new EventSourcingRepository<Team>(
 				Team.class, eventStore());
 		repository.setEventBus(eventBus());
 		return repository;
@@ -100,8 +103,16 @@ public class AxonConfiguration {
 
 	@Bean
 	public Repository<User> userRepository() {
-		EventSourcingRepository<User> repository = new EventSourcingRepository<User>(
+		final EventSourcingRepository<User> repository = new EventSourcingRepository<User>(
 				User.class, eventStore());
+		repository.setEventBus(eventBus());
+		return repository;
+	}
+
+	@Bean
+	public Repository<PenaltyType> penaltyTypeRepository() {
+		final EventSourcingRepository<PenaltyType> repository = new EventSourcingRepository<PenaltyType>(
+				PenaltyType.class, eventStore());
 		repository.setEventBus(eventBus());
 		return repository;
 	}
