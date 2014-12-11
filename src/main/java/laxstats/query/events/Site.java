@@ -11,7 +11,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-import laxstats.query.people.Address;
+import laxstats.query.people.AddressEntry;
 import laxstats.query.users.UserEntry;
 
 import org.hibernate.annotations.Type;
@@ -51,7 +51,7 @@ public class Site {
 	private Site.Surface surface;
 	
 	@OneToOne
-	private Address address;
+	private AddressEntry address;
 	
 	@Column(columnDefinition = "text")
 	private String directions;
@@ -94,11 +94,11 @@ public class Site {
 		this.surface = surface;
 	}
 
-	public Address getAddress() {
+	public AddressEntry getAddress() {
 		return address;
 	}
 
-	public void setAddress(Address address) {
+	public void setAddress(AddressEntry address) {
 		this.address = address;
 	}
 

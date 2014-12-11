@@ -14,7 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-import laxstats.query.people.Person;
+import laxstats.query.people.PersonEntry;
 import laxstats.query.teams.Role;
 import laxstats.query.teams.Team;
 import laxstats.query.users.UserEntry;
@@ -72,7 +72,7 @@ public class EventAttendee {
 	
 	@ManyToOne
 	@JoinColumn(name = "personId", insertable = false, updatable = false)
-	private Person person;
+	private PersonEntry person;
 
 	@ManyToOne
 	@JoinColumn(name = "eventId", insertable = false, updatable = false)
@@ -101,7 +101,7 @@ public class EventAttendee {
 	
 	public EventAttendee(){}
 	
-	public EventAttendee(Person person, Event event){
+	public EventAttendee(PersonEntry person, Event event){
 		this.person = person;
 		this.event = event;
 		
@@ -118,11 +118,11 @@ public class EventAttendee {
 		return id;
 	}
 
-	public Person getPerson() {
+	public PersonEntry getPerson() {
 		return person;
 	}
 
-	public void setPerson(Person person) {
+	public void setPerson(PersonEntry person) {
 		this.person = person;
 	}
 
