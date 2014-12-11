@@ -2,7 +2,7 @@ package laxstats.api.teams;
 
 import org.joda.time.LocalDateTime;
 
-import laxstats.domain.Gender;
+import laxstats.api.people.Gender;
 
 public class TeamDTO {
 	private final TeamId teamId;

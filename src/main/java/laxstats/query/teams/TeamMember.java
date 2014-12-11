@@ -13,7 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import laxstats.query.people.Person;
+import laxstats.query.people.PersonEntry;
 import laxstats.query.season.Season;
 import laxstats.query.users.UserEntry;
 
@@ -78,7 +78,7 @@ public class TeamMember {
 	
 	@ManyToOne
 	@JoinColumn(name = "personId", insertable = false, updatable = false)
-	private Person person;
+	private PersonEntry person;
 	
 	@ManyToOne
 	@JoinColumn(name = "seasonId", insertable = false, updatable = false)
@@ -125,7 +125,7 @@ public class TeamMember {
 	
 	public TeamMember(){}
 	
-	public TeamMember(Person person, Season season, Team team) {
+	public TeamMember(PersonEntry person, Season season, Team team) {
 		this.person = person;
 		this.season = season;
 		this.team = team;
@@ -143,7 +143,7 @@ public class TeamMember {
 		return id;
 	}
 
-	public Person getPerson() {
+	public PersonEntry getPerson() {
 		return person;
 	}
 

@@ -3,10 +3,10 @@ package laxstats.domain.teams;
 import java.util.HashSet;
 import java.util.Set;
 
+import laxstats.api.people.Gender;
 import laxstats.api.teams.TeamCreatedEvent;
 import laxstats.api.teams.TeamDTO;
 import laxstats.api.teams.TeamId;
-import laxstats.domain.Gender;
 import laxstats.query.events.TeamEvent;
 
 import org.axonframework.eventsourcing.annotation.AbstractAnnotatedAggregateRoot;

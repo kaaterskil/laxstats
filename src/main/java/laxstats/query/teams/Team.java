@@ -15,7 +15,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-import laxstats.domain.Gender;
+import laxstats.api.people.Gender;
 import laxstats.query.events.Site;
 import laxstats.query.events.TeamEvent;
 import laxstats.query.users.UserEntry;

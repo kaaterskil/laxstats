@@ -1,6 +1,6 @@
 package laxstats.web.teams;
 
-import laxstats.domain.Gender;
+import laxstats.api.people.Gender;
 
 public class TeamForm {
 	private String name;
