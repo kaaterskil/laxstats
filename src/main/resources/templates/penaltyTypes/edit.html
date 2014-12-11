@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<head>
+</head>
+<body>
+	<div layout:fragment="content">
+		<h1>Penalty Maintenance</h1>
+		<form action="#" 
+			th:action="@{/penaltyTypes/} + ${id}" 
+			th:object="${form}"
+			th:method="put" 
+			role="form">
+			<div class="form-group">
+				<label for="name">Name</label>
+					<input type="text" 
+							id="name"
+							class="form-control" 
+							th:field="*{name}" 
+							placeholder="Name" />
+			</div>
+			<div class="form-group">
+				<label for="description">Description</label>
+				<textarea id="description" 
+						class="form-control" 
+						rows="3"
+						th:field="*{description}"
+						placeholder="Description"></textarea>
+			</div>
+			<div class="form-group">
+				<label for="category">Category</label>
+				<select id="category" 
+						class="form-control"
+						th:field="*{category}">
+					<option value="">Select...</option>
+					<option th:each="optItem : ${T(laxstats.api.plays.PenaltyCategory).values()}" th:value="${optItem}"
+						th:text="${optItem.value}">Category</option>
+				</select>
+			</div>
+			<div class="form-group">
+				<label for="penaltyLength">Penalty Length</label>
+				<select id="penaltyLength" 
+						class="form-control" 
+						th:field="*{penaltyLength}">
+					<option value="">Select...</option>
+					<option th:each="optItem : ${T(laxstats.api.plays.PenaltyLength).values()}"
+						th:value="${optItem}"
+						th:text="${optItem.value}">Penalty
+						Length</option>
+				</select>
+			</div>
+			<div class="form-group">
+				<label th:for="releasable">Releasable</label>
+				<input type="checkbox" 
+						id="releasable" 
+						th:field="*{releasable}" />
+			</div>
+			<input type="submit" class="btn btn-default" value="Submit" />
+		</form>
+	</div>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<head>
+</head>
+<body>
+<div layout:fragment="content">
+	<h1>Penalty Maintenance</h1>
+	<div class="ls-list-container">
+		<div><a th:href="@{/penaltyTypes/new}">Create New</a></div>
+		<table class="table table-striped">
+			<tr>
+				<th th:text="${headerName}">Foo</th>
+				<th th:text="${headerCategory}">Bar</th>
+				<th th:text="${headerReleasable}">Baz</th>
+			</tr>
+			<tr th:each="item : ${items}">
+				<th><a th:href="@{/penaltyTypes/} + ${item.id} + @{/edit}" th:text="${item.name}">Name</a></th>
+				<th th:text="${item.category.value}">Category</th>
+				<th th:text="${item.releasable}">Releasable</th>
+			</tr>
+		</table>
+	</div>
+</div>
+</body>
+</html>
