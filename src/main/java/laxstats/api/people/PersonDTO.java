@@ -1,12 +1,10 @@
 package laxstats.api.people;
 
-import laxstats.domain.DominantHand;
-import laxstats.domain.Gender;
-
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
 public class PersonDTO {
+
 	private final PersonId personId;
 	private final String prefix;
 	private final String firstName;
@@ -29,7 +27,13 @@ public class PersonDTO {
 	private final String modifiedBy;
 	private final LocalDateTime modifiedAt;
 
-	public PersonDTO(PersonId personId, String prefix, String firstName, String middleName, String lastName, String suffix, String nickname, String fullName, Gender gender, DominantHand dominantHand, boolean isParentReleased, LocalDate parentReleaseSentOn, LocalDate parentReleaseReceivedOn, LocalDate birthdate, String photo, String college, String collegeUrl, String createdBy, LocalDateTime createdAt, String modifiedBy, LocalDateTime modifiedAt) {
+	public PersonDTO(PersonId personId, String prefix, String firstName,
+			String middleName, String lastName, String suffix, String nickname,
+			String fullName, Gender gender, DominantHand dominantHand,
+			boolean isParentReleased, LocalDate parentReleaseSentOn,
+			LocalDate parentReleaseReceivedOn, LocalDate birthdate,
+			String photo, String college, String collegeUrl, String createdBy,
+			LocalDateTime createdAt, String modifiedBy, LocalDateTime modifiedAt) {
 		this.personId = personId;
 		this.prefix = prefix;
 		this.firstName = firstName;
@@ -53,64 +57,46 @@ public class PersonDTO {
 		this.modifiedAt = modifiedAt;
 	}
 
-	public PersonId getPersonId() {
-		return personId;
-	}
+	public String fullName() {
+		final StringBuffer buf = new StringBuffer();
+		boolean needsSpace = false;
 
-	public String getPrefix() {
-		return prefix;
-	}
-
-	public String getFirstName() {
-		return firstName;
-	}
-
-	public String getMiddleName() {
-		return middleName;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public String getSuffix() {
-		return suffix;
-	}
-
-	public String getNickname() {
-		return nickname;
-	}
-
-	public String getFullName() {
-		return fullName;
-	}
-
-	public Gender getGender() {
-		return gender;
-	}
-
-	public DominantHand getDominantHand() {
-		return dominantHand;
-	}
-
-	public boolean isParentReleased() {
-		return isParentReleased;
-	}
-
-	public LocalDate getParentReleaseSentOn() {
-		return parentReleaseSentOn;
-	}
-
-	public LocalDate getParentReleaseReceivedOn() {
-		return parentReleaseReceivedOn;
+		if (prefix.length() > 0) {
+			buf.append(prefix);
+			needsSpace = true;
+		}
+		if (firstName.length() > 0) {
+			if (needsSpace) {
+				buf.append(" ");
+			}
+			buf.append(firstName);
+			needsSpace = true;
+		}
+		if (middleName.length() > 0) {
+			if (needsSpace) {
+				buf.append(" ");
+			}
+			buf.append(middleName);
+			needsSpace = true;
+		}
+		if (lastName.length() > 0) {
+			if (needsSpace) {
+				buf.append(" ");
+			}
+			buf.append(lastName);
+			needsSpace = true;
+		}
+		if (suffix.length() > 0) {
+			if (needsSpace) {
+				buf.append(" ");
+			}
+			buf.append(suffix);
+		}
+		return buf.toString();
 	}
 
 	public LocalDate getBirthdate() {
 		return birthdate;
-	}
-
-	public String getPhoto() {
-		return photo;
 	}
 
 	public String getCollege() {
@@ -121,19 +107,75 @@ public class PersonDTO {
 		return collegeUrl;
 	}
 
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
+
 	public String getCreatedBy() {
 		return createdBy;
 	}
 
-	public LocalDateTime getCreatedAt() {
-		return createdAt;
+	public DominantHand getDominantHand() {
+		return dominantHand;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public String getFullName() {
+		return fullName;
+	}
+
+	public Gender getGender() {
+		return gender;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public String getMiddleName() {
+		return middleName;
+	}
+
+	public LocalDateTime getModifiedAt() {
+		return modifiedAt;
 	}
 
 	public String getModifiedBy() {
 		return modifiedBy;
 	}
 
-	public LocalDateTime getModifiedAt() {
-		return modifiedAt;
+	public String getNickname() {
+		return nickname;
+	}
+
+	public LocalDate getParentReleaseReceivedOn() {
+		return parentReleaseReceivedOn;
+	}
+
+	public LocalDate getParentReleaseSentOn() {
+		return parentReleaseSentOn;
+	}
+
+	public PersonId getPersonId() {
+		return personId;
+	}
+
+	public String getPhoto() {
+		return photo;
+	}
+
+	public String getPrefix() {
+		return prefix;
+	}
+
+	public String getSuffix() {
+		return suffix;
+	}
+
+	public boolean isParentReleased() {
+		return isParentReleased;
 	}
 }

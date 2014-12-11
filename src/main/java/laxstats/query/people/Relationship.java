@@ -17,14 +17,14 @@ import javax.persistence.Table;
 @Table(indexes = {@Index(name = "relationship_idx1", columnList = "type")})
 public class Relationship {
 	
-	static Relationship create(Person parent, Person child, Relationship.Type type) {
+	static Relationship create(PersonEntry parent, PersonEntry child, Relationship.Type type) {
 		if(!canCreate(parent, child, type)) {
 			throw new IllegalArgumentException("Invalid relationship");
 		}
 		return new Relationship(parent, child, type);
 	}
 	
-	static boolean canCreate(Person parent, Person child, Relationship.Type type) {
+	static boolean canCreate(PersonEntry parent, PersonEntry child, Relationship.Type type) {
 		if(parent.equals(child)) {
 			return false;
 		}
@@ -74,17 +74,17 @@ public class Relationship {
 
 	@ManyToOne
 	@JoinColumn(name = "parentId", insertable = false, updatable = false)
-	private Person parent;
+	private PersonEntry parent;
 	
 	@ManyToOne
 	@JoinColumn(name = "childId", insertable = false, updatable = false)
-	private Person child;
+	private PersonEntry child;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20)
 	private Relationship.Type type;
 	
-	private Relationship(Person parent, Person child, Relationship.Type type) {
+	private Relationship(PersonEntry parent, PersonEntry child, Relationship.Type type) {
 		this.parent = parent;
 		this.child = child;
 		this.type = type;
@@ -96,19 +96,19 @@ public class Relationship {
 		child.addParentRelationship(this);
 	}
 
-	public Person getParent() {
+	public PersonEntry getParent() {
 		return parent;
 	}
 
-	public void setParent(Person parent) {
+	public void setParent(PersonEntry parent) {
 		this.parent = parent;
 	}
 
-	public Person getChild() {
+	public PersonEntry getChild() {
 		return child;
 	}
 
-	public void setChild(Person child) {
+	public void setChild(PersonEntry child) {
 		this.child = child;
 	}
 
