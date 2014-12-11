@@ -61,6 +61,9 @@ public class UserEntry {
 	@ManyToOne(targetEntity = UserEntry.class)
 	private String modifiedBy;
 
+	protected UserEntry() {
+	}
+
 	// ---------- Getter/Setters ----------//
 
 	public String getId() {
