@@ -1,26 +1,14 @@
 package laxstats.query.teams;
 
-import java.io.Serializable;
-
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Index;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-import javax.validation.constraints.NotNull;
-
-import laxstats.query.season.Season;
+import laxstats.query.season.SeasonEntry;
 import laxstats.query.users.UserEntry;
-
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 @Entity
 @Table(
@@ -34,7 +22,7 @@ import org.joda.time.LocalDateTime;
 public class TeamSeason {
 	
 	public enum Status {
-		ACTIVE, INACTIVE;
+		ACTIVE, INACTIVE
 	}
 
 	@Embeddable
@@ -77,7 +65,7 @@ public class TeamSeason {
 	
 	@ManyToOne
 	@JoinColumn(name = "seasonId", insertable = false, updatable = false)
-	private Season season;
+	private SeasonEntry season;
 	
 	@ManyToOne
 	private Affiliation affiliation;
@@ -109,8 +97,8 @@ public class TeamSeason {
 	//---------- Constructors ----------//
 	
 	public TeamSeason(){}
-	
-	public TeamSeason(TeamEntry team, Season season) {
+
+	public TeamSeason(TeamEntry team, SeasonEntry season) {
 		this.team = team;
 		this.season = season;
 		
@@ -130,7 +118,7 @@ public class TeamSeason {
 		return team;
 	}
 
-	public Season getSeason() {
+	public SeasonEntry getSeason() {
 		return season;
 	}
 

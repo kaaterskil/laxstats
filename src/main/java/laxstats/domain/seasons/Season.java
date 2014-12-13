@@ -1,13 +1,10 @@
 package laxstats.domain.seasons;
 
-import laxstats.api.seasons.SeasonCreatedEvent;
-import laxstats.api.seasons.SeasonId;
-
-import org.axonframework.eventhandling.annotation.EventHandler;
+import laxstats.api.seasons.*;
 import org.axonframework.eventsourcing.annotation.AbstractAnnotatedAggregateRoot;
 import org.axonframework.eventsourcing.annotation.AggregateIdentifier;
+import org.axonframework.eventsourcing.annotation.EventSourcingHandler;
 import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
 
 public class Season extends AbstractAnnotatedAggregateRoot<SeasonId> {
 	private static final long serialVersionUID = 8223916312274072503L;
@@ -17,20 +14,49 @@ public class Season extends AbstractAnnotatedAggregateRoot<SeasonId> {
 	private String description;
 	private LocalDate startsOn;
 	private LocalDate endsOn;
-	private String createdBy;
-	private LocalDateTime createdAt;
-	private String modifiedBy;
-	private LocalDateTime modifiedAt;
+
+	public Season(SeasonId seasonId, SeasonDTO seasonDTO) {
+		apply(new SeasonCreatedEvent(seasonId, seasonDTO));
+	}
 
 	protected Season() {
 	}
 
-	public Season(SeasonId seasonId, String description, LocalDate startsOn,
-			LocalDate endsOn, String createdBy, LocalDateTime createdAt,
-			String modifiedBy, LocalDateTime modifiedAt) {
-		apply(new SeasonCreatedEvent(seasonId, description, startsOn,
-				endsOn, createdBy, createdAt, modifiedBy, modifiedAt));
+	//---------- Methods ----------//
+
+	public void update(SeasonId seasonId, SeasonDTO seasonDTO) {
+		apply(new SeasonUpdatedEvent(seasonId, seasonDTO));
 	}
+
+	public void delete(SeasonId seasonId) {
+		apply(new SeasonDeletedEvent(seasonId));
+	}
+
+	//---------- Event handlers ----------//
+
+	@EventSourcingHandler
+	protected void handle(SeasonCreatedEvent event) {
+		SeasonDTO dto = event.getSeasonDTO();
+		seasonId = event.getSeasonId();
+		description = dto.getDescription();
+		startsOn = dto.getStartsOn();
+		endsOn = dto.getEndsOn();
+	}
+
+	@EventSourcingHandler
+	protected void handle(SeasonUpdatedEvent event) {
+		SeasonDTO dto = event.getSeasonDTO();
+		description = dto.getDescription();
+		startsOn = dto.getStartsOn();
+		endsOn = dto.getEndsOn();
+	}
+
+	@EventSourcingHandler
+	protected void handle(SeasonDeletedEvent event) {
+		markDeleted();
+	}
+
+	//---------- Getters ----------//
 
 	@Override
 	public SeasonId getIdentifier() {
@@ -47,33 +73,5 @@ public class Season extends AbstractAnnotatedAggregateRoot<SeasonId> {
 
 	public LocalDate getEndsOn() {
 		return endsOn;
-	}
-
-	public String getCreatedBy() {
-		return createdBy;
-	}
-
-	public LocalDateTime getCreatedAt() {
-		return createdAt;
-	}
-
-	public String getModifiedBy() {
-		return modifiedBy;
-	}
-
-	public LocalDateTime getModifiedAt() {
-		return modifiedAt;
-	}
-
-	@EventHandler
-	public void on(SeasonCreatedEvent event) {
-		this.seasonId = event.getSeasonId();
-		this.description = event.getDescription();
-		this.startsOn = event.getStartsOn();
-		this.endsOn = event.getEndsOn();
-		this.createdBy = event.getCreatedBy();
-		this.createdAt = event.getCreatedAt();
-		this.modifiedBy = event.getModifiedBy();
-		this.modifiedAt = event.getModifiedAt();
 	}
 }

@@ -1,24 +1,13 @@
 package laxstats.query.teams;
 
-import java.io.Serializable;
-
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Index;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
 import laxstats.query.people.PersonEntry;
-import laxstats.query.season.Season;
+import laxstats.query.season.SeasonEntry;
 import laxstats.query.users.UserEntry;
-
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
+
+import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(
@@ -32,7 +21,7 @@ import org.joda.time.LocalDateTime;
 public class TeamMember {
 	
 	public enum Status {
-		ACTIVE, INJURED, TRYOUT, INACTIVE;
+		ACTIVE, INJURED, TRYOUT, INACTIVE
 	}
 
 	@Embeddable
@@ -82,7 +71,7 @@ public class TeamMember {
 	
 	@ManyToOne
 	@JoinColumn(name = "seasonId", insertable = false, updatable = false)
-	private Season season;
+	private SeasonEntry season;
 	
 	@ManyToOne
 	@JoinColumn(name = "teamId", insertable = false, updatable = false)
@@ -124,8 +113,8 @@ public class TeamMember {
 	//---------- Constructors ----------//
 	
 	public TeamMember(){}
-	
-	public TeamMember(PersonEntry person, Season season, TeamEntry team) {
+
+	public TeamMember(PersonEntry person, SeasonEntry season, TeamEntry team) {
 		this.person = person;
 		this.season = season;
 		this.team = team;
@@ -147,7 +136,7 @@ public class TeamMember {
 		return person;
 	}
 
-	public Season getSeason() {
+	public SeasonEntry getSeason() {
 		return season;
 	}
 

@@ -1,9 +1,9 @@
 package laxstats.domain.seasons;
 
 import laxstats.api.seasons.CreateSeasonCommand;
+import laxstats.api.seasons.DeleteSeasonCommand;
 import laxstats.api.seasons.SeasonId;
-import laxstats.query.season.SeasonQueryRepository;
-
+import laxstats.api.seasons.UpdateSeasonCommand;
 import org.axonframework.commandhandling.annotation.CommandHandler;
 import org.axonframework.repository.Repository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,28 +15,31 @@ public class SeasonCommandHandler {
 
 	private Repository<Season> repository;
 
-	@SuppressWarnings("unused")
-	private SeasonQueryRepository seasonQueryRepository;
-
 	@Autowired
 	@Qualifier("seasonRepository")
 	public void setRepository(Repository<Season> seasonRepository) {
 		this.repository = seasonRepository;
 	}
 
-	@Autowired
-	public void setSeasonRepository(SeasonQueryRepository seasonRepository) {
-		this.seasonQueryRepository = seasonRepository;
-	}
-
 	@CommandHandler
 	public SeasonId handle(CreateSeasonCommand command) {
 		SeasonId identifier = command.getSeasonId();
-		Season season = new Season(identifier, command.getDescription(),
-				command.getStartsOn(), command.getEndsOn(),
-				command.getCreatedBy(), command.getCreatedAt(),
-				command.getModifiedBy(), command.getModifiedAt());
-		repository.add(season);
+		Season aggregate = new Season(identifier, command.getSeasonDTO());
+		repository.add(aggregate);
 		return identifier;
+	}
+
+	@CommandHandler
+	public void handle(UpdateSeasonCommand command) {
+		SeasonId identifier = command.getSeasonId();
+		Season aggregate = repository.load(identifier);
+		aggregate.update(identifier, command.getSeasonDTO());
+	}
+
+	@CommandHandler
+	public void handle(DeleteSeasonCommand command) {
+		SeasonId identifier = command.getSeasonId();
+		Season aggregate = repository.load(identifier);
+		aggregate.delete(identifier);
 	}
 }

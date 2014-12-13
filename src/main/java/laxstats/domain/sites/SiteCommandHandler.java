@@ -4,7 +4,6 @@ import laxstats.api.sites.CreateSiteCommand;
 import laxstats.api.sites.DeleteSiteCommand;
 import laxstats.api.sites.SiteId;
 import laxstats.api.sites.UpdateSiteCommand;
-
 import org.axonframework.commandhandling.annotation.CommandHandler;
 import org.axonframework.repository.Repository;
 import org.springframework.beans.factory.annotation.Autowired;
