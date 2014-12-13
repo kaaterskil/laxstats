@@ -1,28 +1,31 @@
 package laxstats.api.users;
 
+import laxstats.query.teams.TeamEntry;
+import laxstats.query.users.UserEntry;
+
 import org.joda.time.LocalDateTime;
 
 public class UserDTO {
 
-	private UserId userId;
+	private String userId;
 	private String email;
 	private String encodedPassword;
 	private String firstName;
 	private String lastName;
-	private String teamId;
+	private TeamEntry team;
 	private String ipAddress;
 	private boolean enabled;
 	private Role role;
 	private LocalDateTime createdAt;
-	private String createdBy;
+	private UserEntry createdBy;
 	private LocalDateTime modifiedAt;
-	private String modifiedBy;
+	private UserEntry modifiedBy;
 
-	public UserId getUserId() {
+	public String getUserId() {
 		return userId;
 	}
 
-	public void setUserId(UserId userId) {
+	public void setUserId(String userId) {
 		this.userId = userId;
 	}
 
@@ -58,12 +61,12 @@ public class UserDTO {
 		this.lastName = lastName;
 	}
 
-	public String getTeamId() {
-		return teamId;
+	public TeamEntry getTeam() {
+		return team;
 	}
 
-	public void setTeamId(String teamId) {
-		this.teamId = teamId;
+	public void setTeam(TeamEntry team) {
+		this.team = team;
 	}
 
 	public String getIpAddress() {
@@ -98,11 +101,11 @@ public class UserDTO {
 		this.createdAt = createdAt;
 	}
 
-	public String getCreatedBy() {
+	public UserEntry getCreatedBy() {
 		return createdBy;
 	}
 
-	public void setCreatedBy(String createdBy) {
+	public void setCreatedBy(UserEntry createdBy) {
 		this.createdBy = createdBy;
 	}
 
@@ -114,11 +117,11 @@ public class UserDTO {
 		this.modifiedAt = modifiedAt;
 	}
 
-	public String getModifiedBy() {
+	public UserEntry getModifiedBy() {
 		return modifiedBy;
 	}
 
-	public void setModifiedBy(String modifiedBy) {
+	public void setModifiedBy(UserEntry modifiedBy) {
 		this.modifiedBy = modifiedBy;
 	}
 

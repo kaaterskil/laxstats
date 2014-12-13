@@ -1,37 +1,112 @@
 package laxstats.domain.users;
 
+import laxstats.api.users.Role;
 import laxstats.api.users.UserCreatedEvent;
 import laxstats.api.users.UserDTO;
 import laxstats.api.users.UserId;
+import laxstats.api.users.UserUpdatedEvent;
 
-import org.axonframework.eventhandling.annotation.EventHandler;
 import org.axonframework.eventsourcing.annotation.AbstractAnnotatedAggregateRoot;
 import org.axonframework.eventsourcing.annotation.AggregateIdentifier;
+import org.axonframework.eventsourcing.annotation.EventSourcingHandler;
 
 public class User extends AbstractAnnotatedAggregateRoot<UserId> {
 	private static final long serialVersionUID = -2440058181713894132L;
 
 	@AggregateIdentifier
 	private UserId userId;
-
-	@SuppressWarnings("unused")
+	private String teamId;
+	private String email;
 	private String encodedPassword;
-
-	protected User() {
-	}
+	private boolean enabled;
+	private String firstName;
+	private String lastName;
+	private String ipAddress;
+	private Role role;
 
 	public User(UserId userId, UserDTO userDTO) {
 		apply(new UserCreatedEvent(userId, userDTO));
 	}
+
+	protected User() {
+	}
+
+	// ---------- Methods ----------//
+
+	public void update(UserId userId, UserDTO userDTO) {
+		apply(new UserUpdatedEvent(userId, userDTO));
+	}
+
+	// ---------- Event handlers ----------//
+
+	@EventSourcingHandler
+	protected void handle(UserCreatedEvent event) {
+		final UserDTO dto = event.getUserDTO();
+		this.userId = event.getUserId();
+
+		if (dto.getTeam() != null) {
+			teamId = dto.getTeam().toString();
+		}
+		email = dto.getEmail();
+		encodedPassword = dto.getEncodedPassword();
+		enabled = dto.isEnabled();
+		firstName = dto.getFirstName();
+		lastName = dto.getLastName();
+		ipAddress = dto.getIpAddress();
+		role = dto.getRole();
+	}
+
+	@EventSourcingHandler
+	protected void handle(UserUpdatedEvent event) {
+		final UserDTO dto = event.getUserDTO();
+		if (dto.getTeam() != null) {
+			teamId = dto.getTeam().toString();
+		}
+		email = dto.getEmail();
+		encodedPassword = dto.getEncodedPassword();
+		enabled = dto.isEnabled();
+		firstName = dto.getFirstName();
+		lastName = dto.getLastName();
+		ipAddress = dto.getIpAddress();
+		role = dto.getRole();
+	}
+
+	// ---------- Getters ----------//
 
 	@Override
 	public UserId getIdentifier() {
 		return userId;
 	}
 
-	@EventHandler
-	public void handle(UserCreatedEvent event) {
-		this.userId = event.getUserId();
-		this.encodedPassword = event.getUserDTO().getEncodedPassword();
+	public String getTeamId() {
+		return teamId;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public String getEncodedPassword() {
+		return encodedPassword;
+	}
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public String getIpAddress() {
+		return ipAddress;
+	}
+
+	public Role getRole() {
+		return role;
 	}
 }

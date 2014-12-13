@@ -6,6 +6,7 @@ import java.util.Arrays;
 import laxstats.domain.people.Person;
 import laxstats.domain.plays.PenaltyType;
 import laxstats.domain.seasons.Season;
+import laxstats.domain.sites.Site;
 import laxstats.domain.teams.Team;
 import laxstats.domain.users.User;
 
@@ -113,6 +114,14 @@ public class AxonConfiguration {
 	public Repository<PenaltyType> penaltyTypeRepository() {
 		final EventSourcingRepository<PenaltyType> repository = new EventSourcingRepository<PenaltyType>(
 				PenaltyType.class, eventStore());
+		repository.setEventBus(eventBus());
+		return repository;
+	}
+
+	@Bean
+	public Repository<Site> siteRepository() {
+		final EventSourcingRepository<Site> repository = new EventSourcingRepository<Site>(
+				Site.class, eventStore());
 		repository.setEventBus(eventBus());
 		return repository;
 	}

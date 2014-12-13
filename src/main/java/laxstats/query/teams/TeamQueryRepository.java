@@ -4,6 +4,6 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 @RepositoryRestResource(collectionResourceRel = "teams", path = "teams")
-public interface TeamQueryRepository extends PagingAndSortingRepository<Team, String> {
+public interface TeamQueryRepository extends PagingAndSortingRepository<TeamEntry, String> {
 
 }

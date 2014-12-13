@@ -16,57 +16,58 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import laxstats.api.people.Gender;
-import laxstats.query.events.Site;
 import laxstats.query.events.TeamEvent;
+import laxstats.query.sites.SiteEntry;
 import laxstats.query.users.UserEntry;
 
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 
 @Entity
-@Table(indexes = {@Index(name = "team_idx1", columnList = "gender")})
-public class Team {
+@Table(indexes = { @Index(name = "team_idx1", columnList = "gender"),
+		@Index(name = "team_idx2", columnList = "name") })
+public class TeamEntry {
 
 	@Id
 	@Column(length = 36)
 	private String id;
-	
+
 	@NotNull
 	@Column(length = 100, nullable = false)
 	private String name;
-	
+
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20)
 	private Gender gender;
-	
-	@ManyToOne(targetEntity = Site.class)
-	private String homeSiteId;
-	
-	@Column(length = 30)
-	private String encryptedPassword;
-	
+
+	@ManyToOne
+	private SiteEntry homeSite;
+
+	@Column(length = 50)
+	private String encodedPassword;
+
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime createdAt;
 
-	@ManyToOne(targetEntity = UserEntry.class)
-	private String createdBy;
-	
+	@ManyToOne
+	private UserEntry createdBy;
+
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime modifiedAt;
 
-	@ManyToOne(targetEntity = UserEntry.class)
-	private String modifiedBy;
-	
+	@ManyToOne
+	private UserEntry modifiedBy;
+
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "team")
-	private Set<TeamEvent> teamEvents = new HashSet<TeamEvent>();
-	
+	private final Set<TeamEvent> teamEvents = new HashSet<TeamEvent>();
+
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "team")
-	private Set<TeamSeason> teamSeasons = new HashSet<TeamSeason>();
-	
+	private final Set<TeamSeason> teamSeasons = new HashSet<TeamSeason>();
+
 	@OneToMany(mappedBy = "team")
-	private Set<TeamAffiliation> teamAffiliations = new HashSet<TeamAffiliation>();
-	
-	//---------- Getter/Setters ----------//
+	private final Set<TeamAffiliation> teamAffiliations = new HashSet<TeamAffiliation>();
+
+	// ---------- Getter/Setters ----------//
 
 	public String getId() {
 		return id;
@@ -92,20 +93,20 @@ public class Team {
 		this.gender = gender;
 	}
 
-	public String getHomeSiteId() {
-		return homeSiteId;
+	public SiteEntry getHomeSite() {
+		return homeSite;
 	}
 
-	public void setHomeSite(String homeSiteId) {
-		this.homeSiteId = homeSiteId;
+	public void setHomeSite(SiteEntry homeSite) {
+		this.homeSite = homeSite;
 	}
 
-	public String getEncryptedPassword() {
-		return encryptedPassword;
+	public String getEncodedPassword() {
+		return encodedPassword;
 	}
 
-	public void setEncryptedPassword(String encryptedPassword) {
-		this.encryptedPassword = encryptedPassword;
+	public void setEncodedPassword(String encodedPassword) {
+		this.encodedPassword = encodedPassword;
 	}
 
 	public LocalDateTime getCreatedAt() {
@@ -116,11 +117,11 @@ public class Team {
 		this.createdAt = createdAt;
 	}
 
-	public String getCreatedBy() {
+	public UserEntry getCreatedBy() {
 		return createdBy;
 	}
 
-	public void setCreatedBy(String createdBy) {
+	public void setCreatedBy(UserEntry createdBy) {
 		this.createdBy = createdBy;
 	}
 
@@ -132,11 +133,11 @@ public class Team {
 		this.modifiedAt = modifiedAt;
 	}
 
-	public String getModifiedBy() {
+	public UserEntry getModifiedBy() {
 		return modifiedBy;
 	}
 
-	public void setModifiedBy(String modifiedBy) {
+	public void setModifiedBy(UserEntry modifiedBy) {
 		this.modifiedBy = modifiedBy;
 	}
 

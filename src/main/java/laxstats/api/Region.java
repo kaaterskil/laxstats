@@ -1,4 +1,4 @@
-package laxstats.domain;
+package laxstats.api;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

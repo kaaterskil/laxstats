@@ -10,8 +10,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import laxstats.api.people.AddressType;
-import laxstats.domain.Region;
-import laxstats.query.events.Site;
+import laxstats.api.Region;
+import laxstats.query.sites.SiteEntry;
 import laxstats.query.users.UserEntry;
 
 import org.hibernate.annotations.Type;
@@ -31,7 +31,7 @@ public class AddressEntry {
 	@ManyToOne
 	private PersonEntry person;
 
-	@ManyToOne(targetEntity = Site.class)
+	@ManyToOne(targetEntity = SiteEntry.class)
 	private String siteId;
 
 	@Enumerated(EnumType.STRING)

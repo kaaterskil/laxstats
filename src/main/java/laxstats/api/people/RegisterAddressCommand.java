@@ -1,6 +1,6 @@
 package laxstats.api.people;
 
-import laxstats.domain.Region;
+import laxstats.api.Region;
 
 import org.joda.time.LocalDateTime;
 

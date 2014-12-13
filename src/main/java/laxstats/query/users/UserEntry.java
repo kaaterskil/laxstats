@@ -10,7 +10,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import laxstats.query.teams.Team;
+import laxstats.query.teams.TeamEntry;
 
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
@@ -24,8 +24,8 @@ public class UserEntry {
 	@Column(length = 36)
 	private String id;
 
-	@ManyToOne(targetEntity = Team.class)
-	private String teamId;
+	@ManyToOne
+	private TeamEntry team;
 
 	@Column(nullable = false)
 	private String email;
@@ -52,14 +52,14 @@ public class UserEntry {
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime createdAt;
 
-	@ManyToOne(targetEntity = UserEntry.class)
-	private String createdBy;
+	@ManyToOne
+	private UserEntry createdBy;
 
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime modifiedAt;
 
-	@ManyToOne(targetEntity = UserEntry.class)
-	private String modifiedBy;
+	@ManyToOne
+	private UserEntry modifiedBy;
 
 	protected UserEntry() {
 	}
@@ -74,12 +74,12 @@ public class UserEntry {
 		this.id = id;
 	}
 
-	public String getTeamId() {
-		return teamId;
+	public TeamEntry getTeam() {
+		return team;
 	}
 
-	public void setTeamId(String teamId) {
-		this.teamId = teamId;
+	public void setTeam(TeamEntry team) {
+		this.team = team;
 	}
 
 	public boolean isEnabled() {
@@ -146,11 +146,11 @@ public class UserEntry {
 		this.createdAt = createdAt;
 	}
 
-	public String getCreatedBy() {
+	public UserEntry getCreatedBy() {
 		return createdBy;
 	}
 
-	public void setCreatedBy(String createdBy) {
+	public void setCreatedBy(UserEntry createdBy) {
 		this.createdBy = createdBy;
 	}
 
@@ -162,11 +162,11 @@ public class UserEntry {
 		this.modifiedAt = modifiedAt;
 	}
 
-	public String getModifiedBy() {
+	public UserEntry getModifiedBy() {
 		return modifiedBy;
 	}
 
-	public void setModifiedBy(String modifiedBy) {
+	public void setModifiedBy(UserEntry modifiedBy) {
 		this.modifiedBy = modifiedBy;
 	}
 }

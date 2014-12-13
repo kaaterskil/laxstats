@@ -73,7 +73,7 @@ public class TeamSeason {
 	
 	@ManyToOne
 	@JoinColumn(name = "teamId", insertable = false, updatable = false)
-	private Team team;
+	private TeamEntry team;
 	
 	@ManyToOne
 	@JoinColumn(name = "seasonId", insertable = false, updatable = false)
@@ -110,7 +110,7 @@ public class TeamSeason {
 	
 	public TeamSeason(){}
 	
-	public TeamSeason(Team team, Season season) {
+	public TeamSeason(TeamEntry team, Season season) {
 		this.team = team;
 		this.season = season;
 		
@@ -126,7 +126,7 @@ public class TeamSeason {
 		return id;
 	}
 
-	public Team getTeam() {
+	public TeamEntry getTeam() {
 		return team;
 	}
 

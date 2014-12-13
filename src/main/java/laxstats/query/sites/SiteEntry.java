@@ -1,4 +1,4 @@
-package laxstats.query.events;
+package laxstats.query.sites;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,6 +11,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import laxstats.api.sites.SiteStyle;
+import laxstats.api.sites.Surface;
 import laxstats.query.people.AddressEntry;
 import laxstats.query.users.UserEntry;
 
@@ -18,57 +20,53 @@ import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 
 @Entity
-@Table(
-	indexes = {
-		@Index(name = "site_idx1", columnList = "style"),
-		@Index(name = "site_idx2", columnList = "surface")
-	}
-)
-public class Site {
-	
-	public enum Style {
-		COMPETITION, PRACTICE;
-	}
-	
-	public enum Surface {
-		GRASS, TURF;
-	}
+@Table(indexes = { @Index(name = "site_idx1", columnList = "style"),
+		@Index(name = "site_idx2", columnList = "surface") })
+public class SiteEntry {
 
 	@Id
 	@Column(length = 36)
 	private String id;
-	
+
 	@NotNull
 	@Column(length = 100, nullable = false)
 	private String name;
-	
+
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20)
-	private Site.Style style;
-	
+	private SiteStyle style;
+
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20)
-	private Site.Surface surface;
-	
+	private Surface surface;
+
 	@OneToOne
 	private AddressEntry address;
-	
+
 	@Column(columnDefinition = "text")
 	private String directions;
-	
+
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime createdAt;
 
-	@ManyToOne(targetEntity = UserEntry.class)
-	private String createdBy;
-	
+	@ManyToOne
+	private UserEntry createdBy;
+
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime modifiedAt;
 
-	@ManyToOne(targetEntity = UserEntry.class)
-	private String modifiedBy;
-	
-	//---------- Getter/Setters ----------//
+	@ManyToOne
+	private UserEntry modifiedBy;
+
+	// ---------- Getter/Setters ----------//
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 
 	public String getName() {
 		return name;
@@ -78,19 +76,19 @@ public class Site {
 		this.name = name;
 	}
 
-	public Site.Style getStyle() {
+	public SiteStyle getStyle() {
 		return style;
 	}
 
-	public void setStyle(Site.Style style) {
+	public void setStyle(SiteStyle style) {
 		this.style = style;
 	}
 
-	public Site.Surface getSurface() {
+	public Surface getSurface() {
 		return surface;
 	}
 
-	public void setSurface(Site.Surface surface) {
+	public void setSurface(Surface surface) {
 		this.surface = surface;
 	}
 
@@ -118,11 +116,11 @@ public class Site {
 		this.createdAt = createdAt;
 	}
 
-	public String getCreatedBy() {
+	public UserEntry getCreatedBy() {
 		return createdBy;
 	}
 
-	public void setCreatedBy(String createdBy) {
+	public void setCreatedBy(UserEntry createdBy) {
 		this.createdBy = createdBy;
 	}
 
@@ -134,11 +132,11 @@ public class Site {
 		this.modifiedAt = modifiedAt;
 	}
 
-	public String getModifiedBy() {
+	public UserEntry getModifiedBy() {
 		return modifiedBy;
 	}
 
-	public void setModifiedBy(String modifiedBy) {
+	public void setModifiedBy(UserEntry modifiedBy) {
 		this.modifiedBy = modifiedBy;
 	}
 }

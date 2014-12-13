@@ -45,9 +45,6 @@ public class PenaltyTypeController {
 	@RequestMapping(method = RequestMethod.GET)
 	public String index(Model model) {
 		model.addAttribute("items", penaltyTypeRepository.findAll());
-		model.addAttribute("headerName", "Name");
-		model.addAttribute("headerCategory", "Category");
-		model.addAttribute("headerReleasable", "Releasable");
 		return "penaltyTypes/index";
 	}
 
@@ -75,11 +72,7 @@ public class PenaltyTypeController {
 		}
 
 		final LocalDateTime now = LocalDateTime.now();
-		final Object principal = SecurityContextHolder.getContext()
-				.getAuthentication().getPrincipal();
-		final String email = ((org.springframework.security.core.userdetails.User) principal)
-				.getUsername();
-		final UserEntry user = userRepository.findByEmail(email);
+		final UserEntry user = getCurrentUser();
 		final PenaltyTypeId identifier = new PenaltyTypeId();
 
 		final PenaltyTypeDTO dto = new PenaltyTypeDTO();
@@ -119,13 +112,13 @@ public class PenaltyTypeController {
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 	public String updatePenaltyType(@PathVariable String id,
-			@ModelAttribute("form") @Valid PenaltyTypeForm form, Model model) {
+			@ModelAttribute("form") @Valid PenaltyTypeForm form,
+			BindingResult bindingResult, Model model) {
+		if (bindingResult.hasErrors()) {
+			return "penaltyTypes/edit";
+		}
 		final LocalDateTime now = LocalDateTime.now();
-		final Object principal = SecurityContextHolder.getContext()
-				.getAuthentication().getPrincipal();
-		final String email = ((org.springframework.security.core.userdetails.User) principal)
-				.getUsername();
-		final UserEntry user = userRepository.findByEmail(email);
+		final UserEntry user = getCurrentUser();
 		final PenaltyTypeId penaltyTypeId = new PenaltyTypeId(id);
 
 		final PenaltyTypeDTO dto = new PenaltyTypeDTO();
@@ -153,5 +146,13 @@ public class PenaltyTypeController {
 				.dispatch(new GenericCommandMessage<DeletePenaltyTypeCommand>(
 						command));
 		return "redirect:";
+	}
+
+	private UserEntry getCurrentUser() {
+		final Object principal = SecurityContextHolder.getContext()
+				.getAuthentication().getPrincipal();
+		final String email = ((org.springframework.security.core.userdetails.User) principal)
+				.getUsername();
+		return userRepository.findByEmail(email);
 	}
 }

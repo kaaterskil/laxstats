@@ -58,7 +58,7 @@ public class TeamAffiliation {
 	
 	@ManyToOne
 	@JoinColumn(name = "teamId", insertable = false, updatable = false)
-	private Team team;
+	private TeamEntry team;
 	
 	@ManyToOne
 	@JoinColumn(name = "affiliationId", insertable = false, updatable = false)
@@ -86,7 +86,7 @@ public class TeamAffiliation {
 	
 	public TeamAffiliation(){}
 	
-	public TeamAffiliation(Team team, Affiliation affiliation) {
+	public TeamAffiliation(TeamEntry team, Affiliation affiliation) {
 		this.team = team;
 		this.affiliation = affiliation;
 		
@@ -151,7 +151,7 @@ public class TeamAffiliation {
 		return id;
 	}
 
-	public Team getTeam() {
+	public TeamEntry getTeam() {
 		return team;
 	}
 

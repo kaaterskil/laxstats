@@ -86,7 +86,7 @@ public class TeamMember {
 	
 	@ManyToOne
 	@JoinColumn(name = "teamId", insertable = false, updatable = false)
-	private Team team;
+	private TeamEntry team;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20)
@@ -125,7 +125,7 @@ public class TeamMember {
 	
 	public TeamMember(){}
 	
-	public TeamMember(PersonEntry person, Season season, Team team) {
+	public TeamMember(PersonEntry person, Season season, TeamEntry team) {
 		this.person = person;
 		this.season = season;
 		this.team = team;
@@ -151,7 +151,7 @@ public class TeamMember {
 		return season;
 	}
 
-	public Team getTeam() {
+	public TeamEntry getTeam() {
 		return team;
 	}
 

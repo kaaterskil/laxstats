@@ -3,7 +3,7 @@ package laxstats.web.people;
 import javax.validation.constraints.NotNull;
 
 import laxstats.api.people.AddressType;
-import laxstats.domain.Region;
+import laxstats.api.Region;
 
 public class AddressForm {
 
