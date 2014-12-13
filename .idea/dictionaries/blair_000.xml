@@ -3,11 +3,14 @@
     <words>
       <w>csrf</w>
       <w>datasource</w>
+      <w>dateandtime</w>
+      <w>jadira</w>
       <w>jdbc</w>
       <w>kaaterskil</w>
       <w>laxstats</w>
       <w>postgre</w>
       <w>postgresql</w>
+      <w>usertype</w>
     </words>
   </dictionary>
 </component>

@@ -15,6 +15,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import laxstats.query.sites.SiteEntry;
 import laxstats.query.users.UserEntry;
 
 import org.hibernate.annotations.Type;
@@ -33,28 +34,28 @@ import org.joda.time.LocalDateTime;
 public class Event {
 	
 	public enum Alignment {
-		HOME, NEUTRAL;
+		HOME, NEUTRAL
 	}
 	
 	public enum Conditions {
 		RAIN, SUNNY, CLEAR, PARTLY_CLOUDY, CLOUDY, MOSTLY_CLOUDY, WINDY, 
-		SNOW, SHOWERS;
+		SNOW, SHOWERS
 	}
 	
 	public enum Status {
 		SCHEDULED, OCCURRED, POSTPONED, SUSPENDED, HALTED, FORFEITED, 
-		RESCHEDULED, DELAYED, CANCELLED, IF_NECESSARY, DISCARDED;
+		RESCHEDULED, DELAYED, CANCELLED, IF_NECESSARY, DISCARDED
 	}
 	
 	public enum Schedule {
-		PRE_SEASON, REGULAR, POST_SEASON, EXHIBITION;
+		PRE_SEASON, REGULAR, POST_SEASON, EXHIBITION
 	}
 
 	@Id
 	@Column(length = 36)
 	private String id;
 	
-	@ManyToOne(targetEntity = Site.class)
+	@ManyToOne(targetEntity = SiteEntry.class)
 	private String siteId;
 	
 	@Enumerated(EnumType.STRING)
@@ -95,10 +96,10 @@ public class Event {
 	private String modifiedBy;
 	
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
-	private Set<EventAttendee> eventAttendees = new HashSet<EventAttendee>();
+	private Set<EventAttendee> eventAttendees = new HashSet<>();
 	
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
-	private Set<TeamEvent> eventTeams = new HashSet<TeamEvent>();
+	private Set<TeamEvent> eventTeams = new HashSet<>();
 	
 	//---------- Getter/Setters ----------//
 

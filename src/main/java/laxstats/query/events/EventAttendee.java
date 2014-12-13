@@ -16,7 +16,7 @@ import javax.validation.constraints.NotNull;
 
 import laxstats.query.people.PersonEntry;
 import laxstats.query.teams.Role;
-import laxstats.query.teams.Team;
+import laxstats.query.teams.TeamEntry;
 import laxstats.query.users.UserEntry;
 
 import org.hibernate.annotations.Type;
@@ -32,7 +32,7 @@ import org.joda.time.LocalDateTime;
 public class EventAttendee {
 	
 	public enum Status {
-		STARTED, PLAYED;
+		STARTED, PLAYED
 	}
 	
 	@Embeddable
@@ -78,7 +78,7 @@ public class EventAttendee {
 	@JoinColumn(name = "eventId", insertable = false, updatable = false)
 	private Event event;
 	
-	@ManyToOne(targetEntity = Team.class)
+	@ManyToOne(targetEntity = TeamEntry.class)
 	private String teamId;
 	
 	@NotNull

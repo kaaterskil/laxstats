@@ -14,7 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import laxstats.query.people.PersonEntry;
-import laxstats.query.teams.Team;
+import laxstats.query.teams.TeamEntry;
 import laxstats.query.users.UserEntry;
 
 import org.hibernate.annotations.Type;
@@ -32,7 +32,7 @@ public class PlayParticipantEntry {
 	public enum Role {
 		SCORER, ASSIST, GOALIE, SHOOTER, BLOCKER, GROUND_BALL, 
 		PENALTY_COMMITTED_BY, PENALTY_COMMITTED_AGAINST, 
-		FACEOFF_WINNER, FACEOFF_LOSER;
+		FACEOFF_WINNER, FACEOFF_LOSER
 	}
 	
 	@Embeddable
@@ -85,7 +85,7 @@ public class PlayParticipantEntry {
 	
 	@ManyToOne
 	@JoinColumn(name = "teamId", insertable = false, updatable = false)
-	private Team team;
+	private TeamEntry team;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20)
@@ -107,7 +107,7 @@ public class PlayParticipantEntry {
 	
 	protected PlayParticipantEntry(){}
 	
-	public PlayParticipantEntry(PlayEntry play, PersonEntry person, Team team) {
+	public PlayParticipantEntry(PlayEntry play, PersonEntry person, TeamEntry team) {
 		this.play = play;
 		this.person = person;
 		this.team = team;
@@ -127,7 +127,7 @@ public class PlayParticipantEntry {
 		return person;
 	}
 
-	public Team getTeam() {
+	public TeamEntry getTeam() {
 		return team;
 	}
 

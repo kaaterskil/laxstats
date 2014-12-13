@@ -24,7 +24,7 @@ import laxstats.api.plays.PlayResult;
 import laxstats.api.plays.ScoreAttemptType;
 import laxstats.api.plays.Strength;
 import laxstats.query.events.Event;
-import laxstats.query.teams.Team;
+import laxstats.query.teams.TeamEntry;
 import laxstats.query.users.UserEntry;
 
 import org.hibernate.annotations.Type;
@@ -54,7 +54,7 @@ abstract public class PlayEntry {
 
 	private int sequenceNumber;
 
-	@ManyToOne(targetEntity = Team.class, optional = false)
+	@ManyToOne(targetEntity = TeamEntry.class, optional = false)
 	private String teamId;
 
 	private int period;
@@ -84,7 +84,7 @@ abstract public class PlayEntry {
 
 	private int manUpAdvantage;
 
-	@ManyToOne(targetEntity = Team.class)
+	@ManyToOne(targetEntity = TeamEntry.class)
 	private String manUpTeamId;
 
 	@Column(columnDefinition = "text")
@@ -103,7 +103,7 @@ abstract public class PlayEntry {
 	private String modifiedBy;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "play")
-	private final Set<PlayParticipantEntry> participants = new HashSet<PlayParticipantEntry>();
+	private final Set<PlayParticipantEntry> participants = new HashSet<>();
 
 	// ---------- Getter/Setters ----------//
 

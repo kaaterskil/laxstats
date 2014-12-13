@@ -14,7 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-import laxstats.query.teams.Team;
+import laxstats.query.teams.TeamEntry;
 import laxstats.query.users.UserEntry;
 
 import org.hibernate.annotations.Type;
@@ -30,11 +30,11 @@ import org.joda.time.LocalDateTime;
 public class TeamEvent {
 	
 	public enum Alignment {
-		HOME, AWAY;
+		HOME, AWAY
 	}
 	
 	public enum Outcome {
-		WIN, LOSS;
+		WIN, LOSS
 	}
 
 	@Embeddable
@@ -73,7 +73,7 @@ public class TeamEvent {
 	
 	@ManyToOne
 	@JoinColumn(name = "teamId", insertable = false, updatable = false)
-	private Team team;
+	private TeamEntry team;
 	
 	@ManyToOne
 	@JoinColumn(name = "eventId", insertable = false, updatable = false)
@@ -112,7 +112,7 @@ public class TeamEvent {
 	
 	public TeamEvent(){}
 	
-	public TeamEvent(Team team, Event event) {
+	public TeamEvent(TeamEntry team, Event event) {
 		this.team = team;
 		this.event = event;
 		
@@ -129,7 +129,7 @@ public class TeamEvent {
 		return id;
 	}
 
-	public Team getTeam() {
+	public TeamEntry getTeam() {
 		return team;
 	}
 
