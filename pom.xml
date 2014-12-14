@@ -96,6 +96,7 @@
 		<dependency>
 			<groupId>org.thymeleaf.extras</groupId>
 			<artifactId>thymeleaf-extras-springsecurity3</artifactId>
+			<version>2.1.1.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.mxab.thymeleaf.extras</groupId>

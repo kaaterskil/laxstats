@@ -1,17 +1,15 @@
 package laxstats.api.people;
 
-import laxstats.web.people.ContactForm;
 
 public class AddContactCommand extends AbstractPersonCommand {
+	private final ContactDTO contactDTO;
 
-	private ContactForm contactForm;
-
-	public ContactForm getContactForm() {
-		return contactForm;
+	public AddContactCommand(PersonId personId, ContactDTO contactDTO) {
+		super(personId);
+		this.contactDTO = contactDTO;
 	}
 
-	public void setContactForm(ContactForm contactForm) {
-		this.contactForm = contactForm;
+	public ContactDTO getContactDTO() {
+		return contactDTO;
 	}
-
 }
