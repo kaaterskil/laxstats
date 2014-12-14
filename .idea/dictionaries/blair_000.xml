@@ -4,12 +4,16 @@
       <w>csrf</w>
       <w>datasource</w>
       <w>dateandtime</w>
+      <w>faceoff</w>
+      <w>iter</w>
       <w>jadira</w>
       <w>jdbc</w>
       <w>kaaterskil</w>
       <w>laxstats</w>
+      <w>lede</w>
       <w>postgre</w>
       <w>postgresql</w>
+      <w>ultraq</w>
       <w>usertype</w>
     </words>
   </dictionary>

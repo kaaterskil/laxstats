@@ -24,7 +24,7 @@ import org.joda.time.LocalDateTime;
 public class Affiliation {
 	
 	public enum Level {
-		LEAGUE, DIVISION, CONFERENCE;
+		LEAGUE, DIVISION, CONFERENCE
 	}
 
 	@Id
@@ -56,10 +56,10 @@ public class Affiliation {
 	private String modifiedBy;
 	
 	@OneToMany(mappedBy = "parent")
-	private Set<Affiliation> children = new HashSet<Affiliation>();
+	private Set<Affiliation> children = new HashSet<>();
 	
 	@OneToMany(mappedBy = "affiliation")
-	private Set<TeamAffiliation> affiliatedTeams = new HashSet<TeamAffiliation>();
+	private final Set<TeamAffiliation> affiliatedTeams = new HashSet<>();
 	
 	//---------- Getter/Setters ----------//
 

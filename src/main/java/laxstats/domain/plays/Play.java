@@ -33,5 +33,5 @@ abstract public class Play {
 	private String createdBy;
 	private LocalDateTime modifiedAt;
 	private String modifiedBy;
-	private final Set<PlayParticipantEntry> participants = new HashSet<PlayParticipantEntry>();
+	private final Set<PlayParticipantEntry> participants = new HashSet<>();
 }

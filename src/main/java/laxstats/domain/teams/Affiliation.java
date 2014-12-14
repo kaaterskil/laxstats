@@ -8,7 +8,7 @@ import org.joda.time.LocalDateTime;
 public class Affiliation {
 
 	public enum Level {
-		LEAGUE, DIVISION, CONFERENCE;
+		LEAGUE, DIVISION, CONFERENCE
 	}
 
 	private String id;
@@ -19,6 +19,6 @@ public class Affiliation {
 	private String createdBy;
 	private LocalDateTime modifiedAt;
 	private String modifiedBy;
-	private Set<Affiliation> children = new HashSet<Affiliation>();
-	private Set<TeamAffiliation> affiliatedTeams = new HashSet<TeamAffiliation>();
+	private Set<Affiliation> children = new HashSet<>();
+	private Set<TeamAffiliation> affiliatedTeams = new HashSet<>();
 }

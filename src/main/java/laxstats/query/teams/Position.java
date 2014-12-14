@@ -13,5 +13,5 @@ public enum Position {
 	TIMEKEEPER, 
 	COACH, 
 	ASSISTANT_COACH, 
-	MANAGER; 
+	MANAGER
 }

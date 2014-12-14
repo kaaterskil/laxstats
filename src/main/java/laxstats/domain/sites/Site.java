@@ -1,6 +1,6 @@
 package laxstats.domain.sites;
 
-import laxstats.api.people.Address;
+import laxstats.api.people.AddressDTO;
 import laxstats.api.sites.DeleteSiteCommand;
 import laxstats.api.sites.SiteCreatedEvent;
 import laxstats.api.sites.SiteDTO;
@@ -23,7 +23,7 @@ public class Site extends AbstractAnnotatedAggregateRoot<SiteId> {
 	private String name;
 	private SiteStyle style;
 	private Surface surface;
-	private Address address;
+	private AddressDTO address;
 	private String directions;
 
 	public Site(SiteId siteId, SiteDTO siteDTO) {
@@ -92,7 +92,7 @@ public class Site extends AbstractAnnotatedAggregateRoot<SiteId> {
 		return surface;
 	}
 
-	public Address getAddress() {
+	public AddressDTO getAddress() {
 		return address;
 	}
 

@@ -2,17 +2,16 @@ package laxstats.api.people;
 
 
 public class ContactChangedEvent {
-
 	private final PersonId personId;
-	private final Contact contact;
+	private final ContactDTO contactDTO;
 
-	public ContactChangedEvent(PersonId personId, Contact contact) {
+	public ContactChangedEvent(PersonId personId, ContactDTO contactDTO) {
 		this.personId = personId;
-		this.contact = contact;
+		this.contactDTO = contactDTO;
 	}
 
-	public Contact getContact() {
-		return contact;
+	public ContactDTO getContact() {
+		return contactDTO;
 	}
 
 	public PersonId getPersonId() {

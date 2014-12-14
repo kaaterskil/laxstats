@@ -100,22 +100,22 @@ public class PersonEntry {
 	private String modifiedBy;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "person")
-	private final Map<String, AddressEntry> addresses = new HashMap<String, AddressEntry>();
+	private final Map<String, AddressEntry> addresses = new HashMap<>();
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "person")
-	private final Map<String, ContactEntry> contacts = new HashMap<String, ContactEntry>();
+	private final Map<String, ContactEntry> contacts = new HashMap<>();
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "parent")
-	private final Set<Relationship> childRelationships = new HashSet<Relationship>();
+	private final Set<Relationship> childRelationships = new HashSet<>();
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "child")
-	private final Set<Relationship> parentRelationships = new HashSet<Relationship>();
+	private final Set<Relationship> parentRelationships = new HashSet<>();
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "person")
-	private final Set<EventAttendee> attendedEvents = new HashSet<EventAttendee>();
+	private final Set<EventAttendee> attendedEvents = new HashSet<>();
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "person")
-	private final Set<TeamMember> playedSeasons = new HashSet<TeamMember>();
+	private final Set<TeamMember> playedSeasons = new HashSet<>();
 
 	// ---------- Getter/Setters ----------//
 
@@ -164,7 +164,7 @@ public class PersonEntry {
 	}
 
 	Set<PersonEntry> getChildren(Relationship.Type type) {
-		final Set<PersonEntry> result = new HashSet<PersonEntry>();
+		final Set<PersonEntry> result = new HashSet<>();
 		final Iterator<Relationship> iter = childRelationships.iterator();
 		while (iter.hasNext()) {
 			final Relationship each = iter.next();
@@ -244,7 +244,7 @@ public class PersonEntry {
 	}
 
 	Set<PersonEntry> getParents(Relationship.Type type) {
-		final Set<PersonEntry> result = new HashSet<PersonEntry>();
+		final Set<PersonEntry> result = new HashSet<>();
 		final Iterator<Relationship> iter = parentRelationships.iterator();
 		while (iter.hasNext()) {
 			final Relationship each = iter.next();
@@ -382,8 +382,8 @@ public class PersonEntry {
 	}
 
 	/**
-	 * REturns the person's primary contact. If there is no primary contact, the
-	 * method returns the firstcontact in the collection.
+	 * Returns the person's primary contact. If there is no primary contact, the
+	 * method returns the first contact in the collection.
 	 *
 	 * @return The person's primary contact.
 	 */

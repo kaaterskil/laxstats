@@ -96,10 +96,10 @@ public class Event {
 	private String modifiedBy;
 	
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
-	private Set<EventAttendee> eventAttendees = new HashSet<>();
+	private final Set<EventAttendee> eventAttendees = new HashSet<>();
 	
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
-	private Set<TeamEvent> eventTeams = new HashSet<>();
+	private final Set<TeamEvent> eventTeams = new HashSet<>();
 	
 	//---------- Getter/Setters ----------//
 

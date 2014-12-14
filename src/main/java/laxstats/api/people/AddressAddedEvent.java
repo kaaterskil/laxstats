@@ -3,14 +3,14 @@ package laxstats.api.people;
 public class AddressAddedEvent {
 
 	private final PersonId personId;
-	private final Address address;
+	private final AddressDTO address;
 
-	public AddressAddedEvent(PersonId personId, Address address) {
+	public AddressAddedEvent(PersonId personId, AddressDTO address) {
 		this.personId = personId;
 		this.address = address;
 	}
 
-	public Address getAddress() {
+	public AddressDTO getAddress() {
 		return address;
 	}
 

@@ -1,6 +1,6 @@
 package laxstats.api.sites;
 
-import laxstats.api.people.Address;
+import laxstats.api.people.AddressDTO;
 import laxstats.query.users.UserEntry;
 
 import org.joda.time.LocalDateTime;
@@ -11,7 +11,7 @@ public class SiteDTO {
 	private String name;
 	private SiteStyle style;
 	private Surface surface;
-	private Address address;
+	private AddressDTO address;
 	private String directions;
 	private LocalDateTime createdAt;
 	private UserEntry createdBy;
@@ -50,11 +50,11 @@ public class SiteDTO {
 		this.surface = surface;
 	}
 
-	public Address getAddress() {
+	public AddressDTO getAddress() {
 		return address;
 	}
 
-	public void setAddress(Address address) {
+	public void setAddress(AddressDTO address) {
 		this.address = address;
 	}
 

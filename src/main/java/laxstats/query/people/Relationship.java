@@ -25,17 +25,14 @@ public class Relationship {
 	}
 	
 	static boolean canCreate(PersonEntry parent, PersonEntry child, Relationship.Type type) {
-		if(parent.equals(child)) {
-			return false;
-		}
-		if(parent.ancestorsInclude(child, type)) {
+		if(parent.equals(child) || parent.ancestorsInclude(child, type)) {
 			return false;
 		}
 		return true;
 	}
 	
 	public enum Type {
-		FAMILY, COUNSELOR;
+		FAMILY, COUNSELOR
 	}
 	
 	@Embeddable
@@ -70,7 +67,7 @@ public class Relationship {
 
 	@javax.persistence.Id
 	@Embedded
-	private Relationship.Id id = new Id();
+	private final Relationship.Id id = new Id();
 
 	@ManyToOne
 	@JoinColumn(name = "parentId", insertable = false, updatable = false)

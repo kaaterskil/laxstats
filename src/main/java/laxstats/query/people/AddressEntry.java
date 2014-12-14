@@ -1,220 +1,216 @@
 package laxstats.query.people;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
-import javax.persistence.Index;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
-import laxstats.api.people.AddressType;
 import laxstats.api.Region;
+import laxstats.api.people.AddressType;
 import laxstats.query.sites.SiteEntry;
 import laxstats.query.users.UserEntry;
-
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 
+import javax.persistence.*;
+
 @Entity
-@Table(indexes = { @Index(name = "address_idx1", columnList = "city"),
-		@Index(name = "address_idx2", columnList = "isPrimary"),
-		@Index(name = "address_idx3", columnList = "doNotUse"),
-		@Index(name = "address_idx4", columnList = "addressType") })
+@Table(indexes = {@Index(name = "address_idx1", columnList = "city"),
+    @Index(name = "address_idx2", columnList = "isPrimary"),
+    @Index(name = "address_idx3", columnList = "doNotUse"),
+    @Index(name = "address_idx4", columnList = "addressType")})
 public class AddressEntry {
 
-	@Id
-	@Column(length = 36)
-	private String id;
+    @Id
+    @Column(length = 36)
+    private String id;
 
-	@ManyToOne
-	private PersonEntry person;
+    @ManyToOne
+    private PersonEntry person;
 
-	@ManyToOne(targetEntity = SiteEntry.class)
-	private String siteId;
+    @ManyToOne
+    private SiteEntry site;
 
-	@Enumerated(EnumType.STRING)
-	@Column(length = 20, nullable = false)
-	private AddressType addressType;
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20, nullable = false)
+    private AddressType addressType;
 
-	@Column(length = 34)
-	private String address1;
+    @Column(length = 34)
+    private String address1;
 
-	@Column(length = 34)
-	private String address2;
+    @Column(length = 34)
+    private String address2;
 
-	@Column(length = 30, nullable = false)
-	private String city;
+    @Column(length = 30, nullable = false)
+    private String city;
 
-	@ManyToOne
-	private Region region;
+    @ManyToOne
+    private Region region;
 
-	@Column(length = 10)
-	private String postalCode;
+    @Column(length = 10)
+    private String postalCode;
 
-	private boolean isPrimary = false;
+    private boolean isPrimary = false;
 
-	private boolean doNotUse = false;
+    private boolean doNotUse = false;
 
-	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
-	private LocalDateTime createdAt;
+    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+    private LocalDateTime createdAt;
 
-	@ManyToOne(targetEntity = UserEntry.class)
-	private String createdBy;
+    @ManyToOne
+    private UserEntry createdBy;
 
-	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
-	private LocalDateTime modifiedAt;
+    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+    private LocalDateTime modifiedAt;
 
-	@ManyToOne(targetEntity = UserEntry.class)
-	private String modifiedBy;
+    @ManyToOne
+    private UserEntry modifiedBy;
 
-	// ---------- Getter/Setters ----------//
+    // ---------- Getter/Setters ----------//
 
-	public String getAddress1() {
-		return address1;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public String getAddress2() {
-		return address2;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	public AddressType getAddressType() {
-		return addressType;
-	}
+    public String getAddress1() {
+        return address1;
+    }
 
-	public String getCity() {
-		return city;
-	}
+    public void setAddress1(String address1) {
+        this.address1 = address1;
+    }
 
-	public LocalDateTime getCreatedAt() {
-		return createdAt;
-	}
+    public String getAddress2() {
+        return address2;
+    }
 
-	public String getCreatedBy() {
-		return createdBy;
-	}
+    public void setAddress2(String address2) {
+        this.address2 = address2;
+    }
 
-	public String getId() {
-		return id;
-	}
+    public AddressType getAddressType() {
+        return addressType;
+    }
 
-	public LocalDateTime getModifiedAt() {
-		return modifiedAt;
-	}
+    public void setAddressType(AddressType addressType) {
+        this.addressType = addressType;
+    }
 
-	public String getModifiedBy() {
-		return modifiedBy;
-	}
+    public String getCity() {
+        return city;
+    }
 
-	public PersonEntry getPerson() {
-		return person;
-	}
+    public void setCity(String city) {
+        this.city = city;
+    }
 
-	public String getPostalCode() {
-		return postalCode;
-	}
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
 
-	public Region getRegion() {
-		return region;
-	}
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 
-	public String getSiteId() {
-		return siteId;
-	}
+    public UserEntry getCreatedBy() {
+        return createdBy;
+    }
 
-	public boolean isDoNotUse() {
-		return doNotUse;
-	}
+    public void setCreatedBy(UserEntry createdBy) {
+        this.createdBy = createdBy;
+    }
 
-	public boolean isPrimary() {
-		return isPrimary;
-	}
+    public LocalDateTime getModifiedAt() {
+        return modifiedAt;
+    }
 
-	public void setAddress1(String address1) {
-		this.address1 = address1;
-	}
+    public void setModifiedAt(LocalDateTime modifiedAt) {
+        this.modifiedAt = modifiedAt;
+    }
 
-	public void setAddress2(String address2) {
-		this.address2 = address2;
-	}
+    public UserEntry getModifiedBy() {
+        return modifiedBy;
+    }
 
-	public void setAddressType(AddressType addressType) {
-		this.addressType = addressType;
-	}
+    public void setModifiedBy(UserEntry modifiedBy) {
+        this.modifiedBy = modifiedBy;
+    }
 
-	public void setCity(String city) {
-		this.city = city;
-	}
+    public PersonEntry getPerson() {
+        return person;
+    }
 
-	public void setCreatedAt(LocalDateTime createdAt) {
-		this.createdAt = createdAt;
-	}
+    public void setPerson(PersonEntry person) {
+        this.person = person;
+    }
 
-	public void setCreatedBy(String createdBy) {
-		this.createdBy = createdBy;
-	}
+    public String getPostalCode() {
+        return postalCode;
+    }
 
-	public void setDoNotUse(boolean doNotUse) {
-		this.doNotUse = doNotUse;
-	}
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
+    }
 
-	public void setModifiedAt(LocalDateTime modifiedAt) {
-		this.modifiedAt = modifiedAt;
-	}
+    public Region getRegion() {
+        return region;
+    }
 
-	public void setModifiedBy(String modifiedBy) {
-		this.modifiedBy = modifiedBy;
-	}
+    public void setRegion(Region region) {
+        this.region = region;
+    }
 
-	public void setPerson(PersonEntry person) {
-		this.person = person;
-	}
+    public SiteEntry getSite() {
+        return site;
+    }
 
-	public void setPostalCode(String postalCode) {
-		this.postalCode = postalCode;
-	}
+    public void setSite(SiteEntry site) {
+        this.site = site;
+    }
 
-	public void setPrimary(boolean isPrimary) {
-		this.isPrimary = isPrimary;
-	}
+    public boolean isDoNotUse() {
+        return doNotUse;
+    }
 
-	public void setRegion(Region region) {
-		this.region = region;
-	}
+    public void setDoNotUse(boolean doNotUse) {
+        this.doNotUse = doNotUse;
+    }
 
-	public void setSiteId(String siteId) {
-		this.siteId = siteId;
-	}
+    public boolean isPrimary() {
+        return isPrimary;
+    }
 
-	// ---------- Other methods ----------//
+    public void setPrimary(boolean isPrimary) {
+        this.isPrimary = isPrimary;
+    }
 
-	public String toHTML() {
-		String result = "";
-		boolean addBreak = false;
-		if (address1 != null) {
-			result += address1;
-			addBreak = true;
-		}
-		if (address2 != null) {
-			if (addBreak) {
-				result += "<br>";
-			}
-			result += address2;
-			addBreak = true;
-		}
-		if (city != null) {
-			if (addBreak) {
-				result += "<br>";
-			}
-			result += city;
-		}
-		if (region != null) {
-			result += ", " + region.getAbbreviation();
-		}
-		if (postalCode != null) {
-			result += " " + postalCode;
-		}
-		return result;
-	}
+    // ---------- Other methods ----------//
+
+    public String toHTML() {
+        String result = "";
+        boolean addBreak = false;
+        if (address1 != null) {
+            result += address1;
+            addBreak = true;
+        }
+        if (address2 != null) {
+            if (addBreak) {
+                result += "<br>";
+            }
+            result += address2;
+            addBreak = true;
+        }
+        if (city != null) {
+            if (addBreak) {
+                result += "<br>";
+            }
+            result += city;
+        }
+        if (region != null) {
+            result += ", " + region.getAbbreviation();
+        }
+        if (postalCode != null) {
+            result += " " + postalCode;
+        }
+        return result;
+    }
 }

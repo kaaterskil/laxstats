@@ -5,32 +5,20 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import laxstats.api.people.Address;
-import laxstats.api.people.AddressAddedEvent;
-import laxstats.api.people.AddressChangedEvent;
-import laxstats.api.people.Contact;
-import laxstats.api.people.ContactAddedEvent;
-import laxstats.api.people.ContactChangedEvent;
-import laxstats.api.people.DominantHand;
-import laxstats.api.people.Gender;
-import laxstats.api.people.PersonCreatedEvent;
-import laxstats.api.people.PersonDTO;
-import laxstats.api.people.PersonId;
+import laxstats.api.people.*;
 import laxstats.domain.teams.TeamMember;
 import laxstats.query.events.EventAttendee;
 
-import org.axonframework.eventhandling.annotation.EventHandler;
 import org.axonframework.eventsourcing.annotation.AbstractAnnotatedAggregateRoot;
 import org.axonframework.eventsourcing.annotation.AggregateIdentifier;
+import org.axonframework.eventsourcing.annotation.EventSourcingHandler;
 import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
 
 public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
 	private static final long serialVersionUID = -1073698329248234019L;
 
 	@AggregateIdentifier
 	private PersonId id;
-
 	private String prefix;
 	private String firstName;
 	private String middleName;
@@ -47,16 +35,12 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
 	private String photo;
 	private String college;
 	private String collegeUrl;
-	private LocalDateTime createdAt;
-	private String createdBy;
-	private LocalDateTime modifiedAt;
-	private String modifiedBy;
-	private final Map<String, Address> addresses = new HashMap<String, Address>();
-	private final Map<String, Contact> contacts = new HashMap<String, Contact>();
-	private final Set<Relationship> childRelationships = new HashSet<Relationship>();
-	private final Set<Relationship> parentRelationships = new HashSet<Relationship>();
-	private final Set<EventAttendee> attendedEvents = new HashSet<EventAttendee>();
-	private final Set<TeamMember> playedSeasons = new HashSet<TeamMember>();
+	private final Map<String, Address> addresses = new HashMap<>();
+	private final Map<String, Contact> contacts = new HashMap<>();
+	private final Set<Relationship> childRelationships = new HashSet<>();
+	private final Set<Relationship> parentRelationships = new HashSet<>();
+	private final Set<EventAttendee> attendedEvents = new HashSet<>();
+	private final Set<TeamMember> playedSeasons = new HashSet<>();
 
 	Person() {
 	}
@@ -65,17 +49,35 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
 		apply(new PersonCreatedEvent(personId, personDTO));
 	}
 
-	@EventHandler
-	protected void handle(AddressAddedEvent event) {
-		addresses.put(event.getAddress().getId(), event.getAddress());
+	//---------- Methods ----------//
+
+	public void registerAddress(AddressDTO addressDTO) {
+		if (addresses.containsKey(addressDTO.getId())) {
+			apply(new AddressChangedEvent(id, addressDTO));
+		} else {
+			apply(new AddressAddedEvent(id, addressDTO));
+		}
 	}
 
-	@EventHandler
-	protected void handle(ContactAddedEvent event) {
-		contacts.put(event.getContact().getId(), event.getContact());
+	public void updateAddress(AddressDTO addressDTO) {
+		apply(new AddressChangedEvent(id, addressDTO));
 	}
 
-	@EventHandler
+	public void registerContact(ContactDTO contactDTO) {
+		if(contacts.containsKey(contactDTO.getId())) {
+			apply(new ContactChangedEvent(id, contactDTO));
+		} else {
+			apply(new ContactAddedEvent(id, contactDTO));
+		}
+	}
+
+	public void updateContact(ContactDTO contactDTO) {
+		apply(new ContactChangedEvent(id, contactDTO));
+	}
+
+	//---------- Event handlers ----------//
+
+	@EventSourcingHandler
 	protected void handle(PersonCreatedEvent event) {
 		final PersonDTO dto = event.getPersonDTO();
 
@@ -90,25 +92,68 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
 		gender = dto.getGender();
 		dominantHand = dto.getDominantHand();
 		birthdate = dto.getBirthdate();
-		createdBy = dto.getCreatedBy();
-		createdAt = dto.getCreatedAt();
-		modifiedBy = dto.getModifiedBy();
-		modifiedAt = dto.getModifiedAt();
 	}
 
-	public void registerAddress(Address address) {
-		if (addresses.containsKey(address.getId())) {
-			apply(new AddressChangedEvent(id, address));
-		} else {
-			apply(new AddressAddedEvent(id, address));
-		}
+	@EventSourcingHandler
+	protected void handle(AddressAddedEvent event) {
+		String addressId = event.getAddress().getId();
+		AddressDTO dto = event.getAddress();
+
+		Address address = new Address();
+		address.setPersonId(dto.getPerson().getId());
+		address.setAddress1(dto.getAddress1());
+		address.setAddress2(dto.getAddress2());
+		address.setCity(dto.getCity());
+		address.setRegion(dto.getRegion());
+		address.setPostalCode(dto.getPostalCode());
+		address.setAddressType(dto.getAddressType());
+		address.setPrimary(dto.isPrimary());
+		address.setDoNotUse(dto.isDoNotUse());
+
+		addresses.put(addressId, address);
 	}
 
-	public void registerContact(Contact contact) {
-		if (contacts.containsKey(contact.getId())) {
-			apply(new ContactChangedEvent(id, contact));
-		} else {
-			apply(new ContactAddedEvent(id, contact));
-		}
+	@EventSourcingHandler
+	protected void handle(AddressChangedEvent event) {
+		String addressId = event.getAddressDTO().getId();
+		AddressDTO dto = event.getAddressDTO();
+
+		Address address = addresses.get(addressId);
+		address.setAddressType(dto.getAddressType());
+		address.setAddress1(dto.getAddress1());
+		address.setAddress2(dto.getAddress2());
+		address.setCity(dto.getCity());
+		address.setRegion(dto.getRegion());
+		address.setPostalCode(dto.getPostalCode());
+		address.setPrimary(dto.isPrimary());
+		address.setDoNotUse(dto.isDoNotUse());
+	}
+
+	@EventSourcingHandler
+	protected void handle(ContactAddedEvent event) {
+		String contactId = event.getContact().getId();
+		ContactDTO dto = event.getContact();
+
+		Contact contact = new Contact();
+		contact.setId(dto.getId());
+		contact.setPersonId(id.toString());
+		contact.setMethod(dto.getMethod());
+		contact.setValue(dto.getValue());
+		contact.setPrimary(dto.isPrimary());
+		contact.setDoNotUse(dto.isDoNotUse());
+
+		contacts.put(contactId, contact);
+	}
+
+	@EventSourcingHandler
+	protected void handle(ContactChangedEvent event) {
+		String contactId = event.getContact().getId();
+		ContactDTO dto = event.getContact();
+
+		Contact contact = contacts.get(contactId);
+		contact.setMethod(dto.getMethod());
+		contact.setValue(dto.getValue());
+		contact.setPrimary(dto.isPrimary());
+		contact.setDoNotUse(dto.isDoNotUse());
 	}
 }

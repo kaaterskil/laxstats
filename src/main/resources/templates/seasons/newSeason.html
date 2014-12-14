@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	  layout:decorator="layout.html">
+<head>
+</head>
+<body>
+<div layout:fragment="content">
+	<h1>Season Maintenance</h1>
+
+	<form action="#"
+		  th:action="@{/seasons}"
+		  th:object="${seasonForm}"
+		  method="post"
+		  role="form">
+		<div class="form-group">
+			<label for="description">Description</label>
+			<input th:type="text"
+				   id="description"
+				   class="form-control"
+				   th:field="*{description}"
+				   th:placeholder="Description"/>
+		</div>
+		<div class="form-group">
+			<label for="starts-on">Start Date</label>
+			<input th:type="date"
+				   id="starts-on"
+				   class="form-control"
+				   th:field="*{startsOn}"/>
+		</div>
+		<div class="form-group">
+			<label for="ends-on">End Date</label>
+			<input th:type="date"
+				   id="ends-on"
+				   class="form-control"
+				   th:field="*{endsOn}"/>
+		</div>
+		<button th:type="submit" class="btn btn-default">Submit</button>
+	</form>
+</div>
+</body>
+</html>

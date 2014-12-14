@@ -58,41 +58,41 @@ public class PersonDTO {
 	}
 
 	public String fullName() {
-		final StringBuffer buf = new StringBuffer();
+		final StringBuilder sb = new StringBuilder();
 		boolean needsSpace = false;
 
 		if (prefix.length() > 0) {
-			buf.append(prefix);
+			sb.append(prefix);
 			needsSpace = true;
 		}
 		if (firstName.length() > 0) {
 			if (needsSpace) {
-				buf.append(" ");
+				sb.append(" ");
 			}
-			buf.append(firstName);
+			sb.append(firstName);
 			needsSpace = true;
 		}
 		if (middleName.length() > 0) {
 			if (needsSpace) {
-				buf.append(" ");
+				sb.append(" ");
 			}
-			buf.append(middleName);
+			sb.append(middleName);
 			needsSpace = true;
 		}
 		if (lastName.length() > 0) {
 			if (needsSpace) {
-				buf.append(" ");
+				sb.append(" ");
 			}
-			buf.append(lastName);
+			sb.append(lastName);
 			needsSpace = true;
 		}
 		if (suffix.length() > 0) {
 			if (needsSpace) {
-				buf.append(" ");
+				sb.append(" ");
 			}
-			buf.append(suffix);
+			sb.append(suffix);
 		}
-		return buf.toString();
+		return sb.toString();
 	}
 
 	public LocalDate getBirthdate() {

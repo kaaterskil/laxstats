@@ -1,4 +1,4 @@
-package laxstats.query.season;
+package laxstats.query.seasons;
 
 import laxstats.api.seasons.*;
 import org.axonframework.eventhandling.annotation.EventHandler;

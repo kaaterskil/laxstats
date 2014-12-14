@@ -1,7 +1,7 @@
 package laxstats.api.seasons;
 
 public class SeasonDeletedEvent {
-    private SeasonId seasonId;
+    private final SeasonId seasonId;
 
     public SeasonDeletedEvent(SeasonId seasonId) {
         this.seasonId = seasonId;

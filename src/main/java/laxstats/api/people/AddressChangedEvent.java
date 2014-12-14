@@ -1,21 +1,20 @@
 package laxstats.api.people;
 
 public class AddressChangedEvent {
+    private final PersonId personId;
+    private final AddressDTO addressDTO;
 
-	private final PersonId personId;
-	private final Address address;
+    public AddressChangedEvent(PersonId personId, AddressDTO addressDTO) {
+        this.personId = personId;
+        this.addressDTO = addressDTO;
+    }
 
-	public AddressChangedEvent(PersonId personId, Address address) {
-		this.personId = personId;
-		this.address = address;
-	}
+    public AddressDTO getAddressDTO() {
+        return addressDTO;
+    }
 
-	public Address getAddress() {
-		return address;
-	}
-
-	public PersonId getPersonId() {
-		return personId;
-	}
+    public PersonId getPersonId() {
+        return personId;
+    }
 
 }

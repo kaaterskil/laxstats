@@ -5,8 +5,8 @@ import org.axonframework.commandhandling.annotation.TargetAggregateIdentifier;
 public class UpdateSeasonCommand {
 
     @TargetAggregateIdentifier
-    private SeasonId seasonId;
-    private SeasonDTO seasonDTO;
+    private final SeasonId seasonId;
+    private final SeasonDTO seasonDTO;
 
     public UpdateSeasonCommand(SeasonId seasonId, SeasonDTO seasonDTO) {
         this.seasonId = seasonId;

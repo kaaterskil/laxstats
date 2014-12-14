@@ -1,134 +1,127 @@
 package laxstats.query.people;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
-import javax.persistence.Index;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-
 import laxstats.api.people.ContactMethod;
 import laxstats.query.users.UserEntry;
-
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 
+import javax.persistence.*;
+
 @Entity
-@Table(indexes = { @Index(name = "contact_idx1", columnList = "method"),
-		@Index(name = "contact_idx2", columnList = "isPrimary"),
-		@Index(name = "contact_idx3", columnList = "doNotUse") })
+@Table(indexes = {@Index(name = "contact_idx1", columnList = "method"),
+        @Index(name = "contact_idx2", columnList = "isPrimary"),
+        @Index(name = "contact_idx3", columnList = "doNotUse")})
 public class ContactEntry {
 
-	@Id
-	@Column(length = 36)
-	private String id;
+    @Id
+    @Column(length = 36)
+    private String id;
 
-	@ManyToOne
-	private PersonEntry person;
+    @ManyToOne
+    private PersonEntry person;
 
-	@NotNull
-	@Enumerated(EnumType.STRING)
-	@Column(length = 20, nullable = false)
-	private ContactMethod method;
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20, nullable = false)
+    private ContactMethod method;
 
-	@NotNull
-	@Column(nullable = false)
-	private String value;
+    @Column(nullable = false)
+    private String value;
 
-	private boolean isPrimary = false;
+    private boolean isPrimary = false;
 
-	private boolean doNotUse = false;
+    private boolean doNotUse = false;
 
-	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
-	private LocalDateTime createdAt;
+    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+    private LocalDateTime createdAt;
 
-	@ManyToOne(targetEntity = UserEntry.class)
-	private String createdBy;
+    @ManyToOne
+    private UserEntry createdBy;
 
-	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
-	private LocalDateTime modifiedAt;
+    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+    private LocalDateTime modifiedAt;
 
-	@ManyToOne(targetEntity = UserEntry.class)
-	private String modifiedBy;
+    @ManyToOne
+    private UserEntry modifiedBy;
 
-	// ---------- Getter/Setters ----------//
+    // ---------- Getter/Setters ----------//
 
-	public LocalDateTime getCreatedAt() {
-		return createdAt;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public String getCreatedBy() {
-		return createdBy;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	public String getId() {
-		return id;
-	}
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
 
-	public ContactMethod getMethod() {
-		return method;
-	}
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 
-	public LocalDateTime getModifiedAt() {
-		return modifiedAt;
-	}
+    public UserEntry getCreatedBy() {
+        return createdBy;
+    }
 
-	public String getModifiedBy() {
-		return modifiedBy;
-	}
+    public void setCreatedBy(UserEntry createdBy) {
+        this.createdBy = createdBy;
+    }
 
-	public PersonEntry getPerson() {
-		return person;
-	}
+    public ContactMethod getMethod() {
+        return method;
+    }
 
-	public String getValue() {
-		return value;
-	}
+    public void setMethod(ContactMethod method) {
+        this.method = method;
+    }
 
-	public boolean isDoNotUse() {
-		return doNotUse;
-	}
+    public LocalDateTime getModifiedAt() {
+        return modifiedAt;
+    }
 
-	public boolean isPrimary() {
-		return isPrimary;
-	}
+    public void setModifiedAt(LocalDateTime modifiedAt) {
+        this.modifiedAt = modifiedAt;
+    }
 
-	public void setCreatedAt(LocalDateTime createdAt) {
-		this.createdAt = createdAt;
-	}
+    public UserEntry getModifiedBy() {
+        return modifiedBy;
+    }
 
-	public void setCreatedBy(String createdBy) {
-		this.createdBy = createdBy;
-	}
+    public void setModifiedBy(UserEntry modifiedBy) {
+        this.modifiedBy = modifiedBy;
+    }
 
-	public void setDoNotUse(boolean doNotUse) {
-		this.doNotUse = doNotUse;
-	}
+    public PersonEntry getPerson() {
+        return person;
+    }
 
-	public void setMethod(ContactMethod method) {
-		this.method = method;
-	}
+    public void setPerson(PersonEntry person) {
+        this.person = person;
+    }
 
-	public void setModifiedAt(LocalDateTime modifiedAt) {
-		this.modifiedAt = modifiedAt;
-	}
+    public String getValue() {
+        return value;
+    }
 
-	public void setModifiedBy(String modifiedBy) {
-		this.modifiedBy = modifiedBy;
-	}
+    public void setValue(String value) {
+        this.value = value;
+    }
 
-	public void setPerson(PersonEntry person) {
-		this.person = person;
-	}
+    public boolean isDoNotUse() {
+        return doNotUse;
+    }
 
-	public void setPrimary(boolean isPrimary) {
-		this.isPrimary = isPrimary;
-	}
+    public void setDoNotUse(boolean doNotUse) {
+        this.doNotUse = doNotUse;
+    }
 
-	public void setValue(String value) {
-		this.value = value;
-	}
+    public boolean isPrimary() {
+        return isPrimary;
+    }
+
+    public void setPrimary(boolean isPrimary) {
+        this.isPrimary = isPrimary;
+    }
 }

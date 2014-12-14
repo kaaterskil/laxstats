@@ -1,7 +1,7 @@
 package laxstats.query.teams;
 
 import laxstats.query.people.PersonEntry;
-import laxstats.query.season.SeasonEntry;
+import laxstats.query.seasons.SeasonEntry;
 import laxstats.query.users.UserEntry;
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
@@ -63,7 +63,7 @@ public class TeamMember {
 
 	@javax.persistence.Id
 	@Embedded
-	private TeamMember.Id id = new Id();
+	private final TeamMember.Id id = new Id();
 	
 	@ManyToOne
 	@JoinColumn(name = "personId", insertable = false, updatable = false)

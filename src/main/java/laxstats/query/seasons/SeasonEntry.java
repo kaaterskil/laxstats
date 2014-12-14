@@ -1,4 +1,4 @@
-package laxstats.query.season;
+package laxstats.query.seasons;
 
 import laxstats.query.users.UserEntry;
 import org.hibernate.annotations.Type;
@@ -31,7 +31,7 @@ public class SeasonEntry {
 	private LocalDate startsOn;
 
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
-	private LocalDate endsOn;
+	private LocalDate endsOn = new LocalDate(Long.MAX_VALUE);
 
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime createdAt;
@@ -44,6 +44,8 @@ public class SeasonEntry {
 
 	@ManyToOne
 	private UserEntry modifiedBy;
+
+	//---------- Methods ----------//
 
 	// ---------- Getter/Setters ----------//
 
@@ -76,6 +78,9 @@ public class SeasonEntry {
 	}
 
 	public void setEndsOn(LocalDate endsOn) {
+		if (endsOn == null) {
+			endsOn = new LocalDate(Long.MAX_VALUE);
+		}
 		this.endsOn = endsOn;
 	}
 

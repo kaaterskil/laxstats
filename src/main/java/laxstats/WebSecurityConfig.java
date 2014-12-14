@@ -15,26 +15,26 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-	@Autowired
-	private UserDetailsService loginService;
+  @Autowired
+  private UserDetailsService loginService;
 
-	@Autowired
-	public void configureGlobal(AuthenticationManagerBuilder auth)
-			throws Exception {
-		auth.userDetailsService(loginService).passwordEncoder(
-				new BCryptPasswordEncoder());
-	}
+  @Autowired
+  public void configureGlobal(AuthenticationManagerBuilder auth)
+      throws Exception {
+    auth.userDetailsService(loginService).passwordEncoder(
+        new BCryptPasswordEncoder());
+  }
 
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests()
-				.antMatchers("/", "/home", "/events", "/teams", "/people")
-				.permitAll().antMatchers("/fonts/**").permitAll()
-				.antMatchers("/admin/**").hasAnyRole("ADMIN").anyRequest()
-				.authenticated();
-		http.formLogin().failureUrl("/login?error")
-				.defaultSuccessUrl("/home/office").loginPage("/login")
-				.permitAll();
-		http.logout().permitAll();
-	}
+  @Override
+  protected void configure(HttpSecurity http) throws Exception {
+    http.authorizeRequests()
+        .antMatchers("/", "/home", "/events", "/teams", "/people").permitAll()
+        .antMatchers("/fonts/**").permitAll()
+        .antMatchers("/admin/**").hasAnyRole("ADMIN")
+        .anyRequest().authenticated();
+    http.formLogin().failureUrl("/login?error")
+        .defaultSuccessUrl("/home/office").loginPage("/login")
+        .permitAll();
+    http.logout().permitAll();
+  }
 }

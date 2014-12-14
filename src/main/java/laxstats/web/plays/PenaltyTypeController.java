@@ -11,13 +11,12 @@ import laxstats.query.plays.PenaltyTypeEntry;
 import laxstats.query.plays.PenaltyTypeQueryRepository;
 import laxstats.query.users.UserEntry;
 import laxstats.query.users.UserQueryRepository;
-import laxstats.web.security.CurrentUser;
+import laxstats.web.ApplicationController;
 
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.commandhandling.GenericCommandMessage;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -28,18 +27,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
 @RequestMapping("/penaltyTypes")
-public class PenaltyTypeController {
+public class PenaltyTypeController extends ApplicationController {
 	private final PenaltyTypeQueryRepository penaltyTypeRepository;
-	private final UserQueryRepository userRepository;
-	private final CommandBus commandBus;
 
 	@Autowired
 	public PenaltyTypeController(
 			PenaltyTypeQueryRepository penaltyTypeRepository,
 			UserQueryRepository userRepository, CommandBus commandBus) {
+		super(userRepository, commandBus);
 		this.penaltyTypeRepository = penaltyTypeRepository;
-		this.userRepository = userRepository;
-		this.commandBus = commandBus;
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
@@ -65,8 +61,7 @@ public class PenaltyTypeController {
 	@RequestMapping(method = RequestMethod.POST)
 	public String createPenaltyType(
 			@ModelAttribute("form") @Valid PenaltyTypeForm form,
-			BindingResult bindingResult, Model model,
-			@CurrentUser Object currentUser) {
+			BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
 			return "penaltyTypes/new";
 		}
@@ -89,7 +84,7 @@ public class PenaltyTypeController {
 		final CreatePenaltyTypeCommand command = new CreatePenaltyTypeCommand(
 				identifier, dto);
 		commandBus
-				.dispatch(new GenericCommandMessage<CreatePenaltyTypeCommand>(
+				.dispatch(new GenericCommandMessage<>(
 						command));
 		return "redirect:penaltyTypes";
 	}
@@ -113,7 +108,7 @@ public class PenaltyTypeController {
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 	public String updatePenaltyType(@PathVariable String id,
 			@ModelAttribute("form") @Valid PenaltyTypeForm form,
-			BindingResult bindingResult, Model model) {
+			BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
 			return "penaltyTypes/edit";
 		}
@@ -133,7 +128,7 @@ public class PenaltyTypeController {
 		final UpdatePenaltyTypeCommand command = new UpdatePenaltyTypeCommand(
 				penaltyTypeId, dto);
 		commandBus
-				.dispatch(new GenericCommandMessage<UpdatePenaltyTypeCommand>(
+				.dispatch(new GenericCommandMessage<>(
 						command));
 		return "redirect:";
 	}
@@ -143,16 +138,8 @@ public class PenaltyTypeController {
 		final DeletePenaltyTypeCommand command = new DeletePenaltyTypeCommand(
 				new PenaltyTypeId(id));
 		commandBus
-				.dispatch(new GenericCommandMessage<DeletePenaltyTypeCommand>(
+				.dispatch(new GenericCommandMessage<>(
 						command));
 		return "redirect:";
-	}
-
-	private UserEntry getCurrentUser() {
-		final Object principal = SecurityContextHolder.getContext()
-				.getAuthentication().getPrincipal();
-		final String email = ((org.springframework.security.core.userdetails.User) principal)
-				.getUsername();
-		return userRepository.findByEmail(email);
 	}
 }

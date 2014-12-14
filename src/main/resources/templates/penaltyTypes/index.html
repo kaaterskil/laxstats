@@ -11,9 +11,9 @@
 		<div><a th:href="@{/penaltyTypes/new}">Create New</a></div>
 		<table class="table table-striped">
 			<tr>
-				<th th:text="${headerName}">Foo</th>
-				<th th:text="${headerCategory}">Bar</th>
-				<th th:text="${headerReleasable}">Baz</th>
+				<th>Name</th>
+				<th>Category</th>
+				<th>Releasable</th>
 			</tr>
 			<tr th:each="item : ${items}">
 				<th><a th:href="@{/penaltyTypes/} + ${item.id} + @{/edit}" th:text="${item.name}">Name</a></th>

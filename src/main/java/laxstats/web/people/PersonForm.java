@@ -10,41 +10,41 @@ import org.joda.time.LocalDate;
 public class PersonForm {
 
 	public static String fullName(PersonForm form) {
-		final StringBuffer buf = new StringBuffer();
+		final StringBuilder sb = new StringBuilder();
 		boolean needsSpace = false;
 
 		if (form.prefix.length() > 0) {
-			buf.append(form.prefix);
+			sb.append(form.prefix);
 			needsSpace = true;
 		}
 		if (form.firstName.length() > 0) {
 			if (needsSpace) {
-				buf.append(" ");
+				sb.append(" ");
 			}
-			buf.append(form.firstName);
+			sb.append(form.firstName);
 			needsSpace = true;
 		}
 		if (form.middleName.length() > 0) {
 			if (needsSpace) {
-				buf.append(" ");
+				sb.append(" ");
 			}
-			buf.append(form.middleName);
+			sb.append(form.middleName);
 			needsSpace = true;
 		}
 		if (form.lastName.length() > 0) {
 			if (needsSpace) {
-				buf.append(" ");
+				sb.append(" ");
 			}
-			buf.append(form.lastName);
+			sb.append(form.lastName);
 			needsSpace = true;
 		}
 		if (form.suffix.length() > 0) {
 			if (needsSpace) {
-				buf.append(" ");
+				sb.append(" ");
 			}
-			buf.append(form.suffix);
+			sb.append(form.suffix);
 		}
-		return buf.toString();
+		return sb.toString();
 	}
 
 	private String prefix;

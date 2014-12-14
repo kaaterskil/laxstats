@@ -7,7 +7,7 @@ import org.axonframework.domain.IdentifierFactory;
 public class AggregateId implements Serializable {
 	private static final long serialVersionUID = -2466843517557507562L;
 	
-	private String identifier;
+	private final String identifier;
 	
 	public AggregateId() {
 		identifier = IdentifierFactory.getInstance().generateIdentifier();

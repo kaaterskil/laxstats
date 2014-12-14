@@ -9,11 +9,11 @@ import org.joda.time.LocalDateTime;
 public class TeamEvent {
 
 	public enum Alignment {
-		HOME, AWAY;
+		HOME, AWAY
 	}
 
 	public enum Outcome {
-		WIN, LOSS;
+		WIN, LOSS
 	}
 
 	public static class Id implements Serializable {

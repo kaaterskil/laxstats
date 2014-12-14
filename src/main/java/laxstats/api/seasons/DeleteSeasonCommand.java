@@ -5,7 +5,7 @@ import org.axonframework.commandhandling.annotation.TargetAggregateIdentifier;
 public class DeleteSeasonCommand {
 
     @TargetAggregateIdentifier
-    private SeasonId seasonId;
+    private final SeasonId seasonId;
 
     public DeleteSeasonCommand(SeasonId seasonId) {
         this.seasonId = seasonId;

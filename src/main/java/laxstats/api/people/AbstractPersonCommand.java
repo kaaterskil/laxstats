@@ -5,14 +5,14 @@ import org.axonframework.commandhandling.annotation.TargetAggregateIdentifier;
 public abstract class AbstractPersonCommand {
 
 	@TargetAggregateIdentifier
-	private PersonId personId;
+	private final PersonId personId;
+
+	protected AbstractPersonCommand(PersonId personId) {
+		this.personId = personId;
+	}
 
 	public PersonId getPersonId() {
 		return personId;
-	}
-
-	public void setPersonId(PersonId personId) {
-		this.personId = personId;
 	}
 
 }

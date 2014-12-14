@@ -10,7 +10,7 @@ import org.joda.time.LocalDateTime;
 public class TeamMember {
 
 	public enum Status {
-		ACTIVE, INJURED, TRYOUT, INACTIVE;
+		ACTIVE, INJURED, TRYOUT, INACTIVE
 	}
 
 	public static class Id implements Serializable {

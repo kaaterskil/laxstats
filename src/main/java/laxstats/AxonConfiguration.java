@@ -80,7 +80,7 @@ public class AxonConfiguration {
 
 	@Bean
 	public Repository<Person> personRepository() {
-		final EventSourcingRepository<Person> repository = new EventSourcingRepository<Person>(
+		final EventSourcingRepository<Person> repository = new EventSourcingRepository<>(
 				Person.class, eventStore());
 		repository.setEventBus(eventBus());
 		return repository;
@@ -88,7 +88,7 @@ public class AxonConfiguration {
 
 	@Bean
 	public Repository<Season> seasonRepository() {
-		final EventSourcingRepository<Season> repository = new EventSourcingRepository<Season>(
+		final EventSourcingRepository<Season> repository = new EventSourcingRepository<>(
 				Season.class, eventStore());
 		repository.setEventBus(eventBus());
 		return repository;
@@ -96,7 +96,7 @@ public class AxonConfiguration {
 
 	@Bean
 	public Repository<Team> teamRepository() {
-		final EventSourcingRepository<Team> repository = new EventSourcingRepository<Team>(
+		final EventSourcingRepository<Team> repository = new EventSourcingRepository<>(
 				Team.class, eventStore());
 		repository.setEventBus(eventBus());
 		return repository;
@@ -104,7 +104,7 @@ public class AxonConfiguration {
 
 	@Bean
 	public Repository<User> userRepository() {
-		final EventSourcingRepository<User> repository = new EventSourcingRepository<User>(
+		final EventSourcingRepository<User> repository = new EventSourcingRepository<>(
 				User.class, eventStore());
 		repository.setEventBus(eventBus());
 		return repository;
@@ -112,7 +112,7 @@ public class AxonConfiguration {
 
 	@Bean
 	public Repository<PenaltyType> penaltyTypeRepository() {
-		final EventSourcingRepository<PenaltyType> repository = new EventSourcingRepository<PenaltyType>(
+		final EventSourcingRepository<PenaltyType> repository = new EventSourcingRepository<>(
 				PenaltyType.class, eventStore());
 		repository.setEventBus(eventBus());
 		return repository;
@@ -120,7 +120,7 @@ public class AxonConfiguration {
 
 	@Bean
 	public Repository<Site> siteRepository() {
-		final EventSourcingRepository<Site> repository = new EventSourcingRepository<Site>(
+		final EventSourcingRepository<Site> repository = new EventSourcingRepository<>(
 				Site.class, eventStore());
 		repository.setEventBus(eventBus());
 		return repository;

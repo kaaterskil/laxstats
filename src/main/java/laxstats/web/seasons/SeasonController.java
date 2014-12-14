@@ -1,38 +1,38 @@
 package laxstats.web.seasons;
 
 import laxstats.api.seasons.*;
-import laxstats.query.season.SeasonEntry;
-import laxstats.query.season.SeasonQueryRepository;
+import laxstats.query.seasons.SeasonEntry;
+import laxstats.query.seasons.SeasonQueryRepository;
 import laxstats.query.users.UserEntry;
 import laxstats.query.users.UserQueryRepository;
+import laxstats.web.ApplicationController;
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.commandhandling.GenericCommandMessage;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
 @Controller
 @RequestMapping("/seasons")
-public class SeasonController {
-	private SeasonQueryRepository seasonRepository;
-	private UserQueryRepository userRepository;
-	private CommandBus commandBus;
+public class SeasonController extends ApplicationController {
+	private final SeasonQueryRepository seasonRepository;
 
 	@Autowired
 	public SeasonController(SeasonQueryRepository seasonRepository,
 			UserQueryRepository userRepository, CommandBus commandBus) {
+		super(userRepository, commandBus);
 		this.seasonRepository = seasonRepository;
-		this.userRepository = userRepository;
-		this.commandBus = commandBus;
+	}
+
+	@InitBinder
+	protected void initBinder(WebDataBinder binder) {
+		binder.setValidator(new SeasonFormValidator());
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
@@ -51,12 +51,12 @@ public class SeasonController {
 	@RequestMapping(value = "/new", method = RequestMethod.GET)
 	public String newSeason(Model model) {
 		SeasonForm form = new SeasonForm();
-		model.addAttribute("form", form);
-		return "seasons/new";
+		model.addAttribute("seasonForm", form);
+		return "seasons/newSeason";
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
-	public String createSeason(@ModelAttribute("form") @Valid SeasonForm form,
+	public String createSeason(@ModelAttribute("seasonForm") @Valid SeasonForm form,
 							   BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
 			return "seasons/new";
@@ -88,12 +88,12 @@ public class SeasonController {
 		form.setDescription(season.getDescription());
 		form.setStartsOn(season.getStartsOn());
 		form.setEndsOn(season.getEndsOn());
-		model.addAttribute("form", form);
+		model.addAttribute("seasonForm", form);
 		return "seasons/edit";
 	}
 
 	@RequestMapping(value = "/{seasonId}", method = RequestMethod.PUT)
-	public String updateSeason(@ModelAttribute("form") @Valid SeasonForm form,
+	public String updateSeason(@ModelAttribute("seasonForm") @Valid SeasonForm form,
 							   @PathVariable String seasonId,
 							   BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
@@ -122,13 +122,5 @@ public class SeasonController {
 		DeleteSeasonCommand payload = new DeleteSeasonCommand(identifier);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
 		return "redirect:/seasons";
-	}
-
-	private UserEntry getCurrentUser() {
-		final Object principal = SecurityContextHolder.getContext()
-				.getAuthentication().getPrincipal();
-		final String email = ((org.springframework.security.core.userdetails.User) principal)
-				.getUsername();
-		return userRepository.findByEmail(email);
 	}
 }

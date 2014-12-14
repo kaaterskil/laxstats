@@ -54,7 +54,7 @@ public class TeamAffiliation {
 
 	@javax.persistence.Id
 	@Embedded
-	private TeamAffiliation.Id id = new Id();
+	private final TeamAffiliation.Id id = new Id();
 	
 	@ManyToOne
 	@JoinColumn(name = "teamId", insertable = false, updatable = false)

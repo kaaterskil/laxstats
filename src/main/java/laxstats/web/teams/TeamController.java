@@ -14,11 +14,11 @@ import laxstats.query.teams.TeamQueryRepository;
 import laxstats.query.users.UserEntry;
 import laxstats.query.users.UserQueryRepository;
 
+import laxstats.web.ApplicationController;
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.commandhandling.GenericCommandMessage;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,20 +30,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
 @RequestMapping("/teams")
-public class TeamController {
+public class TeamController extends ApplicationController {
 	private final TeamQueryRepository teamRepository;
-	private final UserQueryRepository userRepository;
 	private final SiteQueryRepository siteRepository;
-	private final CommandBus commandBus;
 
 	@Autowired
 	public TeamController(TeamQueryRepository teamRepository,
 			SiteQueryRepository siteRepository,
 			UserQueryRepository userRepository, CommandBus commandBus) {
+		super(userRepository, commandBus);
 		this.teamRepository = teamRepository;
 		this.siteRepository = siteRepository;
-		this.userRepository = userRepository;
-		this.commandBus = commandBus;
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
@@ -144,13 +141,5 @@ public class TeamController {
 		commandBus.dispatch(new GenericCommandMessage<>(
 				command));
 		return "redirect:";
-	}
-
-	private UserEntry getCurrentUser() {
-		final Object principal = SecurityContextHolder.getContext()
-				.getAuthentication().getPrincipal();
-		final String email = ((org.springframework.security.core.userdetails.User) principal)
-				.getUsername();
-		return userRepository.findByEmail(email);
 	}
 }

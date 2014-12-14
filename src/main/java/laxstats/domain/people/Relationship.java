@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class Relationship {
 
 	public enum Type {
-		FAMILY, COUNSELOR;
+		FAMILY, COUNSELOR
 	}
 
 	public static class Id implements Serializable {

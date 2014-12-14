@@ -1,6 +1,6 @@
 package laxstats.query.teams;
 
-import laxstats.query.season.SeasonEntry;
+import laxstats.query.seasons.SeasonEntry;
 import laxstats.query.users.UserEntry;
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDate;
@@ -57,7 +57,7 @@ public class TeamSeason {
 
 	@javax.persistence.Id
 	@Embedded
-	private TeamSeason.Id id = new Id();
+	private final TeamSeason.Id id = new Id();
 	
 	@ManyToOne
 	@JoinColumn(name = "teamId", insertable = false, updatable = false)

@@ -8,19 +8,19 @@ import org.joda.time.LocalDateTime;
 public class Event {
 
 	public enum Alignment {
-		HOME, NEUTRAL;
+		HOME, NEUTRAL
 	}
 
 	public enum Conditions {
-		RAIN, SUNNY, CLEAR, PARTLY_CLOUDY, CLOUDY, MOSTLY_CLOUDY, WINDY, SNOW, SHOWERS;
+		RAIN, SUNNY, CLEAR, PARTLY_CLOUDY, CLOUDY, MOSTLY_CLOUDY, WINDY, SNOW, SHOWERS
 	}
 
 	public enum Status {
-		SCHEDULED, OCCURRED, POSTPONED, SUSPENDED, HALTED, FORFEITED, RESCHEDULED, DELAYED, CANCELLED, IF_NECESSARY, DISCARDED;
+		SCHEDULED, OCCURRED, POSTPONED, SUSPENDED, HALTED, FORFEITED, RESCHEDULED, DELAYED, CANCELLED, IF_NECESSARY, DISCARDED
 	}
 
 	public enum Schedule {
-		PRE_SEASON, REGULAR, POST_SEASON, EXHIBITION;
+		PRE_SEASON, REGULAR, POST_SEASON, EXHIBITION
 	}
 
 	private String id;
@@ -35,6 +35,6 @@ public class Event {
 	private String createdBy;
 	private LocalDateTime modifiedAt;
 	private String modifiedBy;
-	private Set<EventAttendee> eventAttendees = new HashSet<EventAttendee>();
-	private Set<TeamEvent> eventTeams = new HashSet<TeamEvent>();
+	private Set<EventAttendee> eventAttendees = new HashSet<>();
+	private Set<TeamEvent> eventTeams = new HashSet<>();
 }

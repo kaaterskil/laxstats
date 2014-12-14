@@ -69,7 +69,7 @@ public class TeamEvent {
 
 	@javax.persistence.Id
 	@Embedded
-	private TeamEvent.Id id = new Id();
+	private final TeamEvent.Id id = new Id();
 	
 	@ManyToOne
 	@JoinColumn(name = "teamId", insertable = false, updatable = false)

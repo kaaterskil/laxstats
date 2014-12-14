@@ -59,13 +59,13 @@ public class TeamEntry {
 	private UserEntry modifiedBy;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "team")
-	private final Set<TeamEvent> teamEvents = new HashSet<TeamEvent>();
+	private final Set<TeamEvent> teamEvents = new HashSet<>();
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "team")
-	private final Set<TeamSeason> teamSeasons = new HashSet<TeamSeason>();
+	private final Set<TeamSeason> teamSeasons = new HashSet<>();
 
 	@OneToMany(mappedBy = "team")
-	private final Set<TeamAffiliation> teamAffiliations = new HashSet<TeamAffiliation>();
+	private final Set<TeamAffiliation> teamAffiliations = new HashSet<>();
 
 	// ---------- Getter/Setters ----------//
 

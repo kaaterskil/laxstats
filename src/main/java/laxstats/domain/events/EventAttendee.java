@@ -10,7 +10,7 @@ import org.joda.time.LocalDateTime;
 public class EventAttendee {
 
 	public enum Status {
-		STARTED, PLAYED;
+		STARTED, PLAYED
 	}
 
 	public static class Id implements Serializable {

@@ -1,9 +1,9 @@
 package laxstats.api.people;
 
-public class RegisterAddressCommand extends AbstractPersonCommand {
+public class UpdateAddressCommand extends AbstractPersonCommand {
     private final AddressDTO addressDTO;
 
-    public RegisterAddressCommand(PersonId personId, AddressDTO addressDTO) {
+    public UpdateAddressCommand(PersonId personId, AddressDTO addressDTO) {
         super(personId);
         this.addressDTO = addressDTO;
     }

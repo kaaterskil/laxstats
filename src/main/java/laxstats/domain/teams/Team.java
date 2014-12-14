@@ -25,9 +25,9 @@ public class Team extends AbstractAnnotatedAggregateRoot<TeamId> {
 	private Gender gender;
 	private String homeSiteId;
 	private String encodedPassword;
-	private final Set<TeamEvent> teamEvents = new HashSet<TeamEvent>();
-	private final Set<TeamSeason> teamSeasons = new HashSet<TeamSeason>();
-	private final Set<TeamAffiliation> teamAffiliations = new HashSet<TeamAffiliation>();
+	private final Set<TeamEvent> teamEvents = new HashSet<>();
+	private final Set<TeamSeason> teamSeasons = new HashSet<>();
+	private final Set<TeamAffiliation> teamAffiliations = new HashSet<>();
 
 	public Team(TeamId teamId, TeamDTO teamDTO) {
 		apply(new TeamCreatedEvent(teamId, teamDTO));

@@ -1,18 +1,18 @@
 package laxstats.web.site;
 
-import laxstats.api.people.Address;
+import laxstats.api.people.AddressDTO;
 import laxstats.api.people.AddressType;
 import laxstats.api.sites.*;
 import laxstats.query.sites.SiteEntry;
 import laxstats.query.sites.SiteQueryRepository;
 import laxstats.query.users.UserEntry;
 import laxstats.query.users.UserQueryRepository;
+import laxstats.web.ApplicationController;
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.commandhandling.GenericCommandMessage;
 import org.axonframework.domain.IdentifierFactory;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -25,18 +25,15 @@ import javax.validation.Valid;
 
 @Controller
 @RequestMapping("/sites")
-public class SiteController {
-    private SiteQueryRepository siteRepository;
-    private UserQueryRepository userRepository;
-    private CommandBus commandBus;
+public class SiteController extends ApplicationController {
+    private final SiteQueryRepository siteRepository;
 
     @Autowired
     public SiteController(SiteQueryRepository siteRepository,
                           UserQueryRepository userRepository,
                           CommandBus commandBus) {
+        super(userRepository, commandBus);
         this.siteRepository = siteRepository;
-        this.userRepository = userRepository;
-        this.commandBus = commandBus;
     }
 
     @RequestMapping(method = RequestMethod.GET)
@@ -69,7 +66,7 @@ public class SiteController {
         SiteId identifier = new SiteId();
         String addressId = IdentifierFactory.getInstance().generateIdentifier();
 
-        Address address = new Address(addressId, null, identifier.toString(), AddressType.SITE, form.getAddress1(), form.getAddress2(), form.getCity(), form.getRegion(), form.getPostalCode(), true, false, user.getId(), now, user.getId(), now);
+        AddressDTO address = new AddressDTO(addressId, null, identifier.toString(), AddressType.SITE, form.getAddress1(), form.getAddress2(), form.getCity(), form.getRegion(), form.getPostalCode(), true, false, user, now, user, now);
 
         SiteDTO dto = new SiteDTO();
         dto.setAddress(address);
@@ -118,7 +115,7 @@ public class SiteController {
         SiteEntry site = siteRepository.findOne(siteId);
         SiteId identifier = new SiteId(siteId);
 
-        Address address = new Address(site.getAddress().getId(), null, siteId, AddressType.SITE, form.getAddress1(), form.getAddress2(), form.getCity(), form.getRegion(), form.getPostalCode(), true, false, user.getId(), now, user.getId(), now);
+        AddressDTO address = new AddressDTO(site.getAddress().getId(), null, siteId, AddressType.SITE, form.getAddress1(), form.getAddress2(), form.getCity(), form.getRegion(), form.getPostalCode(), true, false, user, now, user, now);
 
         SiteDTO dto = new SiteDTO();
         dto.setAddress(address);
@@ -143,13 +140,5 @@ public class SiteController {
         DeleteSiteCommand payload = new DeleteSiteCommand(identifier);
         commandBus.dispatch(new GenericCommandMessage<>(payload));
         return "redirect:/sites";
-    }
-
-    private UserEntry getCurrentUser() {
-        final Object principal = SecurityContextHolder.getContext()
-                .getAuthentication().getPrincipal();
-        final String email = ((org.springframework.security.core.userdetails.User) principal)
-                .getUsername();
-        return userRepository.findByEmail(email);
     }
 }

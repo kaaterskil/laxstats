@@ -1,20 +1,21 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-	layout:decorator="layout">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorator="layout.html">
 <head></head>
 <body>
 	<div layout:fragment="content">
 		<div class="row">
 			<h1>
-				<span th:text="${person.fullName}">Name</span><br>
+				<span th:text="${}">Name</span><br>
 				<span>Team</span>
 			</h1>
 		</div>
-		<div class="row" th:object="${person}">
+		<div class="row" th:object="${}">
 			<div class="col-sm-3 col-xs-12">
 				<div>
-					<strong>Name:</strong> <span th:text="*{fullName}">Full
+					<strong>Name:</strong> <span th:field="*{fullName}">Full
 						Name</span>
 				</div>
 				<div>

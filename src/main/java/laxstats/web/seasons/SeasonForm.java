@@ -1,11 +1,13 @@
 package laxstats.web.seasons;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import org.joda.time.LocalDate;
 
 public class SeasonForm {
 	@NotNull
+	@Size(min = 3)
 	private String description;
 	
 	@NotNull

@@ -2,14 +2,14 @@ package laxstats.api.people;
 
 public class CreatePersonCommand extends AbstractPersonCommand {
 
-	private PersonDTO PersonDTO;
+	private final PersonDTO personDTO;
+
+	public CreatePersonCommand(PersonId personId, PersonDTO personDTO) {
+		super(personId);
+		this.personDTO = personDTO;
+	}
 
 	public PersonDTO getPersonDTO() {
-		return PersonDTO;
+		return personDTO;
 	}
-
-	public void setPersonDTO(PersonDTO PersonDTO) {
-		this.PersonDTO = PersonDTO;
-	}
-
 }

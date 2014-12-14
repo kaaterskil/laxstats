@@ -73,7 +73,7 @@ public class PlayParticipantEntry {
 	
 	@javax.persistence.Id
 	@Embedded
-	private Id id = new Id();
+	private final Id id = new Id();
 	
 	@ManyToOne
 	@JoinColumn(name = "playId", insertable = false, updatable = false)

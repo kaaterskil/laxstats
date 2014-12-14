@@ -4,7 +4,6 @@ import laxstats.api.plays.CreatePenaltyTypeCommand;
 import laxstats.api.plays.DeletePenaltyTypeCommand;
 import laxstats.api.plays.PenaltyTypeId;
 import laxstats.api.plays.UpdatePenaltyTypeCommand;
-import laxstats.query.plays.PenaltyTypeQueryRepository;
 
 import org.axonframework.commandhandling.annotation.CommandHandler;
 import org.axonframework.repository.Repository;
@@ -17,19 +16,10 @@ public class PenaltyTypeCommandHandler {
 
 	private Repository<PenaltyType> repository;
 
-	@SuppressWarnings("unused")
-	private PenaltyTypeQueryRepository penaltyTypeQueryRepository;
-
 	@Autowired
 	@Qualifier("penaltyTypeRepository")
 	public void setRepository(Repository<PenaltyType> repository) {
 		this.repository = repository;
-	}
-
-	@Autowired
-	public void setPenaltyTypeQueryRepository(
-			PenaltyTypeQueryRepository penaltyTypeQueryRepository) {
-		this.penaltyTypeQueryRepository = penaltyTypeQueryRepository;
 	}
 
 	@CommandHandler

@@ -68,7 +68,7 @@ public class EventAttendee {
 	
 	@javax.persistence.Id
 	@Embedded
-	private EventAttendee.Id id = new Id();
+	private final EventAttendee.Id id = new Id();
 	
 	@ManyToOne
 	@JoinColumn(name = "personId", insertable = false, updatable = false)

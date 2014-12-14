@@ -1,8 +1,8 @@
 package laxstats.api.seasons;
 
 public class SeasonCreatedEvent {
-	private SeasonId seasonId;
-	private SeasonDTO seasonDTO;
+	private final SeasonId seasonId;
+	private final SeasonDTO seasonDTO;
 
 	public SeasonCreatedEvent(SeasonId seasonId, SeasonDTO seasonDTO) {
 		this.seasonId = seasonId;
