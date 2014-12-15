@@ -23,7 +23,7 @@ import laxstats.api.plays.PlayKey;
 import laxstats.api.plays.PlayResult;
 import laxstats.api.plays.ScoreAttemptType;
 import laxstats.api.plays.Strength;
-import laxstats.query.events.Event;
+import laxstats.query.events.EventEntry;
 import laxstats.query.teams.TeamEntry;
 import laxstats.query.users.UserEntry;
 
@@ -34,7 +34,8 @@ import org.joda.time.LocalTime;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "playType", length = 20, discriminatorType = DiscriminatorType.STRING)
-@Table(indexes = { @Index(name = "play_idx1", columnList = "playType"),
+@Table(name = "plays", indexes = {
+		@Index(name = "play_idx1", columnList = "playType"),
 		@Index(name = "play_idx2", columnList = "event, playType"),
 		@Index(name = "play_idx3", columnList = "period"),
 		@Index(name = "play_idx4", columnList = "strength"),
@@ -50,12 +51,12 @@ abstract public class PlayEntry {
 	private String id;
 
 	@ManyToOne
-	private Event event;
+	private EventEntry event;
 
 	private int sequenceNumber;
 
-	@ManyToOne(targetEntity = TeamEntry.class, optional = false)
-	private String teamId;
+	@ManyToOne(optional = false)
+	private TeamEntry team;
 
 	private int period;
 
@@ -84,8 +85,8 @@ abstract public class PlayEntry {
 
 	private int manUpAdvantage;
 
-	@ManyToOne(targetEntity = TeamEntry.class)
-	private String manUpTeamId;
+	@ManyToOne
+	private TeamEntry manUpTeam;
 
 	@Column(columnDefinition = "text")
 	private String comment;
@@ -93,14 +94,14 @@ abstract public class PlayEntry {
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime createdAt;
 
-	@ManyToOne(targetEntity = UserEntry.class)
-	private String createdBy;
+	@ManyToOne
+	private UserEntry createdBy;
 
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime modifiedAt;
 
-	@ManyToOne(targetEntity = UserEntry.class)
-	private String modifiedBy;
+	@ManyToOne
+	private UserEntry modifiedBy;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "play")
 	private final Set<PlayParticipantEntry> participants = new HashSet<>();
@@ -111,11 +112,15 @@ abstract public class PlayEntry {
 		return id;
 	}
 
-	public Event getEvent() {
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public EventEntry getEvent() {
 		return event;
 	}
 
-	public void setEvent(Event event) {
+	public void setEvent(EventEntry event) {
 		this.event = event;
 	}
 
@@ -127,12 +132,12 @@ abstract public class PlayEntry {
 		this.sequenceNumber = sequenceNumber;
 	}
 
-	public String getTeamId() {
-		return teamId;
+	public TeamEntry getTeam() {
+		return team;
 	}
 
-	public void setTeam(String teamId) {
-		this.teamId = teamId;
+	public void setTeam(TeamEntry team) {
+		this.team = team;
 	}
 
 	public int getPeriod() {
@@ -207,12 +212,12 @@ abstract public class PlayEntry {
 		this.manUpAdvantage = manUpAdvantage;
 	}
 
-	public String getManUpTeamId() {
-		return manUpTeamId;
+	public TeamEntry getManUpTeam() {
+		return manUpTeam;
 	}
 
-	public void setManUpTeam(String manUpTeamId) {
-		this.manUpTeamId = manUpTeamId;
+	public void setManUpTeam(TeamEntry manUpTeam) {
+		this.manUpTeam = manUpTeam;
 	}
 
 	public String getComment() {
@@ -231,11 +236,11 @@ abstract public class PlayEntry {
 		this.createdAt = createdAt;
 	}
 
-	public String getCreatedBy() {
+	public UserEntry getCreatedBy() {
 		return createdBy;
 	}
 
-	public void setCreatedBy(String createdBy) {
+	public void setCreatedBy(UserEntry createdBy) {
 		this.createdBy = createdBy;
 	}
 
@@ -247,11 +252,11 @@ abstract public class PlayEntry {
 		this.modifiedAt = modifiedAt;
 	}
 
-	public String getModifiedBy() {
+	public UserEntry getModifiedBy() {
 		return modifiedBy;
 	}
 
-	public void setModifiedBy(String modifiedBy) {
+	public void setModifiedBy(UserEntry modifiedBy) {
 		this.modifiedBy = modifiedBy;
 	}
 

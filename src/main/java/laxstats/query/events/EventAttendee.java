@@ -76,7 +76,7 @@ public class EventAttendee {
 
 	@ManyToOne
 	@JoinColumn(name = "eventId", insertable = false, updatable = false)
-	private Event event;
+	private EventEntry event;
 	
 	@ManyToOne(targetEntity = TeamEntry.class)
 	private String teamId;
@@ -101,7 +101,7 @@ public class EventAttendee {
 	
 	public EventAttendee(){}
 	
-	public EventAttendee(PersonEntry person, Event event){
+	public EventAttendee(PersonEntry person, EventEntry event){
 		this.person = person;
 		this.event = event;
 		
@@ -126,11 +126,11 @@ public class EventAttendee {
 		this.person = person;
 	}
 
-	public Event getEvent() {
+	public EventEntry getEvent() {
 		return event;
 	}
 
-	public void setEvent(Event event) {
+	public void setEvent(EventEntry event) {
 		this.event = event;
 	}
 

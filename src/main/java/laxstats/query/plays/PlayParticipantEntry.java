@@ -21,103 +21,103 @@ import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 
 @Entity
-@Table(
-	indexes = {
+@Table(name = "playParticipants", indexes = {
 		@Index(name = "play_participant_idx1", columnList = "role"),
-		@Index(name = "play_participant_idx2", columnList = "pointCredit")
-	}
-)
+		@Index(name = "play_participant_idx2", columnList = "pointCredit") })
 public class PlayParticipantEntry {
-	
+
 	public enum Role {
-		SCORER, ASSIST, GOALIE, SHOOTER, BLOCKER, GROUND_BALL, 
-		PENALTY_COMMITTED_BY, PENALTY_COMMITTED_AGAINST, 
-		FACEOFF_WINNER, FACEOFF_LOSER
+		SCORER, ASSIST, GOALIE, SHOOTER, BLOCKER, GROUND_BALL, PENALTY_COMMITTED_BY, PENALTY_COMMITTED_AGAINST, FACEOFF_WINNER, FACEOFF_LOSER
 	}
-	
+
 	@Embeddable
 	public static class Id implements Serializable {
 		private static final long serialVersionUID = 912492002722920566L;
 
 		@Column(length = 36)
 		private String playId;
-		
+
 		@Column(length = 36)
 		private String personId;
-		
+
 		@Column(length = 36)
 		private String teamId;
-		
-		public Id(){}
-		
+
+		public Id() {
+		}
+
 		public Id(String playId, String personId, String teamId) {
 			this.playId = playId;
 			this.personId = personId;
 			this.teamId = teamId;
 		}
-		
+
+		@Override
 		public boolean equals(Object o) {
-			if(o != null && o instanceof PlayParticipantEntry.Id) {
-				Id that = (Id) o;
-				return this.playId.equals(that.playId) && 
-						this.personId.equals(that.personId) && 
-						this.teamId.equals(that.teamId);
+			if (o != null && o instanceof PlayParticipantEntry.Id) {
+				final Id that = (Id) o;
+				return this.playId.equals(that.playId)
+						&& this.personId.equals(that.personId)
+						&& this.teamId.equals(that.teamId);
 			}
 			return false;
 		}
-		
+
+		@Override
 		public int hashCode() {
 			return playId.hashCode() + personId.hashCode() + teamId.hashCode();
 		}
 	}
-	
+
 	@javax.persistence.Id
 	@Embedded
 	private final Id id = new Id();
-	
+
 	@ManyToOne
 	@JoinColumn(name = "playId", insertable = false, updatable = false)
 	private PlayEntry play;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "personId", insertable = false, updatable = false)
 	private PersonEntry person;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "teamId", insertable = false, updatable = false)
 	private TeamEntry team;
-	
+
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20)
 	private PlayParticipantEntry.Role role;
-	
+
 	private boolean pointCredit = false;
-	
+
 	private int cumulativeAssists;
-	
+
 	private int cumulativeGoals;
-	
+
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime createdAt;
 
 	@ManyToOne(targetEntity = UserEntry.class)
 	private String createdBy;
-	
-	//---------- Constructors ----------//
-	
-	protected PlayParticipantEntry(){}
-	
-	public PlayParticipantEntry(PlayEntry play, PersonEntry person, TeamEntry team) {
+
+	// ---------- Constructors ----------//
+
+	protected PlayParticipantEntry() {
+	}
+
+	public PlayParticipantEntry(PlayEntry play, PersonEntry person,
+			TeamEntry team) {
 		this.play = play;
 		this.person = person;
 		this.team = team;
-		
+
 		this.id.playId = play.getId();
 		this.id.personId = person.getId();
 		this.id.teamId = team.getId();
 	}
-	
-	//---------- Getter/Setters ----------//
+
+	// ---------- Getter/Setters ----------//
 
 	public PlayEntry getPlay() {
 		return play;

@@ -7,10 +7,10 @@ import laxstats.api.plays.PlayKey;
 import laxstats.api.plays.PlayType;
 
 @Entity
-@DiscriminatorValue(PlayType.CLEAR)
-public class ClearEntry extends PlayEntry {
+@DiscriminatorValue(PlayType.PENALTY)
+public class PenaltyEntry extends PlayEntry {
 
-	public ClearEntry() {
+	public PenaltyEntry() {
 		playKey = PlayKey.PLAY;
 	}
 }

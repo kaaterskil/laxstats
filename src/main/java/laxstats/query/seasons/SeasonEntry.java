@@ -1,22 +1,24 @@
 package laxstats.query.seasons;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+
 import laxstats.query.users.UserEntry;
+
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
-import javax.persistence.*;
-
 @Entity
-@Table(
-	indexes = {
+@Table(name = "seasons", indexes = {
 		@Index(name = "season_idx1", columnList = "startsOn"),
-		@Index(name = "season_idx2", columnList = "endsOn")
-	},
-	uniqueConstraints = {
-		@UniqueConstraint(name = "season_uk1", columnNames = {"startsOn", "endsOn"})
-	}
-)
+		@Index(name = "season_idx2", columnList = "endsOn") }, uniqueConstraints = { @UniqueConstraint(name = "season_uk1", columnNames = {
+		"startsOn", "endsOn" }) })
 public class SeasonEntry {
 
 	@Id
@@ -45,7 +47,7 @@ public class SeasonEntry {
 	@ManyToOne
 	private UserEntry modifiedBy;
 
-	//---------- Methods ----------//
+	// ---------- Methods ----------//
 
 	// ---------- Getter/Setters ----------//
 

@@ -24,7 +24,8 @@ import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 
 @Entity
-@Table(indexes = { @Index(name = "team_idx1", columnList = "gender"),
+@Table(name = "teams", indexes = {
+		@Index(name = "team_idx1", columnList = "gender"),
 		@Index(name = "team_idx2", columnList = "name") })
 public class TeamEntry {
 

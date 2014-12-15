@@ -29,7 +29,8 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
 @Entity
-@Table(indexes = { @Index(name = "people_idx1", columnList = "lastName"),
+@Table(name = "people", indexes = {
+		@Index(name = "people_idx1", columnList = "lastName"),
 		@Index(name = "people_idx2", columnList = "isParentReleased"),
 		@Index(name = "people_idx3", columnList = "parentReleaseSentOn"),
 		@Index(name = "people_idx4", columnList = "parentReleaseReceivedOn") })

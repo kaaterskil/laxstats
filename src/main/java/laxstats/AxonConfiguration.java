@@ -3,8 +3,10 @@ package laxstats;
 import java.io.File;
 import java.util.Arrays;
 
+import laxstats.domain.events.Event;
 import laxstats.domain.people.Person;
 import laxstats.domain.plays.PenaltyType;
+import laxstats.domain.plays.Play;
 import laxstats.domain.seasons.Season;
 import laxstats.domain.sites.Site;
 import laxstats.domain.teams.Team;
@@ -122,6 +124,22 @@ public class AxonConfiguration {
 	public Repository<Site> siteRepository() {
 		final EventSourcingRepository<Site> repository = new EventSourcingRepository<>(
 				Site.class, eventStore());
+		repository.setEventBus(eventBus());
+		return repository;
+	}
+
+	@Bean
+	public Repository<Event> eventRepository() {
+		final EventSourcingRepository<Event> repository = new EventSourcingRepository<>(
+				Event.class, eventStore());
+		repository.setEventBus(eventBus());
+		return repository;
+	}
+
+	@Bean
+	public Repository<Play> playRepository() {
+		final EventSourcingRepository<Play> repository = new EventSourcingRepository<>(
+				Play.class, eventStore());
 		repository.setEventBus(eventBus());
 		return repository;
 	}

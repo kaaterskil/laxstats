@@ -15,6 +15,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import laxstats.api.events.Alignment;
+import laxstats.api.events.Conditions;
+import laxstats.api.events.Schedule;
+import laxstats.api.events.Status;
 import laxstats.query.sites.SiteEntry;
 import laxstats.query.users.UserEntry;
 
@@ -22,97 +26,80 @@ import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 
 @Entity
-@Table(
-	indexes = {
+@Table(name = "events", indexes = {
 		@Index(name = "event_idx1", columnList = "schedule"),
 		@Index(name = "event_idx2", columnList = "startsAt"),
 		@Index(name = "event_idx3", columnList = "alignment"),
 		@Index(name = "event_idx4", columnList = "status"),
-		@Index(name = "event_idx5", columnList = "conditions")
-	}
-)
-public class Event {
-	
-	public enum Alignment {
-		HOME, NEUTRAL
-	}
-	
-	public enum Conditions {
-		RAIN, SUNNY, CLEAR, PARTLY_CLOUDY, CLOUDY, MOSTLY_CLOUDY, WINDY, 
-		SNOW, SHOWERS
-	}
-	
-	public enum Status {
-		SCHEDULED, OCCURRED, POSTPONED, SUSPENDED, HALTED, FORFEITED, 
-		RESCHEDULED, DELAYED, CANCELLED, IF_NECESSARY, DISCARDED
-	}
-	
-	public enum Schedule {
-		PRE_SEASON, REGULAR, POST_SEASON, EXHIBITION
-	}
+		@Index(name = "event_idx5", columnList = "conditions") })
+public class EventEntry {
 
 	@Id
 	@Column(length = 36)
 	private String id;
-	
-	@ManyToOne(targetEntity = SiteEntry.class)
-	private String siteId;
-	
+
+	@ManyToOne
+	private SiteEntry site;
+
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20)
 	private Alignment alignment;
 
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime startsAt;
-	
+
 	@NotNull
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20, nullable = false)
 	private Schedule schedule;
-	
+
 	@NotNull
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20, nullable = false)
 	private Status status;
-	
+
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20)
 	private Conditions conditions;
-	
+
 	@NotNull
 	@Column(nullable = false)
 	private String description;
-	
+
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime createdAt;
 
-	@ManyToOne(targetEntity = UserEntry.class)
-	private String createdBy;
-	
+	@ManyToOne
+	private UserEntry createdBy;
+
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime modifiedAt;
 
-	@ManyToOne(targetEntity = UserEntry.class)
-	private String modifiedBy;
-	
+	@ManyToOne
+	private UserEntry modifiedBy;
+
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
 	private final Set<EventAttendee> eventAttendees = new HashSet<>();
-	
+
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
 	private final Set<TeamEvent> eventTeams = new HashSet<>();
-	
-	//---------- Getter/Setters ----------//
+
+	// ---------- Getter/Setters ----------//
 
 	public String getId() {
 		return id;
 	}
 
-	public String getSiteId() {
-		return siteId;
+	public void setId(String id) {
+		this.id = id;
 	}
 
-	public void setSiteId(String siteId) {
-		this.siteId = siteId;
+	public SiteEntry getSite() {
+		return site;
+	}
+
+	public void setSite(SiteEntry site) {
+		this.site = site;
 	}
 
 	public Alignment getAlignment() {
@@ -171,11 +158,11 @@ public class Event {
 		this.createdAt = createdAt;
 	}
 
-	public String getCreatedBy() {
+	public UserEntry getCreatedBy() {
 		return createdBy;
 	}
 
-	public void setCreatedBy(String createdBy) {
+	public void setCreatedBy(UserEntry createdBy) {
 		this.createdBy = createdBy;
 	}
 
@@ -187,11 +174,11 @@ public class Event {
 		this.modifiedAt = modifiedAt;
 	}
 
-	public String getModifiedBy() {
+	public UserEntry getModifiedBy() {
 		return modifiedBy;
 	}
 
-	public void setModifiedBy(String modifiedBy) {
+	public void setModifiedBy(UserEntry modifiedBy) {
 		this.modifiedBy = modifiedBy;
 	}
 
