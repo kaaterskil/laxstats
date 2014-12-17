@@ -2,6 +2,8 @@ package laxstats.domain.teams;
 
 import java.io.Serializable;
 
+import laxstats.domain.leagues.League;
+
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
@@ -36,7 +38,7 @@ public class TeamAffiliation {
 
 	private TeamAffiliation.Id id = new Id();
 	private Team team;
-	private Affiliation affiliation;
+	private League affiliation;
 	private LocalDate startingOn;
 	private LocalDate endingOn;
 	private LocalDateTime createdAt;

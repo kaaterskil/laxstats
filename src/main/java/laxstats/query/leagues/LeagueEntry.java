@@ -1,4 +1,4 @@
-package laxstats.query.teams;
+package laxstats.query.leagues;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -12,59 +12,60 @@ import javax.persistence.Index;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
+import laxstats.api.leagues.Level;
 import laxstats.query.users.UserEntry;
 
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 
 @Entity
-@Table(indexes = {@Index(name = "affiliation_idx1", columnList = "level")})
-public class Affiliation {
-	
-	public enum Level {
-		LEAGUE, DIVISION, CONFERENCE
-	}
+@Table(name = "leagues", indexes = { @Index(name = "affiliation_idx1", columnList = "level") })
+public class LeagueEntry {
 
 	@Id
 	@Column(length = 36)
 	private String id;
-	
-	@NotNull
+
 	@Column(length = 50, nullable = false)
 	private String name;
-	
-	@NotNull
+
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20, nullable = false)
-	private Affiliation.Level level;
-	
+	private Level level;
+
+	@Column(columnDefinition = "text")
+	private String description;
+
 	@ManyToOne
-	private Affiliation parent;
-	
+	private LeagueEntry parent;
+
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime createdAt;
-	
-	@ManyToOne(targetEntity = UserEntry.class)
-	private String createdBy;
-	
+
+	@ManyToOne
+	private UserEntry createdBy;
+
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime modifiedAt;
-	
-	@ManyToOne(targetEntity = UserEntry.class)
-	private String modifiedBy;
-	
+
+	@ManyToOne
+	private UserEntry modifiedBy;
+
 	@OneToMany(mappedBy = "parent")
-	private Set<Affiliation> children = new HashSet<>();
-	
+	private Set<LeagueEntry> children = new HashSet<>();
+
 	@OneToMany(mappedBy = "affiliation")
 	private final Set<TeamAffiliation> affiliatedTeams = new HashSet<>();
-	
-	//---------- Getter/Setters ----------//
+
+	// ---------- Getter/Setters ----------//
 
 	public String getId() {
 		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	public String getName() {
@@ -83,11 +84,19 @@ public class Affiliation {
 		this.level = level;
 	}
 
-	public Affiliation getParent() {
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public LeagueEntry getParent() {
 		return parent;
 	}
 
-	public void setParent(Affiliation parent) {
+	public void setParent(LeagueEntry parent) {
 		this.parent = parent;
 	}
 
@@ -99,11 +108,11 @@ public class Affiliation {
 		this.createdAt = createdAt;
 	}
 
-	public String getCreatedBy() {
+	public UserEntry getCreatedBy() {
 		return createdBy;
 	}
 
-	public void setCreatedBy(String createdBy) {
+	public void setCreatedBy(UserEntry createdBy) {
 		this.createdBy = createdBy;
 	}
 
@@ -115,23 +124,23 @@ public class Affiliation {
 		this.modifiedAt = modifiedAt;
 	}
 
-	public String getModifiedBy() {
+	public UserEntry getModifiedBy() {
 		return modifiedBy;
 	}
 
-	public void setModifiedBy(String modifiedBy) {
+	public void setModifiedBy(UserEntry modifiedBy) {
 		this.modifiedBy = modifiedBy;
 	}
 
-	public Set<Affiliation> getChildren() {
+	public Set<LeagueEntry> getChildren() {
 		return children;
 	}
 
-	public void setChildren(Set<Affiliation> children) {
+	public void setChildren(Set<LeagueEntry> children) {
 		this.children = children;
 	}
-	
-	public boolean addChild(Affiliation child) {
+
+	public boolean addChild(LeagueEntry child) {
 		child.setParent(this);
 		return children.add(child);
 	}

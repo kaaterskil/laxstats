@@ -1,4 +1,4 @@
-package laxstats.query.teams;
+package laxstats.query.leagues;
 
 import java.io.Serializable;
 
@@ -11,6 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import laxstats.query.teams.TeamEntry;
 import laxstats.query.users.UserEntry;
 
 import org.hibernate.annotations.Type;
@@ -62,7 +63,7 @@ public class TeamAffiliation {
 	
 	@ManyToOne
 	@JoinColumn(name = "affiliationId", insertable = false, updatable = false)
-	private Affiliation affiliation;
+	private LeagueEntry affiliation;
 
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
 	private LocalDate startingOn;
@@ -86,7 +87,7 @@ public class TeamAffiliation {
 	
 	public TeamAffiliation(){}
 	
-	public TeamAffiliation(TeamEntry team, Affiliation affiliation) {
+	public TeamAffiliation(TeamEntry team, LeagueEntry affiliation) {
 		this.team = team;
 		this.affiliation = affiliation;
 		
@@ -155,7 +156,7 @@ public class TeamAffiliation {
 		return team;
 	}
 
-	public Affiliation getAffiliation() {
+	public LeagueEntry getAffiliation() {
 		return affiliation;
 	}
 }

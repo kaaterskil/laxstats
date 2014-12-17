@@ -1,13 +1,16 @@
 package laxstats.query.teams;
 
+import laxstats.query.leagues.LeagueEntry;
 import laxstats.query.seasons.SeasonEntry;
 import laxstats.query.users.UserEntry;
+
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+
 import java.io.Serializable;
 
 @Entity
@@ -68,7 +71,7 @@ public class TeamSeason {
 	private SeasonEntry season;
 	
 	@ManyToOne
-	private Affiliation affiliation;
+	private LeagueEntry affiliation;
 	
 	@NotNull
 	@Column(nullable = false)
@@ -122,11 +125,11 @@ public class TeamSeason {
 		return season;
 	}
 
-	public Affiliation getAffiliation() {
+	public LeagueEntry getAffiliation() {
 		return affiliation;
 	}
 
-	public void setAffiliation(Affiliation affiliation) {
+	public void setAffiliation(LeagueEntry affiliation) {
 		this.affiliation = affiliation;
 	}
 

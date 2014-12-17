@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import laxstats.api.people.*;
-import laxstats.domain.teams.TeamMember;
+import laxstats.domain.teams.Player;
 import laxstats.query.events.EventAttendee;
 
 import org.axonframework.eventsourcing.annotation.AbstractAnnotatedAggregateRoot;
@@ -40,7 +40,7 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
 	private final Set<Relationship> childRelationships = new HashSet<>();
 	private final Set<Relationship> parentRelationships = new HashSet<>();
 	private final Set<EventAttendee> attendedEvents = new HashSet<>();
-	private final Set<TeamMember> playedSeasons = new HashSet<>();
+	private final Set<Player> playedSeasons = new HashSet<>();
 
 	Person() {
 	}

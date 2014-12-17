@@ -17,6 +17,7 @@ import javax.validation.constraints.NotNull;
 
 import laxstats.api.people.Gender;
 import laxstats.query.events.TeamEvent;
+import laxstats.query.leagues.TeamAffiliation;
 import laxstats.query.sites.SiteEntry;
 import laxstats.query.users.UserEntry;
 

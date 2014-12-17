@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Arrays;
 
 import laxstats.domain.events.Event;
+import laxstats.domain.leagues.League;
 import laxstats.domain.people.Person;
 import laxstats.domain.plays.PenaltyType;
 import laxstats.domain.plays.Play;
@@ -140,6 +141,14 @@ public class AxonConfiguration {
 	public Repository<Play> playRepository() {
 		final EventSourcingRepository<Play> repository = new EventSourcingRepository<>(
 				Play.class, eventStore());
+		repository.setEventBus(eventBus());
+		return repository;
+	}
+
+	@Bean
+	public Repository<League> leagueRepository() {
+		final EventSourcingRepository<League> repository = new EventSourcingRepository<>(
+				League.class, eventStore());
 		repository.setEventBus(eventBus());
 		return repository;
 	}
