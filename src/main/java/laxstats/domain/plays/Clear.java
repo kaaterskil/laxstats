@@ -10,4 +10,7 @@ public class Clear extends Play {
 	public Clear(PlayId playId, PlayDTO playDTO) {
 		apply(new ClearCreatedEvent(playId, playDTO));
 	}
+
+	protected Clear() {
+	}
 }

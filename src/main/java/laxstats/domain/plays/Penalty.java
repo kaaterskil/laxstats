@@ -10,4 +10,7 @@ public class Penalty extends Play {
 	public Penalty(PlayId playId, PlayDTO playDTO) {
 		apply(new PenaltyCreatedEvent(playId, playDTO));
 	}
+
+	protected Penalty() {
+	}
 }

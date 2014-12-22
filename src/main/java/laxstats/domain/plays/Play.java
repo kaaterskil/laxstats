@@ -17,7 +17,7 @@ import org.axonframework.eventsourcing.annotation.AggregateIdentifier;
 import org.axonframework.eventsourcing.annotation.EventSourcingHandler;
 import org.joda.time.LocalTime;
 
-abstract public class Play extends AbstractAnnotatedAggregateRoot<PlayId> {
+public class Play extends AbstractAnnotatedAggregateRoot<PlayId> {
 
 	@AggregateIdentifier
 	private PlayId id;

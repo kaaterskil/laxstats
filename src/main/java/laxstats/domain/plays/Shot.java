@@ -10,4 +10,7 @@ public class Shot extends Play {
 	public Shot(PlayId playId, PlayDTO playDTO) {
 		apply(new ShotCreatedEvent(playId, playDTO));
 	}
+
+	protected Shot() {
+	}
 }

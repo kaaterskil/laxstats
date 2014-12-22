@@ -10,4 +10,7 @@ public class FaceOff extends Play {
 	public FaceOff(PlayId playId, PlayDTO playDTO) {
 		apply(new FaceOffCreatedEvent(playId, playDTO));
 	}
+
+	protected FaceOff() {
+	}
 }

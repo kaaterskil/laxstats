@@ -10,4 +10,7 @@ public class Goal extends Play {
 	public Goal(PlayId playId, PlayDTO playDTO) {
 		apply(new GoalCreatedEvent(playId, playDTO));
 	}
+
+	protected Goal() {
+	}
 }

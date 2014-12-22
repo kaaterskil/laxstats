@@ -10,4 +10,7 @@ public class GroundBall extends Play {
 	public GroundBall(PlayId playId, PlayDTO playDTO) {
 		apply(new GroundBallCreatedEvent(playId, playDTO));
 	}
+
+	protected GroundBall() {
+	}
 }
