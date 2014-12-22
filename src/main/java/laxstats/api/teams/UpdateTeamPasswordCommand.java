@@ -1,9 +1,9 @@
 package laxstats.api.teams;
 
-public class CreateTeamCommand extends AbstractTeamCommand {
+public class UpdateTeamPasswordCommand extends AbstractTeamCommand {
 	private final TeamDTO teamDTO;
 
-	public CreateTeamCommand(TeamId teamId, TeamDTO teamDTO) {
+	public UpdateTeamPasswordCommand(TeamId teamId, TeamDTO teamDTO) {
 		super(teamId);
 		this.teamDTO = teamDTO;
 	}

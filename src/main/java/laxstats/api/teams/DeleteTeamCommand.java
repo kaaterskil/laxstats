@@ -1,17 +1,8 @@
 package laxstats.api.teams;
 
-import org.axonframework.commandhandling.annotation.TargetAggregateIdentifier;
-
-public class DeleteTeamCommand {
-
-	@TargetAggregateIdentifier
-	private final TeamId teamId;
+public class DeleteTeamCommand extends AbstractTeamCommand {
 
 	public DeleteTeamCommand(TeamId teamId) {
-		this.teamId = teamId;
-	}
-
-	public TeamId getTeamId() {
-		return teamId;
+		super(teamId);
 	}
 }

@@ -1,7 +1,9 @@
 package laxstats.web.teams;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 import laxstats.api.people.Gender;
 
@@ -11,12 +13,8 @@ public class TeamForm {
 
 	@NotNull
 	private Gender gender;
-	private String homeSiteId;
-
-	@Size(min = 6)
-	private String password;
-
-	// ---------- Getter/Setters ----------//
+	private String siteId;
+	private Map<String, String> sites = new HashMap<>();
 
 	public String getName() {
 		return name;
@@ -34,20 +32,19 @@ public class TeamForm {
 		this.gender = gender;
 	}
 
-	public String getHomeSiteId() {
-		return homeSiteId;
+	public String getSiteId() {
+		return siteId;
 	}
 
-	public void setHomeSiteId(String homeSiteId) {
-		this.homeSiteId = homeSiteId;
+	public void setSiteId(String siteId) {
+		this.siteId = siteId;
 	}
 
-	public String getPassword() {
-		return password;
+	public Map<String, String> getSites() {
+		return sites;
 	}
 
-	public void setPassword(String password) {
-		this.password = password;
+	public void setSites(Map<String, String> sites) {
+		this.sites = sites;
 	}
-
 }

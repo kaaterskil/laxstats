@@ -1,7 +1,7 @@
 package laxstats.query.teams;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -16,9 +16,9 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import laxstats.api.people.Gender;
-import laxstats.query.events.TeamEvent;
-import laxstats.query.leagues.TeamAffiliation;
+import laxstats.query.leagues.LeagueEntry;
 import laxstats.query.sites.SiteEntry;
+import laxstats.query.teamSeasons.TeamSeasonEntry;
 import laxstats.query.users.UserEntry;
 
 import org.hibernate.annotations.Type;
@@ -39,8 +39,11 @@ public class TeamEntry {
 	private String name;
 
 	@Enumerated(EnumType.STRING)
-	@Column(length = 20)
+	@Column(length = 20, nullable = false)
 	private Gender gender;
+
+	@ManyToOne
+	private LeagueEntry affiliation;
 
 	@ManyToOne
 	private SiteEntry homeSite;
@@ -61,13 +64,24 @@ public class TeamEntry {
 	private UserEntry modifiedBy;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "team")
-	private final Set<TeamEvent> teamEvents = new HashSet<>();
+	private final List<TeamSeasonEntry> seasons = new ArrayList<>();
 
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "team")
-	private final Set<TeamSeason> teamSeasons = new HashSet<>();
+	// ---------- Methods ----------//
 
-	@OneToMany(mappedBy = "team")
-	private final Set<TeamAffiliation> teamAffiliations = new HashSet<>();
+	public String getFullName() {
+		final StringBuilder sb = new StringBuilder();
+		boolean addSpace = false;
+
+		if (homeSite != null && homeSite.getAddress() != null) {
+			sb.append(homeSite.getAddress().getRegion().getName());
+			addSpace = true;
+		}
+		if (addSpace) {
+			sb.append(" ");
+		}
+		sb.append(name);
+		return sb.toString();
+	}
 
 	// ---------- Getter/Setters ----------//
 
@@ -93,6 +107,14 @@ public class TeamEntry {
 
 	public void setGender(Gender gender) {
 		this.gender = gender;
+	}
+
+	public LeagueEntry getAffiliation() {
+		return affiliation;
+	}
+
+	public void setAffiliation(LeagueEntry affiliation) {
+		this.affiliation = affiliation;
 	}
 
 	public SiteEntry getHomeSite() {
@@ -143,15 +165,7 @@ public class TeamEntry {
 		this.modifiedBy = modifiedBy;
 	}
 
-	public Set<TeamEvent> getTeamEvents() {
-		return teamEvents;
-	}
-
-	public Set<TeamSeason> getTeamSeasons() {
-		return teamSeasons;
-	}
-
-	public Set<TeamAffiliation> getTeamAffiliations() {
-		return teamAffiliations;
+	public List<TeamSeasonEntry> getSeasons() {
+		return seasons;
 	}
 }

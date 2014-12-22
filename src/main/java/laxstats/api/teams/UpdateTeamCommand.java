@@ -1,24 +1,16 @@
 package laxstats.api.teams;
 
-import org.axonframework.commandhandling.annotation.TargetAggregateIdentifier;
 
-public class UpdateTeamCommand {
-
-	@TargetAggregateIdentifier
-	private final TeamId teamId;
+public class UpdateTeamCommand extends AbstractTeamCommand {
 	private final TeamDTO teamDTO;
-	
-	public UpdateTeamCommand(TeamId teamId, TeamDTO teamDTO) {
-		this.teamId = teamId;
-		this.teamDTO = teamDTO;
-	}
 
-	public TeamId getTeamId() {
-		return teamId;
+	public UpdateTeamCommand(TeamId teamId, TeamDTO teamDTO) {
+		super(teamId);
+		this.teamDTO = teamDTO;
 	}
 
 	public TeamDTO getTeamDTO() {
 		return teamDTO;
 	}
-	
+
 }

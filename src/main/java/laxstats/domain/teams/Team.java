@@ -1,15 +1,17 @@
 package laxstats.domain.teams;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import laxstats.api.people.Gender;
+import laxstats.api.teams.SeasonRegisteredEvent;
 import laxstats.api.teams.TeamCreatedEvent;
 import laxstats.api.teams.TeamDTO;
 import laxstats.api.teams.TeamDeletedEvent;
 import laxstats.api.teams.TeamId;
+import laxstats.api.teams.TeamPasswordCreatedEvent;
+import laxstats.api.teams.TeamPasswordUpdatedEvent;
 import laxstats.api.teams.TeamUpdatedEvent;
-import laxstats.query.events.TeamEvent;
 
 import org.axonframework.eventsourcing.annotation.AbstractAnnotatedAggregateRoot;
 import org.axonframework.eventsourcing.annotation.AggregateIdentifier;
@@ -25,9 +27,7 @@ public class Team extends AbstractAnnotatedAggregateRoot<TeamId> {
 	private Gender gender;
 	private String homeSiteId;
 	private String encodedPassword;
-	private final Set<TeamEvent> teamEvents = new HashSet<>();
-	private final Set<TeamSeason> teamSeasons = new HashSet<>();
-	private final Set<TeamAffiliation> teamAffiliations = new HashSet<>();
+	private final List<TeamSeasonInfo> seasons = new ArrayList<>();
 
 	public Team(TeamId teamId, TeamDTO teamDTO) {
 		apply(new TeamCreatedEvent(teamId, teamDTO));
@@ -46,23 +46,39 @@ public class Team extends AbstractAnnotatedAggregateRoot<TeamId> {
 		apply(new TeamDeletedEvent(teamId));
 	}
 
+	public void createPassword(TeamId teamId, TeamDTO teamDTO) {
+		apply(new TeamPasswordCreatedEvent(teamId, teamDTO));
+	}
+
+	public void updatePassword(TeamId teamId, TeamDTO teamDTO) {
+		apply(new TeamPasswordUpdatedEvent(teamId, teamDTO));
+	}
+
+	public void registerSeason(TeamSeasonInfo teamSeason) {
+		if (!canTeamRegisterSeason(teamSeason)) {
+			throw new IllegalArgumentException("season already registered");
+		}
+		apply(new SeasonRegisteredEvent(teamId, teamSeason));
+	}
+
+	private boolean canTeamRegisterSeason(TeamSeasonInfo teamSeason) {
+		return !seasons.contains(teamSeason);
+	}
+
 	// ---------- Event handlers ----------//
 
 	@EventSourcingHandler
 	protected void handle(TeamCreatedEvent event) {
 		final TeamDTO dto = event.getTeamDTO();
-
 		teamId = event.getTeamId();
 		name = dto.getName();
 		gender = dto.getGender();
 		homeSiteId = dto.getHomeSite().toString();
-		encodedPassword = dto.getEncodedPassword();
 	}
 
 	@EventSourcingHandler
 	protected void handle(TeamUpdatedEvent event) {
 		final TeamDTO dto = event.getTeamDTO();
-
 		name = dto.getName();
 		gender = dto.getGender();
 		homeSiteId = dto.getHomeSite().toString();
@@ -73,6 +89,24 @@ public class Team extends AbstractAnnotatedAggregateRoot<TeamId> {
 		markDeleted();
 	}
 
+	@EventSourcingHandler
+	protected void handle(SeasonRegisteredEvent event) {
+		final TeamSeasonInfo season = event.getSeason();
+		seasons.add(season);
+	}
+
+	@EventSourcingHandler
+	protected void handle(TeamPasswordCreatedEvent event) {
+		final TeamDTO dto = event.getTeamDTO();
+		encodedPassword = dto.getEncodedPassword();
+	}
+
+	@EventSourcingHandler
+	protected void handle(TeamPasswordUpdatedEvent event) {
+		final TeamDTO dto = event.getTeamDTO();
+		encodedPassword = dto.getEncodedPassword();
+	}
+
 	// ---------- Getters ----------//
 
 	@Override
@@ -80,52 +114,24 @@ public class Team extends AbstractAnnotatedAggregateRoot<TeamId> {
 		return teamId;
 	}
 
-	public void setTeamId(TeamId teamId) {
-		this.teamId = teamId;
-	}
-
 	public String getName() {
 		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public Gender getGender() {
 		return gender;
 	}
 
-	public void setGender(Gender gender) {
-		this.gender = gender;
-	}
-
 	public String getHomeSiteId() {
 		return homeSiteId;
-	}
-
-	public void setHomeSiteId(String homeSiteId) {
-		this.homeSiteId = homeSiteId;
 	}
 
 	public String getEncodedPassword() {
 		return encodedPassword;
 	}
 
-	public void setEncodedPassword(String encodedPassword) {
-		this.encodedPassword = encodedPassword;
-	}
-
-	public Set<TeamEvent> getTeamEvents() {
-		return teamEvents;
-	}
-
-	public Set<TeamSeason> getTeamSeasons() {
-		return teamSeasons;
-	}
-
-	public Set<TeamAffiliation> getTeamAffiliations() {
-		return teamAffiliations;
+	public List<TeamSeasonInfo> getSeasons() {
+		return seasons;
 	}
 
 }

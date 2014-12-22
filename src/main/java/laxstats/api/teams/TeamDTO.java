@@ -7,89 +7,83 @@ import laxstats.query.users.UserEntry;
 import org.joda.time.LocalDateTime;
 
 public class TeamDTO {
-	private TeamId teamId;
-	private String name;
-	private Gender gender;
-	private SiteEntry homeSite;
-	private String encodedPassword;
-	private LocalDateTime createdAt;
-	private UserEntry createdBy;
-	private LocalDateTime modifiedAt;
-	private UserEntry modifiedBy;
+	private final TeamId teamId;
+	private final String name;
+	private final Gender gender;
+	private final SiteEntry homeSite;
+	private final String encodedPassword;
+	private final LocalDateTime createdAt;
+	private final UserEntry createdBy;
+	private final LocalDateTime modifiedAt;
+	private final UserEntry modifiedBy;
 
-	public TeamDTO() {
+	public TeamDTO(TeamId teamId, String name, Gender gender,
+			SiteEntry homeSite, LocalDateTime createdAt, UserEntry createdBy,
+			LocalDateTime modifiedAt, UserEntry modifiedBy) {
+		this(teamId, name, gender, homeSite, null, createdAt, createdBy,
+				modifiedAt, modifiedBy);
+	}
+
+	public TeamDTO(TeamId teamId, String name, Gender gender,
+			SiteEntry homeSite, LocalDateTime modifiedAt, UserEntry modifiedBy) {
+		this(teamId, name, gender, homeSite, null, null, null, modifiedAt,
+				modifiedBy);
+	}
+
+	public TeamDTO(TeamId teamId, String encodedPassword,
+			LocalDateTime modifiedAt, UserEntry modifiedBy) {
+		this(teamId, null, null, null, encodedPassword, null, null, modifiedAt,
+				modifiedBy);
+	}
+
+	protected TeamDTO(TeamId teamId, String name, Gender gender,
+			SiteEntry homeSite, String encodedPassword,
+			LocalDateTime createdAt, UserEntry createdBy,
+			LocalDateTime modifiedAt, UserEntry modifiedBy) {
+		this.teamId = teamId;
+		this.name = name;
+		this.gender = gender;
+		this.homeSite = homeSite;
+		this.encodedPassword = encodedPassword;
+		this.createdAt = createdAt;
+		this.createdBy = createdBy;
+		this.modifiedAt = modifiedAt;
+		this.modifiedBy = modifiedBy;
 	}
 
 	public TeamId getTeamId() {
 		return teamId;
 	}
 
-	public void setTeamId(TeamId teamId) {
-		this.teamId = teamId;
-	}
-
 	public String getName() {
 		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public Gender getGender() {
 		return gender;
 	}
 
-	public void setGender(Gender gender) {
-		this.gender = gender;
-	}
-
 	public SiteEntry getHomeSite() {
 		return homeSite;
-	}
-
-	public void setHomeSite(SiteEntry homeSite) {
-		this.homeSite = homeSite;
 	}
 
 	public String getEncodedPassword() {
 		return encodedPassword;
 	}
 
-	public void setEncodedPassword(String encodedPassword) {
-		this.encodedPassword = encodedPassword;
-	}
-
 	public LocalDateTime getCreatedAt() {
 		return createdAt;
-	}
-
-	public void setCreatedAt(LocalDateTime createdAt) {
-		this.createdAt = createdAt;
 	}
 
 	public UserEntry getCreatedBy() {
 		return createdBy;
 	}
 
-	public void setCreatedBy(UserEntry createdBy) {
-		this.createdBy = createdBy;
-	}
-
 	public LocalDateTime getModifiedAt() {
 		return modifiedAt;
-	}
-
-	public void setModifiedAt(LocalDateTime modifiedAt) {
-		this.modifiedAt = modifiedAt;
 	}
 
 	public UserEntry getModifiedBy() {
 		return modifiedBy;
 	}
-
-	public void setModifiedBy(UserEntry modifiedBy) {
-		this.modifiedBy = modifiedBy;
-	}
-
 }

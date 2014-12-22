@@ -1,6 +1,7 @@
 package laxstats.domain.teams;
 
 import laxstats.api.teams.CreateTeamCommand;
+import laxstats.api.teams.CreateTeamPasswordCommand;
 import laxstats.api.teams.DeleteTeamCommand;
 import laxstats.api.teams.TeamId;
 import laxstats.api.teams.UpdateTeamCommand;
@@ -22,7 +23,7 @@ public class TeamCommandHandler {
 	}
 
 	@CommandHandler
-	public TeamId handle(CreateTeamCommand command) {
+	protected TeamId handle(CreateTeamCommand command) {
 		final TeamId identifier = command.getTeamId();
 		final Team team = new Team(identifier, command.getTeamDTO());
 		repository.add(team);
@@ -30,17 +31,24 @@ public class TeamCommandHandler {
 	}
 
 	@CommandHandler
-	public void handle(UpdateTeamCommand command) {
+	protected void handle(UpdateTeamCommand command) {
 		final TeamId identifier = command.getTeamId();
 		final Team team = repository.load(identifier);
 		team.update(identifier, command.getTeamDTO());
 	}
 
 	@CommandHandler
-	public void handle(DeleteTeamCommand command) {
+	protected void handle(DeleteTeamCommand command) {
 		final TeamId identifier = command.getTeamId();
 		final Team team = repository.load(identifier);
 		team.delete(identifier);
+	}
+
+	@CommandHandler
+	protected void handle(CreateTeamPasswordCommand command) {
+		final TeamId identifier = command.getTeamId();
+		final Team team = repository.load(identifier);
+
 	}
 
 }
