@@ -10,6 +10,7 @@ import laxstats.domain.plays.PenaltyType;
 import laxstats.domain.plays.Play;
 import laxstats.domain.seasons.Season;
 import laxstats.domain.sites.Site;
+import laxstats.domain.teamSeasons.TeamSeason;
 import laxstats.domain.teams.Team;
 import laxstats.domain.users.User;
 
@@ -101,6 +102,14 @@ public class AxonConfiguration {
 	public Repository<Team> teamRepository() {
 		final EventSourcingRepository<Team> repository = new EventSourcingRepository<>(
 				Team.class, eventStore());
+		repository.setEventBus(eventBus());
+		return repository;
+	}
+
+	@Bean
+	public Repository<TeamSeason> teamSeasonRepository() {
+		final EventSourcingRepository<TeamSeason> repository = new EventSourcingRepository<>(
+				TeamSeason.class, eventStore());
 		repository.setEventBus(eventBus());
 		return repository;
 	}
