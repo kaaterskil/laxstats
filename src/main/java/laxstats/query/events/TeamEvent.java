@@ -21,18 +21,14 @@ import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 
 @Entity
-@Table(
-	indexes = {
-		@Index(name = "team_event_idx1", columnList = "outcome"),
-		@Index(name = "team_event_idx2", columnList = "alignment")
-	}
-)
+@Table(indexes = { @Index(name = "team_event_idx1", columnList = "outcome"),
+		@Index(name = "team_event_idx2", columnList = "alignment") })
 public class TeamEvent {
-	
+
 	public enum Alignment {
 		HOME, AWAY
 	}
-	
+
 	public enum Outcome {
 		WIN, LOSS
 	}
@@ -43,25 +39,29 @@ public class TeamEvent {
 
 		@Column(length = 36)
 		private String teamId;
-		
+
 		@Column(length = 36)
 		private String eventId;
-		
-		public Id(){}
-		
-		public Id(String teamId, String eventID){
+
+		public Id() {
+		}
+
+		public Id(String teamId, String eventID) {
 			this.teamId = teamId;
 			this.eventId = eventID;
 		}
-		
+
+		@Override
 		public boolean equals(Object o) {
-			if(o != null && o instanceof TeamEvent.Id) {
-				Id that = (Id) o;
-				return this.teamId.equals(that.teamId) && this.eventId.equals(that.eventId);
+			if (o != null && o instanceof TeamEvent.Id) {
+				final Id that = (Id) o;
+				return this.teamId.equals(that.teamId)
+						&& this.eventId.equals(that.eventId);
 			}
 			return false;
 		}
-		
+
+		@Override
 		public int hashCode() {
 			return teamId.hashCode() + eventId.hashCode();
 		}
@@ -70,60 +70,60 @@ public class TeamEvent {
 	@javax.persistence.Id
 	@Embedded
 	private final TeamEvent.Id id = new Id();
-	
+
 	@ManyToOne
 	@JoinColumn(name = "teamId", insertable = false, updatable = false)
 	private TeamEntry team;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "eventId", insertable = false, updatable = false)
 	private EventEntry event;
-	
+
 	@NotNull
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20, nullable = false)
 	private Alignment alignment;
-	
+
 	private int score;
-	
+
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20)
 	private Outcome outcome;
-	
+
 	@Column(length = 100)
 	private String scorekeeper;
-	
+
 	@Column(length = 100)
 	private String timekeeper;
-	
+
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime createdAt;
 
 	@ManyToOne(targetEntity = UserEntry.class)
 	private String createdBy;
-	
+
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime modifiedAt;
 
 	@ManyToOne(targetEntity = UserEntry.class)
 	private String modifiedBy;
-	
-	//----------Constructor ----------//
-	
-	public TeamEvent(){}
-	
+
+	// ----------Constructor ----------//
+
+	public TeamEvent() {
+	}
+
 	public TeamEvent(TeamEntry team, EventEntry event) {
 		this.team = team;
 		this.event = event;
-		
+
 		this.id.teamId = team.getId();
 		this.id.eventId = team.getId();
-		
-		team.getTeamEvents().add(this);
+
 		event.getEventTeams().add(this);
 	}
-	
-	//---------- Getter/Setters ----------//
+
+	// ---------- Getter/Setters ----------//
 
 	public TeamEvent.Id getId() {
 		return id;
@@ -135,7 +135,7 @@ public class TeamEvent {
 
 	public EventEntry getEvent() {
 		return event;
-	}	
+	}
 
 	public Alignment getAlignment() {
 		return alignment;

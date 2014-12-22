@@ -5,7 +5,17 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import laxstats.api.people.*;
+import laxstats.api.people.AddressAddedEvent;
+import laxstats.api.people.AddressChangedEvent;
+import laxstats.api.people.AddressDTO;
+import laxstats.api.people.ContactAddedEvent;
+import laxstats.api.people.ContactChangedEvent;
+import laxstats.api.people.ContactDTO;
+import laxstats.api.people.DominantHand;
+import laxstats.api.people.Gender;
+import laxstats.api.people.PersonCreatedEvent;
+import laxstats.api.people.PersonDTO;
+import laxstats.api.people.PersonId;
 import laxstats.domain.teams.Player;
 import laxstats.query.events.EventAttendee;
 
@@ -42,14 +52,14 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
 	private final Set<EventAttendee> attendedEvents = new HashSet<>();
 	private final Set<Player> playedSeasons = new HashSet<>();
 
-	Person() {
-	}
-
 	public Person(PersonId personId, PersonDTO personDTO) {
 		apply(new PersonCreatedEvent(personId, personDTO));
 	}
 
-	//---------- Methods ----------//
+	protected Person() {
+	}
+
+	// ---------- Methods ----------//
 
 	public void registerAddress(AddressDTO addressDTO) {
 		if (addresses.containsKey(addressDTO.getId())) {
@@ -64,7 +74,7 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
 	}
 
 	public void registerContact(ContactDTO contactDTO) {
-		if(contacts.containsKey(contactDTO.getId())) {
+		if (contacts.containsKey(contactDTO.getId())) {
 			apply(new ContactChangedEvent(id, contactDTO));
 		} else {
 			apply(new ContactAddedEvent(id, contactDTO));
@@ -75,7 +85,7 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
 		apply(new ContactChangedEvent(id, contactDTO));
 	}
 
-	//---------- Event handlers ----------//
+	// ---------- Event handlers ----------//
 
 	@EventSourcingHandler
 	protected void handle(PersonCreatedEvent event) {
@@ -96,10 +106,10 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
 
 	@EventSourcingHandler
 	protected void handle(AddressAddedEvent event) {
-		String addressId = event.getAddress().getId();
-		AddressDTO dto = event.getAddress();
+		final String addressId = event.getAddress().getId();
+		final AddressDTO dto = event.getAddress();
 
-		Address address = new Address();
+		final Address address = new Address();
 		address.setPersonId(dto.getPerson().getId());
 		address.setAddress1(dto.getAddress1());
 		address.setAddress2(dto.getAddress2());
@@ -115,10 +125,10 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
 
 	@EventSourcingHandler
 	protected void handle(AddressChangedEvent event) {
-		String addressId = event.getAddressDTO().getId();
-		AddressDTO dto = event.getAddressDTO();
+		final String addressId = event.getAddressDTO().getId();
+		final AddressDTO dto = event.getAddressDTO();
 
-		Address address = addresses.get(addressId);
+		final Address address = addresses.get(addressId);
 		address.setAddressType(dto.getAddressType());
 		address.setAddress1(dto.getAddress1());
 		address.setAddress2(dto.getAddress2());
@@ -131,10 +141,10 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
 
 	@EventSourcingHandler
 	protected void handle(ContactAddedEvent event) {
-		String contactId = event.getContact().getId();
-		ContactDTO dto = event.getContact();
+		final String contactId = event.getContact().getId();
+		final ContactDTO dto = event.getContact();
 
-		Contact contact = new Contact();
+		final Contact contact = new Contact();
 		contact.setId(dto.getId());
 		contact.setPersonId(id.toString());
 		contact.setMethod(dto.getMethod());
@@ -147,10 +157,10 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
 
 	@EventSourcingHandler
 	protected void handle(ContactChangedEvent event) {
-		String contactId = event.getContact().getId();
-		ContactDTO dto = event.getContact();
+		final String contactId = event.getContact().getId();
+		final ContactDTO dto = event.getContact();
 
-		Contact contact = contacts.get(contactId);
+		final Contact contact = contacts.get(contactId);
 		contact.setMethod(dto.getMethod());
 		contact.setValue(dto.getValue());
 		contact.setPrimary(dto.isPrimary());

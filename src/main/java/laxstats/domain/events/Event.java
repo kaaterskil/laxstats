@@ -37,6 +37,9 @@ public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 		apply(new EventCreatedEvent(eventId, eventDTO));
 	}
 
+	protected Event() {
+	}
+
 	// ---------- Methods ----------//
 
 	public void update(EventId eventId, EventDTO eventDTO) {
