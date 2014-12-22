@@ -39,4 +39,18 @@ public class TeamInfo {
 	public void setEndingOn(LocalDate endingOn) {
 		this.endingOn = endingOn;
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o != null && o instanceof TeamInfo) {
+			final TeamInfo that = (TeamInfo) o;
+			return this.id.equals(that.id);
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return id.hashCode();
+	}
 }

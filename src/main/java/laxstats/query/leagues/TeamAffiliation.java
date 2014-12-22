@@ -19,35 +19,38 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
 @Entity
-@Table(indexes = {@Index(name = "team_affiliation_idx1", columnList = "startingOn")})
+@Table(indexes = { @Index(name = "team_affiliation_idx1", columnList = "startingOn") })
 public class TeamAffiliation {
-	
+
 	@Embeddable
 	public static class Id implements Serializable {
 		private static final long serialVersionUID = 5408146241619855006L;
 
 		@Column(length = 36)
 		private String teamId;
-		
+
 		@Column(length = 36)
 		private String affiliationId;
-		
-		public Id(){}
-		
+
+		public Id() {
+		}
+
 		public Id(String teamId, String affiliationId) {
 			this.teamId = teamId;
 			this.affiliationId = affiliationId;
 		}
-		
+
+		@Override
 		public boolean equals(Object o) {
-			if(o != null && o instanceof TeamAffiliation.Id) {
-				Id that = (Id) o;
-				return this.teamId.equals(that.teamId) && 
-						this.affiliationId.equals(that.affiliationId);
+			if (o != null && o instanceof TeamAffiliation.Id) {
+				final Id that = (Id) o;
+				return this.teamId.equals(that.teamId)
+						&& this.affiliationId.equals(that.affiliationId);
 			}
 			return false;
 		}
-		
+
+		@Override
 		public int hashCode() {
 			return teamId.hashCode() + affiliationId.hashCode();
 		}
@@ -56,49 +59,49 @@ public class TeamAffiliation {
 	@javax.persistence.Id
 	@Embedded
 	private final TeamAffiliation.Id id = new Id();
-	
+
 	@ManyToOne
 	@JoinColumn(name = "teamId", insertable = false, updatable = false)
 	private TeamEntry team;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "affiliationId", insertable = false, updatable = false)
 	private LeagueEntry affiliation;
 
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
 	private LocalDate startingOn;
-	
+
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
 	private LocalDate endingOn;
-	
+
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime createdAt;
-	
+
 	@ManyToOne(targetEntity = UserEntry.class)
 	private String createdBy;
-	
+
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime modifiedAt;
-	
+
 	@ManyToOne(targetEntity = UserEntry.class)
 	private String modifiedBy;
-	
-	//---------- Constructors ----------//
-	
-	public TeamAffiliation(){}
-	
+
+	// ---------- Constructors ----------//
+
+	public TeamAffiliation() {
+	}
+
 	public TeamAffiliation(TeamEntry team, LeagueEntry affiliation) {
 		this.team = team;
 		this.affiliation = affiliation;
-		
+
 		this.id.teamId = team.getId();
 		this.id.affiliationId = affiliation.getId();
-		
-		team.getTeamAffiliations().add(this);
+
 		affiliation.getAffiliatedTeams().add(this);
 	}
-	
-	//---------- Getter/Setters ----------//
+
+	// ---------- Getter/Setters ----------//
 
 	public LocalDate getStartingOn() {
 		return startingOn;

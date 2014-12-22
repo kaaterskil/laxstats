@@ -28,6 +28,12 @@ public class LeagueDTO {
 		this.modifiedBy = modifiedBy;
 	}
 
+	public LeagueDTO(String name, Level level, String description,
+			LeagueEntry parent, LocalDateTime modifiedAt, UserEntry modifiedBy) {
+		this(name, level, description, parent, null, null, modifiedAt,
+				modifiedBy);
+	}
+
 	public String getName() {
 		return name;
 	}

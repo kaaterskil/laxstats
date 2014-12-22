@@ -29,6 +29,9 @@ public class League extends AbstractAnnotatedAggregateRoot<LeagueId> {
 		apply(new LeagueCreatedEvent(leagueId, leagueDTO));
 	}
 
+	protected League() {
+	}
+
 	// ---------- Methods ----------//
 
 	public void update(LeagueId leagueId, LeagueDTO leagueDTO) {
@@ -36,6 +39,14 @@ public class League extends AbstractAnnotatedAggregateRoot<LeagueId> {
 	}
 
 	public void delete(LeagueId leagueId) {
+		if (teams.size() > 0) {
+			throw new IllegalArgumentException(
+					"cannot delete league with registered teams");
+		}
+		if (affiliatedLeagues.size() > 0) {
+			throw new IllegalArgumentException(
+					"cannot delete league with registered affiliates");
+		}
 		apply(new LeagueDeletedEvent(leagueId));
 	}
 
