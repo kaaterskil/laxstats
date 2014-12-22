@@ -77,14 +77,14 @@ public class TeamAffiliation {
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime createdAt;
 
-	@ManyToOne(targetEntity = UserEntry.class)
-	private String createdBy;
+	@ManyToOne
+	private UserEntry createdBy;
 
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime modifiedAt;
 
-	@ManyToOne(targetEntity = UserEntry.class)
-	private String modifiedBy;
+	@ManyToOne
+	private UserEntry modifiedBy;
 
 	// ---------- Constructors ----------//
 
@@ -127,11 +127,11 @@ public class TeamAffiliation {
 		this.createdAt = createdAt;
 	}
 
-	public String getCreatedBy() {
+	public UserEntry getCreatedBy() {
 		return createdBy;
 	}
 
-	public void setCreatedBy(String createdBy) {
+	public void setCreatedBy(UserEntry createdBy) {
 		this.createdBy = createdBy;
 	}
 
@@ -143,11 +143,11 @@ public class TeamAffiliation {
 		this.modifiedAt = modifiedAt;
 	}
 
-	public String getModifiedBy() {
+	public UserEntry getModifiedBy() {
 		return modifiedBy;
 	}
 
-	public void setModifiedBy(String modifiedBy) {
+	public void setModifiedBy(UserEntry modifiedBy) {
 		this.modifiedBy = modifiedBy;
 	}
 

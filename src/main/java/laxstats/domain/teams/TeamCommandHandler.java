@@ -5,6 +5,7 @@ import laxstats.api.teams.CreateTeamPasswordCommand;
 import laxstats.api.teams.DeleteTeamCommand;
 import laxstats.api.teams.TeamId;
 import laxstats.api.teams.UpdateTeamCommand;
+import laxstats.api.teams.UpdateTeamPasswordCommand;
 
 import org.axonframework.commandhandling.annotation.CommandHandler;
 import org.axonframework.repository.Repository;
@@ -48,7 +49,14 @@ public class TeamCommandHandler {
 	protected void handle(CreateTeamPasswordCommand command) {
 		final TeamId identifier = command.getTeamId();
 		final Team team = repository.load(identifier);
+		team.createPassword(identifier, command.getTeamDTO());
+	}
 
+	@CommandHandler
+	protected void handle(UpdateTeamPasswordCommand command) {
+		final TeamId identifier = command.getTeamId();
+		final Team team = repository.load(identifier);
+		team.updatePassword(identifier, command.getTeamDTO());
 	}
 
 }

@@ -1,19 +1,26 @@
 package laxstats.domain.leagues;
 
+import laxstats.query.users.UserEntry;
+
 import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 
 public class TeamInfo {
-	private String id;
+	private String teamId;
 	private String name;
 	private LocalDate startingOn;
 	private LocalDate endingOn;
+	private LocalDateTime createdAt;
+	private UserEntry createdBy;
+	private LocalDateTime modifiedAt;
+	private UserEntry modifiedBy;
 
-	public String getId() {
-		return id;
+	public String getTeamId() {
+		return teamId;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public void setTeamId(String teamId) {
+		this.teamId = teamId;
 	}
 
 	public String getName() {
@@ -40,17 +47,49 @@ public class TeamInfo {
 		this.endingOn = endingOn;
 	}
 
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public UserEntry getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(UserEntry createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public LocalDateTime getModifiedAt() {
+		return modifiedAt;
+	}
+
+	public void setModifiedAt(LocalDateTime modifiedAt) {
+		this.modifiedAt = modifiedAt;
+	}
+
+	public UserEntry getModifiedBy() {
+		return modifiedBy;
+	}
+
+	public void setModifiedBy(UserEntry modifiedBy) {
+		this.modifiedBy = modifiedBy;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (o != null && o instanceof TeamInfo) {
 			final TeamInfo that = (TeamInfo) o;
-			return this.id.equals(that.id);
+			return this.teamId.equals(that.teamId);
 		}
 		return false;
 	}
 
 	@Override
 	public int hashCode() {
-		return id.hashCode();
+		return teamId.hashCode();
 	}
 }

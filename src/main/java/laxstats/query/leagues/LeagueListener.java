@@ -83,12 +83,16 @@ public class LeagueListener {
 		final TeamInfo dto = event.getTeam();
 
 		final LeagueEntry league = repository.findOne(identifier.toString());
-		final TeamEntry team = teamRepository.findOne(dto.getId());
+		final TeamEntry team = teamRepository.findOne(dto.getTeamId());
 
 		final TeamAffiliation teamAffiliation = new TeamAffiliation(team,
 				league);
 		teamAffiliation.setStartingOn(dto.getStartingOn());
 		teamAffiliation.setEndingOn(dto.getEndingOn());
+		teamAffiliation.setCreatedAt(dto.getCreatedAt());
+		teamAffiliation.setCreatedBy(dto.getCreatedBy());
+		teamAffiliation.setModifiedAt(dto.getModifiedAt());
+		teamAffiliation.setModifiedBy(dto.getModifiedBy());
 		repository.save(league);
 	}
 }
