@@ -1,6 +1,10 @@
 package laxstats.domain.teamSeasons;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import laxstats.api.teamSeasons.DeleteTeamSeasonCommand;
+import laxstats.api.teamSeasons.PlayerRegisteredEvent;
 import laxstats.api.teamSeasons.TeamSeasonCreatedEvent;
 import laxstats.api.teamSeasons.TeamSeasonDTO;
 import laxstats.api.teamSeasons.TeamSeasonDeletedEvent;
@@ -25,6 +29,7 @@ public class TeamSeason extends AbstractAnnotatedAggregateRoot<TeamSeasonId> {
 	private TeamStatus status;
 	private LocalDate startsOn;
 	private LocalDate endsOn;
+	private final List<PlayerInfo> roster = new ArrayList<>();
 
 	public TeamSeason(TeamSeasonId teamSeasonId, TeamSeasonDTO teamSeasonDTO) {
 		apply(new TeamSeasonCreatedEvent(teamSeasonId, teamSeasonDTO));
@@ -42,6 +47,17 @@ public class TeamSeason extends AbstractAnnotatedAggregateRoot<TeamSeasonId> {
 
 	public void delete(DeleteTeamSeasonCommand command) {
 		apply(new TeamSeasonDeletedEvent(command.getTeamSeasonId()));
+	}
+
+	public void registerPlayer(PlayerInfo player) {
+		if (!canRegisterPlayer(player)) {
+			throw new IllegalArgumentException("player already registered");
+		}
+		apply(new PlayerRegisteredEvent(id, player));
+	}
+
+	private boolean canRegisterPlayer(PlayerInfo player) {
+		return !roster.contains(player);
 	}
 
 	// ---------- Event handlers ---------- //
@@ -72,6 +88,12 @@ public class TeamSeason extends AbstractAnnotatedAggregateRoot<TeamSeasonId> {
 		markDeleted();
 	}
 
+	@EventSourcingHandler
+	protected void handle(PlayerRegisteredEvent event) {
+		final PlayerInfo player = event.getPlayer();
+		roster.add(player);
+	}
+
 	// ---------- Getters ---------- //
 
 	@Override
@@ -97,5 +119,9 @@ public class TeamSeason extends AbstractAnnotatedAggregateRoot<TeamSeasonId> {
 
 	public LocalDate getEndsOn() {
 		return endsOn;
+	}
+
+	public List<PlayerInfo> getRoster() {
+		return roster;
 	}
 }

@@ -22,16 +22,18 @@ public class TeamSeasonListeneer {
 		final TeamSeasonId identifier = event.getTeamSeasonId();
 		final TeamSeasonDTO dto = event.getTeamSeasonDTO();
 
-		final TeamSeasonEntry season = new TeamSeasonEntry(dto.getTeam(),
-				dto.getSeason());
-		season.setCreatedAt(dto.getCreatedAt());
-		season.setCreatedBy(dto.getCreatedBy());
-		season.setEndsOn(dto.getEndsOnd());
-		season.setModifiedAt(dto.getModifiedAt());
-		season.setModifiedBy(dto.getModifiedBy());
-		season.setStartsOn(dto.getStartsOn());
-		season.setStatus(dto.getStatus());
-		repository.save(season);
+		final TeamSeasonEntry entity = new TeamSeasonEntry();
+		entity.setId(identifier.toString());
+		entity.setTeam(dto.getTeam());
+		entity.setSeason(dto.getSeason());
+		entity.setStartsOn(dto.getStartsOn());
+		entity.setEndsOn(dto.getEndsOnd());
+		entity.setStatus(dto.getStatus());
+		entity.setCreatedAt(dto.getCreatedAt());
+		entity.setCreatedBy(dto.getCreatedBy());
+		entity.setModifiedAt(dto.getModifiedAt());
+		entity.setModifiedBy(dto.getModifiedBy());
+		repository.save(entity);
 	}
 
 	@EventHandler
@@ -39,21 +41,21 @@ public class TeamSeasonListeneer {
 		final TeamSeasonId identifier = event.getTeamSeasonId();
 		final TeamSeasonDTO dto = event.getTeamSeasonDTO();
 
-		final TeamSeasonEntry season = repository
+		final TeamSeasonEntry entity = repository
 				.findOne(identifier.toString());
-		season.setEndsOn(dto.getEndsOnd());
-		season.setModifiedAt(dto.getModifiedAt());
-		season.setModifiedBy(dto.getModifiedBy());
-		season.setStartsOn(dto.getStartsOn());
-		season.setStatus(dto.getStatus());
-		repository.save(season);
+		entity.setEndsOn(dto.getEndsOnd());
+		entity.setModifiedAt(dto.getModifiedAt());
+		entity.setModifiedBy(dto.getModifiedBy());
+		entity.setStartsOn(dto.getStartsOn());
+		entity.setStatus(dto.getStatus());
+		repository.save(entity);
 	}
 
 	@EventHandler
 	protected void handle(TeamSeasonDeletedEvent event) {
 		final TeamSeasonId identifier = event.getTeamSeasonId();
-		final TeamSeasonEntry season = repository
+		final TeamSeasonEntry entity = repository
 				.findOne(identifier.toString());
-		repository.delete(season);
+		repository.delete(entity);
 	}
 }
