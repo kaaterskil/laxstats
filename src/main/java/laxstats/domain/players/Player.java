@@ -1,7 +1,10 @@
-package laxstats.domain.teams;
+package laxstats.domain.players;
 
-import laxstats.api.teams.MemberStatus;
-import laxstats.api.teams.TeamMemberDTO;
+import laxstats.api.players.PlayerDTO;
+import laxstats.api.players.PlayerStatus;
+import laxstats.api.players.Position;
+import laxstats.api.players.Role;
+import laxstats.domain.teams.Team;
 
 public class Player {
 	private final String id;
@@ -9,7 +12,7 @@ public class Player {
 	private final String seasonId;
 	private final Team team;
 	private final Role role;
-	private final MemberStatus status;
+	private final PlayerStatus status;
 	private final String jerseyNumber;
 	private final Position position;
 	private final boolean isCaptain;
@@ -17,12 +20,12 @@ public class Player {
 	private final int height;
 	private final int weight;
 
-	public Player(Team team, TeamMemberDTO dto) {
+	public Player(Team team, PlayerDTO dto) {
 		this.team = team;
 
 		id = dto.getId();
-		personId = dto.getPersonId();
-		seasonId = dto.getSeasonId();
+		personId = dto.getPerson().getId();
+		seasonId = dto.getTeam().getId();
 		role = dto.getRole();
 		status = dto.getStatus();
 		jerseyNumber = dto.getJerseyNumber();
@@ -53,7 +56,7 @@ public class Player {
 		return role;
 	}
 
-	public MemberStatus getStatus() {
+	public PlayerStatus getStatus() {
 		return status;
 	}
 

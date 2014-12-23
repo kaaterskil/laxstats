@@ -1,0 +1,17 @@
+package laxstats.api.players;
+
+public enum Position {
+	ATTACK, 
+	MIDFIELD, 
+	LONG_STICK_MIDFIELD, 
+	DEFENSE, 
+	GOALIE, 
+	REFEREE, 
+	UMPIRE, 
+	FIELD_JUDGE, 
+	SCOREKEEPER, 
+	TIMEKEEPER, 
+	COACH, 
+	ASSISTANT_COACH, 
+	MANAGER
+}
