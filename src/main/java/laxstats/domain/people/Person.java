@@ -16,7 +16,7 @@ import laxstats.api.people.Gender;
 import laxstats.api.people.PersonCreatedEvent;
 import laxstats.api.people.PersonDTO;
 import laxstats.api.people.PersonId;
-import laxstats.domain.teams.Player;
+import laxstats.domain.players.Player;
 import laxstats.query.events.EventAttendee;
 
 import org.axonframework.eventsourcing.annotation.AbstractAnnotatedAggregateRoot;

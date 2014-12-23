@@ -21,7 +21,7 @@ import javax.validation.constraints.NotNull;
 import laxstats.api.people.DominantHand;
 import laxstats.api.people.Gender;
 import laxstats.query.events.EventAttendee;
-import laxstats.query.teams.TeamMember;
+import laxstats.query.players.PlayerEntry;
 import laxstats.query.users.UserEntry;
 
 import org.hibernate.annotations.Type;
@@ -116,7 +116,7 @@ public class PersonEntry {
 	private final Set<EventAttendee> attendedEvents = new HashSet<>();
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "person")
-	private final Set<TeamMember> playedSeasons = new HashSet<>();
+	private final Set<PlayerEntry> playedSeasons = new HashSet<>();
 
 	// ---------- Getter/Setters ----------//
 
@@ -260,7 +260,7 @@ public class PersonEntry {
 		return photo;
 	}
 
-	public Set<TeamMember> getPlayedSeasons() {
+	public Set<PlayerEntry> getPlayedSeasons() {
 		return playedSeasons;
 	}
 
