@@ -9,7 +9,7 @@ import laxstats.api.teamSeasons.TeamSeasonUpdatedEvent;
 import org.axonframework.eventhandling.annotation.EventHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class TeamSeasonListeneer {
+public class TeamSeasonListener {
 	private TeamSeasonQueryRepository repository;
 
 	@Autowired

@@ -14,8 +14,6 @@ import laxstats.api.teams.TeamDTO;
 import laxstats.api.teams.TeamId;
 import laxstats.api.teams.UpdateTeamCommand;
 import laxstats.api.teams.UpdateTeamPasswordCommand;
-import laxstats.query.leagues.LeagueEntry;
-import laxstats.query.leagues.LeagueQueryRepository;
 import laxstats.query.sites.SiteEntry;
 import laxstats.query.sites.SiteQueryRepository;
 import laxstats.query.teams.TeamEntry;
@@ -42,17 +40,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @RequestMapping("/teams")
 public class TeamController extends ApplicationController {
 	private final TeamQueryRepository teamRepository;
-	private final LeagueQueryRepository leagueRepository;
 	private final SiteQueryRepository siteRepository;
 
 	@Autowired
 	public TeamController(TeamQueryRepository teamRepository,
-			LeagueQueryRepository leagueRepository,
 			SiteQueryRepository siteRepository,
 			UserQueryRepository userRepository, CommandBus commandBus) {
 		super(userRepository, commandBus);
 		this.teamRepository = teamRepository;
-		this.leagueRepository = leagueRepository;
 		this.siteRepository = siteRepository;
 	}
 
@@ -201,15 +196,6 @@ public class TeamController extends ApplicationController {
 				identifier, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
 		return "teams/show";
-	}
-
-	private Map<String, String> getLeagueData() {
-		final Map<String, String> result = new HashMap<>();
-		final Iterable<LeagueEntry> leagues = leagueRepository.findAll();
-		for (final LeagueEntry each : leagues) {
-			result.put(each.getId(), each.getName());
-		}
-		return result;
 	}
 
 	private Map<String, String> getSiteData() {
