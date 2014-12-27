@@ -11,7 +11,6 @@ import laxstats.api.teamSeasons.TeamSeasonDeletedEvent;
 import laxstats.api.teamSeasons.TeamSeasonId;
 import laxstats.api.teamSeasons.TeamSeasonUpdatedEvent;
 import laxstats.api.teamSeasons.TeamStatus;
-import laxstats.api.teamSeasons.UpdateTeamSeasonCommand;
 
 import org.axonframework.eventsourcing.annotation.AbstractAnnotatedAggregateRoot;
 import org.axonframework.eventsourcing.annotation.AggregateIdentifier;
@@ -40,9 +39,8 @@ public class TeamSeason extends AbstractAnnotatedAggregateRoot<TeamSeasonId> {
 
 	// ---------- Methods ---------- //
 
-	public void update(UpdateTeamSeasonCommand command) {
-		apply(new TeamSeasonUpdatedEvent(command.getTeamSeasonId(),
-				command.getTeamSeasonDTO()));
+	public void update(TeamSeasonId identifier, TeamSeasonDTO dto) {
+		apply(new TeamSeasonUpdatedEvent(identifier, dto));
 	}
 
 	public void delete(DeleteTeamSeasonCommand command) {
@@ -65,7 +63,7 @@ public class TeamSeason extends AbstractAnnotatedAggregateRoot<TeamSeasonId> {
 	@EventSourcingHandler
 	protected void handle(TeamSeasonCreatedEvent event) {
 		final TeamSeasonDTO dto = event.getTeamSeasonDTO();
-		id = event.getTeamSeasonId();
+		id = dto.getTeamSeasonId();
 		teamId = dto.getTeam().getId();
 		seasonId = dto.getSeason().getId();
 		status = dto.getStatus();

@@ -1,18 +1,17 @@
 package laxstats.api.teamSeasons;
 
-
 public class TeamSeasonCreatedEvent {
-	private final TeamSeasonId teamSeasonId;
+	private final TeamSeasonId identifier;
 	private final TeamSeasonDTO teamSeasonDTO;
 
-	public TeamSeasonCreatedEvent(TeamSeasonId teamSeasonId,
+	public TeamSeasonCreatedEvent(TeamSeasonId identifier,
 			TeamSeasonDTO teamSeasonDTO) {
-		this.teamSeasonId = teamSeasonId;
+		this.identifier = identifier;
 		this.teamSeasonDTO = teamSeasonDTO;
 	}
 
-	public TeamSeasonId getTeamSeasonId() {
-		return teamSeasonId;
+	public TeamSeasonId getIdentifier() {
+		return identifier;
 	}
 
 	public TeamSeasonDTO getTeamSeasonDTO() {

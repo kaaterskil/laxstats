@@ -37,7 +37,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
-@RequestMapping("/teams")
 public class TeamController extends ApplicationController {
 	private final TeamQueryRepository teamRepository;
 	private final SiteQueryRepository siteRepository;
@@ -51,7 +50,7 @@ public class TeamController extends ApplicationController {
 		this.siteRepository = siteRepository;
 	}
 
-	@RequestMapping(method = RequestMethod.GET)
+	@RequestMapping(value = "/teams", method = RequestMethod.GET)
 	public String index(Model model) {
 		final Sort sort = getTeamSorter();
 		final Iterable<TeamEntry> teams = teamRepository.findAll(sort);
@@ -59,22 +58,7 @@ public class TeamController extends ApplicationController {
 		return "teams/index";
 	}
 
-	@RequestMapping(value = "/{teamId}", method = RequestMethod.GET)
-	public String show(@PathVariable String teamId, Model model) {
-		final TeamEntry team = teamRepository.findOne(teamId);
-		model.addAttribute("team", team);
-		return "teams/show";
-	}
-
-	@RequestMapping(value = "/new", method = RequestMethod.GET)
-	public String newTeam(Model model) {
-		final TeamForm form = new TeamForm();
-		form.setSites(getSiteData());
-		model.addAttribute("form", form);
-		return "teams/new";
-	}
-
-	@RequestMapping(method = RequestMethod.POST)
+	@RequestMapping(value = "/teams", method = RequestMethod.POST)
 	public String createTeam(@ModelAttribute("form") @Valid TeamForm form,
 			BindingResult result) {
 		if (result.hasErrors()) {
@@ -94,19 +78,14 @@ public class TeamController extends ApplicationController {
 		return "redirect:/teams";
 	}
 
-	@RequestMapping(value = "/{teamId}/edit", method = RequestMethod.GET)
-	public String editTeam(@PathVariable String teamId, Model model) {
+	@RequestMapping(value = "/teams/{teamId}", method = RequestMethod.GET)
+	public String show(@PathVariable String teamId, Model model) {
 		final TeamEntry team = teamRepository.findOne(teamId);
-		final TeamForm form = new TeamForm();
-		form.setName(team.getName());
-		form.setGender(team.getGender());
-		form.setSiteId(team.getHomeSite().getId());
-		form.setSites(getSiteData());
-		model.addAttribute("form", form);
-		return "teams/edit";
+		model.addAttribute("team", team);
+		return "teams/show";
 	}
 
-	@RequestMapping(value = "/{teamId}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/teams/{teamId}", method = RequestMethod.PUT)
 	public String updateTeam(@PathVariable String teamId,
 			@ModelAttribute("form") @Valid TeamForm form, BindingResult result) {
 		if (result.hasErrors()) {
@@ -126,7 +105,7 @@ public class TeamController extends ApplicationController {
 		return "redirect:";
 	}
 
-	@RequestMapping(value = "/{teamId}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/teams/{teamId}", method = RequestMethod.DELETE)
 	public String deleteTeam(@PathVariable String teamId) {
 		final TeamId identifier = new TeamId(teamId);
 		final DeleteTeamCommand command = new DeleteTeamCommand(identifier);
@@ -134,9 +113,29 @@ public class TeamController extends ApplicationController {
 		return "redirect:";
 	}
 
+	@RequestMapping(value = "teams/new", method = RequestMethod.GET)
+	public String newTeam(Model model) {
+		final TeamForm form = new TeamForm();
+		form.setSites(getSiteData());
+		model.addAttribute("form", form);
+		return "teams/new";
+	}
+
+	@RequestMapping(value = "/teams/{teamId}/edit", method = RequestMethod.GET)
+	public String editTeam(@PathVariable String teamId, Model model) {
+		final TeamEntry team = teamRepository.findOne(teamId);
+		final TeamForm form = new TeamForm();
+		form.setName(team.getName());
+		form.setGender(team.getGender());
+		form.setSiteId(team.getHomeSite().getId());
+		form.setSites(getSiteData());
+		model.addAttribute("form", form);
+		return "teams/edit";
+	}
+
 	// ---------- Password actions ---------- //
 
-	@RequestMapping(value = "/{teamId}/newPassword", method = RequestMethod.GET)
+	@RequestMapping(value = "/teams/{teamId}/newPassword", method = RequestMethod.GET)
 	public String newPassword(@PathVariable String teamId, Model model) {
 		final TeamPasswordForm form = new TeamPasswordForm();
 		model.addAttribute("teamId", teamId);
@@ -144,7 +143,7 @@ public class TeamController extends ApplicationController {
 		return "teams/newPassword";
 	}
 
-	@RequestMapping(value = "/{teamId}/newPassword", method = RequestMethod.PUT)
+	@RequestMapping(value = "/teams/{teamId}/newPassword", method = RequestMethod.PUT)
 	public String createPassword(@PathVariable String teamId,
 			@ModelAttribute("form") TeamPasswordForm form, BindingResult result) {
 		if (result.hasErrors()) {
@@ -167,7 +166,7 @@ public class TeamController extends ApplicationController {
 		return "teams/show";
 	}
 
-	@RequestMapping(value = "/{teamId}/changePassword", method = RequestMethod.GET)
+	@RequestMapping(value = "/teams/{teamId}/changePassword", method = RequestMethod.GET)
 	public String changePassword(@PathVariable String teamId, Model model) {
 		final TeamPasswordForm form = new TeamPasswordForm();
 		model.addAttribute("teamId", teamId);
@@ -175,7 +174,7 @@ public class TeamController extends ApplicationController {
 		return "/teams/changePassword";
 	}
 
-	@RequestMapping(value = "/{teamId}/changePassword", method = RequestMethod.PUT)
+	@RequestMapping(value = "/teams/{teamId}/changePassword", method = RequestMethod.PUT)
 	public String updatePassword(@PathVariable String teamId,
 			@ModelAttribute("form") TeamPasswordForm form, BindingResult result) {
 		if (result.hasErrors()) {

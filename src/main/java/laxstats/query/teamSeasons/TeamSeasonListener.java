@@ -19,8 +19,8 @@ public class TeamSeasonListener {
 
 	@EventHandler
 	protected void handle(TeamSeasonCreatedEvent event) {
-		final TeamSeasonId identifier = event.getTeamSeasonId();
 		final TeamSeasonDTO dto = event.getTeamSeasonDTO();
+		final TeamSeasonId identifier = event.getIdentifier();
 
 		final TeamSeasonEntry entity = new TeamSeasonEntry();
 		entity.setId(identifier.toString());
@@ -38,16 +38,17 @@ public class TeamSeasonListener {
 
 	@EventHandler
 	protected void handle(TeamSeasonUpdatedEvent event) {
-		final TeamSeasonId identifier = event.getTeamSeasonId();
 		final TeamSeasonDTO dto = event.getTeamSeasonDTO();
+		final TeamSeasonId identifier = event.getIdentifier();
 
 		final TeamSeasonEntry entity = repository
 				.findOne(identifier.toString());
+		entity.setSeason(dto.getSeason());
+		entity.setStartsOn(dto.getStartsOn());
 		entity.setEndsOn(dto.getEndsOnd());
+		entity.setStatus(dto.getStatus());
 		entity.setModifiedAt(dto.getModifiedAt());
 		entity.setModifiedBy(dto.getModifiedBy());
-		entity.setStartsOn(dto.getStartsOn());
-		entity.setStatus(dto.getStatus());
 		repository.save(entity);
 	}
 

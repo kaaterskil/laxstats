@@ -1,9 +1,7 @@
 package laxstats.domain.teamSeasons;
 
-import laxstats.api.teamSeasons.CreateTeamSeasonCommand;
 import laxstats.api.teamSeasons.DeleteTeamSeasonCommand;
 import laxstats.api.teamSeasons.TeamSeasonId;
-import laxstats.api.teamSeasons.UpdateTeamSeasonCommand;
 
 import org.axonframework.commandhandling.annotation.CommandHandler;
 import org.axonframework.repository.Repository;
@@ -22,25 +20,9 @@ public class TeamSeasonCommandHandler {
 	}
 
 	@CommandHandler
-	protected TeamSeasonId handle(CreateTeamSeasonCommand command) {
-		final TeamSeasonId identifier = command.getTeamSeasonId();
-		final TeamSeason season = new TeamSeason(command.getTeamSeasonId(),
-				command.getTeamSeasonDTO());
-		repository.add(season);
-		return identifier;
-	}
-
-	@CommandHandler
-	protected void handle(UpdateTeamSeasonCommand command) {
-		final TeamSeasonId identifier = command.getTeamSeasonId();
-		final TeamSeason season = repository.load(identifier);
-		season.update(command);
-	}
-
-	@CommandHandler
 	protected void handle(DeleteTeamSeasonCommand command) {
 		final TeamSeasonId identifier = command.getTeamSeasonId();
-		final TeamSeason season = repository.load(identifier);
-		season.delete(command);
+		final TeamSeason entity = repository.load(identifier);
+		entity.delete(command);
 	}
 }

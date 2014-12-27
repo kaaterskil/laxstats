@@ -6,6 +6,7 @@ import java.util.Arrays;
 import laxstats.domain.events.Event;
 import laxstats.domain.leagues.League;
 import laxstats.domain.people.Person;
+import laxstats.domain.players.Player;
 import laxstats.domain.plays.PenaltyType;
 import laxstats.domain.plays.Play;
 import laxstats.domain.seasons.Season;
@@ -83,6 +84,22 @@ public class AxonConfiguration {
 	// ---------- Repositories ----------//
 
 	@Bean
+	public Repository<Event> eventRepository() {
+		final EventSourcingRepository<Event> repository = new EventSourcingRepository<>(
+				Event.class, eventStore());
+		repository.setEventBus(eventBus());
+		return repository;
+	}
+
+	@Bean
+	public Repository<League> leagueRepository() {
+		final EventSourcingRepository<League> repository = new EventSourcingRepository<>(
+				League.class, eventStore());
+		repository.setEventBus(eventBus());
+		return repository;
+	}
+
+	@Bean
 	public Repository<Person> personRepository() {
 		final EventSourcingRepository<Person> repository = new EventSourcingRepository<>(
 				Person.class, eventStore());
@@ -91,9 +108,41 @@ public class AxonConfiguration {
 	}
 
 	@Bean
+	public Repository<Player> playerRepository() {
+		final EventSourcingRepository<Player> repository = new EventSourcingRepository<Player>(
+				Player.class, eventStore());
+		repository.setEventBus(eventBus());
+		return repository;
+	}
+
+	@Bean
+	public Repository<PenaltyType> penaltyTypeRepository() {
+		final EventSourcingRepository<PenaltyType> repository = new EventSourcingRepository<>(
+				PenaltyType.class, eventStore());
+		repository.setEventBus(eventBus());
+		return repository;
+	}
+
+	@Bean
+	public Repository<Play> playRepository() {
+		final EventSourcingRepository<Play> repository = new EventSourcingRepository<>(
+				Play.class, eventStore());
+		repository.setEventBus(eventBus());
+		return repository;
+	}
+
+	@Bean
 	public Repository<Season> seasonRepository() {
 		final EventSourcingRepository<Season> repository = new EventSourcingRepository<>(
 				Season.class, eventStore());
+		repository.setEventBus(eventBus());
+		return repository;
+	}
+
+	@Bean
+	public Repository<Site> siteRepository() {
+		final EventSourcingRepository<Site> repository = new EventSourcingRepository<>(
+				Site.class, eventStore());
 		repository.setEventBus(eventBus());
 		return repository;
 	}
@@ -118,46 +167,6 @@ public class AxonConfiguration {
 	public Repository<User> userRepository() {
 		final EventSourcingRepository<User> repository = new EventSourcingRepository<>(
 				User.class, eventStore());
-		repository.setEventBus(eventBus());
-		return repository;
-	}
-
-	@Bean
-	public Repository<PenaltyType> penaltyTypeRepository() {
-		final EventSourcingRepository<PenaltyType> repository = new EventSourcingRepository<>(
-				PenaltyType.class, eventStore());
-		repository.setEventBus(eventBus());
-		return repository;
-	}
-
-	@Bean
-	public Repository<Site> siteRepository() {
-		final EventSourcingRepository<Site> repository = new EventSourcingRepository<>(
-				Site.class, eventStore());
-		repository.setEventBus(eventBus());
-		return repository;
-	}
-
-	@Bean
-	public Repository<Event> eventRepository() {
-		final EventSourcingRepository<Event> repository = new EventSourcingRepository<>(
-				Event.class, eventStore());
-		repository.setEventBus(eventBus());
-		return repository;
-	}
-
-	@Bean
-	public Repository<Play> playRepository() {
-		final EventSourcingRepository<Play> repository = new EventSourcingRepository<>(
-				Play.class, eventStore());
-		repository.setEventBus(eventBus());
-		return repository;
-	}
-
-	@Bean
-	public Repository<League> leagueRepository() {
-		final EventSourcingRepository<League> repository = new EventSourcingRepository<>(
-				League.class, eventStore());
 		repository.setEventBus(eventBus());
 		return repository;
 	}

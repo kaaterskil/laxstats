@@ -9,8 +9,6 @@ import laxstats.api.teamSeasons.TeamStatus;
 import org.joda.time.LocalDate;
 
 public class TeamSeasonForm {
-	@NotNull
-	private String teamId;
 
 	@NotNull
 	private String seasonId;
@@ -22,14 +20,6 @@ public class TeamSeasonForm {
 	private TeamStatus status;
 	private Map<String, String> teams;
 	private Map<String, String> seasons;
-
-	public String getTeamId() {
-		return teamId;
-	}
-
-	public void setTeamId(String teamId) {
-		this.teamId = teamId;
-	}
 
 	public String getSeasonId() {
 		return seasonId;

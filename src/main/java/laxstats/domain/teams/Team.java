@@ -4,13 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import laxstats.api.people.Gender;
-import laxstats.api.teams.SeasonRegisteredEvent;
+import laxstats.api.teamSeasons.TeamSeasonDTO;
 import laxstats.api.teams.TeamCreatedEvent;
 import laxstats.api.teams.TeamDTO;
 import laxstats.api.teams.TeamDeletedEvent;
 import laxstats.api.teams.TeamId;
 import laxstats.api.teams.TeamPasswordCreatedEvent;
 import laxstats.api.teams.TeamPasswordUpdatedEvent;
+import laxstats.api.teams.TeamSeasonEditedEvent;
+import laxstats.api.teams.TeamSeasonRegisteredEvent;
 import laxstats.api.teams.TeamUpdatedEvent;
 
 import org.axonframework.eventsourcing.annotation.AbstractAnnotatedAggregateRoot;
@@ -54,15 +56,24 @@ public class Team extends AbstractAnnotatedAggregateRoot<TeamId> {
 		apply(new TeamPasswordUpdatedEvent(teamId, teamDTO));
 	}
 
-	public void registerSeason(TeamSeasonInfo teamSeason) {
-		if (!canTeamRegisterSeason(teamSeason)) {
+	public void registerSeason(TeamSeasonDTO dto) {
+		if (!canTeamRegisterSeason(dto.getSeason().getId())) {
 			throw new IllegalArgumentException("season already registered");
 		}
-		apply(new SeasonRegisteredEvent(teamId, teamSeason));
+		apply(new TeamSeasonRegisteredEvent(teamId, dto));
 	}
 
-	private boolean canTeamRegisterSeason(TeamSeasonInfo teamSeason) {
-		return !seasons.contains(teamSeason);
+	private boolean canTeamRegisterSeason(String seasonId) {
+		for (final TeamSeasonInfo each : seasons) {
+			if (each.getSeasonId().equals(seasonId)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public void updateSeason(TeamSeasonDTO dto) {
+		apply(new TeamSeasonEditedEvent(teamId, dto));
 	}
 
 	// ---------- Event handlers ----------//
@@ -90,9 +101,29 @@ public class Team extends AbstractAnnotatedAggregateRoot<TeamId> {
 	}
 
 	@EventSourcingHandler
-	protected void handle(SeasonRegisteredEvent event) {
-		final TeamSeasonInfo season = event.getSeason();
-		seasons.add(season);
+	protected void handle(TeamSeasonRegisteredEvent event) {
+		final TeamSeasonDTO dto = event.getTeamSeasonDTO();
+
+		final TeamSeasonInfo vo = new TeamSeasonInfo(dto.getTeamSeasonId()
+				.toString(), dto.getTeam().getId(), dto.getSeason().getId(),
+				dto.getStartsOn(), dto.getEndsOnd(), dto.getStatus());
+		seasons.add(vo);
+	}
+
+	@EventSourcingHandler
+	protected void handle(TeamSeasonEditedEvent event) {
+		final TeamSeasonDTO dto = event.getTeamSeasonDTO();
+		final String id = dto.getTeamSeasonId().toString();
+
+		for (final TeamSeasonInfo each : seasons) {
+			if (each.getId().equals(id)) {
+				seasons.remove(each);
+			}
+		}
+		final TeamSeasonInfo vo = new TeamSeasonInfo(dto.getTeamSeasonId()
+				.toString(), dto.getTeam().getId(), dto.getSeason().getId(),
+				dto.getStartsOn(), dto.getEndsOnd(), dto.getStatus());
+		seasons.add(vo);
 	}
 
 	@EventSourcingHandler

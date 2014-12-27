@@ -22,6 +22,7 @@ import laxstats.query.teams.TeamEntry;
 import laxstats.query.users.UserEntry;
 
 import org.hibernate.annotations.Type;
+import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
@@ -74,6 +75,11 @@ public class TeamSeasonEntry {
 	private final List<PlayerEntry> roster = new ArrayList<>();
 
 	// ---------- Methods ---------- //
+
+	public Interval getSeasonInterval() {
+		return new Interval(startsOn.toDateTimeAtStartOfDay(),
+				endsOn.toDateTimeAtStartOfDay());
+	}
 
 	public boolean addPlayerToRoster(PlayerEntry player) {
 		player.setTeamSeason(this);
