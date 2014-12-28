@@ -1,6 +1,8 @@
 package laxstats.query.events;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -15,10 +17,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-import laxstats.api.events.Alignment;
 import laxstats.api.events.Conditions;
 import laxstats.api.events.Schedule;
 import laxstats.api.events.Status;
+import laxstats.api.sites.SiteAlignment;
 import laxstats.query.sites.SiteEntry;
 import laxstats.query.users.UserEntry;
 
@@ -43,7 +45,7 @@ public class EventEntry {
 
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20)
-	private Alignment alignment;
+	private SiteAlignment alignment;
 
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime startsAt;
@@ -82,7 +84,7 @@ public class EventEntry {
 	private final Set<EventAttendee> eventAttendees = new HashSet<>();
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
-	private final Set<TeamEvent> eventTeams = new HashSet<>();
+	private final List<TeamEvent> teams = new ArrayList<>();
 
 	// ---------- Getter/Setters ----------//
 
@@ -102,11 +104,11 @@ public class EventEntry {
 		this.site = site;
 	}
 
-	public Alignment getAlignment() {
+	public SiteAlignment getAlignment() {
 		return alignment;
 	}
 
-	public void setAlignment(Alignment alignment) {
+	public void setAlignment(SiteAlignment alignment) {
 		this.alignment = alignment;
 	}
 
@@ -186,7 +188,7 @@ public class EventEntry {
 		return eventAttendees;
 	}
 
-	public Set<TeamEvent> getEventTeams() {
-		return eventTeams;
+	public List<TeamEvent> getTeams() {
+		return teams;
 	}
 }

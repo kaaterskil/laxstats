@@ -1,108 +1,126 @@
 package laxstats.api.events;
 
+import laxstats.api.sites.SiteAlignment;
 import laxstats.query.sites.SiteEntry;
+import laxstats.query.teamSeasons.TeamSeasonEntry;
 import laxstats.query.users.UserEntry;
 
 import org.joda.time.LocalDateTime;
 
 public class EventDTO {
-	private SiteEntry site;
-	private Alignment alignment;
-	private LocalDateTime startsAt;
-	private Schedule schedule;
-	private Status status;
-	private Conditions conditions;
-	private String description;
-	private LocalDateTime createdAt;
-	private UserEntry createdBy;
-	private LocalDateTime modifiedAt;
-	private UserEntry modifiedBy;
+	private final String id;
+	private final SiteEntry site;
+	private final TeamSeasonEntry teamOne;
+	private final TeamSeasonEntry teamTwo;
+	private final Alignment teamOneAlignment;
+	private final Alignment teamTwoAlignment;
+	private final SiteAlignment alignment;
+	private final LocalDateTime startsAt;
+	private final Schedule schedule;
+	private final Status status;
+	private final Conditions conditions;
+	private final String description;
+	private final LocalDateTime createdAt;
+	private final UserEntry createdBy;
+	private final LocalDateTime modifiedAt;
+	private final UserEntry modifiedBy;
+
+	public EventDTO(String id, SiteEntry site, TeamSeasonEntry teamOne,
+			TeamSeasonEntry teamTwo, Alignment teamOneAlignment,
+			Alignment teamTwoAlignment, SiteAlignment alignment,
+			LocalDateTime startsAt, Schedule schedule, Status status,
+			Conditions conditions, String description, LocalDateTime createdAt,
+			UserEntry createdBy, LocalDateTime modifiedAt, UserEntry modifiedBy) {
+		this.id = id;
+		this.site = site;
+		this.teamOne = teamOne;
+		this.teamTwo = teamTwo;
+		this.teamOneAlignment = teamOneAlignment;
+		this.teamTwoAlignment = teamTwoAlignment;
+		this.alignment = alignment;
+		this.startsAt = startsAt;
+		this.schedule = schedule;
+		this.status = status;
+		this.conditions = conditions;
+		this.description = description;
+		this.createdAt = createdAt;
+		this.createdBy = createdBy;
+		this.modifiedAt = modifiedAt;
+		this.modifiedBy = modifiedBy;
+	}
+
+	public EventDTO(String id, SiteEntry site, TeamSeasonEntry teamOne,
+			TeamSeasonEntry teamTwo, Alignment teamOneAlignment,
+			Alignment teamTwoAlignment, SiteAlignment alignment,
+			LocalDateTime startsAt, Schedule schedule, Status status,
+			Conditions conditions, String description,
+			LocalDateTime modifiedAt, UserEntry modifiedBy) {
+		this(id, site, teamOne, teamTwo, teamOneAlignment, teamTwoAlignment,
+				alignment, startsAt, schedule, status, conditions, description,
+				null, null, modifiedAt, modifiedBy);
+	}
+
+	public String getId() {
+		return id;
+	}
 
 	public SiteEntry getSite() {
 		return site;
 	}
 
-	public void setSite(SiteEntry site) {
-		this.site = site;
+	public TeamSeasonEntry getTeamOne() {
+		return teamOne;
 	}
 
-	public Alignment getAlignment() {
+	public TeamSeasonEntry getTeamTwo() {
+		return teamTwo;
+	}
+
+	public Alignment getTeamOneAlignment() {
+		return teamOneAlignment;
+	}
+
+	public Alignment getTeamTwoAlignment() {
+		return teamTwoAlignment;
+	}
+
+	public SiteAlignment getAlignment() {
 		return alignment;
-	}
-
-	public void setAlignment(Alignment alignment) {
-		this.alignment = alignment;
 	}
 
 	public LocalDateTime getStartsAt() {
 		return startsAt;
 	}
 
-	public void setStartsAt(LocalDateTime startsAt) {
-		this.startsAt = startsAt;
-	}
-
 	public Schedule getSchedule() {
 		return schedule;
-	}
-
-	public void setSchedule(Schedule schedule) {
-		this.schedule = schedule;
 	}
 
 	public Status getStatus() {
 		return status;
 	}
 
-	public void setStatus(Status status) {
-		this.status = status;
-	}
-
 	public Conditions getConditions() {
 		return conditions;
-	}
-
-	public void setConditions(Conditions conditions) {
-		this.conditions = conditions;
 	}
 
 	public String getDescription() {
 		return description;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
 	public LocalDateTime getCreatedAt() {
 		return createdAt;
-	}
-
-	public void setCreatedAt(LocalDateTime createdAt) {
-		this.createdAt = createdAt;
 	}
 
 	public UserEntry getCreatedBy() {
 		return createdBy;
 	}
 
-	public void setCreatedBy(UserEntry createdBy) {
-		this.createdBy = createdBy;
-	}
-
 	public LocalDateTime getModifiedAt() {
 		return modifiedAt;
 	}
 
-	public void setModifiedAt(LocalDateTime modifiedAt) {
-		this.modifiedAt = modifiedAt;
-	}
-
 	public UserEntry getModifiedBy() {
 		return modifiedBy;
-	}
-
-	public void setModifiedBy(UserEntry modifiedBy) {
-		this.modifiedBy = modifiedBy;
 	}
 }

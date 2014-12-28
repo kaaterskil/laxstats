@@ -12,7 +12,7 @@ public class TeamSeasonDTO {
 	private final TeamEntry team;
 	private final SeasonEntry season;
 	private final LocalDate startsOn;
-	private final LocalDate endsOnd;
+	private final LocalDate endsOn;
 	private final TeamStatus status;
 	private final UserEntry createdBy;
 	private final LocalDateTime createdAt;
@@ -20,14 +20,14 @@ public class TeamSeasonDTO {
 	private final LocalDateTime modifiedAt;
 
 	public TeamSeasonDTO(TeamSeasonId teamSeasonId, TeamEntry team,
-			SeasonEntry season, LocalDate startsOn, LocalDate endsOnd,
+			SeasonEntry season, LocalDate startsOn, LocalDate endsOn,
 			TeamStatus status, UserEntry createdBy, LocalDateTime createdAt,
 			UserEntry modifiedBy, LocalDateTime modifiedAt) {
 		this.teamSeasonId = teamSeasonId;
 		this.team = team;
 		this.season = season;
 		this.startsOn = startsOn;
-		this.endsOnd = endsOnd;
+		this.endsOn = endsOn;
 		this.status = status;
 		this.createdBy = createdBy;
 		this.createdAt = createdAt;
@@ -58,8 +58,8 @@ public class TeamSeasonDTO {
 		return startsOn;
 	}
 
-	public LocalDate getEndsOnd() {
-		return endsOnd;
+	public LocalDate getEndsOn() {
+		return endsOn;
 	}
 
 	public TeamStatus getStatus() {

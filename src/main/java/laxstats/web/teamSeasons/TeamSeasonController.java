@@ -116,7 +116,7 @@ public class TeamSeasonController extends ApplicationController {
 		final EditTeamSeasonCommand payload = new EditTeamSeasonCommand(
 				new TeamId(teamId), dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:";
+		return "redirect:/teams/" + teamId + "/seasons";
 	}
 
 	@RequestMapping(value = "/teams/{teamId}/seasons/{teamSeasonId}", method = RequestMethod.DELETE)

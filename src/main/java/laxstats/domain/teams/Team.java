@@ -106,7 +106,7 @@ public class Team extends AbstractAnnotatedAggregateRoot<TeamId> {
 
 		final TeamSeasonInfo vo = new TeamSeasonInfo(dto.getTeamSeasonId()
 				.toString(), dto.getTeam().getId(), dto.getSeason().getId(),
-				dto.getStartsOn(), dto.getEndsOnd(), dto.getStatus());
+				dto.getStartsOn(), dto.getEndsOn(), dto.getStatus());
 		seasons.add(vo);
 	}
 
@@ -122,7 +122,7 @@ public class Team extends AbstractAnnotatedAggregateRoot<TeamId> {
 		}
 		final TeamSeasonInfo vo = new TeamSeasonInfo(dto.getTeamSeasonId()
 				.toString(), dto.getTeam().getId(), dto.getSeason().getId(),
-				dto.getStartsOn(), dto.getEndsOnd(), dto.getStatus());
+				dto.getStartsOn(), dto.getEndsOn(), dto.getStatus());
 		seasons.add(vo);
 	}
 

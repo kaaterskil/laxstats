@@ -1,85 +1,43 @@
 package laxstats.query.events;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+import javax.persistence.UniqueConstraint;
 
-import laxstats.query.teams.TeamEntry;
+import laxstats.api.events.Alignment;
+import laxstats.api.events.Outcome;
+import laxstats.query.teamSeasons.TeamSeasonEntry;
 import laxstats.query.users.UserEntry;
 
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 
 @Entity
-@Table(indexes = { @Index(name = "team_event_idx1", columnList = "outcome"),
-		@Index(name = "team_event_idx2", columnList = "alignment") })
+@Table(name = "team_events", indexes = {
+		@Index(name = "team_events_idx1", columnList = "outcome"),
+		@Index(name = "team_events_idx2", columnList = "alignment") }, uniqueConstraints = { @UniqueConstraint(name = "team_events_uk1", columnNames = {
+		"team", "event" }) })
 public class TeamEvent {
 
-	public enum Alignment {
-		HOME, AWAY
-	}
-
-	public enum Outcome {
-		WIN, LOSS
-	}
-
-	@Embeddable
-	public static class Id implements Serializable {
-		private static final long serialVersionUID = -3438452317292121148L;
-
-		@Column(length = 36)
-		private String teamId;
-
-		@Column(length = 36)
-		private String eventId;
-
-		public Id() {
-		}
-
-		public Id(String teamId, String eventID) {
-			this.teamId = teamId;
-			this.eventId = eventID;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (o != null && o instanceof TeamEvent.Id) {
-				final Id that = (Id) o;
-				return this.teamId.equals(that.teamId)
-						&& this.eventId.equals(that.eventId);
-			}
-			return false;
-		}
-
-		@Override
-		public int hashCode() {
-			return teamId.hashCode() + eventId.hashCode();
-		}
-	}
-
-	@javax.persistence.Id
-	@Embedded
-	private final TeamEvent.Id id = new Id();
+	@Id
+	@Column(length = 36)
+	private String id;
 
 	@ManyToOne
-	@JoinColumn(name = "teamId", insertable = false, updatable = false)
-	private TeamEntry team;
+	@JoinColumn(nullable = false)
+	private TeamSeasonEntry teamSeason;
 
 	@ManyToOne
-	@JoinColumn(name = "eventId", insertable = false, updatable = false)
+	@JoinColumn(nullable = false)
 	private EventEntry event;
 
-	@NotNull
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20, nullable = false)
 	private Alignment alignment;
@@ -99,42 +57,50 @@ public class TeamEvent {
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime createdAt;
 
-	@ManyToOne(targetEntity = UserEntry.class)
-	private String createdBy;
+	@ManyToOne
+	private UserEntry createdBy;
 
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime modifiedAt;
 
-	@ManyToOne(targetEntity = UserEntry.class)
-	private String modifiedBy;
+	@ManyToOne
+	private UserEntry modifiedBy;
 
 	// ----------Constructor ----------//
 
 	public TeamEvent() {
 	}
 
-	public TeamEvent(TeamEntry team, EventEntry event) {
-		this.team = team;
+	public TeamEvent(String id, TeamSeasonEntry teamSeason, EventEntry event,
+			int eventIndex) {
+		this.id = id;
+		this.teamSeason = teamSeason;
 		this.event = event;
 
-		this.id.teamId = team.getId();
-		this.id.eventId = team.getId();
-
-		event.getEventTeams().add(this);
+		teamSeason.getEvents().put(event.getStartsAt(), this);
+		event.getTeams().set(eventIndex, this);
 	}
 
 	// ---------- Getter/Setters ----------//
 
-	public TeamEvent.Id getId() {
+	public String getId() {
 		return id;
 	}
 
-	public TeamEntry getTeam() {
-		return team;
+	public TeamSeasonEntry getTeamSeason() {
+		return teamSeason;
+	}
+
+	public void setTeamSeason(TeamSeasonEntry teamSeason) {
+		this.teamSeason = teamSeason;
 	}
 
 	public EventEntry getEvent() {
 		return event;
+	}
+
+	public void setEvent(EventEntry event) {
+		this.event = event;
 	}
 
 	public Alignment getAlignment() {
@@ -185,11 +151,11 @@ public class TeamEvent {
 		this.createdAt = createdAt;
 	}
 
-	public String getCreatedBy() {
+	public UserEntry getCreatedBy() {
 		return createdBy;
 	}
 
-	public void setCreatedBy(String createdBy) {
+	public void setCreatedBy(UserEntry createdBy) {
 		this.createdBy = createdBy;
 	}
 
@@ -201,11 +167,11 @@ public class TeamEvent {
 		this.modifiedAt = modifiedAt;
 	}
 
-	public String getModifiedBy() {
+	public UserEntry getModifiedBy() {
 		return modifiedBy;
 	}
 
-	public void setModifiedBy(String modifiedBy) {
+	public void setModifiedBy(UserEntry modifiedBy) {
 		this.modifiedBy = modifiedBy;
 	}
 }

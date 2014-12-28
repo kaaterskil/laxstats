@@ -27,7 +27,7 @@ public class TeamSeasonListener {
 		entity.setTeam(dto.getTeam());
 		entity.setSeason(dto.getSeason());
 		entity.setStartsOn(dto.getStartsOn());
-		entity.setEndsOn(dto.getEndsOnd());
+		entity.setEndsOn(dto.getEndsOn());
 		entity.setStatus(dto.getStatus());
 		entity.setCreatedAt(dto.getCreatedAt());
 		entity.setCreatedBy(dto.getCreatedBy());
@@ -45,7 +45,7 @@ public class TeamSeasonListener {
 				.findOne(identifier.toString());
 		entity.setSeason(dto.getSeason());
 		entity.setStartsOn(dto.getStartsOn());
-		entity.setEndsOn(dto.getEndsOnd());
+		entity.setEndsOn(dto.getEndsOn());
 		entity.setStatus(dto.getStatus());
 		entity.setModifiedAt(dto.getModifiedAt());
 		entity.setModifiedBy(dto.getModifiedBy());

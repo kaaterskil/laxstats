@@ -1,9 +1,15 @@
 package laxstats.domain.teamSeasons;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import laxstats.api.events.EventDTO;
 import laxstats.api.teamSeasons.DeleteTeamSeasonCommand;
+import laxstats.api.teamSeasons.EventAlreadyScheduledException;
+import laxstats.api.teamSeasons.EventRevisedEvent;
+import laxstats.api.teamSeasons.EventScheduleConflictException;
+import laxstats.api.teamSeasons.EventScheduledEvent;
 import laxstats.api.teamSeasons.PlayerRegisteredEvent;
 import laxstats.api.teamSeasons.TeamSeasonCreatedEvent;
 import laxstats.api.teamSeasons.TeamSeasonDTO;
@@ -29,6 +35,7 @@ public class TeamSeason extends AbstractAnnotatedAggregateRoot<TeamSeasonId> {
 	private LocalDate startsOn;
 	private LocalDate endsOn;
 	private final List<PlayerInfo> roster = new ArrayList<>();
+	private final List<EventInfo> events = new ArrayList<>();
 
 	public TeamSeason(TeamSeasonId teamSeasonId, TeamSeasonDTO teamSeasonDTO) {
 		apply(new TeamSeasonCreatedEvent(teamSeasonId, teamSeasonDTO));
@@ -58,6 +65,42 @@ public class TeamSeason extends AbstractAnnotatedAggregateRoot<TeamSeasonId> {
 		return !roster.contains(player);
 	}
 
+	public void scheduleEvent(EventDTO dto) {
+		if (alreadyScheduled(dto)) {
+			throw new EventAlreadyScheduledException();
+		}
+		if (scheduleConflicts(dto)) {
+			throw new EventScheduleConflictException();
+		}
+		apply(new EventScheduledEvent(id, dto));
+	}
+
+	public boolean alreadyScheduled(EventDTO dto) {
+		for (final EventInfo event : events) {
+			if (event.getEventId().equals(dto.getId())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean scheduleConflicts(EventDTO dto) {
+		for (final EventInfo event : events) {
+			if (!event.getEventId().equals(dto.getId())
+					&& event.getStartsAt().equals(dto.getStartsAt())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public void updateEvent(EventDTO dto) {
+		if (scheduleConflicts(dto)) {
+			throw new EventScheduleConflictException();
+		}
+		apply(new EventRevisedEvent(id, dto));
+	}
+
 	// ---------- Event handlers ---------- //
 
 	@EventSourcingHandler
@@ -68,7 +111,7 @@ public class TeamSeason extends AbstractAnnotatedAggregateRoot<TeamSeasonId> {
 		seasonId = dto.getSeason().getId();
 		status = dto.getStatus();
 		startsOn = dto.getStartsOn();
-		endsOn = dto.getEndsOnd();
+		endsOn = dto.getEndsOn();
 	}
 
 	@EventSourcingHandler
@@ -78,7 +121,7 @@ public class TeamSeason extends AbstractAnnotatedAggregateRoot<TeamSeasonId> {
 		seasonId = dto.getSeason().getId();
 		status = dto.getStatus();
 		startsOn = dto.getStartsOn();
-		endsOn = dto.getEndsOnd();
+		endsOn = dto.getEndsOn();
 	}
 
 	@EventSourcingHandler
@@ -90,6 +133,44 @@ public class TeamSeason extends AbstractAnnotatedAggregateRoot<TeamSeasonId> {
 	protected void handle(PlayerRegisteredEvent event) {
 		final PlayerInfo player = event.getPlayer();
 		roster.add(player);
+	}
+
+	@EventSourcingHandler
+	protected void handle(EventScheduledEvent event) {
+		final EventDTO dto = event.getEvent();
+		final String siteId = dto.getSite() == null ? null : dto.getSite()
+				.getId();
+		final String teamOneId = dto.getTeamOne() == null ? null : dto
+				.getTeamOne().getId();
+		final String teamTwoId = dto.getTeamTwo() == null ? null : dto
+				.getTeamTwo().getId();
+
+		final EventInfo vo = new EventInfo(dto.getId(), siteId, teamOneId,
+				teamTwoId, dto.getStartsAt());
+		events.add(vo);
+	}
+
+	@EventSourcingHandler
+	protected void handle(EventRevisedEvent event) {
+		final EventDTO dto = event.getEventDTO();
+		final String siteId = dto.getSite() == null ? null : dto.getSite()
+				.getId();
+		final String teamOneId = dto.getTeamOne() == null ? null : dto
+				.getTeamOne().getId();
+		final String teamTwoId = dto.getTeamTwo() == null ? null : dto
+				.getTeamTwo().getId();
+
+		final EventInfo vo = new EventInfo(dto.getId(), siteId, teamOneId,
+				teamTwoId, dto.getStartsAt());
+
+		final Iterator<EventInfo> iter = events.iterator();
+		while (iter.hasNext()) {
+			final EventInfo each = iter.next();
+			if (each.getEventId().equals(dto.getId())) {
+				iter.remove();
+			}
+		}
+		events.add(vo);
 	}
 
 	// ---------- Getters ---------- //
@@ -121,5 +202,9 @@ public class TeamSeason extends AbstractAnnotatedAggregateRoot<TeamSeasonId> {
 
 	public List<PlayerInfo> getRoster() {
 		return roster;
+	}
+
+	public List<EventInfo> getEvents() {
+		return events;
 	}
 }

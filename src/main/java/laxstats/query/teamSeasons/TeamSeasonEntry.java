@@ -1,7 +1,9 @@
 package laxstats.query.teamSeasons;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,6 +18,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 import laxstats.api.teamSeasons.TeamStatus;
+import laxstats.query.events.TeamEvent;
 import laxstats.query.players.PlayerEntry;
 import laxstats.query.seasons.SeasonEntry;
 import laxstats.query.teams.TeamEntry;
@@ -73,6 +76,9 @@ public class TeamSeasonEntry {
 
 	@OneToMany(mappedBy = "teamSeason")
 	private final List<PlayerEntry> roster = new ArrayList<>();
+
+	@OneToMany(mappedBy = "teamSeason")
+	private final Map<LocalDateTime, TeamEvent> events = new HashMap<>();
 
 	// ---------- Methods ---------- //
 
@@ -170,5 +176,9 @@ public class TeamSeasonEntry {
 
 	public List<PlayerEntry> getRoster() {
 		return roster;
+	}
+
+	public Map<LocalDateTime, TeamEvent> getEvents() {
+		return events;
 	}
 }

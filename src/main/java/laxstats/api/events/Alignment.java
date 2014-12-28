@@ -1,5 +1,5 @@
 package laxstats.api.events;
 
 public enum Alignment {
-	HOME, NEUTRAL
+	HOME, AWAY, NEUTRAL
 }

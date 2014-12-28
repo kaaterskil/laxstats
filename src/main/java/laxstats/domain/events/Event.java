@@ -1,9 +1,9 @@
 package laxstats.domain.events;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-import laxstats.api.events.Alignment;
 import laxstats.api.events.Conditions;
 import laxstats.api.events.EventCreatedEvent;
 import laxstats.api.events.EventDTO;
@@ -12,6 +12,7 @@ import laxstats.api.events.EventId;
 import laxstats.api.events.EventUpdatedEvent;
 import laxstats.api.events.Schedule;
 import laxstats.api.events.Status;
+import laxstats.api.sites.SiteAlignment;
 
 import org.axonframework.eventsourcing.annotation.AbstractAnnotatedAggregateRoot;
 import org.axonframework.eventsourcing.annotation.AggregateIdentifier;
@@ -24,14 +25,13 @@ public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 	@AggregateIdentifier
 	private EventId id;
 	private String siteId;
-	private Alignment alignment;
+	private SiteAlignment alignment;
 	private LocalDateTime startsAt;
 	private Schedule schedule;
 	private Status status;
 	private Conditions conditions;
 	private String description;
-	private final Set<EventAttendee> eventAttendees = new HashSet<>();
-	private final Set<TeamEvent> eventTeams = new HashSet<>();
+	private List<TeamSeasonInfo> teams;
 
 	public Event(EventId eventId, EventDTO eventDTO) {
 		apply(new EventCreatedEvent(eventId, eventDTO));
@@ -57,26 +57,45 @@ public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 		final EventDTO dto = event.getEventDTO();
 
 		id = event.getEventId();
-		siteId = dto.getSite().toString();
+		siteId = dto.getSite() == null ? null : dto.getSite().getId();
 		alignment = dto.getAlignment();
 		startsAt = dto.getStartsAt();
 		schedule = dto.getSchedule();
 		status = dto.getStatus();
 		conditions = dto.getConditions();
 		description = dto.getDescription();
+		teams = createTeams(dto);
 	}
 
 	@EventSourcingHandler
 	protected void handle(EventUpdatedEvent event) {
 		final EventDTO dto = event.getEventDTO();
 
-		siteId = dto.getSite().toString();
+		siteId = dto.getSite() == null ? null : dto.getSite().getId();
 		alignment = dto.getAlignment();
 		startsAt = dto.getStartsAt();
 		schedule = dto.getSchedule();
 		status = dto.getStatus();
 		conditions = dto.getConditions();
 		description = dto.getDescription();
+		teams = createTeams(dto);
+	}
+
+	private List<TeamSeasonInfo> createTeams(EventDTO dto) {
+		final List<TeamSeasonInfo> teams = new ArrayList<>();
+		if (dto.getTeamOne() != null) {
+			final TeamSeasonInfo vo = new TeamSeasonInfo(dto.getTeamOne()
+					.getId(), dto.getTeamOne().getTeam().getName(),
+					dto.getTeamOneAlignment());
+			teams.add(vo);
+		}
+		if (dto.getTeamTwo() != null) {
+			final TeamSeasonInfo vo = new TeamSeasonInfo(dto.getTeamTwo()
+					.getId(), dto.getTeamTwo().getTeam().getName(),
+					dto.getTeamTwoAlignment());
+			teams.add(vo);
+		}
+		return teams;
 	}
 
 	@EventSourcingHandler
@@ -98,7 +117,7 @@ public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 		return siteId;
 	}
 
-	public Alignment getAlignment() {
+	public SiteAlignment getAlignment() {
 		return alignment;
 	}
 
@@ -122,11 +141,7 @@ public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 		return description;
 	}
 
-	public Set<EventAttendee> getEventAttendees() {
-		return eventAttendees;
-	}
-
-	public Set<TeamEvent> getEventTeams() {
-		return eventTeams;
+	public List<TeamSeasonInfo> getTeams() {
+		return Collections.unmodifiableList(teams);
 	}
 }
