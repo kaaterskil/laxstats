@@ -3,7 +3,6 @@ package laxstats.query.players;
 import laxstats.api.players.PlayerCreatedEvent;
 import laxstats.api.players.PlayerDTO;
 import laxstats.api.players.PlayerDeletedEvent;
-import laxstats.api.players.PlayerId;
 import laxstats.api.players.PlayerUpdatedEvent;
 
 import org.axonframework.eventhandling.annotation.EventHandler;
@@ -20,12 +19,12 @@ public class PlayerListener {
 	}
 
 	@EventHandler
-	protected PlayerId handle(PlayerCreatedEvent event) {
-		final PlayerId identifier = event.getPlayerId();
+	protected void handle(PlayerCreatedEvent event) {
 		final PlayerDTO dto = event.getPlayerDTO();
+		final String id = event.getPlayerId().toString();
 
 		final PlayerEntry entity = new PlayerEntry();
-		entity.setId(identifier.toString());
+		entity.setId(id);
 		entity.setPerson(dto.getPerson());
 		entity.setTeamSeason(dto.getTeam());
 		entity.setRole(dto.getRole());
@@ -41,15 +40,14 @@ public class PlayerListener {
 		entity.setModifiedAt(dto.getModifiedAt());
 		entity.setModifiedBy(dto.getModifiedBy());
 		repository.save(entity);
-		return identifier;
 	}
 
 	@EventHandler
 	protected void handle(PlayerUpdatedEvent event) {
-		final PlayerId identifier = event.getPlayerId();
 		final PlayerDTO dto = event.getPlayerDTO();
+		final String id = event.getPlayerId().toString();
 
-		final PlayerEntry entity = repository.findOne(identifier.toString());
+		final PlayerEntry entity = repository.findOne(id);
 		entity.setPerson(dto.getPerson());
 		entity.setTeamSeason(dto.getTeam());
 		entity.setRole(dto.getRole());
@@ -67,8 +65,8 @@ public class PlayerListener {
 
 	@EventHandler
 	protected void handle(PlayerDeletedEvent event) {
-		final PlayerId identifier = event.getPlayerId();
-		final PlayerEntry entity = repository.findOne(identifier.toString());
+		final String id = event.getPlayerId().toString();
+		final PlayerEntry entity = repository.findOne(id);
 		repository.delete(entity);
 	}
 }

@@ -7,7 +7,7 @@ import laxstats.query.users.UserEntry;
 import org.joda.time.LocalDateTime;
 
 public class PlayerDTO {
-	private final String id;
+	private final PlayerId id;
 	private final PersonEntry person;
 	private final TeamSeasonEntry team;
 	private final Role role;
@@ -23,7 +23,7 @@ public class PlayerDTO {
 	private final LocalDateTime modifiedAt;
 	private final UserEntry modifiedBy;
 
-	public PlayerDTO(String id, PersonEntry person, TeamSeasonEntry team,
+	public PlayerDTO(PlayerId id, PersonEntry person, TeamSeasonEntry team,
 			Role role, PlayerStatus status, String jerseyNumber,
 			Position position, boolean isCaptain, int depth, int height,
 			int weight, LocalDateTime createdAt, UserEntry createdBy,
@@ -45,7 +45,15 @@ public class PlayerDTO {
 		this.modifiedBy = modifiedBy;
 	}
 
-	public String getId() {
+	public PlayerDTO(PlayerId id, PersonEntry person, TeamSeasonEntry team,
+			Role role, PlayerStatus status, String jerseyNumber,
+			Position position, boolean isCaptain, int depth, int height,
+			int weight, LocalDateTime modifiedAt, UserEntry modifiedBy) {
+		this(id, person, team, role, status, jerseyNumber, position, isCaptain,
+				depth, height, weight, null, null, modifiedAt, modifiedBy);
+	}
+
+	public PlayerId getId() {
 		return id;
 	}
 

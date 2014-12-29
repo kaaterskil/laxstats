@@ -23,12 +23,14 @@ import org.joda.time.LocalDateTime;
 
 @Entity
 @Table(name = "players", indexes = {
-		@Index(name = "player_idx1", columnList = "id, teamSeason, person"),
-		@Index(name = "player_idx2", columnList = "role"),
-		@Index(name = "player_idx3", columnList = "status"),
-		@Index(name = "player_idx4", columnList = "isCaptain"),
-		@Index(name = "player_idx5", columnList = "depth") }, uniqueConstraints = { @UniqueConstraint(name = "player_uk1", columnNames = {
-		"id", "teamSeason", "person" }) })
+		@Index(name = "player_idx1", columnList = "id, team_season, person"),
+		@Index(name = "player_idx2", columnList = "team_season"),
+		@Index(name = "player_idx3", columnList = "person"),
+		@Index(name = "player_idx4", columnList = "role"),
+		@Index(name = "player_idx5", columnList = "status"),
+		@Index(name = "player_idx6", columnList = "isCaptain"),
+		@Index(name = "player_idx7", columnList = "depth") }, uniqueConstraints = { @UniqueConstraint(name = "player_uk1", columnNames = {
+		"id", "team_season", "person" }) })
 public class PlayerEntry {
 
 	@Id

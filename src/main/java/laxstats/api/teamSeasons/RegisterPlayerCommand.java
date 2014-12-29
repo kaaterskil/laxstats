@@ -2,11 +2,14 @@ package laxstats.api.teamSeasons;
 
 import laxstats.api.players.PlayerDTO;
 
-public class PlayerRegisteredEvent {
+import org.axonframework.commandhandling.annotation.TargetAggregateIdentifier;
+
+public class RegisterPlayerCommand {
+	@TargetAggregateIdentifier
 	private final TeamSeasonId teamSeasonId;
 	private final PlayerDTO playerDTO;
 
-	public PlayerRegisteredEvent(TeamSeasonId teamSeasonId, PlayerDTO playerDTO) {
+	public RegisterPlayerCommand(TeamSeasonId teamSeasonId, PlayerDTO playerDTO) {
 		this.teamSeasonId = teamSeasonId;
 		this.playerDTO = playerDTO;
 	}

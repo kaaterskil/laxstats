@@ -23,7 +23,7 @@ import org.joda.time.LocalDateTime;
 @Table(name = "team_events", indexes = {
 		@Index(name = "team_events_idx1", columnList = "outcome"),
 		@Index(name = "team_events_idx2", columnList = "alignment") }, uniqueConstraints = { @UniqueConstraint(name = "team_events_uk1", columnNames = {
-		"team", "event" }) })
+		"team_season", "event" }) })
 public class TeamEvent {
 
 	@Id

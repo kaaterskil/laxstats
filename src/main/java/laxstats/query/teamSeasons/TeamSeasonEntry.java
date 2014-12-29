@@ -19,6 +19,7 @@ import javax.persistence.UniqueConstraint;
 
 import laxstats.api.teamSeasons.TeamStatus;
 import laxstats.query.events.TeamEvent;
+import laxstats.query.leagues.LeagueEntry;
 import laxstats.query.players.PlayerEntry;
 import laxstats.query.seasons.SeasonEntry;
 import laxstats.query.teams.TeamEntry;
@@ -50,6 +51,9 @@ public class TeamSeasonEntry {
 	@ManyToOne
 	@JoinColumn(nullable = false)
 	private SeasonEntry season;
+
+	@ManyToOne
+	private LeagueEntry affiliation;
 
 	@Column(nullable = false)
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
@@ -116,6 +120,14 @@ public class TeamSeasonEntry {
 
 	public void setSeason(SeasonEntry season) {
 		this.season = season;
+	}
+
+	public LeagueEntry getAffiliation() {
+		return affiliation;
+	}
+
+	public void setAffiliation(LeagueEntry affiliation) {
+		this.affiliation = affiliation;
 	}
 
 	public LocalDate getStartsOn() {

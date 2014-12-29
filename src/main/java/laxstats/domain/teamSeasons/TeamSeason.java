@@ -1,15 +1,21 @@
 package laxstats.domain.teamSeasons;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import laxstats.api.events.EventDTO;
+import laxstats.api.players.PlayerDTO;
+import laxstats.api.players.PlayerId;
 import laxstats.api.teamSeasons.DeleteTeamSeasonCommand;
 import laxstats.api.teamSeasons.EventAlreadyScheduledException;
 import laxstats.api.teamSeasons.EventRevisedEvent;
 import laxstats.api.teamSeasons.EventScheduleConflictException;
 import laxstats.api.teamSeasons.EventScheduledEvent;
+import laxstats.api.teamSeasons.PlayerDroppedEvent;
+import laxstats.api.teamSeasons.PlayerEditedEvent;
 import laxstats.api.teamSeasons.PlayerRegisteredEvent;
 import laxstats.api.teamSeasons.TeamSeasonCreatedEvent;
 import laxstats.api.teamSeasons.TeamSeasonDTO;
@@ -34,7 +40,7 @@ public class TeamSeason extends AbstractAnnotatedAggregateRoot<TeamSeasonId> {
 	private TeamStatus status;
 	private LocalDate startsOn;
 	private LocalDate endsOn;
-	private final List<PlayerInfo> roster = new ArrayList<>();
+	private final Map<String, PlayerInfo> roster = new HashMap<>();
 	private final List<EventInfo> events = new ArrayList<>();
 
 	public TeamSeason(TeamSeasonId teamSeasonId, TeamSeasonDTO teamSeasonDTO) {
@@ -54,15 +60,29 @@ public class TeamSeason extends AbstractAnnotatedAggregateRoot<TeamSeasonId> {
 		apply(new TeamSeasonDeletedEvent(command.getTeamSeasonId()));
 	}
 
-	public void registerPlayer(PlayerInfo player) {
-		if (!canRegisterPlayer(player)) {
+	public void registerPlayer(PlayerDTO dto) {
+		if (isPlayerRegistered(dto.getId().toString())) {
 			throw new IllegalArgumentException("player already registered");
 		}
-		apply(new PlayerRegisteredEvent(id, player));
+		apply(new PlayerRegisteredEvent(id, dto));
 	}
 
-	private boolean canRegisterPlayer(PlayerInfo player) {
-		return !roster.contains(player);
+	public void updatePlayer(PlayerDTO dto) {
+		if (!isPlayerRegistered(dto.getId().toString())) {
+			throw new IllegalArgumentException("player is not registered");
+		}
+		apply(new PlayerEditedEvent(id, dto));
+	}
+
+	public void dropPlayer(PlayerId playerId) {
+		if (!isPlayerRegistered(playerId.toString())) {
+			throw new IllegalArgumentException("player is not registered");
+		}
+		apply(new PlayerDroppedEvent(id, playerId));
+	}
+
+	private boolean isPlayerRegistered(String playerId) {
+		return roster.containsKey(playerId);
 	}
 
 	public void scheduleEvent(EventDTO dto) {
@@ -131,8 +151,32 @@ public class TeamSeason extends AbstractAnnotatedAggregateRoot<TeamSeasonId> {
 
 	@EventSourcingHandler
 	protected void handle(PlayerRegisteredEvent event) {
-		final PlayerInfo player = event.getPlayer();
-		roster.add(player);
+		final PlayerDTO dto = event.getPlayerDTO();
+		final String playerId = dto.getId().toString();
+		final String personId = dto.getPerson().getId();
+
+		final PlayerInfo player = new PlayerInfo(playerId, personId,
+				dto.getRole(), dto.getStatus(), dto.getJerseyNumber(),
+				dto.getPosition());
+		roster.put(playerId, player);
+	}
+
+	@EventSourcingHandler
+	protected void handle(PlayerEditedEvent event) {
+		final PlayerDTO dto = event.getPlayerDTO();
+		final String playerId = dto.getId().toString();
+		final String personId = dto.getPerson().getId();
+
+		final PlayerInfo player = new PlayerInfo(playerId, personId,
+				dto.getRole(), dto.getStatus(), dto.getJerseyNumber(),
+				dto.getPosition());
+		roster.put(playerId, player);
+	}
+
+	@EventSourcingHandler
+	protected void handle(PlayerDroppedEvent event) {
+		final String playerId = event.getPlayerId().toString();
+		roster.remove(playerId);
 	}
 
 	@EventSourcingHandler
@@ -200,7 +244,7 @@ public class TeamSeason extends AbstractAnnotatedAggregateRoot<TeamSeasonId> {
 		return endsOn;
 	}
 
-	public List<PlayerInfo> getRoster() {
+	public Map<String, PlayerInfo> getRoster() {
 		return roster;
 	}
 

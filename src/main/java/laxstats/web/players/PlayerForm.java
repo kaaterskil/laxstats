@@ -1,7 +1,5 @@
 package laxstats.web.players;
 
-import java.util.Map;
-
 import javax.validation.constraints.NotNull;
 
 import laxstats.api.players.PlayerStatus;
@@ -10,32 +8,17 @@ import laxstats.api.players.Role;
 
 public class PlayerForm {
 	@NotNull
-	private String teamSeasonId;
-
-	@NotNull
 	private String personId;
-	private Role role;
-
 	@NotNull
 	private PlayerStatus status;
-
 	@NotNull
 	private String jerseyNumber;
+	private Role role;
 	private Position position;
 	private boolean isCaptain;
 	private int depth;
 	private int height;
 	private int weight;
-	private Map<String, String> seasons;
-	private Map<String, String> people;
-
-	public String getTeamSeasonId() {
-		return teamSeasonId;
-	}
-
-	public void setTeamSeasonId(String teamSeasonId) {
-		this.teamSeasonId = teamSeasonId;
-	}
 
 	public String getPersonId() {
 		return personId;
@@ -43,14 +26,6 @@ public class PlayerForm {
 
 	public void setPersonId(String personId) {
 		this.personId = personId;
-	}
-
-	public Role getRole() {
-		return role;
-	}
-
-	public void setRole(Role role) {
-		this.role = role;
 	}
 
 	public PlayerStatus getStatus() {
@@ -67,6 +42,14 @@ public class PlayerForm {
 
 	public void setJerseyNumber(String jerseyNumber) {
 		this.jerseyNumber = jerseyNumber;
+	}
+
+	public Role getRole() {
+		return role;
+	}
+
+	public void setRole(Role role) {
+		this.role = role;
 	}
 
 	public Position getPosition() {
@@ -107,21 +90,5 @@ public class PlayerForm {
 
 	public void setWeight(int weight) {
 		this.weight = weight;
-	}
-
-	public Map<String, String> getSeasons() {
-		return seasons;
-	}
-
-	public void setSeasons(Map<String, String> seasons) {
-		this.seasons = seasons;
-	}
-
-	public Map<String, String> getPeople() {
-		return people;
-	}
-
-	public void setPeople(Map<String, String> people) {
-		this.people = people;
 	}
 }

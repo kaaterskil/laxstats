@@ -16,5 +16,4 @@ public class PlayerCreatedEvent {
 	public PlayerDTO getPlayerDTO() {
 		return playerDTO;
 	}
-
 }

@@ -2,11 +2,11 @@ package laxstats.api.teamSeasons;
 
 import laxstats.api.players.PlayerDTO;
 
-public class PlayerRegisteredEvent {
+public class PlayerEditedEvent {
 	private final TeamSeasonId teamSeasonId;
 	private final PlayerDTO playerDTO;
 
-	public PlayerRegisteredEvent(TeamSeasonId teamSeasonId, PlayerDTO playerDTO) {
+	public PlayerEditedEvent(TeamSeasonId teamSeasonId, PlayerDTO playerDTO) {
 		this.teamSeasonId = teamSeasonId;
 		this.playerDTO = playerDTO;
 	}
