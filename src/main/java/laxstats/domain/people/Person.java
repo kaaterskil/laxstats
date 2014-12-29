@@ -166,4 +166,98 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
 		contact.setPrimary(dto.isPrimary());
 		contact.setDoNotUse(dto.isDoNotUse());
 	}
+
+	// ---------- Getters ----------//
+
+	public PersonId getId() {
+		return id;
+	}
+
+	public String getPrefix() {
+		return prefix;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public String getMiddleName() {
+		return middleName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public String getSuffix() {
+		return suffix;
+	}
+
+	public String getNickname() {
+		return nickname;
+	}
+
+	public String getFullName() {
+		return fullName;
+	}
+
+	public Gender getGender() {
+		return gender;
+	}
+
+	public DominantHand getDominantHand() {
+		return dominantHand;
+	}
+
+	public boolean isParentReleased() {
+		return isParentReleased;
+	}
+
+	public LocalDate getParentReleaseSentOn() {
+		return parentReleaseSentOn;
+	}
+
+	public LocalDate getParentReleaseReceivedOn() {
+		return parentReleaseReceivedOn;
+	}
+
+	public LocalDate getBirthdate() {
+		return birthdate;
+	}
+
+	public String getPhoto() {
+		return photo;
+	}
+
+	public String getCollege() {
+		return college;
+	}
+
+	public String getCollegeUrl() {
+		return collegeUrl;
+	}
+
+	public Map<String, Address> getAddresses() {
+		return addresses;
+	}
+
+	public Map<String, Contact> getContacts() {
+		return contacts;
+	}
+
+	public Set<Relationship> getChildRelationships() {
+		return childRelationships;
+	}
+
+	public Set<Relationship> getParentRelationships() {
+		return parentRelationships;
+	}
+
+	public Set<EventAttendee> getAttendedEvents() {
+		return attendedEvents;
+	}
+
+	public Set<Player> getPlayedSeasons() {
+		return playedSeasons;
+	}
 }
