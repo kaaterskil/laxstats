@@ -1,9 +1,9 @@
 package laxstats.query.events;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -15,7 +15,6 @@ import javax.persistence.Index;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
 import laxstats.api.events.Conditions;
 import laxstats.api.events.Schedule;
@@ -50,12 +49,10 @@ public class EventEntry {
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime startsAt;
 
-	@NotNull
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20, nullable = false)
 	private Schedule schedule;
 
-	@NotNull
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20, nullable = false)
 	private Status status;
@@ -64,7 +61,6 @@ public class EventEntry {
 	@Column(length = 20)
 	private Conditions conditions;
 
-	@NotNull
 	@Column(nullable = false)
 	private String description;
 
@@ -81,12 +77,12 @@ public class EventEntry {
 	private UserEntry modifiedBy;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
-	private final Set<EventAttendee> eventAttendees = new HashSet<>();
+	private final Map<String, AttendeeEntry> eventAttendees = new HashMap<>();
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
 	private final List<TeamEvent> teams = new ArrayList<>();
 
-	// ---------- Getter/Setters ----------//
+	/* ---------- Getter/Setters ---------- */
 
 	public String getId() {
 		return id;
@@ -184,7 +180,7 @@ public class EventEntry {
 		this.modifiedBy = modifiedBy;
 	}
 
-	public Set<EventAttendee> getEventAttendees() {
+	public Map<String, AttendeeEntry> getEventAttendees() {
 		return eventAttendees;
 	}
 

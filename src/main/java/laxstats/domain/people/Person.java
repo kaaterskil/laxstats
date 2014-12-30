@@ -17,7 +17,7 @@ import laxstats.api.people.PersonCreatedEvent;
 import laxstats.api.people.PersonDTO;
 import laxstats.api.people.PersonId;
 import laxstats.domain.players.Player;
-import laxstats.query.events.EventAttendee;
+import laxstats.query.events.AttendeeEntry;
 
 import org.axonframework.eventsourcing.annotation.AbstractAnnotatedAggregateRoot;
 import org.axonframework.eventsourcing.annotation.AggregateIdentifier;
@@ -49,7 +49,7 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
 	private final Map<String, Contact> contacts = new HashMap<>();
 	private final Set<Relationship> childRelationships = new HashSet<>();
 	private final Set<Relationship> parentRelationships = new HashSet<>();
-	private final Set<EventAttendee> attendedEvents = new HashSet<>();
+	private final Set<AttendeeEntry> attendedEvents = new HashSet<>();
 	private final Set<Player> playedSeasons = new HashSet<>();
 
 	public Person(PersonId personId, PersonDTO personDTO) {
@@ -253,7 +253,7 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
 		return parentRelationships;
 	}
 
-	public Set<EventAttendee> getAttendedEvents() {
+	public Set<AttendeeEntry> getAttendedEvents() {
 		return attendedEvents;
 	}
 

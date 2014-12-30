@@ -1,6 +1,8 @@
 package laxstats.query.teamSeasons;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +22,7 @@ import javax.persistence.UniqueConstraint;
 import laxstats.api.teamSeasons.TeamStatus;
 import laxstats.query.events.TeamEvent;
 import laxstats.query.leagues.LeagueEntry;
+import laxstats.query.people.PersonEntry;
 import laxstats.query.players.PlayerEntry;
 import laxstats.query.seasons.SeasonEntry;
 import laxstats.query.teams.TeamEntry;
@@ -79,7 +82,7 @@ public class TeamSeasonEntry {
 	private UserEntry modifiedBy;
 
 	@OneToMany(mappedBy = "teamSeason")
-	private final List<PlayerEntry> roster = new ArrayList<>();
+	private final List<PlayerEntry> roster = new ArrayList<PlayerEntry>();
 
 	@OneToMany(mappedBy = "teamSeason")
 	private final Map<LocalDateTime, TeamEvent> events = new HashMap<>();
@@ -94,6 +97,31 @@ public class TeamSeasonEntry {
 	public boolean addPlayerToRoster(PlayerEntry player) {
 		player.setTeamSeason(this);
 		return roster.add(player);
+	}
+
+	public Map<String, String> getRosterData() {
+		final Map<String, String> data = new HashMap<>();
+		if (roster.size() > 0) {
+			final List<PlayerEntry> list = new ArrayList<>(roster);
+			Collections.sort(list, new PlayerComparator());
+			for (final PlayerEntry each : list) {
+				data.put(each.getId(), each.getPerson().getFullName());
+			}
+		}
+		return data;
+	}
+
+	private class PlayerComparator implements Comparator<PlayerEntry> {
+		@Override
+		public int compare(PlayerEntry o1, PlayerEntry o2) {
+			final PersonEntry p1 = o1.getPerson();
+			final PersonEntry p2 = o2.getPerson();
+			final int result = p1.getLastName().compareToIgnoreCase(
+					p2.getLastName());
+			return result == 0 ? p1.getFirstName().compareToIgnoreCase(
+					p2.getFirstName()) : result;
+		}
+
 	}
 
 	// ---------- Getter/Setters ----------//

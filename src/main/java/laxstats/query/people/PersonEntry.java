@@ -20,7 +20,7 @@ import javax.validation.constraints.NotNull;
 
 import laxstats.api.people.DominantHand;
 import laxstats.api.people.Gender;
-import laxstats.query.events.EventAttendee;
+import laxstats.query.events.AttendeeEntry;
 import laxstats.query.players.PlayerEntry;
 import laxstats.query.users.UserEntry;
 
@@ -113,7 +113,7 @@ public class PersonEntry {
 	private final Set<Relationship> parentRelationships = new HashSet<>();
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "person")
-	private final Set<EventAttendee> attendedEvents = new HashSet<>();
+	private final Set<AttendeeEntry> attendedEvents = new HashSet<>();
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "person")
 	private final Set<PlayerEntry> playedSeasons = new HashSet<>();
@@ -156,7 +156,7 @@ public class PersonEntry {
 		return addresses;
 	}
 
-	public Set<EventAttendee> getAttendedEvents() {
+	public Set<AttendeeEntry> getAttendedEvents() {
 		return attendedEvents;
 	}
 

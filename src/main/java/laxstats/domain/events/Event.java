@@ -2,9 +2,15 @@ package laxstats.domain.events;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import laxstats.api.events.AttendeeDeletedEvent;
+import laxstats.api.events.AttendeeRegisteredEvent;
+import laxstats.api.events.AttendeeUpdatedEvent;
 import laxstats.api.events.Conditions;
+import laxstats.api.events.AttendeeDTO;
 import laxstats.api.events.EventCreatedEvent;
 import laxstats.api.events.EventDTO;
 import laxstats.api.events.EventDeletedEvent;
@@ -31,7 +37,8 @@ public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 	private Status status;
 	private Conditions conditions;
 	private String description;
-	private List<TeamSeasonInfo> teams;
+	private final Map<String, AttendeeInfo> attendees = new HashMap<>();
+	private List<TeamSeasonInfo> teams = new ArrayList<>();
 
 	public Event(EventId eventId, EventDTO eventDTO) {
 		apply(new EventCreatedEvent(eventId, eventDTO));
@@ -40,7 +47,7 @@ public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 	protected Event() {
 	}
 
-	// ---------- Methods ----------//
+	/* ---------- Methods ---------- */
 
 	public void update(EventId eventId, EventDTO eventDTO) {
 		apply(new EventUpdatedEvent(eventId, eventDTO));
@@ -50,7 +57,34 @@ public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 		apply(new EventDeletedEvent(eventId));
 	}
 
-	// ---------- Event handling ----------//
+	public void registerAttendee(AttendeeDTO dto) {
+		if (isAttendeeRegistered(dto.getId())) {
+			throw new IllegalArgumentException("attendee already registered");
+		}
+		apply(new AttendeeRegisteredEvent(id, dto));
+	}
+
+	public void updateAttendee(AttendeeDTO dto) {
+		if (!isAttendeeRegistered(dto.getId())) {
+			throw new IllegalArgumentException(
+					"attendee is not registered for this event");
+		}
+		apply(new AttendeeUpdatedEvent(id, dto));
+	}
+
+	public void deleteAttendee(String attendeeId) {
+		if (!isAttendeeRegistered(attendeeId)) {
+			throw new IllegalArgumentException(
+					"attendee is not registered for this event");
+		}
+		apply(new AttendeeDeletedEvent(id, attendeeId));
+	}
+
+	private boolean isAttendeeRegistered(String attendeeId) {
+		return attendees.containsKey(attendeeId);
+	}
+
+	/* ---------- Event handling ---------- */
 
 	@EventSourcingHandler
 	protected void handle(EventCreatedEvent event) {
@@ -103,7 +137,34 @@ public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 		markDeleted();
 	}
 
-	// ---------- Getters ----------//
+	@EventSourcingHandler
+	protected void handle(AttendeeRegisteredEvent event) {
+		setAttendee(event.getAttendeeDTO());
+	}
+
+	@EventSourcingHandler
+	protected void handle(AttendeeUpdatedEvent event) {
+		setAttendee(event.getAttendeeDTO());
+	}
+
+	@EventSourcingHandler
+	protected void handle(AttendeeDeletedEvent event) {
+		attendees.remove(event.getAttendeeId());
+	}
+
+	private AttendeeInfo setAttendee(AttendeeDTO dto) {
+		final String playerId = dto.getPlayer() == null ? null : dto
+				.getPlayer().getId();
+		final String teamSeasonId = dto.getTeamSeason() == null ? null : dto
+				.getTeamSeason().getId();
+
+		final AttendeeInfo vo = new AttendeeInfo(playerId, teamSeasonId,
+				dto.getName(), dto.getJerseyNumber(), dto.getRole(),
+				dto.getStatus());
+		return attendees.put(dto.getId(), vo);
+	}
+
+	/* ---------- Getters ---------- */
 
 	public static long getSerialversionuid() {
 		return serialVersionUID;
@@ -143,5 +204,9 @@ public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 
 	public List<TeamSeasonInfo> getTeams() {
 		return Collections.unmodifiableList(teams);
+	}
+
+	public Map<String, AttendeeInfo> getAttendees() {
+		return attendees;
 	}
 }

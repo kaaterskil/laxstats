@@ -1,9 +1,12 @@
 package laxstats.domain.events;
 
 import laxstats.api.events.CreateEventCommand;
+import laxstats.api.events.DeleteAttendeeCommand;
 import laxstats.api.events.DeleteEventCommand;
 import laxstats.api.events.EventDTO;
 import laxstats.api.events.EventId;
+import laxstats.api.events.RegisterAttendeeCommand;
+import laxstats.api.events.UpdateAttendeeCommand;
 import laxstats.api.events.UpdateEventCommand;
 import laxstats.api.teamSeasons.TeamSeasonId;
 import laxstats.domain.teamSeasons.TeamSeason;
@@ -58,8 +61,8 @@ public class EventCommandHandler {
 		final EventDTO dto = command.getEventDTO();
 		try {
 			if (dto.getTeamOne() != null) {
-				final TeamSeasonId teamOneId = new TeamSeasonId(dto.getTeamOne()
-						.getId());
+				final TeamSeasonId teamOneId = new TeamSeasonId(dto
+						.getTeamOne().getId());
 				final TeamSeason teamOne = teamSeasonRepository.load(teamOneId);
 				if (teamOne.alreadyScheduled(dto)) {
 					teamOne.updateEvent(dto);
@@ -68,8 +71,8 @@ public class EventCommandHandler {
 				}
 			}
 			if (dto.getTeamTwo() != null) {
-				final TeamSeasonId teamTwoId = new TeamSeasonId(dto.getTeamTwo()
-						.getId());
+				final TeamSeasonId teamTwoId = new TeamSeasonId(dto
+						.getTeamTwo().getId());
 				final TeamSeason teamTwo = teamSeasonRepository.load(teamTwoId);
 				if (teamTwo.alreadyScheduled(dto)) {
 					teamTwo.updateEvent(dto);
@@ -79,7 +82,7 @@ public class EventCommandHandler {
 			}
 			final Event event = repository.load(identifier);
 			event.update(identifier, dto);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -90,5 +93,28 @@ public class EventCommandHandler {
 		final EventId eventId = command.getEventId();
 		final Event event = repository.load(eventId);
 		event.delete(eventId);
+	}
+
+	/* --------- Attendee commands ---------- */
+
+	@CommandHandler
+	public void handle(RegisterAttendeeCommand command) {
+		final EventId identifier = command.getEventId();
+		final Event event = repository.load(identifier);
+		event.registerAttendee(command.getAttendeeDTO());
+	}
+
+	@CommandHandler
+	public void handle(UpdateAttendeeCommand command) {
+		final EventId identifier = command.getEventId();
+		final Event event = repository.load(identifier);
+		event.updateAttendee(command.getAttendeeDTO());
+	}
+
+	@CommandHandler
+	public void handle(DeleteAttendeeCommand command) {
+		final EventId identifier = command.getEventId();
+		final Event event = repository.load(identifier);
+		event.deleteAttendee(command.getAttendeeId());
 	}
 }

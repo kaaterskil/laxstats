@@ -2,6 +2,10 @@ package laxstats.query.events;
 
 import java.util.List;
 
+import laxstats.api.events.AttendeeDeletedEvent;
+import laxstats.api.events.AttendeeRegisteredEvent;
+import laxstats.api.events.AttendeeUpdatedEvent;
+import laxstats.api.events.AttendeeDTO;
 import laxstats.api.events.EventCreatedEvent;
 import laxstats.api.events.EventDTO;
 import laxstats.api.events.EventDeletedEvent;
@@ -119,5 +123,55 @@ public class EventListener {
 		final EventId eventId = event.getEventId();
 		final EventEntry entity = repository.findOne(eventId.toString());
 		repository.delete(entity);
+	}
+
+	/* ---------- Event Attendees ---------- */
+
+	@EventHandler
+	protected void handle(AttendeeRegisteredEvent event) {
+		final EventId identifier = event.getEventId();
+		final EventEntry aggregate = repository.findOne(identifier.toString());
+
+		final AttendeeDTO dto = event.getAttendeeDTO();
+		final String attendeeId = dto.getId();
+		final AttendeeEntry entity = new AttendeeEntry(aggregate,
+				dto.getPlayer(), dto.getTeamSeason());
+		entity.setId(attendeeId);
+		entity.setName(dto.getName());
+		entity.setJerseyNumber(dto.getJerseyNumber());
+		entity.setRole(dto.getRole());
+		entity.setStatus(dto.getStatus());
+		entity.setCreatedAt(dto.getCreatedAt());
+		entity.setCreatedBy(dto.getCreatedBy());
+		entity.setModifiedAt(dto.getModifiedAt());
+		entity.setModifiedBy(dto.getModifiedBy());
+
+		aggregate.getEventAttendees().put(attendeeId, entity);
+		repository.save(aggregate);
+	}
+
+	@EventHandler
+	protected void handle(AttendeeUpdatedEvent event) {
+		final EventId identifier = event.getEventId();
+		final EventEntry aggregate = repository.findOne(identifier.toString());
+
+		final AttendeeDTO dto = event.getAttendeeDTO();
+		final AttendeeEntry entity = aggregate.getEventAttendees().get(
+				dto.getId());
+		entity.setName(dto.getName());
+		entity.setJerseyNumber(dto.getJerseyNumber());
+		entity.setRole(dto.getRole());
+		entity.setStatus(dto.getStatus());
+		entity.setModifiedAt(dto.getModifiedAt());
+		entity.setModifiedBy(dto.getModifiedBy());
+		repository.save(aggregate);
+	}
+
+	@EventHandler
+	protected void handle(AttendeeDeletedEvent event) {
+		final EventId identifier = event.getEventId();
+		final EventEntry aggregate = repository.findOne(identifier.toString());
+		aggregate.getEventAttendees().remove(event.getAttendeeId());
+		repository.save(aggregate);
 	}
 }
