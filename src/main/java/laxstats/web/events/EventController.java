@@ -8,10 +8,10 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import laxstats.api.events.Alignment;
+import laxstats.api.events.AttendeeDTO;
 import laxstats.api.events.CreateEventCommand;
 import laxstats.api.events.DeleteAttendeeCommand;
 import laxstats.api.events.DeleteEventCommand;
-import laxstats.api.events.AttendeeDTO;
 import laxstats.api.events.EventDTO;
 import laxstats.api.events.EventId;
 import laxstats.api.events.RegisterAttendeeCommand;
@@ -75,6 +75,7 @@ public class EventController extends ApplicationController {
 	@InitBinder
 	protected void initBinder(WebDataBinder binder) {
 		binder.setValidator(new EventFormValidator());
+		binder.setValidator(new AttendeeFormValidator());
 	}
 
 	/*---------- Event actions ----------*/
@@ -213,8 +214,8 @@ public class EventController extends ApplicationController {
 		final PlayerEntry player = playerRepository.findOne(form.getPlayerId());
 		final TeamSeasonEntry teamSeason = teamRepository.findOne(teamSeasonId);
 
-		final AttendeeDTO dto = new AttendeeDTO(attendeeId, event,
-				player, teamSeason, form.getRole(), form.getStatus(), player
+		final AttendeeDTO dto = new AttendeeDTO(attendeeId, event, player,
+				teamSeason, form.getRole(), form.getStatus(), player
 						.getPerson().getFullName(), player.getJerseyNumber(),
 				now, user, now, user);
 		final RegisterAttendeeCommand payload = new RegisterAttendeeCommand(
@@ -227,8 +228,7 @@ public class EventController extends ApplicationController {
 	public String showAttendee(@PathVariable String eventId,
 			@PathVariable String teamSeasonId, @PathVariable String attendeeId,
 			Model model) {
-		final AttendeeEntry attendee = attendeeRepository
-				.findOne(attendeeId);
+		final AttendeeEntry attendee = attendeeRepository.findOne(attendeeId);
 		model.addAttribute("item", attendee);
 		return "events/showAttendee";
 	}
@@ -247,8 +247,8 @@ public class EventController extends ApplicationController {
 		final PlayerEntry player = playerRepository.findOne(form.getPlayerId());
 		final TeamSeasonEntry teamSeason = teamRepository.findOne(teamSeasonId);
 
-		final AttendeeDTO dto = new AttendeeDTO(attendeeId, event,
-				player, teamSeason, form.getRole(), form.getStatus(), player
+		final AttendeeDTO dto = new AttendeeDTO(attendeeId, event, player,
+				teamSeason, form.getRole(), form.getStatus(), player
 						.getPerson().getFullName(), player.getJerseyNumber(),
 				now, user);
 		final UpdateAttendeeCommand payload = new UpdateAttendeeCommand(
@@ -284,8 +284,7 @@ public class EventController extends ApplicationController {
 	public String editAttendee(@PathVariable String eventId,
 			@PathVariable String teamSeasonId, @PathVariable String attendeeId,
 			Model model) {
-		final AttendeeEntry attendee = attendeeRepository
-				.findOne(attendeeId);
+		final AttendeeEntry attendee = attendeeRepository.findOne(attendeeId);
 		final TeamSeasonEntry teamSeason = teamRepository.findOne(teamSeasonId);
 
 		final AttendeeForm form = new AttendeeForm();

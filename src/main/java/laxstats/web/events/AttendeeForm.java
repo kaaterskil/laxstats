@@ -2,12 +2,16 @@ package laxstats.web.events;
 
 import java.util.Map;
 
+import javax.validation.constraints.NotNull;
+
 import laxstats.api.events.AthleteStatus;
 import laxstats.api.players.Role;
 
 public class AttendeeForm {
 	private String playerId;
 	private String teamSeasonId;
+	private String name;
+	@NotNull
 	private Role role;
 	private AthleteStatus status;
 	private Map<String, String> playerData;
@@ -27,6 +31,14 @@ public class AttendeeForm {
 
 	public void setTeamSeasonId(String teamSeasonId) {
 		this.teamSeasonId = teamSeasonId;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public Role getRole() {

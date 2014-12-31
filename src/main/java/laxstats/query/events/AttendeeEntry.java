@@ -40,11 +40,9 @@ public class AttendeeEntry {
 	private EventEntry event;
 
 	@ManyToOne
-	@JoinColumn(nullable = false)
 	private PlayerEntry player;
 
 	@ManyToOne
-	@JoinColumn(nullable = false)
 	private TeamSeasonEntry teamSeason;
 
 	@Enumerated(EnumType.STRING)
