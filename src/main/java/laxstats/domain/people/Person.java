@@ -1,7 +1,9 @@
 package laxstats.domain.people;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -11,16 +13,17 @@ import laxstats.api.people.AddressDTO;
 import laxstats.api.people.ContactAddedEvent;
 import laxstats.api.people.ContactChangedEvent;
 import laxstats.api.people.ContactDTO;
+import laxstats.api.people.Contactable;
 import laxstats.api.people.DominantHand;
 import laxstats.api.people.Gender;
+import laxstats.api.people.HasPrimaryContactException;
 import laxstats.api.people.PersonCreatedEvent;
 import laxstats.api.people.PersonDTO;
 import laxstats.api.people.PersonId;
-import laxstats.domain.players.Player;
-import laxstats.query.events.AttendeeEntry;
 
 import org.axonframework.eventsourcing.annotation.AbstractAnnotatedAggregateRoot;
 import org.axonframework.eventsourcing.annotation.AggregateIdentifier;
+import org.axonframework.eventsourcing.annotation.EventSourcedMember;
 import org.axonframework.eventsourcing.annotation.EventSourcingHandler;
 import org.joda.time.LocalDate;
 
@@ -45,12 +48,16 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
 	private String photo;
 	private String college;
 	private String collegeUrl;
+	private final Set<RelationshipInfo> childRelationships = new HashSet<>();
+	private final Set<RelationshipInfo> parentRelationships = new HashSet<>();
+
+	@EventSourcedMember
 	private final Map<String, Address> addresses = new HashMap<>();
+
+	@EventSourcedMember
 	private final Map<String, Contact> contacts = new HashMap<>();
-	private final Set<Relationship> childRelationships = new HashSet<>();
-	private final Set<Relationship> parentRelationships = new HashSet<>();
-	private final Set<AttendeeEntry> attendedEvents = new HashSet<>();
-	private final Set<Player> playedSeasons = new HashSet<>();
+
+	/*---------- Constructors ----------*/
 
 	public Person(PersonId personId, PersonDTO personDTO) {
 		apply(new PersonCreatedEvent(personId, personDTO));
@@ -59,38 +66,80 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
 	protected Person() {
 	}
 
-	// ---------- Methods ----------//
+	/* ---------- Methods ---------- */
 
-	public void registerAddress(AddressDTO addressDTO) {
-		if (addresses.containsKey(addressDTO.getId())) {
-			apply(new AddressChangedEvent(id, addressDTO));
+	public void registerAddress(AddressDTO dto, boolean overridePrimary) {
+		if (dto.isPrimary() && hasPrimaryAddress() && !overridePrimary) {
+			final String value = primaryAddress().getAddress();
+			throw new HasPrimaryContactException(value);
+		}
+		if (addresses.containsKey(dto.getId())) {
+			apply(new AddressChangedEvent(id, dto));
 		} else {
-			apply(new AddressAddedEvent(id, addressDTO));
+			apply(new AddressAddedEvent(id, dto));
 		}
 	}
 
-	public void updateAddress(AddressDTO addressDTO) {
-		apply(new AddressChangedEvent(id, addressDTO));
+	public void updateAddress(AddressDTO dto) {
+		apply(new AddressChangedEvent(id, dto));
 	}
 
-	public void registerContact(ContactDTO contactDTO) {
-		if (contacts.containsKey(contactDTO.getId())) {
-			apply(new ContactChangedEvent(id, contactDTO));
+	private boolean hasPrimaryAddress() {
+		return primaryAddress() != null;
+	}
+
+	public Address primaryAddress() {
+		final List<Contactable> list = new ArrayList<Contactable>(
+				addresses.values());
+		return (Address) getPrimaryContactOrAddress(list);
+	}
+
+	public void registerContact(ContactDTO dto, boolean overridePrimary) {
+		if (dto.isPrimary() && hasPrimaryContact() && !overridePrimary) {
+			throw new HasPrimaryContactException(primaryContact().getValue());
+		}
+		if (contacts.containsKey(dto.getId())) {
+			apply(new ContactChangedEvent(id, dto));
 		} else {
-			apply(new ContactAddedEvent(id, contactDTO));
+			apply(new ContactAddedEvent(id, dto));
 		}
 	}
 
-	public void updateContact(ContactDTO contactDTO) {
-		apply(new ContactChangedEvent(id, contactDTO));
+	public void updateContact(ContactDTO dto) {
+		apply(new ContactChangedEvent(id, dto));
 	}
 
-	// ---------- Event handlers ----------//
+	private boolean hasPrimaryContact() {
+		return primaryContact() != null;
+	}
+
+	public Contact primaryContact() {
+		final List<Contactable> list = new ArrayList<Contactable>(
+				contacts.values());
+		return (Contact) getPrimaryContactOrAddress(list);
+	}
+
+	private Contactable getPrimaryContactOrAddress(List<Contactable> c) {
+		Contactable primary = null;
+		Contactable first = null;
+		int i = 0;
+		for (final Contactable each : c) {
+			if (i == 0) {
+				first = each;
+			}
+			if (each.isPrimary()) {
+				primary = each;
+			}
+			i++;
+		}
+		return primary != null ? primary : first;
+	}
+
+	/* ---------- Event handlers ---------- */
 
 	@EventSourcingHandler
 	protected void handle(PersonCreatedEvent event) {
 		final PersonDTO dto = event.getPersonDTO();
-
 		id = event.getPersonId();
 		prefix = dto.getPrefix();
 		firstName = dto.getFirstName();
@@ -119,24 +168,7 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
 		address.setAddressType(dto.getAddressType());
 		address.setPrimary(dto.isPrimary());
 		address.setDoNotUse(dto.isDoNotUse());
-
 		addresses.put(addressId, address);
-	}
-
-	@EventSourcingHandler
-	protected void handle(AddressChangedEvent event) {
-		final String addressId = event.getAddressDTO().getId();
-		final AddressDTO dto = event.getAddressDTO();
-
-		final Address address = addresses.get(addressId);
-		address.setAddressType(dto.getAddressType());
-		address.setAddress1(dto.getAddress1());
-		address.setAddress2(dto.getAddress2());
-		address.setCity(dto.getCity());
-		address.setRegion(dto.getRegion());
-		address.setPostalCode(dto.getPostalCode());
-		address.setPrimary(dto.isPrimary());
-		address.setDoNotUse(dto.isDoNotUse());
 	}
 
 	@EventSourcingHandler
@@ -151,25 +183,13 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
 		contact.setValue(dto.getValue());
 		contact.setPrimary(dto.isPrimary());
 		contact.setDoNotUse(dto.isDoNotUse());
-
 		contacts.put(contactId, contact);
 	}
 
-	@EventSourcingHandler
-	protected void handle(ContactChangedEvent event) {
-		final String contactId = event.getContact().getId();
-		final ContactDTO dto = event.getContact();
+	/* ---------- Getters ---------- */
 
-		final Contact contact = contacts.get(contactId);
-		contact.setMethod(dto.getMethod());
-		contact.setValue(dto.getValue());
-		contact.setPrimary(dto.isPrimary());
-		contact.setDoNotUse(dto.isDoNotUse());
-	}
-
-	// ---------- Getters ----------//
-
-	public PersonId getId() {
+	@Override
+	public PersonId getIdentifier() {
 		return id;
 	}
 
@@ -245,19 +265,11 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
 		return contacts;
 	}
 
-	public Set<Relationship> getChildRelationships() {
+	public Set<RelationshipInfo> getChildRelationships() {
 		return childRelationships;
 	}
 
-	public Set<Relationship> getParentRelationships() {
+	public Set<RelationshipInfo> getParentRelationships() {
 		return parentRelationships;
-	}
-
-	public Set<AttendeeEntry> getAttendedEvents() {
-		return attendedEvents;
-	}
-
-	public Set<Player> getPlayedSeasons() {
-		return playedSeasons;
 	}
 }

@@ -1,8 +1,10 @@
 package laxstats.query.people;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -18,6 +20,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import laxstats.api.people.Contactable;
 import laxstats.api.people.DominantHand;
 import laxstats.api.people.Gender;
 import laxstats.query.events.AttendeeEntry;
@@ -360,45 +363,45 @@ public class PersonEntry {
 		this.suffix = suffix;
 	}
 
-	// ---------- Other methods ----------//
+	/* ---------- Other methods ---------- */
 
 	/**
 	 * Returns the person's primary address. If there is no primary address, the
-	 * method returns the first address in the collection.
+	 * method returns the first address in the collection or <code>null</code>
+	 * if the collection is empty.
 	 *
 	 * @return The person's primary address.
 	 */
 	public AddressEntry primaryAddress() {
-		AddressEntry result = null;
-		int i = 0;
-		final Iterator<AddressEntry> iter = addresses.values().iterator();
-		while (iter.hasNext()) {
-			final AddressEntry entry = iter.next();
-			if (entry.isPrimary() || i == 0) {
-				result = entry;
-			}
-			i++;
-		}
-		return result;
+		final List<Contactable> list = new ArrayList<>(addresses.values());
+		return (AddressEntry) getPrimaryContactOrAddress(list);
 	}
 
 	/**
 	 * Returns the person's primary contact. If there is no primary contact, the
-	 * method returns the first contact in the collection.
+	 * method returns the first contact in the collection or <code>null</code>
+	 * if the collection is empty.
 	 *
 	 * @return The person's primary contact.
 	 */
 	public ContactEntry primaryContact() {
-		ContactEntry result = null;
+		final List<Contactable> list = new ArrayList<>(contacts.values());
+		return (ContactEntry) getPrimaryContactOrAddress(list);
+	}
+
+	private Contactable getPrimaryContactOrAddress(List<Contactable> c) {
+		Contactable primary = null;
+		Contactable first = null;
 		int i = 0;
-		final Iterator<ContactEntry> iter = contacts.values().iterator();
-		while (iter.hasNext()) {
-			final ContactEntry entry = iter.next();
-			if (entry.isPrimary() || i == 0) {
-				result = entry;
+		for (final Contactable each : c) {
+			if (i == 0) {
+				first = each;
+			}
+			if (each.isPrimary()) {
+				primary = each;
 			}
 			i++;
 		}
-		return result;
+		return primary != null ? primary : first;
 	}
 }

@@ -11,6 +11,7 @@ import javax.persistence.Table;
 
 import laxstats.api.Region;
 import laxstats.api.people.AddressType;
+import laxstats.api.people.Contactable;
 import laxstats.query.sites.SiteEntry;
 import laxstats.query.users.UserEntry;
 
@@ -23,7 +24,7 @@ import org.joda.time.LocalDateTime;
 		@Index(name = "address_idx2", columnList = "isPrimary"),
 		@Index(name = "address_idx3", columnList = "doNotUse"),
 		@Index(name = "address_idx4", columnList = "addressType") })
-public class AddressEntry {
+public class AddressEntry implements Contactable {
 
 	@Id
 	@Column(length = 36)
@@ -176,18 +177,22 @@ public class AddressEntry {
 		this.site = site;
 	}
 
+	@Override
 	public boolean isDoNotUse() {
 		return doNotUse;
 	}
 
+	@Override
 	public void setDoNotUse(boolean doNotUse) {
 		this.doNotUse = doNotUse;
 	}
 
+	@Override
 	public boolean isPrimary() {
 		return isPrimary;
 	}
 
+	@Override
 	public void setPrimary(boolean isPrimary) {
 		this.isPrimary = isPrimary;
 	}

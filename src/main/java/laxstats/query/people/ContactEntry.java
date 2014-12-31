@@ -10,6 +10,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import laxstats.api.people.ContactMethod;
+import laxstats.api.people.Contactable;
 import laxstats.query.users.UserEntry;
 
 import org.hibernate.annotations.Type;
@@ -20,7 +21,7 @@ import org.joda.time.LocalDateTime;
 		@Index(name = "contact_idx1", columnList = "method"),
 		@Index(name = "contact_idx2", columnList = "isPrimary"),
 		@Index(name = "contact_idx3", columnList = "doNotUse") })
-public class ContactEntry {
+public class ContactEntry implements Contactable {
 
 	@Id
 	@Column(length = 36)
@@ -118,18 +119,22 @@ public class ContactEntry {
 		this.value = value;
 	}
 
+	@Override
 	public boolean isDoNotUse() {
 		return doNotUse;
 	}
 
+	@Override
 	public void setDoNotUse(boolean doNotUse) {
 		this.doNotUse = doNotUse;
 	}
 
+	@Override
 	public boolean isPrimary() {
 		return isPrimary;
 	}
 
+	@Override
 	public void setPrimary(boolean isPrimary) {
 		this.isPrimary = isPrimary;
 	}

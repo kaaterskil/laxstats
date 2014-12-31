@@ -1,143 +1,172 @@
 package laxstats.domain.people;
 
 import laxstats.api.Region;
+import laxstats.api.people.AddressChangedEvent;
+import laxstats.api.people.AddressDTO;
 import laxstats.api.people.AddressType;
-import org.joda.time.LocalDateTime;
+import laxstats.api.people.Contactable;
 
-public class Address {
-    private String id;
-    private String personId;
-    private String site;
-    private AddressType addressType;
-    private String address1;
-    private String address2;
-    private String city;
-    private Region region;
-    private String postalCode;
-    private boolean isPrimary;
-    private boolean doNotUse;
-    private String createdBy;
-    private LocalDateTime createdAt;
-    private String modifiedBy;
-    private LocalDateTime modifiedAt;
+import org.axonframework.eventhandling.annotation.EventHandler;
+import org.axonframework.eventsourcing.annotation.AbstractAnnotatedEntity;
 
-    public String getId() {
-        return id;
-    }
+public class Address extends AbstractAnnotatedEntity implements Contactable {
+	private String id;
+	private String personId;
+	private String siteId;
+	private AddressType addressType;
+	private String address1;
+	private String address2;
+	private String city;
+	private Region region;
+	private String postalCode;
+	private boolean isPrimary;
+	private boolean doNotUse;
 
-    public void setId(String id) {
-        this.id = id;
-    }
+	/*---------- Methods ----------*/
 
-    public String getPersonId() {
-        return personId;
-    }
+	public String getAddress() {
+		final StringBuilder sb = new StringBuilder();
+		boolean concat = false;
+		if (address1 != null) {
+			sb.append(address1);
+			concat = true;
+		}
+		if (address2 != null) {
+			if (concat) {
+				sb.append(", ");
+			}
+			sb.append(address2);
+			concat = true;
+		}
+		if (city != null) {
+			if (concat) {
+				sb.append(", ");
+			}
+			sb.append(city);
+			concat = true;
+		}
+		if (region != null) {
+			if (concat) {
+				sb.append(" ");
+			}
+			sb.append(region.getAbbreviation());
+		}
+		if (postalCode != null) {
+			sb.append(" ").append(postalCode);
+		}
+		return sb.toString();
+	}
 
-    public void setPersonId(String personId) {
-        this.personId = personId;
-    }
+	/*---------- Event handlers ----------*/
 
-    public String getSite() {
-        return site;
-    }
+	@EventHandler
+	protected void handle(AddressChangedEvent event) {
+		if (!this.id.equals(event.getAddressDTO().getId())) {
+			return;
+		}
 
-    public void setSite(String site) {
-        this.site = site;
-    }
+		final AddressDTO dto = event.getAddressDTO();
+		addressType = dto.getAddressType();
+		address1 = dto.getAddress1();
+		address2 = dto.getAddress2();
+		city = dto.getCity();
+		region = dto.getRegion();
+		postalCode = dto.getPostalCode();
+		isPrimary = dto.isPrimary();
+		doNotUse = dto.isDoNotUse();
+	}
 
-    public AddressType getAddressType() {
-        return addressType;
-    }
+	/*---------- Getter/Setters ----------*/
 
-    public void setAddressType(AddressType addressType) {
-        this.addressType = addressType;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public String getAddress1() {
-        return address1;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public void setAddress1(String address1) {
-        this.address1 = address1;
-    }
+	public String getPersonId() {
+		return personId;
+	}
 
-    public String getAddress2() {
-        return address2;
-    }
+	public void setPersonId(String personId) {
+		this.personId = personId;
+	}
 
-    public void setAddress2(String address2) {
-        this.address2 = address2;
-    }
+	public String getSiteId() {
+		return siteId;
+	}
 
-    public String getCity() {
-        return city;
-    }
+	public void setSiteId(String siteId) {
+		this.siteId = siteId;
+	}
 
-    public void setCity(String city) {
-        this.city = city;
-    }
+	public AddressType getAddressType() {
+		return addressType;
+	}
 
-    public Region getRegion() {
-        return region;
-    }
+	public void setAddressType(AddressType addressType) {
+		this.addressType = addressType;
+	}
 
-    public void setRegion(Region region) {
-        this.region = region;
-    }
+	public String getAddress1() {
+		return address1;
+	}
 
-    public String getPostalCode() {
-        return postalCode;
-    }
+	public void setAddress1(String address1) {
+		this.address1 = address1;
+	}
 
-    public void setPostalCode(String postalCode) {
-        this.postalCode = postalCode;
-    }
+	public String getAddress2() {
+		return address2;
+	}
 
-    public boolean isPrimary() {
-        return isPrimary;
-    }
+	public void setAddress2(String address2) {
+		this.address2 = address2;
+	}
 
-    public void setPrimary(boolean isPrimary) {
-        this.isPrimary = isPrimary;
-    }
+	public String getCity() {
+		return city;
+	}
 
-    public boolean isDoNotUse() {
-        return doNotUse;
-    }
+	public void setCity(String city) {
+		this.city = city;
+	}
 
-    public void setDoNotUse(boolean doNotUse) {
-        this.doNotUse = doNotUse;
-    }
+	public Region getRegion() {
+		return region;
+	}
 
-    public String getCreatedBy() {
-        return createdBy;
-    }
+	public void setRegion(Region region) {
+		this.region = region;
+	}
 
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
+	public String getPostalCode() {
+		return postalCode;
+	}
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
+	@Override
+	public boolean isPrimary() {
+		return isPrimary;
+	}
 
-    public String getModifiedBy() {
-        return modifiedBy;
-    }
+	@Override
+	public void setPrimary(boolean isPrimary) {
+		this.isPrimary = isPrimary;
+	}
 
-    public void setModifiedBy(String modifiedBy) {
-        this.modifiedBy = modifiedBy;
-    }
+	@Override
+	public boolean isDoNotUse() {
+		return doNotUse;
+	}
 
-    public LocalDateTime getModifiedAt() {
-        return modifiedAt;
-    }
-
-    public void setModifiedAt(LocalDateTime modifiedAt) {
-        this.modifiedAt = modifiedAt;
-    }
+	@Override
+	public void setDoNotUse(boolean doNotUse) {
+		this.doNotUse = doNotUse;
+	}
 }
