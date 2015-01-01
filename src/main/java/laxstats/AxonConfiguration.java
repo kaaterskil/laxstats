@@ -9,6 +9,7 @@ import laxstats.domain.people.Person;
 import laxstats.domain.players.Player;
 import laxstats.domain.plays.PenaltyType;
 import laxstats.domain.plays.Play;
+import laxstats.domain.relationships.Relationship;
 import laxstats.domain.seasons.Season;
 import laxstats.domain.sites.Site;
 import laxstats.domain.teamSeasons.TeamSeason;
@@ -103,6 +104,14 @@ public class AxonConfiguration {
 	public Repository<Person> personRepository() {
 		final EventSourcingRepository<Person> repository = new EventSourcingRepository<>(
 				Person.class, eventStore());
+		repository.setEventBus(eventBus());
+		return repository;
+	}
+
+	@Bean
+	public Repository<Relationship> relationshipRepository() {
+		final EventSourcingRepository<Relationship> repository = new EventSourcingRepository<>(
+				Relationship.class, eventStore());
 		repository.setEventBus(eventBus());
 		return repository;
 	}

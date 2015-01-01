@@ -71,7 +71,63 @@ public class AddressEntry implements Contactable {
 	@ManyToOne
 	private UserEntry modifiedBy;
 
-	// ---------- Getter/Setters ----------//
+	/*---------- Methods ----------*/
+
+	public String fullAddress() {
+		final StringBuilder sb = new StringBuilder();
+		boolean addConcat = false;
+		if (address1 != null) {
+			sb.append(address1);
+			addConcat = true;
+		}
+		if (address2 != null) {
+			if (addConcat) {
+				sb.append(", ");
+			}
+			sb.append(address2);
+			addConcat = true;
+		}
+		if (addConcat) {
+			sb.append(" ");
+		}
+		sb.append(city);
+		if (region != null) {
+			sb.append(", ").append(region.getAbbreviation());
+		}
+		if (postalCode != null) {
+			sb.append(" ").append(postalCode);
+		}
+		return sb.toString();
+	}
+
+	public String toHTML() {
+		final StringBuilder sb = new StringBuilder();
+		boolean addBreak = false;
+		if (address1 != null) {
+			sb.append(address1);
+			addBreak = true;
+		}
+		if (address2 != null) {
+			if (addBreak) {
+				sb.append("<br>");
+			}
+			sb.append(address2);
+			addBreak = true;
+		}
+		if (addBreak) {
+			sb.append("<br>");
+		}
+		sb.append(city);
+		if (region != null) {
+			sb.append(", ").append(region.getAbbreviation());
+		}
+		if (postalCode != null) {
+			sb.append(" ").append(postalCode);
+		}
+		return sb.toString();
+	}
+
+	/*---------- Getter/Setters ----------*/
 
 	public String getId() {
 		return id;
@@ -195,36 +251,5 @@ public class AddressEntry implements Contactable {
 	@Override
 	public void setPrimary(boolean isPrimary) {
 		this.isPrimary = isPrimary;
-	}
-
-	// ---------- Other methods ----------//
-
-	public String toHTML() {
-		String result = "";
-		boolean addBreak = false;
-		if (address1 != null) {
-			result += address1;
-			addBreak = true;
-		}
-		if (address2 != null) {
-			if (addBreak) {
-				result += "<br>";
-			}
-			result += address2;
-			addBreak = true;
-		}
-		if (city != null) {
-			if (addBreak) {
-				result += "<br>";
-			}
-			result += city;
-		}
-		if (region != null) {
-			result += ", " + region.getAbbreviation();
-		}
-		if (postalCode != null) {
-			result += " " + postalCode;
-		}
-		return result;
 	}
 }

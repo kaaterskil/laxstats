@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
-@RequestMapping("/people")
+@RequestMapping(value = "/people")
 public class PersonController extends ApplicationController {
 	private final PersonQueryRepository personRepository;
 
@@ -50,20 +50,6 @@ public class PersonController extends ApplicationController {
 	public String index(Model model) {
 		model.addAttribute("items", personRepository.findAll());
 		return "people/index";
-	}
-
-	@RequestMapping(value = "/{personId}", method = RequestMethod.GET)
-	public String showPerson(@PathVariable String personId, Model model) {
-		final PersonEntry person = personRepository.findOne(personId);
-		model.addAttribute("person", person);
-		return "people/showPerson";
-	}
-
-	@RequestMapping(value = "/new", method = RequestMethod.GET)
-	public String newPerson(Model model) {
-		final PersonForm form = new PersonForm();
-		model.addAttribute("form", form);
-		return "people/newPerson";
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
@@ -86,7 +72,21 @@ public class PersonController extends ApplicationController {
 		final CreatePersonCommand command = new CreatePersonCommand(identifier,
 				dto);
 		commandBus.dispatch(new GenericCommandMessage<>(command));
-		return "redirect:/people";
+		return "redirect:/";
+	}
+
+	@RequestMapping(value = "/{personId}", method = RequestMethod.GET)
+	public String showPerson(@PathVariable String personId, Model model) {
+		final PersonEntry person = personRepository.findOne(personId);
+		model.addAttribute("person", person);
+		return "people/showPerson";
+	}
+
+	@RequestMapping(value = "/new", method = RequestMethod.GET)
+	public String newPerson(Model model) {
+		final PersonForm form = new PersonForm();
+		model.addAttribute("form", form);
+		return "people/newPerson";
 	}
 
 	@RequestMapping(value = "/{personId}/edit", method = RequestMethod.GET)
@@ -108,24 +108,13 @@ public class PersonController extends ApplicationController {
 		return "people/editPerson";
 	}
 
-	// ---------- Address actions ----------//
+	/*---------- Address actions ----------*/
 
-	@RequestMapping(value = "/{personId}/addresses/{addressId}", method = RequestMethod.GET)
-	public String showAddress(@PathVariable String personId,
-			@PathVariable String addressId, Model model) {
+	@RequestMapping(value = "/{personId}/addresses", method = RequestMethod.GET)
+	public String addressIndex(@PathVariable String personId, Model model) {
 		final PersonEntry person = personRepository.findOne(personId);
-		final AddressEntry address = person.getAddresses().get(addressId);
-		model.addAttribute("personId", personId);
-		model.addAttribute("address", address);
-		return "people/showAddress";
-	}
-
-	@RequestMapping(value = "/{personId}/addresses/new", method = RequestMethod.GET)
-	public String newAddress(@PathVariable String personId, Model model) {
-		final AddressForm form = new AddressForm();
-		model.addAttribute("personId", personId);
-		model.addAttribute("form", form);
-		return "people/newAddress";
+		model.addAttribute("person", person);
+		return "people/addressIndex";
 	}
 
 	@RequestMapping(value = "/{personId}/addresses", method = RequestMethod.POST)
@@ -161,29 +150,17 @@ public class PersonController extends ApplicationController {
 		final RegisterAddressCommand payload = new RegisterAddressCommand(
 				identifier, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/people/showPerson";
+		return "redirect:/" + personId + "/addresses";
 	}
 
-	@RequestMapping(value = "/{personId}/addresses/{addressId}/edit", method = RequestMethod.GET)
-	public String editAddress(@PathVariable String personId,
+	@RequestMapping(value = "/{personId}/addresses/{addressId}", method = RequestMethod.GET)
+	public String showAddress(@PathVariable String personId,
 			@PathVariable String addressId, Model model) {
 		final PersonEntry person = personRepository.findOne(personId);
 		final AddressEntry address = person.getAddresses().get(addressId);
-
-		final AddressForm form = new AddressForm();
-		form.setAddress1(address.getAddress1());
-		form.setAddress2(address.getAddress2());
-		form.setCity(address.getCity());
-		form.setDoNotUse(address.isDoNotUse());
-		form.setPostalCode(address.getPostalCode());
-		form.setType(address.getAddressType());
-		form.setPrimary(address.isPrimary());
-		form.setRegion(address.getRegion());
-
 		model.addAttribute("personId", personId);
-		model.addAttribute("addressId", addressId);
-		model.addAttribute("form", form);
-		return "people/editAddress";
+		model.addAttribute("address", address);
+		return "people/showAddress";
 	}
 
 	@RequestMapping(value = "/{personId}/addresses/{addressId}", method = RequestMethod.PUT)
@@ -216,27 +193,46 @@ public class PersonController extends ApplicationController {
 		final UpdateAddressCommand payload = new UpdateAddressCommand(
 				identifier, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/people/showPerson";
+		return "redirect:/" + personId + "/addresses";
 	}
 
-	// ---------- Contact actions ----------//
-
-	@RequestMapping(value = "/{personId}/contacts/{contactId}", method = RequestMethod.GET)
-	public String showContact(@PathVariable String personId,
-			@PathVariable String contactId, Model model) {
-		final PersonEntry person = personRepository.findOne(personId);
-		final ContactEntry contact = person.getContacts().get(contactId);
-		model.addAttribute("personId", personId);
-		model.addAttribute("contact", contact);
-		return "people/showContact";
-	}
-
-	@RequestMapping(value = "/{personId}/contacts/new", method = RequestMethod.GET)
-	public String newContact(@PathVariable String personId, Model model) {
-		final ContactForm form = new ContactForm();
+	@RequestMapping(value = "/{personId}/addresses/new", method = RequestMethod.GET)
+	public String newAddress(@PathVariable String personId, Model model) {
+		final AddressForm form = new AddressForm();
 		model.addAttribute("personId", personId);
 		model.addAttribute("form", form);
-		return "people/newContact";
+		return "people/newAddress";
+	}
+
+	@RequestMapping(value = "/{personId}/addresses/{addressId}/edit", method = RequestMethod.GET)
+	public String editAddress(@PathVariable String personId,
+			@PathVariable String addressId, Model model) {
+		final PersonEntry person = personRepository.findOne(personId);
+		final AddressEntry address = person.getAddresses().get(addressId);
+
+		final AddressForm form = new AddressForm();
+		form.setAddress1(address.getAddress1());
+		form.setAddress2(address.getAddress2());
+		form.setCity(address.getCity());
+		form.setDoNotUse(address.isDoNotUse());
+		form.setPostalCode(address.getPostalCode());
+		form.setType(address.getAddressType());
+		form.setPrimary(address.isPrimary());
+		form.setRegion(address.getRegion());
+
+		model.addAttribute("personId", personId);
+		model.addAttribute("addressId", addressId);
+		model.addAttribute("form", form);
+		return "people/editAddress";
+	}
+
+	/*---------- Contact actions ----------*/
+
+	@RequestMapping(value = "/{personId}/contacts", method = RequestMethod.GET)
+	public String contactIndex(@PathVariable String personId, Model model) {
+		final PersonEntry person = personRepository.findOne(personId);
+		model.addAttribute("person", person);
+		return "people/contactIndex";
 	}
 
 	@RequestMapping(value = "/{personId}/contacts", method = RequestMethod.POST)
@@ -268,25 +264,17 @@ public class PersonController extends ApplicationController {
 		final RegisterContactCommand payload = new RegisterContactCommand(
 				identifier, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/people/showPerson";
+		return "redirect:/" + personId + "/contacts";
 	}
 
-	@RequestMapping(value = "/{personId}/contacts/{contactId}/edit", method = RequestMethod.GET)
-	public String editContact(@PathVariable String personId,
+	@RequestMapping(value = "/{personId}/contacts/{contactId}", method = RequestMethod.GET)
+	public String showContact(@PathVariable String personId,
 			@PathVariable String contactId, Model model) {
 		final PersonEntry person = personRepository.findOne(personId);
 		final ContactEntry contact = person.getContacts().get(contactId);
-
-		final ContactForm form = new ContactForm();
-		form.setMethod(contact.getMethod());
-		form.setValue(contact.getValue());
-		form.setDoNotUse(contact.isDoNotUse());
-		form.setPrimary(contact.isPrimary());
-
 		model.addAttribute("personId", personId);
-		model.addAttribute("contactId", contactId);
-		model.addAttribute("form", form);
-		return "people/editContact";
+		model.addAttribute("contact", contact);
+		return "people/showContact";
 	}
 
 	@RequestMapping(value = "/{personId}/contacts/{contactId}", method = RequestMethod.PUT)
@@ -313,6 +301,32 @@ public class PersonController extends ApplicationController {
 		final UpdateContactCommand payload = new UpdateContactCommand(
 				identifier, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect/people/showPerson";
+		return "redirect:/" + personId + "/contacts";
+	}
+
+	@RequestMapping(value = "/{personId}/contacts/new", method = RequestMethod.GET)
+	public String newContact(@PathVariable String personId, Model model) {
+		final ContactForm form = new ContactForm();
+		model.addAttribute("personId", personId);
+		model.addAttribute("form", form);
+		return "people/newContact";
+	}
+
+	@RequestMapping(value = "/{personId}/contacts/{contactId}/edit", method = RequestMethod.GET)
+	public String editContact(@PathVariable String personId,
+			@PathVariable String contactId, Model model) {
+		final PersonEntry person = personRepository.findOne(personId);
+		final ContactEntry contact = person.getContacts().get(contactId);
+
+		final ContactForm form = new ContactForm();
+		form.setMethod(contact.getMethod());
+		form.setValue(contact.getValue());
+		form.setDoNotUse(contact.isDoNotUse());
+		form.setPrimary(contact.isPrimary());
+
+		model.addAttribute("personId", personId);
+		model.addAttribute("contactId", contactId);
+		model.addAttribute("form", form);
+		return "people/editContact";
 	}
 }

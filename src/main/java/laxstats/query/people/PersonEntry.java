@@ -23,8 +23,10 @@ import javax.validation.constraints.NotNull;
 import laxstats.api.people.Contactable;
 import laxstats.api.people.DominantHand;
 import laxstats.api.people.Gender;
+import laxstats.api.relationships.RelationshipType;
 import laxstats.query.events.AttendeeEntry;
 import laxstats.query.players.PlayerEntry;
+import laxstats.query.relationships.RelationshipEntry;
 import laxstats.query.users.UserEntry;
 
 import org.hibernate.annotations.Type;
@@ -110,10 +112,10 @@ public class PersonEntry {
 	private final Map<String, ContactEntry> contacts = new HashMap<>();
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "parent")
-	private final Set<Relationship> childRelationships = new HashSet<>();
+	private final Set<RelationshipEntry> childRelationships = new HashSet<>();
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "child")
-	private final Set<Relationship> parentRelationships = new HashSet<>();
+	private final Set<RelationshipEntry> parentRelationships = new HashSet<>();
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "person")
 	private final Set<AttendeeEntry> attendedEvents = new HashSet<>();
@@ -121,27 +123,9 @@ public class PersonEntry {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "person")
 	private final Set<PlayerEntry> playedSeasons = new HashSet<>();
 
-	// ---------- Getter/Setters ----------//
+	/*---------- Methods ----------*/
 
-	public void addAddress(AddressEntry address) {
-		address.setPerson(this);
-		addresses.put(address.getId(), address);
-	}
-
-	void addChildRelationship(Relationship relationship) {
-		childRelationships.add(relationship);
-	}
-
-	public void addContact(ContactEntry contact) {
-		contact.setPerson(this);
-		contacts.put(contact.getId(), contact);
-	}
-
-	void addParentRelationship(Relationship relationship) {
-		parentRelationships.add(relationship);
-	}
-
-	boolean ancestorsInclude(PersonEntry sample, Relationship.Type type) {
+	public boolean ancestorsInclude(PersonEntry sample, RelationshipType type) {
 		final Iterator<PersonEntry> iter = getParents(type).iterator();
 		while (iter.hasNext()) {
 			final PersonEntry each = iter.next();
@@ -155,6 +139,88 @@ public class PersonEntry {
 		return false;
 	}
 
+	public Set<PersonEntry> getChildren(RelationshipType type) {
+		final Set<PersonEntry> result = new HashSet<>();
+		for (final RelationshipEntry each : childRelationships) {
+			if (type == null || each.getType().equals(type)) {
+				result.add(each.getChild());
+			}
+		}
+		return result;
+	}
+
+	public Set<PersonEntry> getParents(RelationshipType type) {
+		final Set<PersonEntry> result = new HashSet<>();
+		for (final RelationshipEntry each : parentRelationships) {
+			if (type == null || each.getType().equals(type)) {
+				result.add(each.getParent());
+			}
+		}
+		return result;
+	}
+
+	public void addChildRelationship(RelationshipEntry relationship) {
+		relationship.setParent(this);
+		childRelationships.add(relationship);
+	}
+
+	public void addParentRelationship(RelationshipEntry relationship) {
+		relationship.setChild(this);
+		parentRelationships.add(relationship);
+	}
+
+	/**
+	 * Returns the person's primary address. If there is no primary address, the
+	 * method returns the first address in the collection or <code>null</code>
+	 * if the collection is empty.
+	 *
+	 * @return The person's primary address.
+	 */
+	public AddressEntry primaryAddress() {
+		final List<Contactable> list = new ArrayList<>(addresses.values());
+		return (AddressEntry) getPrimaryContactOrAddress(list);
+	}
+
+	/**
+	 * Returns the person's primary contact. If there is no primary contact, the
+	 * method returns the first contact in the collection or <code>null</code>
+	 * if the collection is empty.
+	 *
+	 * @return The person's primary contact.
+	 */
+	public ContactEntry primaryContact() {
+		final List<Contactable> list = new ArrayList<>(contacts.values());
+		return (ContactEntry) getPrimaryContactOrAddress(list);
+	}
+
+	private Contactable getPrimaryContactOrAddress(List<Contactable> c) {
+		Contactable primary = null;
+		Contactable first = null;
+		int i = 0;
+		for (final Contactable each : c) {
+			if (i == 0) {
+				first = each;
+			}
+			if (each.isPrimary()) {
+				primary = each;
+			}
+			i++;
+		}
+		return primary != null ? primary : first;
+	}
+
+	/*---------- Getter/Setters ----------*/
+
+	public void addAddress(AddressEntry address) {
+		address.setPerson(this);
+		addresses.put(address.getId(), address);
+	}
+
+	public void addContact(ContactEntry contact) {
+		contact.setPerson(this);
+		contacts.put(contact.getId(), contact);
+	}
+
 	public Map<String, AddressEntry> getAddresses() {
 		return addresses;
 	}
@@ -165,18 +231,6 @@ public class PersonEntry {
 
 	public LocalDate getBirthdate() {
 		return birthdate;
-	}
-
-	Set<PersonEntry> getChildren(Relationship.Type type) {
-		final Set<PersonEntry> result = new HashSet<>();
-		final Iterator<Relationship> iter = childRelationships.iterator();
-		while (iter.hasNext()) {
-			final Relationship each = iter.next();
-			if (each.getType().equals(type)) {
-				result.add(each.getChild());
-			}
-		}
-		return result;
 	}
 
 	public String getCollege() {
@@ -245,18 +299,6 @@ public class PersonEntry {
 
 	public LocalDate getParentReleaseSentOn() {
 		return parentReleaseSentOn;
-	}
-
-	Set<PersonEntry> getParents(Relationship.Type type) {
-		final Set<PersonEntry> result = new HashSet<>();
-		final Iterator<Relationship> iter = parentRelationships.iterator();
-		while (iter.hasNext()) {
-			final Relationship each = iter.next();
-			if (each.getType().equals(type)) {
-				result.add(each.getParent());
-			}
-		}
-		return result;
 	}
 
 	public String getPhoto() {
@@ -361,47 +403,5 @@ public class PersonEntry {
 
 	public void setSuffix(String suffix) {
 		this.suffix = suffix;
-	}
-
-	/* ---------- Other methods ---------- */
-
-	/**
-	 * Returns the person's primary address. If there is no primary address, the
-	 * method returns the first address in the collection or <code>null</code>
-	 * if the collection is empty.
-	 *
-	 * @return The person's primary address.
-	 */
-	public AddressEntry primaryAddress() {
-		final List<Contactable> list = new ArrayList<>(addresses.values());
-		return (AddressEntry) getPrimaryContactOrAddress(list);
-	}
-
-	/**
-	 * Returns the person's primary contact. If there is no primary contact, the
-	 * method returns the first contact in the collection or <code>null</code>
-	 * if the collection is empty.
-	 *
-	 * @return The person's primary contact.
-	 */
-	public ContactEntry primaryContact() {
-		final List<Contactable> list = new ArrayList<>(contacts.values());
-		return (ContactEntry) getPrimaryContactOrAddress(list);
-	}
-
-	private Contactable getPrimaryContactOrAddress(List<Contactable> c) {
-		Contactable primary = null;
-		Contactable first = null;
-		int i = 0;
-		for (final Contactable each : c) {
-			if (i == 0) {
-				first = each;
-			}
-			if (each.isPrimary()) {
-				primary = each;
-			}
-			i++;
-		}
-		return primary != null ? primary : first;
 	}
 }
