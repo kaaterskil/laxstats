@@ -8,7 +8,6 @@ import laxstats.domain.leagues.League;
 import laxstats.domain.people.Person;
 import laxstats.domain.players.Player;
 import laxstats.domain.plays.PenaltyType;
-import laxstats.domain.plays.Play;
 import laxstats.domain.relationships.Relationship;
 import laxstats.domain.seasons.Season;
 import laxstats.domain.sites.Site;
@@ -128,14 +127,6 @@ public class AxonConfiguration {
 	public Repository<PenaltyType> penaltyTypeRepository() {
 		final EventSourcingRepository<PenaltyType> repository = new EventSourcingRepository<>(
 				PenaltyType.class, eventStore());
-		repository.setEventBus(eventBus());
-		return repository;
-	}
-
-	@Bean
-	public Repository<Play> playRepository() {
-		final EventSourcingRepository<Play> repository = new EventSourcingRepository<>(
-				Play.class, eventStore());
 		repository.setEventBus(eventBus());
 		return repository;
 	}

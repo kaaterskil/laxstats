@@ -1,19 +1,18 @@
 package laxstats.query.plays;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
-import laxstats.query.people.PersonEntry;
+import laxstats.api.events.PlayRole;
+import laxstats.query.events.AttendeeEntry;
 import laxstats.query.teams.TeamEntry;
 import laxstats.query.users.UserEntry;
 
@@ -21,75 +20,33 @@ import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 
 @Entity
-@Table(name = "playParticipants", indexes = {
-		@Index(name = "play_participant_idx1", columnList = "role"),
-		@Index(name = "play_participant_idx2", columnList = "pointCredit") })
+@Table(name = "play_participants", indexes = {
+		@Index(name = "play_participants_idx1", columnList = "role"),
+		@Index(name = "play_participants_idx2", columnList = "pointCredit"),
+		@Index(name = "play_participants_idx3", columnList = "teamSeason") }, uniqueConstraints = { @UniqueConstraint(name = "play_participants_uk1", columnNames = {
+		"id", "play", "attendee" }) })
 public class PlayParticipantEntry {
 
-	public enum Role {
-		SCORER, ASSIST, GOALIE, SHOOTER, BLOCKER, GROUND_BALL, PENALTY_COMMITTED_BY, PENALTY_COMMITTED_AGAINST, FACEOFF_WINNER, FACEOFF_LOSER
-	}
-
-	@Embeddable
-	public static class Id implements Serializable {
-		private static final long serialVersionUID = 912492002722920566L;
-
-		@Column(length = 36)
-		private String playId;
-
-		@Column(length = 36)
-		private String personId;
-
-		@Column(length = 36)
-		private String teamId;
-
-		public Id() {
-		}
-
-		public Id(String playId, String personId, String teamId) {
-			this.playId = playId;
-			this.personId = personId;
-			this.teamId = teamId;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (o != null && o instanceof PlayParticipantEntry.Id) {
-				final Id that = (Id) o;
-				return this.playId.equals(that.playId)
-						&& this.personId.equals(that.personId)
-						&& this.teamId.equals(that.teamId);
-			}
-			return false;
-		}
-
-		@Override
-		public int hashCode() {
-			return playId.hashCode() + personId.hashCode() + teamId.hashCode();
-		}
-	}
-
-	@javax.persistence.Id
-	@Embedded
-	private final Id id = new Id();
+	@Id
+	@Column(length = 36)
+	private String id;
 
 	@ManyToOne
-	@JoinColumn(name = "playId", insertable = false, updatable = false)
+	@JoinColumn(nullable = false)
 	private PlayEntry play;
 
 	@ManyToOne
-	@JoinColumn(name = "personId", insertable = false, updatable = false)
-	private PersonEntry person;
+	@JoinColumn(nullable = false)
+	private AttendeeEntry attendee;
 
 	@ManyToOne
-	@JoinColumn(name = "teamId", insertable = false, updatable = false)
-	private TeamEntry team;
+	private TeamEntry teamSeason;
 
 	@Enumerated(EnumType.STRING)
-	@Column(length = 20)
-	private PlayParticipantEntry.Role role;
+	@Column(length = 20, nullable = false)
+	private PlayRole role;
 
-	private boolean pointCredit = false;
+	private final boolean pointCredit = false;
 
 	private int cumulativeAssists;
 
@@ -98,53 +55,55 @@ public class PlayParticipantEntry {
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime createdAt;
 
-	@ManyToOne(targetEntity = UserEntry.class)
-	private String createdBy;
+	@ManyToOne
+	private UserEntry createdBy;
 
-	// ---------- Constructors ----------//
+	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+	private LocalDateTime modifiedAt;
 
-	protected PlayParticipantEntry() {
+	@ManyToOne
+	private UserEntry modifiedBy;
+
+	/*---------- Getter/Setters ----------*/
+
+	public String getId() {
+		return id;
 	}
 
-	public PlayParticipantEntry(PlayEntry play, PersonEntry person,
-			TeamEntry team) {
-		this.play = play;
-		this.person = person;
-		this.team = team;
-
-		this.id.playId = play.getId();
-		this.id.personId = person.getId();
-		this.id.teamId = team.getId();
+	public void setId(String id) {
+		this.id = id;
 	}
-
-	// ---------- Getter/Setters ----------//
 
 	public PlayEntry getPlay() {
 		return play;
 	}
 
-	public PersonEntry getPerson() {
-		return person;
+	public void setPlay(PlayEntry play) {
+		this.play = play;
 	}
 
-	public TeamEntry getTeam() {
-		return team;
+	public AttendeeEntry getAttendee() {
+		return attendee;
 	}
 
-	public PlayParticipantEntry.Role getRole() {
+	public void setAttendee(AttendeeEntry attendee) {
+		this.attendee = attendee;
+	}
+
+	public TeamEntry getTeamSeason() {
+		return teamSeason;
+	}
+
+	public void setTeamSeason(TeamEntry teamSeason) {
+		this.teamSeason = teamSeason;
+	}
+
+	public PlayRole getRole() {
 		return role;
 	}
 
-	public void setRole(PlayParticipantEntry.Role role) {
+	public void setRole(PlayRole role) {
 		this.role = role;
-	}
-
-	public boolean isPointCredit() {
-		return pointCredit;
-	}
-
-	public void setPointCredit(boolean pointCredit) {
-		this.pointCredit = pointCredit;
 	}
 
 	public int getCumulativeAssists() {
@@ -171,11 +130,31 @@ public class PlayParticipantEntry {
 		this.createdAt = createdAt;
 	}
 
-	public String getCreatedBy() {
+	public UserEntry getCreatedBy() {
 		return createdBy;
 	}
 
-	public void setCreatedBy(String createdBy) {
+	public void setCreatedBy(UserEntry createdBy) {
 		this.createdBy = createdBy;
+	}
+
+	public LocalDateTime getModifiedAt() {
+		return modifiedAt;
+	}
+
+	public void setModifiedAt(LocalDateTime modifiedAt) {
+		this.modifiedAt = modifiedAt;
+	}
+
+	public UserEntry getModifiedBy() {
+		return modifiedBy;
+	}
+
+	public void setModifiedBy(UserEntry modifiedBy) {
+		this.modifiedBy = modifiedBy;
+	}
+
+	public boolean isPointCredit() {
+		return pointCredit;
 	}
 }

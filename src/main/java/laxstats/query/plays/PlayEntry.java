@@ -19,12 +19,12 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import laxstats.api.plays.PlayKey;
-import laxstats.api.plays.PlayResult;
-import laxstats.api.plays.ScoreAttemptType;
-import laxstats.api.plays.Strength;
+import laxstats.api.events.PlayKey;
+import laxstats.api.events.PlayResult;
+import laxstats.api.events.ScoreAttemptType;
+import laxstats.api.events.Strength;
 import laxstats.query.events.EventEntry;
-import laxstats.query.teams.TeamEntry;
+import laxstats.query.teamSeasons.TeamSeasonEntry;
 import laxstats.query.users.UserEntry;
 
 import org.hibernate.annotations.Type;
@@ -56,7 +56,7 @@ abstract public class PlayEntry {
 	private int sequenceNumber;
 
 	@ManyToOne(optional = false)
-	private TeamEntry team;
+	private TeamSeasonEntry team;
 
 	private int period;
 
@@ -64,7 +64,7 @@ abstract public class PlayEntry {
 	private LocalTime elapsedTime;
 
 	@Enumerated(EnumType.STRING)
-	@Column(length = 20)
+	@Column(length = 20, nullable = false)
 	protected PlayKey playKey;
 
 	@Enumerated(EnumType.STRING)
@@ -86,7 +86,7 @@ abstract public class PlayEntry {
 	private int manUpAdvantage;
 
 	@ManyToOne
-	private TeamEntry manUpTeam;
+	private TeamSeasonEntry manUpTeam;
 
 	@Column(columnDefinition = "text")
 	private String comment;
@@ -132,11 +132,11 @@ abstract public class PlayEntry {
 		this.sequenceNumber = sequenceNumber;
 	}
 
-	public TeamEntry getTeam() {
+	public TeamSeasonEntry getTeam() {
 		return team;
 	}
 
-	public void setTeam(TeamEntry team) {
+	public void setTeam(TeamSeasonEntry team) {
 		this.team = team;
 	}
 
@@ -212,11 +212,11 @@ abstract public class PlayEntry {
 		this.manUpAdvantage = manUpAdvantage;
 	}
 
-	public TeamEntry getManUpTeam() {
+	public TeamSeasonEntry getManUpTeam() {
 		return manUpTeam;
 	}
 
-	public void setManUpTeam(TeamEntry manUpTeam) {
+	public void setManUpTeam(TeamSeasonEntry manUpTeam) {
 		this.manUpTeam = manUpTeam;
 	}
 

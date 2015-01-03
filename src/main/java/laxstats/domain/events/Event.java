@@ -8,18 +8,23 @@ import java.util.Map;
 
 import laxstats.api.events.AttendeeDTO;
 import laxstats.api.events.AttendeeDeletedEvent;
+import laxstats.api.events.AttendeeNotRegisteredException;
 import laxstats.api.events.AttendeeRegisteredEvent;
 import laxstats.api.events.AttendeeUpdatedEvent;
+import laxstats.api.events.ClearRecordedEvent;
 import laxstats.api.events.Conditions;
 import laxstats.api.events.EventCreatedEvent;
 import laxstats.api.events.EventDTO;
 import laxstats.api.events.EventDeletedEvent;
 import laxstats.api.events.EventId;
 import laxstats.api.events.EventUpdatedEvent;
+import laxstats.api.events.GoalRecordedEvent;
+import laxstats.api.events.GroundBallRecordedEvent;
+import laxstats.api.events.InvalidPlayException;
+import laxstats.api.events.PlayDTO;
 import laxstats.api.events.Schedule;
+import laxstats.api.events.ShotRecordedEvent;
 import laxstats.api.events.Status;
-import laxstats.api.players.PlayerStatus;
-import laxstats.api.players.Role;
 import laxstats.api.sites.SiteAlignment;
 
 import org.axonframework.eventsourcing.annotation.AbstractAnnotatedAggregateRoot;
@@ -45,6 +50,11 @@ public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 	@EventSourcedMember
 	private final Map<String, Attendee> attendees = new HashMap<>();
 
+	@EventSourcedMember
+	private final Map<String, Play> plays = new HashMap<>();
+
+	/*---------- Constructors ----------*/
+
 	public Event(EventId eventId, EventDTO eventDTO) {
 		apply(new EventCreatedEvent(eventId, eventDTO));
 	}
@@ -62,53 +72,69 @@ public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 		apply(new EventDeletedEvent(eventId));
 	}
 
-	/**
-	 * Preconditions:
-	 * <ol>
-	 * <li>Attendees cannot already be registered.</li>
-	 * <li>Athletes must not be inactive or injured</li>
-	 * </ol>
-	 *
-	 * @param dto
-	 */
+	/* ---------- Attendee methods ---------- */
+
 	public void registerAttendee(AttendeeDTO dto) {
-		if (canRegisterAttendee(dto)) {
+		final AttendeeValidator validator = new AttendeeValidator(this);
+		if (!validator.canRegisterAttendee(dto)) {
 			throw new IllegalArgumentException("invalid attendee");
 		}
 		apply(new AttendeeRegisteredEvent(id, dto));
 	}
 
-	public void updateAttendee(AttendeeDTO dto) {
-		if (!isAttendeeRegistered(dto.getId())) {
-			throw new IllegalArgumentException(
-					"attendee is not registered for this event");
+	public void updateAttendee(AttendeeDTO dto)
+			throws AttendeeNotRegisteredException {
+		final AttendeeValidator validator = new AttendeeValidator(this);
+		if (!validator.isAttendeeRegistered(dto.getId())) {
+			final String msg = dto.getName()
+					+ " is not registered for this event";
+			throw new AttendeeNotRegisteredException(msg);
 		}
 		apply(new AttendeeUpdatedEvent(id, dto));
 	}
 
-	public void deleteAttendee(String attendeeId) {
-		if (!isAttendeeRegistered(attendeeId)) {
-			throw new IllegalArgumentException(
-					"attendee is not registered for this event");
+	public void deleteAttendee(String attendeeId)
+			throws AttendeeNotRegisteredException {
+		final AttendeeValidator validator = new AttendeeValidator(this);
+		if (!validator.isAttendeeRegistered(attendeeId)) {
+			throw new AttendeeNotRegisteredException();
 		}
 		apply(new AttendeeDeletedEvent(id, attendeeId));
 	}
 
-	private boolean canRegisterAttendee(AttendeeDTO dto) {
-		if (!isAttendeeRegistered(dto.getId())) {
-			// Athlete must not be inactive or injured
-			if (dto.getPlayer() != null && dto.getRole().equals(Role.ATHLETE)) {
-				final PlayerStatus status = dto.getPlayer().getStatus();
-				return status.equals(PlayerStatus.ACTIVE)
-						|| status.equals(PlayerStatus.TRYOUT);
-			}
-			return true;
+	/*---------- Play methods ----------*/
+
+	public void recordGoal(PlayDTO dto) {
+		final PlayService service = new GoalService(this);
+		if (!service.canRecordPlay(dto)) {
+			throw new InvalidPlayException();
 		}
-		return false;
+		service.setInvariants(dto);
+		apply(new GoalRecordedEvent(id, dto.getIdentifier(), dto));
 	}
 
-	private boolean isAttendeeRegistered(String attendeeId) {
-		return attendees.containsKey(attendeeId);
+	public void recordShot(PlayDTO dto) {
+		final PlayService service = new PlayServiceImpl(this);
+		if (!service.canRecordPlay(dto)) {
+			throw new InvalidPlayException();
+		}
+		apply(new ShotRecordedEvent(id, dto.getIdentifier(), dto));
+	}
+
+	public void recordGroundBall(PlayDTO dto) {
+		final PlayService service = new PlayServiceImpl(this);
+		if (!service.canRecordPlay(dto)) {
+			throw new InvalidPlayException();
+		}
+		apply(new GroundBallRecordedEvent(id, dto.getIdentifier(), dto));
+	}
+
+	public void recordClear(PlayDTO dto) {
+		final PlayService service = new ClearService(this);
+		if (!service.canRecordPlay(dto)) {
+			throw new InvalidPlayException();
+		}
+		apply(new ClearRecordedEvent(id, dto.getIdentifier(), dto));
 	}
 
 	/* ---------- Event handling ---------- */
@@ -116,7 +142,6 @@ public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 	@EventSourcingHandler
 	protected void handle(EventCreatedEvent event) {
 		final EventDTO dto = event.getEventDTO();
-
 		id = event.getEventId();
 		siteId = dto.getSite() == null ? null : dto.getSite().getId();
 		alignment = dto.getAlignment();
@@ -131,7 +156,6 @@ public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 	@EventSourcingHandler
 	protected void handle(EventUpdatedEvent event) {
 		final EventDTO dto = event.getEventDTO();
-
 		siteId = dto.getSite() == null ? null : dto.getSite().getId();
 		alignment = dto.getAlignment();
 		startsAt = dto.getStartsAt();
@@ -187,13 +211,64 @@ public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 		attendees.remove(event.getAttendeeId());
 	}
 
-	/* ---------- Getters ---------- */
+	@EventSourcingHandler
+	protected void handle(GoalRecordedEvent event) {
+		final PlayDTO dto = event.getPlayDTO();
+		final String eventId = id.toString();
+		final String playId = event.getPlayId().toString();
+		final String teamId = dto.getTeam().getId();
+		final String manUpTeamId = dto.getManUpTeam() == null ? null : dto
+				.getManUpTeam().getId();
 
-	public static long getSerialversionuid() {
-		return serialVersionUID;
+		final Goal entity = new Goal(playId, eventId, teamId, dto.getPeriod(),
+				dto.getElapsedTime(), dto.getAttemptType(), dto.getComment(),
+				dto.getSequence(), dto.getTeamScore(), dto.getOpponentScore(),
+				dto.getStrength(), dto.getManUpAdvantage(), manUpTeamId,
+				dto.getParticipants());
+		plays.put(playId, entity);
 	}
 
-	public EventId getId() {
+	@EventSourcingHandler
+	protected void handle(ShotRecordedEvent event) {
+		final PlayDTO dto = event.getPlayDTO();
+		final String eventId = id.toString();
+		final String playId = dto.getIdentifier().toString();
+		final String teamId = dto.getTeam().getId();
+
+		final Shot entity = new Shot(playId, eventId, teamId, dto.getPeriod(),
+				dto.getElapsedTime(), dto.getAttemptType(), dto.getResult(),
+				dto.getComment(), dto.getParticipants());
+		plays.put(playId, entity);
+	}
+
+	@EventSourcingHandler
+	protected void handle(GroundBallRecordedEvent event) {
+		final PlayDTO dto = event.getPlayDTO();
+		final String eventId = id.toString();
+		final String playId = dto.getIdentifier().toString();
+		final String teamId = dto.getTeam().getId();
+
+		final GroundBall entity = new GroundBall(playId, eventId, teamId,
+				dto.getPeriod(), dto.getComment(), dto.getParticipants());
+		plays.put(playId, entity);
+	}
+
+	@EventSourcingHandler
+	protected void handle(ClearRecordedEvent event) {
+		final PlayDTO dto = event.getPlayDTO();
+		final String eventId = id.toString();
+		final String playId = dto.getIdentifier().toString();
+		final String teamId = dto.getTeam().getId();
+
+		final Clear entity = new Clear(playId, eventId, teamId,
+				dto.getPeriod(), dto.getResult(), dto.getComment());
+		plays.put(playId, entity);
+	}
+
+	/* ---------- Getters ---------- */
+
+	@Override
+	public EventId getIdentifier() {
 		return id;
 	}
 
@@ -231,5 +306,9 @@ public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 
 	public Map<String, Attendee> getAttendees() {
 		return attendees;
+	}
+
+	public Map<String, Play> getPlays() {
+		return plays;
 	}
 }

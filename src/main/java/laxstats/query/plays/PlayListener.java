@@ -1,12 +1,12 @@
 package laxstats.query.plays;
 
-import laxstats.api.plays.ClearCreatedEvent;
-import laxstats.api.plays.FaceOffCreatedEvent;
-import laxstats.api.plays.GoalCreatedEvent;
-import laxstats.api.plays.GroundBallCreatedEvent;
-import laxstats.api.plays.PenaltyCreatedEvent;
-import laxstats.api.plays.PlayDTO;
-import laxstats.api.plays.ShotCreatedEvent;
+import laxstats.api.events.ClearCreatedEvent;
+import laxstats.api.events.FaceOffCreatedEvent;
+import laxstats.api.events.GoalRecordedEvent;
+import laxstats.api.events.GroundBallRecordedEvent;
+import laxstats.api.events.PenaltyCreatedEvent;
+import laxstats.api.events.PlayDTO;
+import laxstats.api.events.ShotRecordedEvent;
 
 import org.axonframework.eventhandling.annotation.EventHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +14,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class PlayListener {
-	private PlayQueryRepository playRepository;
+	private PlayQueryRepository repository;
 
 	@Autowired
-	public void setPlayRepository(PlayQueryRepository playRepository) {
-		this.playRepository = playRepository;
+	public void setPlayRepository(PlayQueryRepository repository) {
+		this.repository = repository;
 	}
 
 	@EventHandler
@@ -28,7 +28,7 @@ public class PlayListener {
 		final ClearEntry clear = new ClearEntry();
 		clear.setId(event.getPlayId().toString());
 		setPropertyValues(clear, dto);
-		playRepository.save(clear);
+		repository.save(clear);
 	}
 
 	@EventHandler
@@ -38,27 +38,27 @@ public class PlayListener {
 		final FaceOffEntry faceoff = new FaceOffEntry();
 		faceoff.setId(event.getPlayId().toString());
 		setPropertyValues(faceoff, dto);
-		playRepository.save(faceoff);
+		repository.save(faceoff);
 	}
 
 	@EventHandler
-	protected void handle(GoalCreatedEvent event) {
+	protected void handle(GoalRecordedEvent event) {
 		final PlayDTO dto = event.getPlayDTO();
 
 		final GoalEntry goal = new GoalEntry();
 		goal.setId(event.getPlayId().toString());
 		setPropertyValues(goal, dto);
-		playRepository.save(goal);
+		repository.save(goal);
 	}
 
 	@EventHandler
-	protected void handle(GroundBallCreatedEvent event) {
+	protected void handle(GroundBallRecordedEvent event) {
 		final PlayDTO dto = event.getPlayDTO();
 
 		final GroundBallEntry groundBall = new GroundBallEntry();
 		groundBall.setId(event.getPlayId().toString());
 		setPropertyValues(groundBall, dto);
-		playRepository.save(groundBall);
+		repository.save(groundBall);
 	}
 
 	@EventHandler
@@ -68,17 +68,17 @@ public class PlayListener {
 		final PenaltyEntry penalty = new PenaltyEntry();
 		penalty.setId(event.getPlayId().toString());
 		setPropertyValues(penalty, dto);
-		playRepository.save(penalty);
+		repository.save(penalty);
 	}
 
 	@EventHandler
-	protected void handle(ShotCreatedEvent event) {
+	protected void handle(ShotRecordedEvent event) {
 		final PlayDTO dto = event.getPlayDTO();
 
 		final ShotEntry shot = new ShotEntry();
 		shot.setId(event.getPlayId().toString());
 		setPropertyValues(shot, dto);
-		playRepository.save(shot);
+		repository.save(shot);
 	}
 
 	private void setPropertyValues(PlayEntry obj, PlayDTO dto) {
