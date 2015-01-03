@@ -1,4 +1,4 @@
-package laxstats.query.plays;
+package laxstats.query.events;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;

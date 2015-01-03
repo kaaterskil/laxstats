@@ -1,4 +1,4 @@
-package laxstats.query.plays;
+package laxstats.query.events;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -7,10 +7,10 @@ import laxstats.api.events.PlayKey;
 import laxstats.api.events.PlayType;
 
 @Entity
-@DiscriminatorValue(PlayType.GOAL)
-public class GoalEntry extends PlayEntry {
+@DiscriminatorValue(PlayType.FACEOFF)
+public class FaceOffEntry extends PlayEntry {
 
-	public GoalEntry() {
-		playKey = PlayKey.GOAL;
+	public FaceOffEntry() {
+		playKey = PlayKey.PLAY;
 	}
 }

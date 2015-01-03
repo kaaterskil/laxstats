@@ -1,7 +1,7 @@
-package laxstats.query.plays;
+package laxstats.query.events;
 
-import laxstats.api.events.ClearCreatedEvent;
-import laxstats.api.events.FaceOffCreatedEvent;
+import laxstats.api.events.ClearRecordedEvent;
+import laxstats.api.events.FaceOffRecordedEvent;
 import laxstats.api.events.GoalRecordedEvent;
 import laxstats.api.events.GroundBallRecordedEvent;
 import laxstats.api.events.PenaltyCreatedEvent;
@@ -22,21 +22,21 @@ public class PlayListener {
 	}
 
 	@EventHandler
-	protected void handle(ClearCreatedEvent event) {
+	protected void handle(ClearRecordedEvent event) {
 		final PlayDTO dto = event.getPlayDTO();
 
 		final ClearEntry clear = new ClearEntry();
-		clear.setId(event.getPlayId().toString());
+		clear.setId(event.getPlayId());
 		setPropertyValues(clear, dto);
 		repository.save(clear);
 	}
 
 	@EventHandler
-	protected void handle(FaceOffCreatedEvent event) {
+	protected void handle(FaceOffRecordedEvent event) {
 		final PlayDTO dto = event.getPlayDTO();
 
 		final FaceOffEntry faceoff = new FaceOffEntry();
-		faceoff.setId(event.getPlayId().toString());
+		faceoff.setId(event.getPlayId());
 		setPropertyValues(faceoff, dto);
 		repository.save(faceoff);
 	}
@@ -46,7 +46,7 @@ public class PlayListener {
 		final PlayDTO dto = event.getPlayDTO();
 
 		final GoalEntry goal = new GoalEntry();
-		goal.setId(event.getPlayId().toString());
+		goal.setId(event.getPlayId());
 		setPropertyValues(goal, dto);
 		repository.save(goal);
 	}
@@ -56,7 +56,7 @@ public class PlayListener {
 		final PlayDTO dto = event.getPlayDTO();
 
 		final GroundBallEntry groundBall = new GroundBallEntry();
-		groundBall.setId(event.getPlayId().toString());
+		groundBall.setId(event.getPlayId());
 		setPropertyValues(groundBall, dto);
 		repository.save(groundBall);
 	}
@@ -66,7 +66,7 @@ public class PlayListener {
 		final PlayDTO dto = event.getPlayDTO();
 
 		final PenaltyEntry penalty = new PenaltyEntry();
-		penalty.setId(event.getPlayId().toString());
+		penalty.setId(event.getPlayId());
 		setPropertyValues(penalty, dto);
 		repository.save(penalty);
 	}
@@ -76,7 +76,7 @@ public class PlayListener {
 		final PlayDTO dto = event.getPlayDTO();
 
 		final ShotEntry shot = new ShotEntry();
-		shot.setId(event.getPlayId().toString());
+		shot.setId(event.getPlayId());
 		setPropertyValues(shot, dto);
 		repository.save(shot);
 	}

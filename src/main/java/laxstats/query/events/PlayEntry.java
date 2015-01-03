@@ -1,4 +1,4 @@
-package laxstats.query.plays;
+package laxstats.query.events;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -23,7 +23,6 @@ import laxstats.api.events.PlayKey;
 import laxstats.api.events.PlayResult;
 import laxstats.api.events.ScoreAttemptType;
 import laxstats.api.events.Strength;
-import laxstats.query.events.EventEntry;
 import laxstats.query.teamSeasons.TeamSeasonEntry;
 import laxstats.query.users.UserEntry;
 

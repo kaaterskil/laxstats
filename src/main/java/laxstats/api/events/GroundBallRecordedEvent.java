@@ -1,10 +1,9 @@
 package laxstats.api.events;
 
-import laxstats.api.plays.PlayId;
 
 public class GroundBallRecordedEvent extends AbstractPlayEvent {
 
-	public GroundBallRecordedEvent(EventId eventId, PlayId playId,
+	public GroundBallRecordedEvent(EventId eventId, String playId,
 			PlayDTO playDTO) {
 		super(eventId, playId, playDTO);
 	}

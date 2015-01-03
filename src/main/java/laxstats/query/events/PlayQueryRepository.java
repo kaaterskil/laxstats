@@ -1,4 +1,4 @@
-package laxstats.query.plays;
+package laxstats.query.events;
 
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;

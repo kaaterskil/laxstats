@@ -18,6 +18,7 @@ import laxstats.api.events.EventDTO;
 import laxstats.api.events.EventDeletedEvent;
 import laxstats.api.events.EventId;
 import laxstats.api.events.EventUpdatedEvent;
+import laxstats.api.events.FaceOffRecordedEvent;
 import laxstats.api.events.GoalRecordedEvent;
 import laxstats.api.events.GroundBallRecordedEvent;
 import laxstats.api.events.InvalidPlayException;
@@ -129,6 +130,14 @@ public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 		apply(new GroundBallRecordedEvent(id, dto.getIdentifier(), dto));
 	}
 
+	public void recordFaceOff(PlayDTO dto) {
+		final PlayService service = new PlayServiceImpl(this);
+		if (!service.canRecordPlay(dto)) {
+			throw new InvalidPlayException();
+		}
+		apply(new FaceOffRecordedEvent(id, dto.getIdentifier(), dto));
+	}
+
 	public void recordClear(PlayDTO dto) {
 		final PlayService service = new ClearService(this);
 		if (!service.canRecordPlay(dto)) {
@@ -215,7 +224,7 @@ public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 	protected void handle(GoalRecordedEvent event) {
 		final PlayDTO dto = event.getPlayDTO();
 		final String eventId = id.toString();
-		final String playId = event.getPlayId().toString();
+		final String playId = event.getPlayId();
 		final String teamId = dto.getTeam().getId();
 		final String manUpTeamId = dto.getManUpTeam() == null ? null : dto
 				.getManUpTeam().getId();
@@ -232,7 +241,7 @@ public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 	protected void handle(ShotRecordedEvent event) {
 		final PlayDTO dto = event.getPlayDTO();
 		final String eventId = id.toString();
-		final String playId = dto.getIdentifier().toString();
+		final String playId = dto.getIdentifier();
 		final String teamId = dto.getTeam().getId();
 
 		final Shot entity = new Shot(playId, eventId, teamId, dto.getPeriod(),
@@ -245,7 +254,7 @@ public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 	protected void handle(GroundBallRecordedEvent event) {
 		final PlayDTO dto = event.getPlayDTO();
 		final String eventId = id.toString();
-		final String playId = dto.getIdentifier().toString();
+		final String playId = dto.getIdentifier();
 		final String teamId = dto.getTeam().getId();
 
 		final GroundBall entity = new GroundBall(playId, eventId, teamId,
@@ -254,10 +263,22 @@ public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 	}
 
 	@EventSourcingHandler
+	protected void handle(FaceOffRecordedEvent event) {
+		final PlayDTO dto = event.getPlayDTO();
+		final String eventId = id.toString();
+		final String playId = dto.getIdentifier();
+		final String teamId = dto.getTeam().getId();
+
+		final FaceOff entity = new FaceOff(playId, eventId, teamId,
+				dto.getPeriod(), dto.getComment(), dto.getParticipants());
+		plays.put(playId, entity);
+	}
+
+	@EventSourcingHandler
 	protected void handle(ClearRecordedEvent event) {
 		final PlayDTO dto = event.getPlayDTO();
 		final String eventId = id.toString();
-		final String playId = dto.getIdentifier().toString();
+		final String playId = dto.getIdentifier();
 		final String teamId = dto.getTeam().getId();
 
 		final Clear entity = new Clear(playId, eventId, teamId,

@@ -1,7 +1,7 @@
 package laxstats.api.events;
 
 import laxstats.query.events.AttendeeEntry;
-import laxstats.query.plays.PlayEntry;
+import laxstats.query.events.PlayEntry;
 import laxstats.query.teamSeasons.TeamSeasonEntry;
 import laxstats.query.users.UserEntry;
 

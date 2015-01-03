@@ -3,7 +3,6 @@ package laxstats.api.events;
 import java.util.ArrayList;
 import java.util.List;
 
-import laxstats.api.plays.PlayId;
 import laxstats.query.events.EventEntry;
 import laxstats.query.teamSeasons.TeamSeasonEntry;
 import laxstats.query.users.UserEntry;
@@ -12,7 +11,7 @@ import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 
 public class PlayDTO {
-	private final PlayId identifier;
+	private final String identifier;
 	private final String discriminator;
 	private final PlayKey playKey;
 	private final EventEntry event;
@@ -36,7 +35,7 @@ public class PlayDTO {
 	private int manUpAdvantage = 0;
 	private TeamSeasonEntry manUpTeam;
 
-	public PlayDTO(PlayId identifier, String discriminator, PlayKey playKey,
+	public PlayDTO(String identifier, String discriminator, PlayKey playKey,
 			EventEntry event, TeamSeasonEntry team, int period,
 			LocalTime elapsedTime, ScoreAttemptType attemptType,
 			PlayResult result, String comment, LocalDateTime createdAt,
@@ -59,7 +58,7 @@ public class PlayDTO {
 		this.participants = participants;
 	}
 
-	public PlayDTO(PlayId identifier, String discriminator, PlayKey playKey,
+	public PlayDTO(String identifier, String discriminator, PlayKey playKey,
 			EventEntry event, TeamSeasonEntry team, int period,
 			LocalTime elapsedTime, ScoreAttemptType attemptType,
 			PlayResult result, String comment, LocalDateTime modifiedAt,
@@ -77,7 +76,7 @@ public class PlayDTO {
 
 	/*---------- Getters ----------*/
 
-	public PlayId getIdentifier() {
+	public String getIdentifier() {
 		return identifier;
 	}
 

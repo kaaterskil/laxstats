@@ -1,11 +1,10 @@
 package laxstats.api.events;
 
-import laxstats.api.plays.PlayId;
 
 public class RecordGroundBallCommand extends AbstractPlayCommand {
 	private final PlayDTO playDTO;
 
-	public RecordGroundBallCommand(EventId eventId, PlayId playId,
+	public RecordGroundBallCommand(EventId eventId, String playId,
 			PlayDTO playDTO) {
 		super(eventId, playId);
 		this.playDTO = playDTO;

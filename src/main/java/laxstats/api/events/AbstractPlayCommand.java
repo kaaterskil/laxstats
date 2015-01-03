@@ -1,15 +1,13 @@
 package laxstats.api.events;
 
-import laxstats.api.plays.PlayId;
-
 import org.axonframework.commandhandling.annotation.TargetAggregateIdentifier;
 
 abstract public class AbstractPlayCommand {
 	@TargetAggregateIdentifier
 	protected EventId eventId;
-	protected PlayId playId;
+	protected String playId;
 
-	protected AbstractPlayCommand(EventId eventId, PlayId playId) {
+	protected AbstractPlayCommand(EventId eventId, String playId) {
 		this.eventId = eventId;
 		this.playId = playId;
 	}
@@ -18,7 +16,7 @@ abstract public class AbstractPlayCommand {
 		return eventId;
 	}
 
-	public PlayId getPlayId() {
+	public String getPlayId() {
 		return playId;
 	}
 }

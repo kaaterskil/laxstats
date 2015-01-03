@@ -1,4 +1,4 @@
-package laxstats.query.plays;
+package laxstats.query.events;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,7 +12,6 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 import laxstats.api.events.PlayRole;
-import laxstats.query.events.AttendeeEntry;
 import laxstats.query.teams.TeamEntry;
 import laxstats.query.users.UserEntry;
 
