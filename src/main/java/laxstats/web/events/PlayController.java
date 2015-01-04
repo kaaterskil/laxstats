@@ -365,7 +365,7 @@ public class PlayController extends ApplicationController {
 		final AttendeeEntry winner = event.getAttendee(form.getWinnerId());
 		final PlayParticipantDTO winnerDTO = new PlayParticipantDTO(winnerId,
 				playId, winner, winner.getTeamSeason(),
-				PlayRole.FACEOFF_WINNER, true, now, user, now, user);
+				PlayRole.FACEOFF_WINNER, false, now, user, now, user);
 		participants.add(winnerDTO);
 
 		// Create loser
@@ -374,7 +374,7 @@ public class PlayController extends ApplicationController {
 		final AttendeeEntry loser = event.getAttendee(form.getLoserId());
 		final PlayParticipantDTO loserDTO = new PlayParticipantDTO(loserId,
 				playId, loser, loser.getTeamSeason(), PlayRole.FACEOFF_LOSER,
-				true, now, user, now, user);
+				false, now, user, now, user);
 		participants.add(loserDTO);
 
 		// Create faceoff

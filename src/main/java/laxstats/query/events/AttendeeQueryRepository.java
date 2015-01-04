@@ -8,7 +8,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 public interface AttendeeQueryRepository extends
 		PagingAndSortingRepository<AttendeeEntry, String> {
 
-	@Query("select eae from EventAttendeeEntry eae where eae.event.id = ?1 and eae.teamSeason.id = ?2 order by eae.role, eae.player.position, eae.status")
+	@Query("select ae from AttendeeEntry ae where ae.event.id = ?1 and ae.teamSeason.id = ?2 order by ae.role, ae.player.position, ae.status")
 	List<AttendeeEntry> findByEventAndTeamSeason(String eventId,
 			String teamSeasonId);
 }

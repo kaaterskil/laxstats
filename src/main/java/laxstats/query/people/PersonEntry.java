@@ -24,7 +24,6 @@ import laxstats.api.people.Contactable;
 import laxstats.api.people.DominantHand;
 import laxstats.api.people.Gender;
 import laxstats.api.relationships.RelationshipType;
-import laxstats.query.events.AttendeeEntry;
 import laxstats.query.players.PlayerEntry;
 import laxstats.query.relationships.RelationshipEntry;
 import laxstats.query.users.UserEntry;
@@ -116,9 +115,6 @@ public class PersonEntry {
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "child")
 	private final Set<RelationshipEntry> parentRelationships = new HashSet<>();
-
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "person")
-	private final Set<AttendeeEntry> attendedEvents = new HashSet<>();
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "person")
 	private final Set<PlayerEntry> playedSeasons = new HashSet<>();
@@ -223,10 +219,6 @@ public class PersonEntry {
 
 	public Map<String, AddressEntry> getAddresses() {
 		return addresses;
-	}
-
-	public Set<AttendeeEntry> getAttendedEvents() {
-		return attendedEvents;
 	}
 
 	public LocalDate getBirthdate() {
