@@ -1,4 +1,4 @@
-package laxstats.web.plays;
+package laxstats.web.events;
 
 public class FaceOffForm extends AbstractPlayForm {
 	private String winningTeamId;

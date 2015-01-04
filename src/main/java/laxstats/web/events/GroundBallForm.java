@@ -1,4 +1,4 @@
-package laxstats.web.plays;
+package laxstats.web.events;
 
 public class GroundBallForm extends AbstractPlayForm {
 	private String playerId;

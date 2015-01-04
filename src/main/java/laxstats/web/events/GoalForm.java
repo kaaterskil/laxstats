@@ -1,4 +1,4 @@
-package laxstats.web.plays;
+package laxstats.web.events;
 
 import org.joda.time.LocalTime;
 

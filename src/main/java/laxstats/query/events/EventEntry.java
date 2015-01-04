@@ -82,6 +82,15 @@ public class EventEntry {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
 	private final List<TeamEvent> teams = new ArrayList<>();
 
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
+	private final List<PlayEntry> plays = new ArrayList<>();
+
+	/*---------- Methods ----------*/
+
+	public AttendeeEntry getAttendee(String key) {
+		return eventAttendees.get(key);
+	}
+
 	/* ---------- Getter/Setters ---------- */
 
 	public String getId() {
@@ -186,5 +195,9 @@ public class EventEntry {
 
 	public List<TeamEvent> getTeams() {
 		return teams;
+	}
+
+	public List<PlayEntry> getPlays() {
+		return plays;
 	}
 }

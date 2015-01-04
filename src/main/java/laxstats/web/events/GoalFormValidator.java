@@ -1,26 +1,26 @@
-package laxstats.web.plays;
+package laxstats.web.events;
 
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
-public class FaceOffFormValidator implements Validator {
+public class GoalFormValidator implements Validator {
 
 	@Override
 	public boolean supports(Class<?> clazz) {
-		return FaceOffForm.class.equals(clazz);
+		return GoalForm.class.equals(clazz);
 	}
 
 	@Override
 	public void validate(Object target, Errors errors) {
 		ValidationUtils.rejectIfEmpty(errors, "teamSeasonId",
 				"play.teamSeasonId.required");
-		ValidationUtils.rejectIfEmpty(errors, "winnerId",
-				"faceoff.winnerId.required");
-		ValidationUtils.rejectIfEmpty(errors, "loserId",
-				"faceoff.loserId.required");
+		ValidationUtils.rejectIfEmpty(errors, "scorerId",
+				"goal.scorerId.required");
+		ValidationUtils.rejectIfEmpty(errors, "elapsedTime",
+				"goal.elapsedTime.required");
 
-		final FaceOffForm form = (FaceOffForm) target;
+		final GoalForm form = (GoalForm) target;
 		if (form.getPeriod() <= 0) {
 			errors.rejectValue("period", "play.period.invalid");
 		}

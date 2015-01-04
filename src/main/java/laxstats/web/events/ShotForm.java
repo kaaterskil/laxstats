@@ -1,4 +1,4 @@
-package laxstats.web.plays;
+package laxstats.web.events;
 
 import laxstats.api.events.PlayResult;
 import laxstats.api.events.ScoreAttemptType;
