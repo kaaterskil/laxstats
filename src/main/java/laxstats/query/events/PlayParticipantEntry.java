@@ -12,7 +12,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 import laxstats.api.events.PlayRole;
-import laxstats.query.teams.TeamEntry;
+import laxstats.query.teamSeasons.TeamSeasonEntry;
 import laxstats.query.users.UserEntry;
 
 import org.hibernate.annotations.Type;
@@ -39,13 +39,13 @@ public class PlayParticipantEntry {
 	private AttendeeEntry attendee;
 
 	@ManyToOne
-	private TeamEntry teamSeason;
+	private TeamSeasonEntry teamSeason;
 
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20, nullable = false)
 	private PlayRole role;
 
-	private final boolean pointCredit = false;
+	private boolean pointCredit = false;
 
 	private int cumulativeAssists;
 
@@ -62,6 +62,16 @@ public class PlayParticipantEntry {
 
 	@ManyToOne
 	private UserEntry modifiedBy;
+
+	/*---------- Methods ----------*/
+
+	public void clear() {
+		play = null;
+		attendee = null;
+		teamSeason = null;
+		createdAt = null;
+		modifiedBy = null;
+	}
 
 	/*---------- Getter/Setters ----------*/
 
@@ -89,11 +99,11 @@ public class PlayParticipantEntry {
 		this.attendee = attendee;
 	}
 
-	public TeamEntry getTeamSeason() {
+	public TeamSeasonEntry getTeamSeason() {
 		return teamSeason;
 	}
 
-	public void setTeamSeason(TeamEntry teamSeason) {
+	public void setTeamSeason(TeamSeasonEntry teamSeason) {
 		this.teamSeason = teamSeason;
 	}
 
@@ -103,6 +113,14 @@ public class PlayParticipantEntry {
 
 	public void setRole(PlayRole role) {
 		this.role = role;
+	}
+
+	public boolean isPointCredit() {
+		return pointCredit;
+	}
+
+	public void setPointCredit(boolean pointCredit) {
+		this.pointCredit = pointCredit;
 	}
 
 	public int getCumulativeAssists() {
@@ -151,9 +169,5 @@ public class PlayParticipantEntry {
 
 	public void setModifiedBy(UserEntry modifiedBy) {
 		this.modifiedBy = modifiedBy;
-	}
-
-	public boolean isPointCredit() {
-		return pointCredit;
 	}
 }

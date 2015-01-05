@@ -1,11 +1,14 @@
 package laxstats.web.events;
 
+import laxstats.api.events.ScoreAttemptType;
+
 import org.joda.time.LocalTime;
 
 public class GoalForm extends AbstractPlayForm {
 	private LocalTime elapsedTime;
 	private String scorerId;
 	private String assistId;
+	private ScoreAttemptType attemptType;
 
 	public LocalTime getElapsedTime() {
 		return elapsedTime;
@@ -29,5 +32,13 @@ public class GoalForm extends AbstractPlayForm {
 
 	public void setAssistId(String assistId) {
 		this.assistId = assistId;
+	}
+
+	public ScoreAttemptType getAttemptType() {
+		return attemptType;
+	}
+
+	public void setAttemptType(ScoreAttemptType attemptType) {
+		this.attemptType = attemptType;
 	}
 }

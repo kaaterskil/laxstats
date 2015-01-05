@@ -1,7 +1,7 @@
 package laxstats.query.events;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -103,9 +103,34 @@ abstract public class PlayEntry {
 	private UserEntry modifiedBy;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "play")
-	private final Set<PlayParticipantEntry> participants = new HashSet<>();
+	private final List<PlayParticipantEntry> participants = new ArrayList<>();
 
-	// ---------- Getter/Setters ----------//
+	/*---------- Methods ----------*/
+
+	public void addParticipant(PlayParticipantEntry participant) {
+		participant.setPlay(this);
+		participants.add(participant);
+	}
+
+	public void removeParticipant(PlayParticipantEntry participant) {
+		participant.clear();
+		participants.remove(participant);
+	}
+
+	public void clear() {
+		event = null;
+		team = null;
+		manUpTeam = null;
+		createdBy = null;
+		modifiedBy = null;
+
+		for (final PlayParticipantEntry each : participants) {
+			each.clear();
+		}
+		participants.clear();
+	}
+
+	/*---------- Getter/Setters ----------*/
 
 	public String getId() {
 		return id;
@@ -259,7 +284,7 @@ abstract public class PlayEntry {
 		this.modifiedBy = modifiedBy;
 	}
 
-	public Set<PlayParticipantEntry> getParticipants() {
+	public List<PlayParticipantEntry> getParticipants() {
 		return participants;
 	}
 }

@@ -2,9 +2,19 @@ package laxstats.domain.events;
 
 import laxstats.api.events.CreateEventCommand;
 import laxstats.api.events.DeleteAttendeeCommand;
+import laxstats.api.events.DeleteClearCommand;
 import laxstats.api.events.DeleteEventCommand;
+import laxstats.api.events.DeleteFaceOffCommand;
+import laxstats.api.events.DeleteGoalCommand;
+import laxstats.api.events.DeleteGroundBallCommand;
+import laxstats.api.events.DeleteShotCommand;
 import laxstats.api.events.EventDTO;
 import laxstats.api.events.EventId;
+import laxstats.api.events.RecordClearCommand;
+import laxstats.api.events.RecordFaceoffCommand;
+import laxstats.api.events.RecordGoalCommand;
+import laxstats.api.events.RecordGroundBallCommand;
+import laxstats.api.events.RecordShotCommand;
 import laxstats.api.events.RegisterAttendeeCommand;
 import laxstats.api.events.UpdateAttendeeCommand;
 import laxstats.api.events.UpdateEventCommand;
@@ -116,5 +126,85 @@ public class EventCommandHandler {
 		final EventId identifier = command.getEventId();
 		final Event event = repository.load(identifier);
 		event.deleteAttendee(command.getAttendeeId());
+	}
+
+	/* --------- Clear commands ---------- */
+
+	@CommandHandler
+	public void handle(RecordClearCommand command) {
+		final EventId identifier = command.getEventId();
+		final Event event = repository.load(identifier);
+		event.recordClear(command.getPlayDTO());
+	}
+
+	@CommandHandler
+	public void handle(DeleteClearCommand command) {
+		final EventId identifier = command.getEventId();
+		final Event event = repository.load(identifier);
+		event.deleteClear(command);
+	}
+
+	/* --------- FaceOff commands ---------- */
+
+	@CommandHandler
+	public void handle(RecordFaceoffCommand command) {
+		final EventId identifier = command.getEventId();
+		final Event event = repository.load(identifier);
+		event.recordFaceOff(command.getPlayDTO());
+	}
+
+	@CommandHandler
+	public void handle(DeleteFaceOffCommand command) {
+		final EventId identifier = command.getEventId();
+		final Event event = repository.load(identifier);
+		event.deleteFaceOff(command);
+	}
+
+	/* --------- Goal commands ---------- */
+
+	@CommandHandler
+	public void handle(RecordGoalCommand command) {
+		final EventId identifier = command.getEventId();
+		final Event event = repository.load(identifier);
+		event.recordGoal(command.getPlayDTO());
+	}
+
+	@CommandHandler
+	public void handle(DeleteGoalCommand command) {
+		final EventId identifier = command.getEventId();
+		final Event event = repository.load(identifier);
+		event.deleteGoal(command);
+	}
+
+	/* --------- Ground Ball commands ---------- */
+
+	@CommandHandler
+	public void handle(RecordGroundBallCommand command) {
+		final EventId identifier = command.getEventId();
+		final Event event = repository.load(identifier);
+		event.recordGroundBall(command.getPlayDTO());
+	}
+
+	@CommandHandler
+	public void handle(DeleteGroundBallCommand command) {
+		final EventId identifier = command.getEventId();
+		final Event event = repository.load(identifier);
+		event.deleteGroundBall(command);
+	}
+
+	/* --------- Shot commands ---------- */
+
+	@CommandHandler
+	public void handle(RecordShotCommand command) {
+		final EventId identifier = command.getEventId();
+		final Event event = repository.load(identifier);
+		event.recordShot(command.getPlayDTO());
+	}
+
+	@CommandHandler
+	public void handle(DeleteShotCommand command) {
+		final EventId identifier = command.getEventId();
+		final Event event = repository.load(identifier);
+		event.deleteShot(command);
 	}
 }

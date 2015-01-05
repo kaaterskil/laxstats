@@ -4,11 +4,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.validation.Valid;
 
+import laxstats.api.events.DeleteClearCommand;
+import laxstats.api.events.DeleteFaceOffCommand;
+import laxstats.api.events.DeleteGoalCommand;
+import laxstats.api.events.DeleteGroundBallCommand;
+import laxstats.api.events.DeleteShotCommand;
 import laxstats.api.events.EventId;
 import laxstats.api.events.PlayDTO;
 import laxstats.api.events.PlayKey;
@@ -18,9 +24,16 @@ import laxstats.api.events.PlayRole;
 import laxstats.api.events.PlayType;
 import laxstats.api.events.PlayUtils;
 import laxstats.api.events.RecordClearCommand;
+import laxstats.api.events.RecordFaceoffCommand;
 import laxstats.api.events.RecordGoalCommand;
 import laxstats.api.events.RecordGroundBallCommand;
 import laxstats.api.events.RecordShotCommand;
+import laxstats.api.events.ScoreAttemptType;
+import laxstats.api.events.UpdateClearCommand;
+import laxstats.api.events.UpdateFaceOffCommand;
+import laxstats.api.events.UpdateGoalCommand;
+import laxstats.api.events.UpdateGroundBallCommand;
+import laxstats.api.events.UpdateShotCommand;
 import laxstats.query.events.AttendeeEntry;
 import laxstats.query.events.ClearEntry;
 import laxstats.query.events.EventEntry;
@@ -29,6 +42,7 @@ import laxstats.query.events.FaceOffEntry;
 import laxstats.query.events.GoalEntry;
 import laxstats.query.events.GroundBallEntry;
 import laxstats.query.events.PlayEntry;
+import laxstats.query.events.PlayParticipantEntry;
 import laxstats.query.events.ShotEntry;
 import laxstats.query.events.TeamEvent;
 import laxstats.query.teamSeasons.TeamSeasonEntry;
@@ -76,203 +90,9 @@ public class PlayController extends ApplicationController {
 		binder.setValidator(new ShotFormValidator());
 	}
 
-	/*---------- Goal actions ----------*/
-
-	@RequestMapping(value = "events/{eventId}/goals", method = RequestMethod.GET)
-	public String goalIndex(@PathVariable String eventId, Model model) {
-		final EventEntry aggregate = eventRepository.findOne(eventId);
-		final List<PlayEntry> teamOnePlays = getPlays(PlayType.GOAL, aggregate,
-				aggregate.getTeams().get(0).getId());
-		final List<PlayEntry> teamTwoPlays = getPlays(PlayType.GOAL, aggregate,
-				aggregate.getTeams().get(1).getId());
-		model.addAttribute("event", aggregate);
-		model.addAttribute("teamOnePlays", teamOnePlays);
-		model.addAttribute("teamTwoPlays", teamTwoPlays);
-		return "events/goalIndex";
-	}
-
-	@RequestMapping(value = "events/{eventId}/goals/new", method = RequestMethod.GET)
-	public String newGoal(@PathVariable String eventId, Model model) {
-		final EventEntry aggregate = eventRepository.findOne(eventId);
-		final GoalForm form = new GoalForm();
-		form.setTeams(getTeams(aggregate));
-		model.addAttribute("form", form);
-		return "events/newGoal";
-	}
-
-	@RequestMapping(value = "events/{eventId}/goals", method = RequestMethod.POST)
-	public String createGoal(@PathVariable String eventId,
-			@ModelAttribute("form") @Valid GoalForm form, BindingResult result) {
-		if (result.hasErrors()) {
-			return "events/newGoal";
-		}
-		final LocalDateTime now = LocalDateTime.now();
-		final UserEntry user = getCurrentUser();
-		final String playId = IdentifierFactory.getInstance()
-				.generateIdentifier();
-
-		final EventEntry event = eventRepository.findOne(eventId);
-		final TeamSeasonEntry teamSeason = teamRepository.findOne(form
-				.getTeamSeasonId());
-		final List<PlayParticipantDTO> participants = new ArrayList<>();
-
-		// Create scorer
-		final String scorerId = IdentifierFactory.getInstance()
-				.generateIdentifier();
-		final AttendeeEntry scorer = event.getAttendee(form.getScorerId());
-		final PlayParticipantDTO scorerDTO = new PlayParticipantDTO(scorerId,
-				playId, scorer, teamSeason, PlayRole.SCORER, true, now, user,
-				now, user);
-		participants.add(scorerDTO);
-
-		// Create assist
-		final AttendeeEntry assist = event.getAttendee(form.getAssistId());
-		if (assist != null) {
-			final String assistId = IdentifierFactory.getInstance()
-					.generateIdentifier();
-			final PlayParticipantDTO assistDTO = new PlayParticipantDTO(
-					assistId, playId, assist, teamSeason, PlayRole.ASSIST,
-					true, now, user, now, user);
-			participants.add(assistDTO);
-		}
-
-		// Create goal
-		final PlayDTO dto = new PlayDTO(playId, PlayType.GOAL, PlayKey.GOAL,
-				event, teamSeason, form.getPeriod(), form.getElapsedTime(),
-				null, PlayResult.GOAL, form.getComment(), now, user, now, user,
-				participants);
-
-		final RecordGoalCommand payload = new RecordGoalCommand(new EventId(
-				eventId), playId, dto);
-		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/events/" + eventId + "/goals";
-	}
-
-	/*---------- Shot actions ----------*/
-
-	@RequestMapping(value = "events/{eventId}/shots", method = RequestMethod.GET)
-	public String shotIndex(@PathVariable String eventId, Model model) {
-		final EventEntry aggregate = eventRepository.findOne(eventId);
-		final List<PlayEntry> teamOnePlays = getPlays(PlayType.SHOT, aggregate,
-				aggregate.getTeams().get(0).getId());
-		final List<PlayEntry> teamTwoPlays = getPlays(PlayType.SHOT, aggregate,
-				aggregate.getTeams().get(1).getId());
-		model.addAttribute("event", aggregate);
-		model.addAttribute("teamOnePlays", teamOnePlays);
-		model.addAttribute("teamTwoPlays", teamTwoPlays);
-		return "events/shotIndex";
-	}
-
-	@RequestMapping(value = "events/{eventId}/shots/new", method = RequestMethod.GET)
-	public String newShot(@PathVariable String eventId, Model model) {
-		final EventEntry aggregate = eventRepository.findOne(eventId);
-		final ShotForm form = new ShotForm();
-		form.setTeams(getTeams(aggregate));
-		model.addAttribute("form", form);
-		return "events/newShot";
-	}
-
-	@RequestMapping(value = "events/{eventId}/shots", method = RequestMethod.POST)
-	public String createShot(@PathVariable String eventId,
-			@ModelAttribute("form") @Valid ShotForm form, BindingResult result) {
-		if (result.hasErrors()) {
-			return "events/newShot";
-		}
-		final LocalDateTime now = LocalDateTime.now();
-		final UserEntry user = getCurrentUser();
-		final String playId = IdentifierFactory.getInstance()
-				.generateIdentifier();
-
-		final EventEntry event = eventRepository.findOne(eventId);
-		final TeamSeasonEntry teamSeason = teamRepository.findOne(form
-				.getTeamSeasonId());
-		final List<PlayParticipantDTO> participants = new ArrayList<>();
-
-		// Create shooter
-		final String shooterId = IdentifierFactory.getInstance()
-				.generateIdentifier();
-		final AttendeeEntry shooter = event.getAttendee(form.getPlayerId());
-		final PlayParticipantDTO shooterDTO = new PlayParticipantDTO(shooterId,
-				playId, shooter, teamSeason, PlayRole.SHOOTER, false, now,
-				user, now, user);
-		participants.add(shooterDTO);
-
-		// Create shot
-		final PlayDTO dto = new PlayDTO(playId, PlayType.SHOT, PlayKey.PLAY,
-				event, teamSeason, form.getPeriod(), null,
-				form.getAttemptType(), form.getResult(), form.getComment(),
-				now, user, now, user, participants);
-
-		final RecordShotCommand payload = new RecordShotCommand(new EventId(
-				eventId), playId, dto);
-		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/events/" + eventId + "/shots";
-	}
-
-	/*---------- Ground Ball actions ----------*/
-
-	@RequestMapping(value = "events/{eventId}/groundBalls", method = RequestMethod.GET)
-	public String groundBallIndex(@PathVariable String eventId, Model model) {
-		final EventEntry aggregate = eventRepository.findOne(eventId);
-		final List<PlayEntry> teamOnePlays = getPlays(PlayType.GROUND_BALL,
-				aggregate, aggregate.getTeams().get(0).getId());
-		final List<PlayEntry> teamTwoPlays = getPlays(PlayType.GROUND_BALL,
-				aggregate, aggregate.getTeams().get(1).getId());
-		model.addAttribute("event", aggregate);
-		model.addAttribute("teamOnePlays", teamOnePlays);
-		model.addAttribute("teamTwoPlays", teamTwoPlays);
-		return "events/groundBallIndex";
-	}
-
-	@RequestMapping(value = "events/{eventId}/groundBalls/new", method = RequestMethod.GET)
-	public String newGroundBall(@PathVariable String eventId, Model model) {
-		final EventEntry aggregate = eventRepository.findOne(eventId);
-		final GroundBallForm form = new GroundBallForm();
-		form.setTeams(getTeams(aggregate));
-		model.addAttribute("form", form);
-		return "events/newGroundBall";
-	}
-
-	@RequestMapping(value = "events/{eventId}/groundBalls", method = RequestMethod.POST)
-	public String createGroundBall(@PathVariable String eventId,
-			@ModelAttribute("form") @Valid GroundBallForm form,
-			BindingResult result) {
-		if (result.hasErrors()) {
-			return "events/newGroundBall";
-		}
-		final LocalDateTime now = LocalDateTime.now();
-		final UserEntry user = getCurrentUser();
-		final String playId = IdentifierFactory.getInstance()
-				.generateIdentifier();
-
-		final EventEntry event = eventRepository.findOne(eventId);
-		final TeamSeasonEntry teamSeason = teamRepository.findOne(form
-				.getTeamSeasonId());
-		final List<PlayParticipantDTO> participants = new ArrayList<>();
-
-		// Create player
-		final String playerId = IdentifierFactory.getInstance()
-				.generateIdentifier();
-		final AttendeeEntry player = event.getAttendee(form.getPlayerId());
-		final PlayParticipantDTO shooterDTO = new PlayParticipantDTO(playerId,
-				playId, player, teamSeason, PlayRole.GROUND_BALL, false, now,
-				user, now, user);
-		participants.add(shooterDTO);
-
-		// Create ground ball play
-		final PlayDTO dto = new PlayDTO(playId, PlayType.GROUND_BALL,
-				PlayKey.PLAY, event, teamSeason, form.getPeriod(), null, null,
-				null, form.getComment(), now, user, now, user, participants);
-
-		final RecordGroundBallCommand payload = new RecordGroundBallCommand(
-				new EventId(eventId), playId, dto);
-		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/events/" + eventId + "/groundBalls";
-	}
-
 	/*---------- Clear actions ----------*/
 
-	@RequestMapping(value = "events/{eventId}/clears", method = RequestMethod.GET)
+	@RequestMapping(value = "/events/{eventId}/clears", method = RequestMethod.GET)
 	public String clearIndex(@PathVariable String eventId, Model model) {
 		final EventEntry aggregate = eventRepository.findOne(eventId);
 		final List<PlayEntry> teamOnePlays = getPlays(PlayType.CLEAR,
@@ -282,23 +102,23 @@ public class PlayController extends ApplicationController {
 		model.addAttribute("event", aggregate);
 		model.addAttribute("teamOnePlays", teamOnePlays);
 		model.addAttribute("teamTwoPlays", teamTwoPlays);
-		return "events/clearIndex";
+		return "events/clears/index";
 	}
 
-	@RequestMapping(value = "events/{eventId}/clears/new", method = RequestMethod.GET)
+	@RequestMapping(value = "/events/{eventId}/clears/new", method = RequestMethod.GET)
 	public String newClear(@PathVariable String eventId, Model model) {
 		final EventEntry aggregate = eventRepository.findOne(eventId);
 		final ClearForm form = new ClearForm();
 		form.setTeams(getTeams(aggregate));
 		model.addAttribute("form", form);
-		return "events/newClear";
+		return "events/clears/newClear";
 	}
 
-	@RequestMapping(value = "events/{eventId}/clears", method = RequestMethod.POST)
+	@RequestMapping(value = "/events/{eventId}/clears", method = RequestMethod.POST)
 	public String createClear(@PathVariable String eventId,
 			@ModelAttribute("form") @Valid ClearForm form, BindingResult result) {
 		if (result.hasErrors()) {
-			return "events/newClear";
+			return "events/clears/newClear";
 		}
 		final LocalDateTime now = LocalDateTime.now();
 		final UserEntry user = getCurrentUser();
@@ -322,32 +142,84 @@ public class PlayController extends ApplicationController {
 		return "redirect:/events/" + eventId + "/clears";
 	}
 
+	@RequestMapping(value = "/events/{eventId}/clears/{playId}", method = RequestMethod.DELETE)
+	public String deleteClear(@PathVariable String eventId,
+			@PathVariable String playId) {
+		final EventId identifier = new EventId(eventId);
+		final DeleteClearCommand payload = new DeleteClearCommand(identifier,
+				playId);
+		commandBus.dispatch(new GenericCommandMessage<>(payload));
+		return "redirect:/events/" + eventId + "/clears";
+	}
+
+	@RequestMapping(value = "/events/{eventId}/clears/{playId}", method = RequestMethod.PUT)
+	public String updateClear(@PathVariable String eventId,
+			@PathVariable String playId,
+			@ModelAttribute("form") @Valid ClearForm form, BindingResult result) {
+		if (result.hasErrors()) {
+			return "events/clears/editClear";
+		}
+		final LocalDateTime now = LocalDateTime.now();
+		final UserEntry user = getCurrentUser();
+		final EventEntry event = eventRepository.findOne(eventId);
+		final TeamSeasonEntry teamSeason = teamRepository.findOne(form
+				.getTeamSeasonId());
+		final List<PlayParticipantDTO> participants = new ArrayList<>();
+
+		// Edit clear
+		final PlayDTO dto = new PlayDTO(playId, PlayType.CLEAR, PlayKey.PLAY,
+				event, teamSeason, form.getPeriod(), null, null,
+				form.getResult(), form.getComment(), now, user, participants);
+
+		final UpdateClearCommand payload = new UpdateClearCommand(new EventId(
+				eventId), playId, dto);
+		commandBus.dispatch(new GenericCommandMessage<>(payload));
+		return "redirect:/events/" + eventId + "/clears";
+	}
+
+	@RequestMapping(value = "/events/{eventId}/clears/{playId}/edit", method = RequestMethod.GET)
+	public String editClear(@PathVariable String eventId,
+			@PathVariable String playId, Model model) {
+		final EventEntry aggregate = eventRepository.findOne(eventId);
+		final PlayEntry play = aggregate.getPlays().get(playId);
+
+		final ClearForm form = new ClearForm();
+		form.setTeamSeasonId(play.getTeam().getId());
+		form.setPeriod(play.getPeriod());
+		form.setResult(play.getResult());
+		form.setComment(play.getComment());
+		form.setTeams(getTeams(aggregate));
+
+		model.addAttribute("form", form);
+		return "events/clears/editClear";
+	}
+
 	/*---------- Faceoff actions ----------*/
 
-	@RequestMapping(value = "events/{eventId}/faceOffs", method = RequestMethod.GET)
+	@RequestMapping(value = "/events/{eventId}/faceOffs", method = RequestMethod.GET)
 	public String faceOffIndex(@PathVariable String eventId, Model model) {
 		final EventEntry aggregate = eventRepository.findOne(eventId);
 		final List<FaceOffEntry> faceOffs = getFaceoffs(aggregate);
 		model.addAttribute("event", aggregate);
 		model.addAttribute("faceOffs", faceOffs);
-		return "events/faceOffIndex";
+		return "events/faceOffs/index";
 	}
 
-	@RequestMapping(value = "events/{eventId}/faceOffs/new", method = RequestMethod.GET)
+	@RequestMapping(value = "/events/{eventId}/faceOffs/new", method = RequestMethod.GET)
 	public String newFaceOff(@PathVariable String eventId, Model model) {
 		final EventEntry aggregate = eventRepository.findOne(eventId);
 		final FaceOffForm form = new FaceOffForm();
 		form.setTeams(getTeams(aggregate));
 		model.addAttribute("form", form);
-		return "events/newFaceOff";
+		return "events/faceOffs/newFaceOff";
 	}
 
-	@RequestMapping(value = "events/{eventId}/faceOffs", method = RequestMethod.POST)
+	@RequestMapping(value = "/events/{eventId}/faceOffs", method = RequestMethod.POST)
 	public String createFaceOff(@PathVariable String eventId,
 			@ModelAttribute("form") @Valid FaceOffForm form,
 			BindingResult result) {
 		if (result.hasErrors()) {
-			return "events/newFaceOff";
+			return "events/faceOffs/newFaceOff";
 		}
 		final LocalDateTime now = LocalDateTime.now();
 		final UserEntry user = getCurrentUser();
@@ -382,10 +254,542 @@ public class PlayController extends ApplicationController {
 				event, teamSeason, form.getPeriod(), null, null, null,
 				form.getComment(), now, user, now, user, participants);
 
+		final RecordFaceoffCommand payload = new RecordFaceoffCommand(
+				new EventId(eventId), playId, dto);
+		commandBus.dispatch(new GenericCommandMessage<>(payload));
+		return "redirect:/events/" + eventId + "/faceOffs";
+	}
+
+	@RequestMapping(value = "/events/{eventId}/faceOffs/{playId}", method = RequestMethod.DELETE)
+	public String deleteFaceOff(@PathVariable String eventId,
+			@PathVariable String playId) {
+		final EventId identifier = new EventId(eventId);
+		final DeleteFaceOffCommand payload = new DeleteFaceOffCommand(
+				identifier, playId);
+		commandBus.dispatch(new GenericCommandMessage<>(payload));
+		return "redirect:/events/" + eventId + "/faceOffs";
+	}
+
+	@RequestMapping(value = "/events/{eventId}/faceOffs/{playId}", method = RequestMethod.PUT)
+	public String updateFaceOff(@PathVariable String eventId,
+			@PathVariable String playId,
+			@ModelAttribute("form") @Valid FaceOffForm form,
+			BindingResult result) {
+		if (result.hasErrors()) {
+			return "events/faceOffs/editFaceOff";
+		}
+		final LocalDateTime now = LocalDateTime.now();
+		final UserEntry user = getCurrentUser();
+
+		final EventEntry event = eventRepository.findOne(eventId);
+		final PlayEntry play = event.getPlays().get(playId);
+		final TeamSeasonEntry teamSeason = teamRepository.findOne(form
+				.getTeamSeasonId());
+
+		// Edit players
+		final List<PlayParticipantDTO> participants = new ArrayList<>();
+		for (final PlayParticipantEntry participant : play.getParticipants()) {
+			AttendeeEntry attendee = participant.getAttendee();
+			PlayRole role = null;
+			if (participant.getRole().equals(PlayRole.FACEOFF_WINNER)) {
+				role = PlayRole.FACEOFF_WINNER;
+				if (!form.getWinnerId().equals(attendee.getId())) {
+					attendee = event.getAttendee(form.getWinnerId());
+				}
+			} else if (participant.getRole().equals(PlayRole.FACEOFF_LOSER)) {
+				role = PlayRole.FACEOFF_LOSER;
+				if (!form.getLoserId().equals(attendee.getId())) {
+					attendee = event.getAttendee(form.getLoserId());
+				}
+			}
+			final PlayParticipantDTO participantDTO = new PlayParticipantDTO(
+					participant.getId(), playId, attendee,
+					attendee.getTeamSeason(), role, false, now, user);
+			participants.add(participantDTO);
+
+		}
+		// Edit faceoff play
+		final PlayDTO dto = new PlayDTO(playId, PlayType.FACEOFF, PlayKey.PLAY,
+				event, teamSeason, form.getPeriod(), null, null, null,
+				form.getComment(), now, user, participants);
+
+		final UpdateFaceOffCommand payload = new UpdateFaceOffCommand(
+				new EventId(eventId), playId, dto);
+		commandBus.dispatch(new GenericCommandMessage<>(payload));
+		return "redirect:/events/" + eventId + "/faceOffs";
+	}
+
+	@RequestMapping(value = "/events/{eventId}/faceOffs/{playId}/edit", method = RequestMethod.GET)
+	public String editFaceOff(@PathVariable String eventId,
+			@PathVariable String playId, Model model) {
+		final EventEntry aggregate = eventRepository.findOne(eventId);
+		final FaceOffEntry play = (FaceOffEntry) aggregate.getPlays().get(
+				playId);
+
+		final FaceOffForm form = new FaceOffForm();
+		form.setTeamSeasonId(play.getTeam().getId());
+		for (final PlayParticipantEntry player : play.getParticipants()) {
+			if (player.getRole().equals(PlayRole.FACEOFF_LOSER)) {
+				form.setLoserId(player.getAttendee().getId());
+			} else if (player.getRole().equals(PlayRole.FACEOFF_WINNER)) {
+				form.setWinnerId(player.getAttendee().getId());
+			}
+		}
+		form.setPeriod(play.getPeriod());
+		form.setComment(play.getComment());
+		form.setTeams(getTeams(aggregate));
+
+		model.addAttribute("form", form);
+		return "events/faceOffs/editFaceOff";
+	}
+
+	/*---------- Goal actions ----------*/
+
+	@RequestMapping(value = "/events/{eventId}/goals", method = RequestMethod.GET)
+	public String goalIndex(@PathVariable String eventId, Model model) {
+		final EventEntry aggregate = eventRepository.findOne(eventId);
+		final List<PlayEntry> teamOnePlays = getPlays(PlayType.GOAL, aggregate,
+				aggregate.getTeams().get(0).getId());
+		final List<PlayEntry> teamTwoPlays = getPlays(PlayType.GOAL, aggregate,
+				aggregate.getTeams().get(1).getId());
+		model.addAttribute("event", aggregate);
+		model.addAttribute("teamOnePlays", teamOnePlays);
+		model.addAttribute("teamTwoPlays", teamTwoPlays);
+		return "events/goals/index";
+	}
+
+	@RequestMapping(value = "/events/{eventId}/goals/new", method = RequestMethod.GET)
+	public String newGoal(@PathVariable String eventId, Model model) {
+		final EventEntry aggregate = eventRepository.findOne(eventId);
+		final GoalForm form = new GoalForm();
+		form.setAttemptType(ScoreAttemptType.REGULAR);
+		form.setTeams(getTeams(aggregate));
+		model.addAttribute("form", form);
+		return "events/goals/newGoal";
+	}
+
+	@RequestMapping(value = "/events/{eventId}/goals", method = RequestMethod.POST)
+	public String createGoal(@PathVariable String eventId,
+			@ModelAttribute("form") @Valid GoalForm form, BindingResult result) {
+		if (result.hasErrors()) {
+			return "events/goals/newGoal";
+		}
+		final LocalDateTime now = LocalDateTime.now();
+		final UserEntry user = getCurrentUser();
+		final String playId = IdentifierFactory.getInstance()
+				.generateIdentifier();
+
+		final EventEntry event = eventRepository.findOne(eventId);
+		final TeamSeasonEntry teamSeason = teamRepository.findOne(form
+				.getTeamSeasonId());
+		final List<PlayParticipantDTO> participants = new ArrayList<>();
+
+		// Create scorer
+		final String scorerId = IdentifierFactory.getInstance()
+				.generateIdentifier();
+		final AttendeeEntry scorer = event.getAttendee(form.getScorerId());
+		final PlayParticipantDTO scorerDTO = new PlayParticipantDTO(scorerId,
+				playId, scorer, teamSeason, PlayRole.SCORER, true, now, user,
+				now, user);
+		participants.add(scorerDTO);
+
+		// Create assist
+		final AttendeeEntry assist = event.getAttendee(form.getAssistId());
+		if (assist != null) {
+			final String assistId = IdentifierFactory.getInstance()
+					.generateIdentifier();
+			final PlayParticipantDTO assistDTO = new PlayParticipantDTO(
+					assistId, playId, assist, teamSeason, PlayRole.ASSIST,
+					true, now, user, now, user);
+			participants.add(assistDTO);
+		}
+
+		// Create goal
+		final PlayDTO dto = new PlayDTO(playId, PlayType.GOAL, PlayKey.GOAL,
+				event, teamSeason, form.getPeriod(), form.getElapsedTime(),
+				form.getAttemptType(), PlayResult.GOAL, form.getComment(), now,
+				user, now, user, participants);
+
 		final RecordGoalCommand payload = new RecordGoalCommand(new EventId(
 				eventId), playId, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/events/" + eventId + "/faceOffs";
+		return "redirect:/events/" + eventId + "/goals";
+	}
+
+	@RequestMapping(value = "/events/{eventId}/goals/{playId}", method = RequestMethod.DELETE)
+	public String deleteGoal(@PathVariable String eventId,
+			@PathVariable String playId) {
+		final EventId identifier = new EventId(eventId);
+		final DeleteGoalCommand payload = new DeleteGoalCommand(identifier,
+				playId);
+		commandBus.dispatch(new GenericCommandMessage<>(payload));
+		return "redirect:/events/" + eventId + "/goals";
+	}
+
+	@RequestMapping(value = "/events/{eventId}/goals/{playId}", method = RequestMethod.PUT)
+	public String updateGoal(@PathVariable String eventId,
+			@PathVariable String playId,
+			@ModelAttribute("form") @Valid GoalForm form, BindingResult result) {
+		if (result.hasErrors()) {
+			return "events/goals/editGoal";
+		}
+		final LocalDateTime now = LocalDateTime.now();
+		final UserEntry user = getCurrentUser();
+
+		final EventEntry event = eventRepository.findOne(eventId);
+		final PlayEntry play = event.getPlays().get(playId);
+		final TeamSeasonEntry teamSeason = teamRepository.findOne(form
+				.getTeamSeasonId());
+		final List<PlayParticipantDTO> participants = new ArrayList<>();
+
+		// Edit scorer
+		for (final PlayParticipantEntry participant : play.getParticipants()) {
+			if (participant.getRole().equals(PlayRole.SCORER)) {
+				AttendeeEntry scorer = participant.getAttendee();
+				if (!form.getScorerId().equals(scorer.getId())) {
+					scorer = event.getAttendee(form.getScorerId());
+				}
+				final PlayParticipantDTO scorerDTO = new PlayParticipantDTO(
+						participant.getId(), playId, scorer, teamSeason,
+						PlayRole.SCORER, true, now, user);
+				participants.add(scorerDTO);
+			}
+		}
+
+		// Edit assist
+		// Edit assist -> null
+		// Edit assist -> new assist
+		boolean foundAssist = false;
+		AttendeeEntry assist = null;
+		PlayParticipantDTO assistDTO = null;
+		final Iterator<PlayParticipantEntry> iter = play.getParticipants()
+				.iterator();
+		while (iter.hasNext()) {
+			final PlayParticipantEntry participant = iter.next();
+			if (participant.getRole().equals(PlayRole.ASSIST)) {
+				foundAssist = true;
+				if (form.getAssistId() == null) {
+					// TODO Probably shouldn't be doing this here. Better to do
+					// it on the update event handler
+					iter.remove();
+				} else {
+					assist = participant.getAttendee();
+					if (!form.getAssistId().equals(assist.getId())) {
+						assist = event.getAttendee(form.getAssistId());
+					}
+					assistDTO = new PlayParticipantDTO(participant.getId(),
+							playId, assist, teamSeason, PlayRole.ASSIST, true,
+							now, user);
+					participants.add(assistDTO);
+				}
+			}
+		}
+		// Edit null -> assist
+		if (!foundAssist && form.getAssistId() != null) {
+			final String id = IdentifierFactory.getInstance()
+					.generateIdentifier();
+			assist = event.getAttendee(form.getAssistId());
+			assistDTO = new PlayParticipantDTO(id, playId, assist, teamSeason,
+					PlayRole.ASSIST, true, now, user);
+			participants.add(assistDTO);
+		}
+
+		// Create goal
+		final PlayDTO dto = new PlayDTO(playId, PlayType.GOAL, PlayKey.GOAL,
+				event, teamSeason, form.getPeriod(), form.getElapsedTime(),
+				form.getAttemptType(), PlayResult.GOAL, form.getComment(), now,
+				user, participants);
+
+		final UpdateGoalCommand payload = new UpdateGoalCommand(new EventId(
+				eventId), playId, dto);
+		commandBus.dispatch(new GenericCommandMessage<>(payload));
+		return "redirect:/events/" + eventId + "/goals";
+	}
+
+	@RequestMapping(value = "/events/{eventId}/goals/{playId}/edit", method = RequestMethod.GET)
+	public String editGoal(@PathVariable String eventId,
+			@PathVariable String playId, Model model) {
+		final EventEntry aggregate = eventRepository.findOne(eventId);
+		final GoalEntry play = (GoalEntry) aggregate.getPlays().get(playId);
+
+		final GoalForm form = new GoalForm();
+		form.setTeamSeasonId(play.getTeam().getId());
+		form.setPeriod(play.getPeriod());
+		form.setElapsedTime(play.getElapsedTime());
+		form.setAttemptType(play.getScoreAttemptType());
+		for (final PlayParticipantEntry player : play.getParticipants()) {
+			if (player.getRole().equals(PlayRole.SCORER)) {
+				form.setScorerId(player.getAttendee().getId());
+			} else if (player.getRole().equals(PlayRole.ASSIST)) {
+				form.setAssistId(player.getAttendee().getId());
+			}
+		}
+		form.setComment(play.getComment());
+		form.setTeams(getTeams(aggregate));
+
+		model.addAttribute("form", form);
+		return "events/goals/editGoal";
+	}
+
+	/*---------- Ground Ball actions ----------*/
+
+	@RequestMapping(value = "/events/{eventId}/groundBalls", method = RequestMethod.GET)
+	public String groundBallIndex(@PathVariable String eventId, Model model) {
+		final EventEntry aggregate = eventRepository.findOne(eventId);
+		final List<PlayEntry> teamOnePlays = getPlays(PlayType.GROUND_BALL,
+				aggregate, aggregate.getTeams().get(0).getId());
+		final List<PlayEntry> teamTwoPlays = getPlays(PlayType.GROUND_BALL,
+				aggregate, aggregate.getTeams().get(1).getId());
+		model.addAttribute("event", aggregate);
+		model.addAttribute("teamOnePlays", teamOnePlays);
+		model.addAttribute("teamTwoPlays", teamTwoPlays);
+		return "events/groundBalls/index";
+	}
+
+	@RequestMapping(value = "/events/{eventId}/groundBalls/new", method = RequestMethod.GET)
+	public String newGroundBall(@PathVariable String eventId, Model model) {
+		final EventEntry aggregate = eventRepository.findOne(eventId);
+		final GroundBallForm form = new GroundBallForm();
+		form.setTeams(getTeams(aggregate));
+		model.addAttribute("form", form);
+		return "events/groundBalls/newGroundBall";
+	}
+
+	@RequestMapping(value = "/events/{eventId}/groundBalls", method = RequestMethod.POST)
+	public String createGroundBall(@PathVariable String eventId,
+			@ModelAttribute("form") @Valid GroundBallForm form,
+			BindingResult result) {
+		if (result.hasErrors()) {
+			return "events/groundBalls/newGroundBall";
+		}
+		final LocalDateTime now = LocalDateTime.now();
+		final UserEntry user = getCurrentUser();
+		final String playId = IdentifierFactory.getInstance()
+				.generateIdentifier();
+
+		final EventEntry event = eventRepository.findOne(eventId);
+		final TeamSeasonEntry teamSeason = teamRepository.findOne(form
+				.getTeamSeasonId());
+		final List<PlayParticipantDTO> participants = new ArrayList<>();
+
+		// Create player
+		final String playerId = IdentifierFactory.getInstance()
+				.generateIdentifier();
+		final AttendeeEntry player = event.getAttendee(form.getPlayerId());
+		final PlayParticipantDTO shooterDTO = new PlayParticipantDTO(playerId,
+				playId, player, teamSeason, PlayRole.GROUND_BALL, false, now,
+				user, now, user);
+		participants.add(shooterDTO);
+
+		// Create ground ball play
+		final PlayDTO dto = new PlayDTO(playId, PlayType.GROUND_BALL,
+				PlayKey.PLAY, event, teamSeason, form.getPeriod(), null, null,
+				null, form.getComment(), now, user, now, user, participants);
+
+		final RecordGroundBallCommand payload = new RecordGroundBallCommand(
+				new EventId(eventId), playId, dto);
+		commandBus.dispatch(new GenericCommandMessage<>(payload));
+		return "redirect:/events/" + eventId + "/groundBalls";
+	}
+
+	@RequestMapping(value = "/events/{eventId}/groundBalls/{playId}", method = RequestMethod.DELETE)
+	public String deleteGroundBall(@PathVariable String eventId,
+			@PathVariable String playId) {
+		final EventId identifier = new EventId(eventId);
+		final DeleteGroundBallCommand payload = new DeleteGroundBallCommand(
+				identifier, playId);
+		commandBus.dispatch(new GenericCommandMessage<>(payload));
+		return "redirect:/events/" + eventId + "/groundBalls";
+	}
+
+	@RequestMapping(value = "/events/{eventId}/groundBalls/{playId}", method = RequestMethod.PUT)
+	public String updateGroundBall(@PathVariable String eventId,
+			@PathVariable String playId,
+			@ModelAttribute("form") @Valid GroundBallForm form,
+			BindingResult result) {
+		if (result.hasErrors()) {
+			return "events/groundBalls/editGroundBall";
+		}
+		final LocalDateTime now = LocalDateTime.now();
+		final UserEntry user = getCurrentUser();
+
+		final EventEntry event = eventRepository.findOne(eventId);
+		final PlayEntry play = event.getPlays().get(playId);
+		final TeamSeasonEntry teamSeason = teamRepository.findOne(form
+				.getTeamSeasonId());
+		final List<PlayParticipantDTO> participants = new ArrayList<>();
+
+		// Edit player
+		final PlayParticipantEntry participant = play.getParticipants().get(0);
+		AttendeeEntry attendee = participant.getAttendee();
+		if (!form.getPlayerId().equals(attendee.getId())) {
+			attendee = event.getAttendee(form.getPlayerId());
+		}
+		final PlayParticipantDTO participantDTO = new PlayParticipantDTO(
+				participant.getId(), playId, attendee, teamSeason,
+				PlayRole.GROUND_BALL, false, now, user);
+		participants.add(participantDTO);
+
+		// Edit ground ball play
+		final PlayDTO dto = new PlayDTO(playId, PlayType.GROUND_BALL,
+				PlayKey.PLAY, event, teamSeason, form.getPeriod(), null, null,
+				null, form.getComment(), now, user, participants);
+
+		final UpdateGroundBallCommand payload = new UpdateGroundBallCommand(
+				new EventId(eventId), playId, dto);
+		commandBus.dispatch(new GenericCommandMessage<>(payload));
+		return "redirect:/events/" + eventId + "/groundBalls";
+	}
+
+	@RequestMapping(value = "/events/{eventId}/groundBalls/{playId}/edit", method = RequestMethod.GET)
+	public String editGroundBall(@PathVariable String eventId,
+			@PathVariable String playId, Model model) {
+		final EventEntry aggregate = eventRepository.findOne(eventId);
+		final GroundBallEntry play = (GroundBallEntry) aggregate.getPlays()
+				.get(playId);
+
+		final GroundBallForm form = new GroundBallForm();
+		form.setTeamSeasonId(play.getTeam().getId());
+		form.setPeriod(play.getPeriod());
+		for (final PlayParticipantEntry player : play.getParticipants()) {
+			form.setPlayerId(player.getAttendee().getId());
+		}
+		form.setComment(play.getComment());
+		form.setTeams(getTeams(aggregate));
+
+		model.addAttribute("form", form);
+		return "events/groundBalls/editGoal";
+	}
+
+	/*---------- Shot actions ----------*/
+
+	@RequestMapping(value = "/events/{eventId}/shots", method = RequestMethod.GET)
+	public String shotIndex(@PathVariable String eventId, Model model) {
+		final EventEntry aggregate = eventRepository.findOne(eventId);
+		final List<PlayEntry> teamOnePlays = getPlays(PlayType.SHOT, aggregate,
+				aggregate.getTeams().get(0).getId());
+		final List<PlayEntry> teamTwoPlays = getPlays(PlayType.SHOT, aggregate,
+				aggregate.getTeams().get(1).getId());
+		model.addAttribute("event", aggregate);
+		model.addAttribute("teamOnePlays", teamOnePlays);
+		model.addAttribute("teamTwoPlays", teamTwoPlays);
+		return "events/shots/index";
+	}
+
+	@RequestMapping(value = "/events/{eventId}/shots/new", method = RequestMethod.GET)
+	public String newShot(@PathVariable String eventId, Model model) {
+		final EventEntry aggregate = eventRepository.findOne(eventId);
+		final ShotForm form = new ShotForm();
+		form.setTeams(getTeams(aggregate));
+		model.addAttribute("form", form);
+		return "events/shots/newShot";
+	}
+
+	@RequestMapping(value = "/events/{eventId}/shots", method = RequestMethod.POST)
+	public String createShot(@PathVariable String eventId,
+			@ModelAttribute("form") @Valid ShotForm form, BindingResult result) {
+		if (result.hasErrors()) {
+			return "events/shots/newShot";
+		}
+		final LocalDateTime now = LocalDateTime.now();
+		final UserEntry user = getCurrentUser();
+		final String playId = IdentifierFactory.getInstance()
+				.generateIdentifier();
+
+		final EventEntry event = eventRepository.findOne(eventId);
+		final TeamSeasonEntry teamSeason = teamRepository.findOne(form
+				.getTeamSeasonId());
+		final List<PlayParticipantDTO> participants = new ArrayList<>();
+
+		// Create shooter
+		final String shooterId = IdentifierFactory.getInstance()
+				.generateIdentifier();
+		final AttendeeEntry shooter = event.getAttendee(form.getPlayerId());
+		final PlayParticipantDTO shooterDTO = new PlayParticipantDTO(shooterId,
+				playId, shooter, teamSeason, PlayRole.SHOOTER, false, now,
+				user, now, user);
+		participants.add(shooterDTO);
+
+		// Create shot
+		final PlayDTO dto = new PlayDTO(playId, PlayType.SHOT, PlayKey.PLAY,
+				event, teamSeason, form.getPeriod(), null,
+				form.getAttemptType(), form.getResult(), form.getComment(),
+				now, user, now, user, participants);
+
+		final RecordShotCommand payload = new RecordShotCommand(new EventId(
+				eventId), playId, dto);
+		commandBus.dispatch(new GenericCommandMessage<>(payload));
+		return "redirect:/events/" + eventId + "/shots";
+	}
+
+	@RequestMapping(value = "/events/{eventId}/shots/{playId}", method = RequestMethod.PUT)
+	public String updateShot(@PathVariable String eventId,
+			@PathVariable String playId,
+			@ModelAttribute("form") @Valid ShotForm form, BindingResult result) {
+		if (result.hasErrors()) {
+			return "events/shots/editShot";
+		}
+		final LocalDateTime now = LocalDateTime.now();
+		final UserEntry user = getCurrentUser();
+
+		final EventEntry event = eventRepository.findOne(eventId);
+		final PlayEntry play = event.getPlays().get(playId);
+		final TeamSeasonEntry teamSeason = teamRepository.findOne(form
+				.getTeamSeasonId());
+		final List<PlayParticipantDTO> participants = new ArrayList<>();
+
+		// Edit shooter
+		final PlayParticipantEntry participant = play.getParticipants().get(0);
+		AttendeeEntry attendee = participant.getAttendee();
+		if (!form.getPlayerId().equals(attendee.getId())) {
+			attendee = event.getAttendee(form.getPlayerId());
+		}
+		final PlayParticipantDTO shooterDTO = new PlayParticipantDTO(
+				participant.getId(), playId, attendee, teamSeason,
+				PlayRole.SHOOTER, false, now, user);
+		participants.add(shooterDTO);
+
+		// Edit shot
+		final PlayDTO dto = new PlayDTO(playId, PlayType.SHOT, PlayKey.PLAY,
+				event, teamSeason, form.getPeriod(), null,
+				form.getAttemptType(), form.getResult(), form.getComment(),
+				now, user, participants);
+
+		final UpdateShotCommand payload = new UpdateShotCommand(new EventId(
+				eventId), playId, dto);
+		commandBus.dispatch(new GenericCommandMessage<>(payload));
+		return "redirect:/events/" + eventId + "/shots";
+	}
+
+	@RequestMapping(value = "/events/{eventId}/shots/{playId}", method = RequestMethod.DELETE)
+	public String deleteShot(@PathVariable String eventId,
+			@PathVariable String playId) {
+		final EventId identifier = new EventId(eventId);
+		final DeleteShotCommand payload = new DeleteShotCommand(identifier,
+				playId);
+		commandBus.dispatch(new GenericCommandMessage<>(payload));
+		return "redirect:/events/" + eventId + "/shots";
+	}
+
+	@RequestMapping(value = "/events/{eventId}/shots/{playId}/edit", method = RequestMethod.GET)
+	public String editShot(@PathVariable String eventId,
+			@PathVariable String playId, Model model) {
+		final EventEntry aggregate = eventRepository.findOne(eventId);
+		final ShotEntry play = (ShotEntry) aggregate.getPlays().get(playId);
+
+		final ShotForm form = new ShotForm();
+		form.setTeamSeasonId(play.getTeam().getId());
+		form.setPeriod(play.getPeriod());
+		form.setAttemptType(play.getScoreAttemptType());
+		form.setResult(play.getResult());
+		for (final PlayParticipantEntry player : play.getParticipants()) {
+			form.setPlayerId(player.getAttendee().getId());
+		}
+		form.setComment(play.getComment());
+		form.setTeams(getTeams(aggregate));
+
+		model.addAttribute("form", form);
+		return "events/shots/editGoal";
 	}
 
 	/*---------- Methods ----------*/
@@ -401,7 +805,7 @@ public class PlayController extends ApplicationController {
 
 	private List<FaceOffEntry> getFaceoffs(EventEntry event) {
 		final List<FaceOffEntry> list = new ArrayList<>();
-		for (final PlayEntry each : event.getPlays()) {
+		for (final PlayEntry each : event.getPlays().values()) {
 			if (each instanceof FaceOffEntry) {
 				list.add((FaceOffEntry) each);
 			}
@@ -413,7 +817,7 @@ public class PlayController extends ApplicationController {
 	private List<PlayEntry> getPlays(String type, EventEntry event,
 			String teamSeasonId) {
 		final List<PlayEntry> list = new ArrayList<>();
-		for (final PlayEntry each : event.getPlays()) {
+		for (final PlayEntry each : event.getPlays().values()) {
 			if (each.getTeam().getId().equals(teamSeasonId)) {
 				switch (type) {
 				case PlayType.CLEAR:

@@ -11,20 +11,35 @@ import laxstats.api.events.AttendeeDeletedEvent;
 import laxstats.api.events.AttendeeNotRegisteredException;
 import laxstats.api.events.AttendeeRegisteredEvent;
 import laxstats.api.events.AttendeeUpdatedEvent;
+import laxstats.api.events.ClearDeletedEvent;
 import laxstats.api.events.ClearRecordedEvent;
+import laxstats.api.events.ClearUpdatedEvent;
 import laxstats.api.events.Conditions;
+import laxstats.api.events.DeleteClearCommand;
+import laxstats.api.events.DeleteFaceOffCommand;
+import laxstats.api.events.DeleteGoalCommand;
+import laxstats.api.events.DeleteGroundBallCommand;
+import laxstats.api.events.DeleteShotCommand;
 import laxstats.api.events.EventCreatedEvent;
 import laxstats.api.events.EventDTO;
 import laxstats.api.events.EventDeletedEvent;
 import laxstats.api.events.EventId;
 import laxstats.api.events.EventUpdatedEvent;
+import laxstats.api.events.FaceOffDeletedEvent;
 import laxstats.api.events.FaceOffRecordedEvent;
+import laxstats.api.events.FaceOffUpdatedEvent;
+import laxstats.api.events.GoalDeletedEvent;
 import laxstats.api.events.GoalRecordedEvent;
+import laxstats.api.events.GoalUpdatedEvent;
+import laxstats.api.events.GroundBallDeletedEvent;
 import laxstats.api.events.GroundBallRecordedEvent;
+import laxstats.api.events.GroundBallUpdatedEvent;
 import laxstats.api.events.InvalidPlayException;
 import laxstats.api.events.PlayDTO;
 import laxstats.api.events.Schedule;
+import laxstats.api.events.ShotDeletedEvent;
 import laxstats.api.events.ShotRecordedEvent;
+import laxstats.api.events.ShotUpdatedEvent;
 import laxstats.api.events.Status;
 import laxstats.api.sites.SiteAlignment;
 
@@ -103,7 +118,43 @@ public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 		apply(new AttendeeDeletedEvent(id, attendeeId));
 	}
 
-	/*---------- Play methods ----------*/
+	/*---------- Clear methods ----------*/
+
+	public void recordClear(PlayDTO dto) {
+		final PlayService service = new ClearService(this);
+		if (!service.canRecordPlay(dto)) {
+			throw new InvalidPlayException();
+		}
+		apply(new ClearRecordedEvent(id, dto.getIdentifier(), dto));
+	}
+
+	public void updateClear(PlayDTO dto) {
+		apply(new ClearUpdatedEvent(id, dto.getIdentifier(), dto));
+	}
+
+	public void deleteClear(DeleteClearCommand command) {
+		apply(new ClearDeletedEvent(id, command.getPlayId()));
+	}
+
+	/*---------- FaceOff methods ----------*/
+
+	public void recordFaceOff(PlayDTO dto) {
+		final PlayService service = new PlayServiceImpl(this);
+		if (!service.canRecordPlay(dto)) {
+			throw new InvalidPlayException();
+		}
+		apply(new FaceOffRecordedEvent(id, dto.getIdentifier(), dto));
+	}
+
+	public void updateFaceOff(PlayDTO dto) {
+		apply(new FaceOffUpdatedEvent(id, dto.getIdentifier(), dto));
+	}
+
+	public void deleteFaceOff(DeleteFaceOffCommand command) {
+		apply(new FaceOffDeletedEvent(id, command.getPlayId()));
+	}
+
+	/*---------- Goal methods ----------*/
 
 	public void recordGoal(PlayDTO dto) {
 		final PlayService service = new GoalService(this);
@@ -114,13 +165,15 @@ public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 		apply(new GoalRecordedEvent(id, dto.getIdentifier(), dto));
 	}
 
-	public void recordShot(PlayDTO dto) {
-		final PlayService service = new PlayServiceImpl(this);
-		if (!service.canRecordPlay(dto)) {
-			throw new InvalidPlayException();
-		}
-		apply(new ShotRecordedEvent(id, dto.getIdentifier(), dto));
+	public void updateGoal(PlayDTO dto) {
+		apply(new GoalUpdatedEvent(id, dto.getIdentifier(), dto));
 	}
+
+	public void deleteGoal(DeleteGoalCommand command) {
+		apply(new GoalDeletedEvent(id, command.getPlayId()));
+	}
+
+	/*---------- Ground Ball methods ----------*/
 
 	public void recordGroundBall(PlayDTO dto) {
 		final PlayService service = new PlayServiceImpl(this);
@@ -130,20 +183,30 @@ public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 		apply(new GroundBallRecordedEvent(id, dto.getIdentifier(), dto));
 	}
 
-	public void recordFaceOff(PlayDTO dto) {
+	public void updateGroundBall(PlayDTO dto) {
+		apply(new GroundBallUpdatedEvent(id, dto.getIdentifier(), dto));
+	}
+
+	public void deleteGroundBall(DeleteGroundBallCommand command) {
+		apply(new GroundBallDeletedEvent(id, command.getPlayId()));
+	}
+
+	/*---------- Shot methods ----------*/
+
+	public void recordShot(PlayDTO dto) {
 		final PlayService service = new PlayServiceImpl(this);
 		if (!service.canRecordPlay(dto)) {
 			throw new InvalidPlayException();
 		}
-		apply(new FaceOffRecordedEvent(id, dto.getIdentifier(), dto));
+		apply(new ShotRecordedEvent(id, dto.getIdentifier(), dto));
 	}
 
-	public void recordClear(PlayDTO dto) {
-		final PlayService service = new ClearService(this);
-		if (!service.canRecordPlay(dto)) {
-			throw new InvalidPlayException();
-		}
-		apply(new ClearRecordedEvent(id, dto.getIdentifier(), dto));
+	public void updateShot(PlayDTO dto) {
+		apply(new ShotUpdatedEvent(id, dto.getIdentifier(), dto));
+	}
+
+	public void deleteShot(DeleteShotCommand command) {
+		apply(new ShotDeletedEvent(id, command.getPlayId()));
 	}
 
 	/* ---------- Event handling ---------- */
@@ -221,6 +284,40 @@ public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 	}
 
 	@EventSourcingHandler
+	protected void handle(ClearRecordedEvent event) {
+		final PlayDTO dto = event.getPlayDTO();
+		final String eventId = id.toString();
+		final String playId = dto.getIdentifier();
+		final String teamId = dto.getTeam().getId();
+
+		final Clear entity = new Clear(playId, eventId, teamId,
+				dto.getPeriod(), dto.getResult(), dto.getComment());
+		plays.put(playId, entity);
+	}
+
+	@EventSourcingHandler
+	protected void handle(ClearDeletedEvent event) {
+		plays.remove(event.getPlayId());
+	}
+
+	@EventSourcingHandler
+	protected void handle(FaceOffRecordedEvent event) {
+		final PlayDTO dto = event.getPlayDTO();
+		final String eventId = id.toString();
+		final String playId = dto.getIdentifier();
+		final String teamId = dto.getTeam().getId();
+
+		final FaceOff entity = new FaceOff(playId, eventId, teamId,
+				dto.getPeriod(), dto.getComment(), dto.getParticipants());
+		plays.put(playId, entity);
+	}
+
+	@EventSourcingHandler
+	protected void handle(FaceOffDeletedEvent event) {
+		plays.remove(event.getPlayId());
+	}
+
+	@EventSourcingHandler
 	protected void handle(GoalRecordedEvent event) {
 		final PlayDTO dto = event.getPlayDTO();
 		final String eventId = id.toString();
@@ -238,16 +335,8 @@ public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 	}
 
 	@EventSourcingHandler
-	protected void handle(ShotRecordedEvent event) {
-		final PlayDTO dto = event.getPlayDTO();
-		final String eventId = id.toString();
-		final String playId = dto.getIdentifier();
-		final String teamId = dto.getTeam().getId();
-
-		final Shot entity = new Shot(playId, eventId, teamId, dto.getPeriod(),
-				dto.getElapsedTime(), dto.getAttemptType(), dto.getResult(),
-				dto.getComment(), dto.getParticipants());
-		plays.put(playId, entity);
+	protected void handle(GoalDeletedEvent event) {
+		plays.remove(event.getPlayId());
 	}
 
 	@EventSourcingHandler
@@ -263,27 +352,26 @@ public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 	}
 
 	@EventSourcingHandler
-	protected void handle(FaceOffRecordedEvent event) {
+	protected void handle(GroundBallDeletedEvent event) {
+		plays.remove(event.getPlayId());
+	}
+
+	@EventSourcingHandler
+	protected void handle(ShotRecordedEvent event) {
 		final PlayDTO dto = event.getPlayDTO();
 		final String eventId = id.toString();
 		final String playId = dto.getIdentifier();
 		final String teamId = dto.getTeam().getId();
 
-		final FaceOff entity = new FaceOff(playId, eventId, teamId,
-				dto.getPeriod(), dto.getComment(), dto.getParticipants());
+		final Shot entity = new Shot(playId, eventId, teamId, dto.getPeriod(),
+				dto.getElapsedTime(), dto.getAttemptType(), dto.getResult(),
+				dto.getComment(), dto.getParticipants());
 		plays.put(playId, entity);
 	}
 
 	@EventSourcingHandler
-	protected void handle(ClearRecordedEvent event) {
-		final PlayDTO dto = event.getPlayDTO();
-		final String eventId = id.toString();
-		final String playId = dto.getIdentifier();
-		final String teamId = dto.getTeam().getId();
-
-		final Clear entity = new Clear(playId, eventId, teamId,
-				dto.getPeriod(), dto.getResult(), dto.getComment());
-		plays.put(playId, entity);
+	protected void handle(ShotDeletedEvent event) {
+		plays.remove(event.getPlayId());
 	}
 
 	/* ---------- Getters ---------- */

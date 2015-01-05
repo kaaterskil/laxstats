@@ -2,10 +2,10 @@ package laxstats.query.events;
 
 import java.util.List;
 
+import laxstats.api.events.AttendeeDTO;
 import laxstats.api.events.AttendeeDeletedEvent;
 import laxstats.api.events.AttendeeRegisteredEvent;
 import laxstats.api.events.AttendeeUpdatedEvent;
-import laxstats.api.events.AttendeeDTO;
 import laxstats.api.events.EventCreatedEvent;
 import laxstats.api.events.EventDTO;
 import laxstats.api.events.EventDeletedEvent;

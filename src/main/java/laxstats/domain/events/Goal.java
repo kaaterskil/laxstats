@@ -3,9 +3,12 @@ package laxstats.domain.events;
 import java.util.List;
 
 import laxstats.api.events.EventId;
+import laxstats.api.events.GoalUpdatedEvent;
+import laxstats.api.events.PlayDTO;
 import laxstats.api.events.PlayKey;
 import laxstats.api.events.PlayParticipantDTO;
 import laxstats.api.events.PlayResult;
+import laxstats.api.events.PlayRole;
 import laxstats.api.events.PlaySequenceNumberChangedEvent;
 import laxstats.api.events.PlayTeamScoreChangedEvent;
 import laxstats.api.events.PlayType;
@@ -56,6 +59,63 @@ public class Goal extends Play {
 	}
 
 	/*---------- Event handlers -----------*/
+
+	@EventHandler
+	protected void handle(GoalUpdatedEvent event) {
+		if (!event.getPlayId().equals(id)) {
+			return;
+		}
+		final PlayDTO dto = event.getPlayDTO();
+		teamId = dto.getTeam().getId();
+		period = dto.getPeriod();
+		elapsedTime = dto.getElapsedTime();
+		result = dto.getResult();
+
+		sequenceNumber = dto.getSequence();
+		teamScore = dto.getTeamScore();
+		opponentScore = dto.getOpponentScore();
+		strength = dto.getStrength();
+		manUpAdvantage = dto.getManUpAdvantage();
+		manUpTeamId = dto.getManUpTeam().getId();
+
+		// Update existing scorer and assist
+		boolean assistExists = false;
+		for (final PlayParticipant participant : participants) {
+			if (participant.getRole().equals(PlayRole.SCORER)) {
+				for (final PlayParticipantDTO participantDTO : dto
+						.getParticipants()) {
+					if (participantDTO.getRole().equals(PlayRole.SCORER)) {
+						participant.update(participantDTO);
+					}
+				}
+			} else if (participant.getRole().equals(PlayRole.ASSIST)) {
+				assistExists = true;
+				for (final PlayParticipantDTO participantDTO : dto
+						.getParticipants()) {
+					if (participantDTO.getRole().equals(PlayRole.ASSIST)) {
+						participant.update(participantDTO);
+					}
+				}
+			}
+		}
+		// For new assists
+		if (!assistExists) {
+			for (final PlayParticipantDTO participantDTO : dto
+					.getParticipants()) {
+				if (participantDTO.getRole().equals(PlayRole.ASSIST)) {
+					final PlayParticipant entity = new PlayParticipant(
+							participantDTO.getId(), id, participantDTO
+									.getAttendee().getId(), participantDTO
+									.getTeamSeason().getId(),
+							participantDTO.getRole(),
+							participantDTO.isPointCredit(),
+							participantDTO.getCumulativeAssists(),
+							participantDTO.getCumulativeGoals());
+					participants.add(entity);
+				}
+			}
+		}
+	}
 
 	@EventHandler
 	protected void handle(PlaySequenceNumberChangedEvent event) {

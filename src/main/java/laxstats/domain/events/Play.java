@@ -26,7 +26,7 @@ public abstract class Play extends AbstractAnnotatedEntity {
 	protected String comment;
 
 	@EventSourcedMember
-	private final List<PlayParticipant> participants = new ArrayList<>();
+	protected final List<PlayParticipant> participants = new ArrayList<>();
 
 	protected Play(String id, String discriminator, PlayKey playKey,
 			String eventId, String teamId, int period, LocalTime elapsedTime,
@@ -62,6 +62,15 @@ public abstract class Play extends AbstractAnnotatedEntity {
 
 	public LocalTime getTotalElapsedTime() {
 		return PlayUtils.getTotalElapsedTime(period, elapsedTime);
+	}
+
+	protected void updateParticipant(PlayParticipant participant,
+			List<PlayParticipantDTO> list) {
+		for (final PlayParticipantDTO dto : list) {
+			if (dto.getRole().equals(participant.getRole())) {
+				participant.update(dto);
+			}
+		}
 	}
 
 	/*---------- Getters ----------*/

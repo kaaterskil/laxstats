@@ -1,5 +1,6 @@
 package laxstats.domain.events;
 
+import laxstats.api.events.PlayParticipantDTO;
 import laxstats.api.events.PlayRole;
 
 import org.axonframework.eventsourcing.annotation.AbstractAnnotatedEntity;
@@ -34,7 +35,13 @@ public class PlayParticipant extends AbstractAnnotatedEntity {
 
 	/*---------- Methods ----------*/
 
-	/*---------- Event Handlers ----------*/
+	public void update(PlayParticipantDTO dto) {
+		attendeeId = dto.getAttendee().getId();
+		teamSeasonId = dto.getTeamSeason().getId();
+		pointCredit = dto.isPointCredit();
+		cumulativeAssists = dto.getCumulativeAssists();
+		cumulativeGoals = dto.getCumulativeGoals();
+	}
 
 	/*---------- Getters ----------*/
 

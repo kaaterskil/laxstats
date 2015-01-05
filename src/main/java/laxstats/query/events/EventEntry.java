@@ -83,12 +83,22 @@ public class EventEntry {
 	private final List<TeamEvent> teams = new ArrayList<>();
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
-	private final List<PlayEntry> plays = new ArrayList<>();
+	private final Map<String, PlayEntry> plays = new HashMap<>();
 
 	/*---------- Methods ----------*/
 
 	public AttendeeEntry getAttendee(String key) {
 		return eventAttendees.get(key);
+	}
+
+	public void addPlay(PlayEntry play) {
+		play.setEvent(this);
+		plays.put(play.getId(), play);
+	}
+
+	public void deletePlay(PlayEntry play) {
+		play.clear();
+		plays.remove(play.getId());
 	}
 
 	/* ---------- Getter/Setters ---------- */
@@ -197,7 +207,7 @@ public class EventEntry {
 		return teams;
 	}
 
-	public List<PlayEntry> getPlays() {
+	public Map<String, PlayEntry> getPlays() {
 		return plays;
 	}
 }

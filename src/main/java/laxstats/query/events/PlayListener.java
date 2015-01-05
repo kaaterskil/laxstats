@@ -1,12 +1,25 @@
 package laxstats.query.events;
 
+import java.util.Iterator;
+
+import laxstats.api.events.ClearDeletedEvent;
 import laxstats.api.events.ClearRecordedEvent;
+import laxstats.api.events.ClearUpdatedEvent;
+import laxstats.api.events.FaceOffDeletedEvent;
 import laxstats.api.events.FaceOffRecordedEvent;
+import laxstats.api.events.FaceOffUpdatedEvent;
+import laxstats.api.events.GoalDeletedEvent;
 import laxstats.api.events.GoalRecordedEvent;
+import laxstats.api.events.GoalUpdatedEvent;
+import laxstats.api.events.GroundBallDeletedEvent;
 import laxstats.api.events.GroundBallRecordedEvent;
+import laxstats.api.events.GroundBallUpdatedEvent;
 import laxstats.api.events.PenaltyCreatedEvent;
 import laxstats.api.events.PlayDTO;
+import laxstats.api.events.PlayParticipantDTO;
+import laxstats.api.events.ShotDeletedEvent;
 import laxstats.api.events.ShotRecordedEvent;
+import laxstats.api.events.ShotUpdatedEvent;
 
 import org.axonframework.eventhandling.annotation.EventHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,90 +27,305 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class PlayListener {
-	private PlayQueryRepository repository;
+	private EventQueryRepository repository;
 
 	@Autowired
-	public void setPlayRepository(PlayQueryRepository repository) {
+	public void setPlayRepository(EventQueryRepository repository) {
 		this.repository = repository;
 	}
 
+	/*---------- Clear event handlers ----------*/
+
 	@EventHandler
 	protected void handle(ClearRecordedEvent event) {
-		final PlayDTO dto = event.getPlayDTO();
-
 		final ClearEntry clear = new ClearEntry();
-		clear.setId(event.getPlayId());
-		setPropertyValues(clear, dto);
-		repository.save(clear);
+		setPropertyValues(clear, event.getPlayDTO());
+
+		final String eventId = event.getEventId().toString();
+		final EventEntry aggregate = repository.findOne(eventId);
+		aggregate.addPlay(clear);
+		repository.save(aggregate);
 	}
+
+	@EventHandler
+	protected void handle(ClearUpdatedEvent event) {
+		final String eventId = event.getEventId().toString();
+		final EventEntry aggregate = repository.findOne(eventId);
+		final PlayEntry play = aggregate.getPlays().get(event.getPlayId());
+		updatePropertyValues(play, event.getPlayDTO());
+		repository.save(aggregate);
+	}
+
+	@EventHandler
+	protected void handle(ClearDeletedEvent event) {
+		final String eventId = event.getEventId().toString();
+		final EventEntry aggregate = repository.findOne(eventId);
+		final PlayEntry play = aggregate.getPlays().get(event.getPlayId());
+		aggregate.deletePlay(play);
+		repository.save(aggregate);
+	}
+
+	/*---------- FaceOff event handlers ----------*/
 
 	@EventHandler
 	protected void handle(FaceOffRecordedEvent event) {
-		final PlayDTO dto = event.getPlayDTO();
-
 		final FaceOffEntry faceoff = new FaceOffEntry();
-		faceoff.setId(event.getPlayId());
-		setPropertyValues(faceoff, dto);
-		repository.save(faceoff);
+		setPropertyValues(faceoff, event.getPlayDTO());
+
+		final String eventId = event.getEventId().toString();
+		final EventEntry aggregate = repository.findOne(eventId);
+		aggregate.addPlay(faceoff);
+		repository.save(aggregate);
 	}
+
+	@EventHandler
+	protected void handle(FaceOffUpdatedEvent event) {
+		final String eventId = event.getEventId().toString();
+		final EventEntry aggregate = repository.findOne(eventId);
+		final PlayEntry play = aggregate.getPlays().get(event.getPlayId());
+		updatePropertyValues(play, event.getPlayDTO());
+		repository.save(aggregate);
+	}
+
+	@EventHandler
+	protected void handle(FaceOffDeletedEvent event) {
+		final String eventId = event.getEventId().toString();
+		final EventEntry aggregate = repository.findOne(eventId);
+		final PlayEntry play = aggregate.getPlays().get(event.getPlayId());
+		aggregate.deletePlay(play);
+		repository.save(aggregate);
+	}
+
+	/*---------- Goal event handlers ----------*/
 
 	@EventHandler
 	protected void handle(GoalRecordedEvent event) {
-		final PlayDTO dto = event.getPlayDTO();
-
 		final GoalEntry goal = new GoalEntry();
-		goal.setId(event.getPlayId());
-		setPropertyValues(goal, dto);
-		repository.save(goal);
+		setPropertyValues(goal, event.getPlayDTO());
+
+		final String eventId = event.getEventId().toString();
+		final EventEntry aggregate = repository.findOne(eventId);
+		aggregate.addPlay(goal);
+		repository.save(aggregate);
 	}
+
+	@EventHandler
+	protected void handle(GoalUpdatedEvent event) {
+		final String eventId = event.getEventId().toString();
+		final EventEntry aggregate = repository.findOne(eventId);
+		final PlayEntry play = aggregate.getPlays().get(event.getPlayId());
+		updatePropertyValues(play, event.getPlayDTO());
+		repository.save(aggregate);
+	}
+
+	@EventHandler
+	protected void handle(GoalDeletedEvent event) {
+		final String eventId = event.getEventId().toString();
+		final EventEntry aggregate = repository.findOne(eventId);
+		final PlayEntry play = aggregate.getPlays().get(event.getPlayId());
+		aggregate.deletePlay(play);
+		repository.save(aggregate);
+	}
+
+	/*---------- Ground Ball event handlers ----------*/
 
 	@EventHandler
 	protected void handle(GroundBallRecordedEvent event) {
-		final PlayDTO dto = event.getPlayDTO();
-
 		final GroundBallEntry groundBall = new GroundBallEntry();
-		groundBall.setId(event.getPlayId());
-		setPropertyValues(groundBall, dto);
-		repository.save(groundBall);
+		setPropertyValues(groundBall, event.getPlayDTO());
+
+		final String eventId = event.getEventId().toString();
+		final EventEntry aggregate = repository.findOne(eventId);
+		aggregate.addPlay(groundBall);
+		repository.save(aggregate);
 	}
+
+	@EventHandler
+	protected void handle(GroundBallUpdatedEvent event) {
+		final String eventId = event.getEventId().toString();
+		final EventEntry aggregate = repository.findOne(eventId);
+		final PlayEntry play = aggregate.getPlays().get(event.getPlayId());
+		updatePropertyValues(play, event.getPlayDTO());
+		repository.save(aggregate);
+	}
+
+	@EventHandler
+	protected void handle(GroundBallDeletedEvent event) {
+		final String eventId = event.getEventId().toString();
+		final EventEntry aggregate = repository.findOne(eventId);
+		final PlayEntry play = aggregate.getPlays().get(event.getPlayId());
+		aggregate.deletePlay(play);
+		repository.save(aggregate);
+	}
+
+	/*---------- Penalty event handlers ----------*/
 
 	@EventHandler
 	protected void handle(PenaltyCreatedEvent event) {
-		final PlayDTO dto = event.getPlayDTO();
-
 		final PenaltyEntry penalty = new PenaltyEntry();
-		penalty.setId(event.getPlayId());
-		setPropertyValues(penalty, dto);
-		repository.save(penalty);
+		setPropertyValues(penalty, event.getPlayDTO());
+
+		final String eventId = event.getEventId().toString();
+		final EventEntry aggregate = repository.findOne(eventId);
+		aggregate.addPlay(penalty);
+		repository.save(aggregate);
 	}
+
+	/*---------- Shot event handlers ----------*/
 
 	@EventHandler
 	protected void handle(ShotRecordedEvent event) {
-		final PlayDTO dto = event.getPlayDTO();
-
 		final ShotEntry shot = new ShotEntry();
-		shot.setId(event.getPlayId());
-		setPropertyValues(shot, dto);
-		repository.save(shot);
+		setPropertyValues(shot, event.getPlayDTO());
+
+		final String eventId = event.getEventId().toString();
+		final EventEntry aggregate = repository.findOne(eventId);
+		aggregate.addPlay(shot);
+		repository.save(aggregate);
 	}
 
+	@EventHandler
+	protected void handle(ShotUpdatedEvent event) {
+		final String eventId = event.getEventId().toString();
+		final EventEntry aggregate = repository.findOne(eventId);
+		final PlayEntry play = aggregate.getPlays().get(event.getPlayId());
+		updatePropertyValues(play, event.getPlayDTO());
+		repository.save(aggregate);
+	}
+
+	@EventHandler
+	protected void handle(ShotDeletedEvent event) {
+		final String eventId = event.getEventId().toString();
+		final EventEntry aggregate = repository.findOne(eventId);
+		final PlayEntry play = aggregate.getPlays().get(event.getPlayId());
+		aggregate.deletePlay(play);
+		repository.save(aggregate);
+	}
+
+	/*---------- Utility methods ----------*/
+
 	private void setPropertyValues(PlayEntry obj, PlayDTO dto) {
-		obj.setEvent(dto.getEvent());
-		obj.setSequenceNumber(dto.getSequence());
+		obj.setId(dto.getIdentifier());
 		obj.setTeam(dto.getTeam());
 		obj.setPeriod(dto.getPeriod());
 		obj.setElapsedTime(dto.getElapsedTime());
 		obj.setScoreAttemptType(dto.getAttemptType());
 		obj.setResult(dto.getResult());
+		obj.setComment(dto.getComment());
+
+		// Set goal values
+		obj.setSequenceNumber(dto.getSequence());
 		obj.setTeamScore(dto.getTeamScore());
 		obj.setOpponentScore(dto.getOpponentScore());
 		obj.setStrength(dto.getStrength());
 		obj.setManUpAdvantage(dto.getManUpAdvantage());
 		obj.setManUpTeam(dto.getManUpTeam());
-		obj.setComment(dto.getComment());
+
+		// Set audit values
 		obj.setCreatedAt(dto.getCreatedAt());
 		obj.setCreatedBy(dto.getCreatedBy());
 		obj.setModifiedAt(dto.getModifiedAt());
 		obj.setModifiedBy(dto.getModifiedBy());
+
+		// Create play participants
+		setPlayParticipants(obj, dto);
+	}
+
+	private void setPlayParticipants(PlayEntry obj, PlayDTO dto) {
+		for (final PlayParticipantDTO pdto : dto.getParticipants()) {
+			setPlayParticipant(obj, pdto);
+		}
+	}
+
+	private void setPlayParticipant(PlayEntry obj, PlayParticipantDTO pdto) {
+		final PlayParticipantEntry p = new PlayParticipantEntry();
+		p.setId(pdto.getId());
+		p.setPlay(obj);
+		p.setAttendee(pdto.getAttendee());
+		p.setTeamSeason(pdto.getTeamSeason());
+		p.setRole(pdto.getRole());
+		p.setPointCredit(pdto.isPointCredit());
+		p.setCumulativeAssists(pdto.getCumulativeAssists());
+		p.setCumulativeGoals(pdto.getCumulativeGoals());
+		p.setCreatedAt(pdto.getCreatedAt());
+		p.setCreatedBy(pdto.getCreatedBy());
+		p.setModifiedAt(pdto.getModifiedAt());
+		p.setModifiedBy(pdto.getModifiedBy());
+		obj.addParticipant(p);
+	}
+
+	private void updatePropertyValues(PlayEntry obj, PlayDTO dto) {
+		obj.setId(dto.getIdentifier());
+		obj.setTeam(dto.getTeam());
+		obj.setPeriod(dto.getPeriod());
+		obj.setElapsedTime(dto.getElapsedTime());
+		obj.setScoreAttemptType(dto.getAttemptType());
+		obj.setResult(dto.getResult());
+		obj.setComment(dto.getComment());
+
+		// Update goal values
+		obj.setSequenceNumber(dto.getSequence());
+		obj.setTeamScore(dto.getTeamScore());
+		obj.setOpponentScore(dto.getOpponentScore());
+		obj.setStrength(dto.getStrength());
+		obj.setManUpAdvantage(dto.getManUpAdvantage());
+		obj.setManUpTeam(dto.getManUpTeam());
+
+		// Update audit values
+		obj.setModifiedAt(dto.getModifiedAt());
+		obj.setModifiedBy(dto.getModifiedBy());
+
+		// Update play participants
+		updatePlayParticipants(obj, dto);
+	}
+
+	private void updatePlayParticipants(PlayEntry obj, PlayDTO dto) {
+		// First remove any deleted participants
+		removePlayParticipant(obj, dto);
+
+		for (final PlayParticipantDTO pdto : dto.getParticipants()) {
+			// Update existing participant
+			boolean found = false;
+			for (final PlayParticipantEntry p : obj.getParticipants()) {
+				if (p.getId().equals(pdto.getId())) {
+					found = true;
+					updatePlayParticipant(p, pdto);
+				}
+			}
+			// Create new participant
+			if (!found) {
+				setPlayParticipant(obj, pdto);
+			}
+		}
+	}
+
+	private void removePlayParticipant(PlayEntry obj, PlayDTO dto) {
+		final Iterator<PlayParticipantEntry> iter = obj.getParticipants()
+				.iterator();
+		while (iter.hasNext()) {
+			final PlayParticipantEntry p = iter.next();
+			boolean found = false;
+			for (final PlayParticipantDTO pdto : dto.getParticipants()) {
+				if (p.getId().equals(pdto.getId())) {
+					found = true;
+				}
+			}
+			if (!found) {
+				p.clear();
+				iter.remove();
+			}
+		}
+	}
+
+	private void updatePlayParticipant(PlayParticipantEntry p,
+			PlayParticipantDTO pdto) {
+		p.setAttendee(pdto.getAttendee());
+		p.setTeamSeason(pdto.getTeamSeason());
+		p.setRole(pdto.getRole());
+		p.setPointCredit(pdto.isPointCredit());
+		p.setCumulativeAssists(pdto.getCumulativeAssists());
+		p.setCumulativeGoals(pdto.getCumulativeGoals());
+		p.setModifiedAt(pdto.getModifiedAt());
+		p.setModifiedBy(pdto.getModifiedBy());
 	}
 }
