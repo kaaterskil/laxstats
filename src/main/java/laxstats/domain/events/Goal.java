@@ -1,5 +1,6 @@
 package laxstats.domain.events;
 
+import java.util.Iterator;
 import java.util.List;
 
 import laxstats.api.events.EventId;
@@ -8,7 +9,6 @@ import laxstats.api.events.PlayDTO;
 import laxstats.api.events.PlayKey;
 import laxstats.api.events.PlayParticipantDTO;
 import laxstats.api.events.PlayResult;
-import laxstats.api.events.PlayRole;
 import laxstats.api.events.PlaySequenceNumberChangedEvent;
 import laxstats.api.events.PlayTeamScoreChangedEvent;
 import laxstats.api.events.PlayType;
@@ -79,40 +79,46 @@ public class Goal extends Play {
 		manUpTeamId = dto.getManUpTeam().getId();
 
 		// Update existing scorer and assist
-		boolean assistExists = false;
-		for (final PlayParticipant participant : participants) {
-			if (participant.getRole().equals(PlayRole.SCORER)) {
-				for (final PlayParticipantDTO participantDTO : dto
-						.getParticipants()) {
-					if (participantDTO.getRole().equals(PlayRole.SCORER)) {
-						participant.update(participantDTO);
-					}
-				}
-			} else if (participant.getRole().equals(PlayRole.ASSIST)) {
-				assistExists = true;
-				for (final PlayParticipantDTO participantDTO : dto
-						.getParticipants()) {
-					if (participantDTO.getRole().equals(PlayRole.ASSIST)) {
-						participant.update(participantDTO);
-					}
+		updateParticipants(dto);
+	}
+
+	private void updateParticipants(PlayDTO dto) {
+		// FIrst remove any deleted participants
+		removeParticipant(dto);
+
+		for (final PlayParticipantDTO pdto : dto.getParticipants()) {
+			// Update existing participants
+			boolean found = false;
+			for (final PlayParticipant p : getParticipants()) {
+				if (p.getId().equals(pdto.getId())) {
+					found = true;
+					p.update(pdto);
 				}
 			}
+			// Create new participant (assist)
+			if (!found) {
+				final PlayParticipant entity = new PlayParticipant(
+						pdto.getId(), id, pdto.getAttendee().getId(), pdto
+								.getTeamSeason().getId(), pdto.getRole(),
+						pdto.isPointCredit(), pdto.getCumulativeAssists(),
+						pdto.getCumulativeGoals());
+				participants.add(entity);
+			}
 		}
-		// For new assists
-		if (!assistExists) {
-			for (final PlayParticipantDTO participantDTO : dto
-					.getParticipants()) {
-				if (participantDTO.getRole().equals(PlayRole.ASSIST)) {
-					final PlayParticipant entity = new PlayParticipant(
-							participantDTO.getId(), id, participantDTO
-									.getAttendee().getId(), participantDTO
-									.getTeamSeason().getId(),
-							participantDTO.getRole(),
-							participantDTO.isPointCredit(),
-							participantDTO.getCumulativeAssists(),
-							participantDTO.getCumulativeGoals());
-					participants.add(entity);
+	}
+
+	private void removeParticipant(PlayDTO dto) {
+		final Iterator<PlayParticipant> iter = getParticipants().iterator();
+		while (iter.hasNext()) {
+			final PlayParticipant p = iter.next();
+			boolean found = false;
+			for (final PlayParticipantDTO pdto : dto.getParticipants()) {
+				if (p.getId().equals(pdto.getId())) {
+					found = true;
 				}
+			}
+			if (!found) {
+				iter.remove();
 			}
 		}
 	}

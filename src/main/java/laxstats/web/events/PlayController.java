@@ -469,9 +469,7 @@ public class PlayController extends ApplicationController {
 			if (participant.getRole().equals(PlayRole.ASSIST)) {
 				foundAssist = true;
 				if (form.getAssistId() == null) {
-					// TODO Probably shouldn't be doing this here. Better to do
-					// it on the update event handler
-					iter.remove();
+					// We'll take care of deleted assists in the model.
 				} else {
 					assist = participant.getAttendee();
 					if (!form.getAssistId().equals(assist.getId())) {
