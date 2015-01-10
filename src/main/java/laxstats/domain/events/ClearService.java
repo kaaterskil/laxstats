@@ -15,4 +15,12 @@ public class ClearService extends PlayServiceImpl {
 		}
 		return true;
 	}
+
+	@Override
+	public boolean canUpdatePlay(PlayDTO dto) {
+		if (!playRecorded(dto)) {
+			return false;
+		}
+		return true;
+	}
 }

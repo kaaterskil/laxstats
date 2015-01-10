@@ -7,13 +7,13 @@ import laxstats.domain.events.Event;
 import laxstats.domain.leagues.League;
 import laxstats.domain.people.Person;
 import laxstats.domain.players.Player;
-import laxstats.domain.plays.PenaltyType;
 import laxstats.domain.relationships.Relationship;
 import laxstats.domain.seasons.Season;
 import laxstats.domain.sites.Site;
 import laxstats.domain.teamSeasons.TeamSeason;
 import laxstats.domain.teams.Team;
 import laxstats.domain.users.User;
+import laxstats.domain.violations.Violation;
 
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.commandhandling.SimpleCommandBus;
@@ -124,9 +124,9 @@ public class AxonConfiguration {
 	}
 
 	@Bean
-	public Repository<PenaltyType> penaltyTypeRepository() {
-		final EventSourcingRepository<PenaltyType> repository = new EventSourcingRepository<>(
-				PenaltyType.class, eventStore());
+	public Repository<Violation> penaltyTypeRepository() {
+		final EventSourcingRepository<Violation> repository = new EventSourcingRepository<>(
+				Violation.class, eventStore());
 		repository.setEventBus(eventBus());
 		return repository;
 	}

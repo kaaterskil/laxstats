@@ -14,7 +14,9 @@ import laxstats.api.events.GoalUpdatedEvent;
 import laxstats.api.events.GroundBallDeletedEvent;
 import laxstats.api.events.GroundBallRecordedEvent;
 import laxstats.api.events.GroundBallUpdatedEvent;
-import laxstats.api.events.PenaltyCreatedEvent;
+import laxstats.api.events.PenaltyDeletedEvent;
+import laxstats.api.events.PenaltyRecordedEvent;
+import laxstats.api.events.PenaltyUpdatedEvent;
 import laxstats.api.events.PlayDTO;
 import laxstats.api.events.PlayParticipantDTO;
 import laxstats.api.events.ShotDeletedEvent;
@@ -161,13 +163,31 @@ public class PlayListener {
 	/*---------- Penalty event handlers ----------*/
 
 	@EventHandler
-	protected void handle(PenaltyCreatedEvent event) {
+	protected void handle(PenaltyRecordedEvent event) {
 		final PenaltyEntry penalty = new PenaltyEntry();
 		setPropertyValues(penalty, event.getPlayDTO());
 
 		final String eventId = event.getEventId().toString();
 		final EventEntry aggregate = repository.findOne(eventId);
 		aggregate.addPlay(penalty);
+		repository.save(aggregate);
+	}
+
+	@EventHandler
+	protected void handle(PenaltyUpdatedEvent event) {
+		final String eventId = event.getEventId().toString();
+		final EventEntry aggregate = repository.findOne(eventId);
+		final PlayEntry play = aggregate.getPlays().get(event.getPlayId());
+		updatePropertyValues(play, event.getPlayDTO());
+		repository.save(aggregate);
+	}
+
+	@EventHandler
+	protected void handle(PenaltyDeletedEvent event) {
+		final String eventId = event.getEventId().toString();
+		final EventEntry aggregate = repository.findOne(eventId);
+		final PlayEntry play = aggregate.getPlays().get(event.getPlayId());
+		aggregate.deletePlay(play);
 		repository.save(aggregate);
 	}
 
@@ -221,6 +241,10 @@ public class PlayListener {
 		obj.setManUpAdvantage(dto.getManUpAdvantage());
 		obj.setManUpTeam(dto.getManUpTeam());
 
+		// Set penalty values
+		obj.setViolation(dto.getViolation());
+		obj.setDuration(dto.getPenaltyDuration());
+
 		// Set audit values
 		obj.setCreatedAt(dto.getCreatedAt());
 		obj.setCreatedBy(dto.getCreatedBy());
@@ -270,6 +294,10 @@ public class PlayListener {
 		obj.setStrength(dto.getStrength());
 		obj.setManUpAdvantage(dto.getManUpAdvantage());
 		obj.setManUpTeam(dto.getManUpTeam());
+
+		// Update penalty values
+		obj.setViolation(dto.getViolation());
+		obj.setDuration(dto.getPenaltyDuration());
 
 		// Update audit values
 		obj.setModifiedAt(dto.getModifiedAt());

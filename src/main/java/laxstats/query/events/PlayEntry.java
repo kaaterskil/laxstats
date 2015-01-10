@@ -25,6 +25,7 @@ import laxstats.api.events.ScoreAttemptType;
 import laxstats.api.events.Strength;
 import laxstats.query.teamSeasons.TeamSeasonEntry;
 import laxstats.query.users.UserEntry;
+import laxstats.query.violations.ViolationEntry;
 
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
@@ -47,20 +48,20 @@ abstract public class PlayEntry {
 
 	@Id
 	@Column(length = 36)
-	private String id;
+	protected String id;
 
 	@ManyToOne
-	private EventEntry event;
+	protected EventEntry event;
 
-	private int sequenceNumber;
+	protected int sequenceNumber;
 
 	@ManyToOne(optional = false)
-	private TeamSeasonEntry team;
+	protected TeamSeasonEntry team;
 
-	private int period;
+	protected int period;
 
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalTime")
-	private LocalTime elapsedTime;
+	protected LocalTime elapsedTime;
 
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20, nullable = false)
@@ -68,42 +69,53 @@ abstract public class PlayEntry {
 
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20)
-	private ScoreAttemptType scoreAttemptType;
+	protected ScoreAttemptType scoreAttemptType;
 
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20)
-	private PlayResult result;
-
-	private int teamScore;
-
-	private int opponentScore;
-
-	@Enumerated(EnumType.STRING)
-	@Column(length = 20)
-	private Strength strength;
-
-	private int manUpAdvantage;
-
-	@ManyToOne
-	private TeamSeasonEntry manUpTeam;
+	protected PlayResult result;
 
 	@Column(columnDefinition = "text")
-	private String comment;
+	protected String comment;
 
-	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
-	private LocalDateTime createdAt;
+	/*----- Goal properties -----*/
+
+	protected int teamScore;
+
+	protected int opponentScore;
+
+	@Enumerated(EnumType.STRING)
+	@Column(length = 20)
+	protected Strength strength;
+
+	protected int manUpAdvantage;
 
 	@ManyToOne
-	private UserEntry createdBy;
+	protected TeamSeasonEntry manUpTeam;
 
-	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
-	private LocalDateTime modifiedAt;
+	/*----- Peanlty properties -----*/
 
 	@ManyToOne
-	private UserEntry modifiedBy;
+	protected ViolationEntry violation;
+
+	protected int duration;
+
+	/*----- Audit properties -----*/
+
+	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+	protected LocalDateTime createdAt;
+
+	@ManyToOne
+	protected UserEntry createdBy;
+
+	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+	protected LocalDateTime modifiedAt;
+
+	@ManyToOne
+	protected UserEntry modifiedBy;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "play")
-	private final List<PlayParticipantEntry> participants = new ArrayList<>();
+	protected final List<PlayParticipantEntry> participants = new ArrayList<>();
 
 	/*---------- Methods ----------*/
 
@@ -242,6 +254,22 @@ abstract public class PlayEntry {
 
 	public void setManUpTeam(TeamSeasonEntry manUpTeam) {
 		this.manUpTeam = manUpTeam;
+	}
+
+	public ViolationEntry getViolation() {
+		return violation;
+	}
+
+	public void setViolation(ViolationEntry violation) {
+		this.violation = violation;
+	}
+
+	public int getDuration() {
+		return duration;
+	}
+
+	public void setDuration(int duration) {
+		this.duration = duration;
 	}
 
 	public String getComment() {

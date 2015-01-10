@@ -37,6 +37,16 @@ public interface PlayService {
 	boolean canRecordPlay(PlayDTO dto);
 
 	/**
+	 * Returns true if the play represented by the specified DTO can be updated,
+	 * false otherwise.
+	 * 
+	 * @param dto the data transfer object representing the specified play.
+	 * @return <code>true</code> if the play represented by the specified DTO
+	 *         can be updated, <code>false</code> otherwise.
+	 */
+	boolean canUpdatePlay(PlayDTO dto);
+
+	/**
 	 * Tests that the play represented by the specified DTO is not already
 	 * registered with the <code>Event</code> aggregate.
 	 *

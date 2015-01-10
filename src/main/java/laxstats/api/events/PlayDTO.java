@@ -6,7 +6,9 @@ import java.util.List;
 import laxstats.query.events.EventEntry;
 import laxstats.query.teamSeasons.TeamSeasonEntry;
 import laxstats.query.users.UserEntry;
+import laxstats.query.violations.ViolationEntry;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 
@@ -20,6 +22,8 @@ public class PlayDTO {
 	private final LocalTime elapsedTime;
 	private final ScoreAttemptType attemptType;
 	private final PlayResult result;
+	private final ViolationEntry violation;
+	private final int penaltyDuration;
 	private final String comment;
 	private final LocalDateTime createdAt;
 	private final UserEntry createdBy;
@@ -38,9 +42,10 @@ public class PlayDTO {
 	public PlayDTO(String identifier, String discriminator, PlayKey playKey,
 			EventEntry event, TeamSeasonEntry team, int period,
 			LocalTime elapsedTime, ScoreAttemptType attemptType,
-			PlayResult result, String comment, LocalDateTime createdAt,
-			UserEntry createdBy, LocalDateTime modifiedAt,
-			UserEntry modifiedBy, List<PlayParticipantDTO> participants) {
+			PlayResult result, ViolationEntry violation, int duration,
+			String comment, LocalDateTime createdAt, UserEntry createdBy,
+			LocalDateTime modifiedAt, UserEntry modifiedBy,
+			List<PlayParticipantDTO> participants) {
 		this.identifier = identifier;
 		this.discriminator = discriminator;
 		this.playKey = playKey;
@@ -50,6 +55,8 @@ public class PlayDTO {
 		this.elapsedTime = elapsedTime;
 		this.attemptType = attemptType;
 		this.result = result;
+		this.violation = violation;
+		this.penaltyDuration = duration;
 		this.comment = comment;
 		this.createdAt = createdAt;
 		this.createdBy = createdBy;
@@ -61,17 +68,22 @@ public class PlayDTO {
 	public PlayDTO(String identifier, String discriminator, PlayKey playKey,
 			EventEntry event, TeamSeasonEntry team, int period,
 			LocalTime elapsedTime, ScoreAttemptType attemptType,
-			PlayResult result, String comment, LocalDateTime modifiedAt,
-			UserEntry modifiedBy, List<PlayParticipantDTO> participants) {
+			PlayResult result, ViolationEntry violation, int duration,
+			String comment, LocalDateTime modifiedAt, UserEntry modifiedBy,
+			List<PlayParticipantDTO> participants) {
 		this(identifier, discriminator, playKey, event, team, period,
-				elapsedTime, attemptType, result, comment, null, null,
-				modifiedAt, modifiedBy, participants);
+				elapsedTime, attemptType, result, violation, duration, comment,
+				null, null, modifiedAt, modifiedBy, participants);
 	}
 
 	/*---------- Methods ----------*/
 
 	public LocalTime getTotalElapsedTime() {
 		return PlayUtils.getTotalElapsedTime(period, elapsedTime);
+	}
+
+	public DateTime getInstant() {
+		return PlayUtils.getInstant(event.getStartsAt(), period, elapsedTime);
 	}
 
 	/*---------- Getters ----------*/
@@ -110,6 +122,14 @@ public class PlayDTO {
 
 	public PlayResult getResult() {
 		return result;
+	}
+
+	public ViolationEntry getViolation() {
+		return violation;
+	}
+
+	public int getPenaltyDuration() {
+		return penaltyDuration;
 	}
 
 	public String getComment() {

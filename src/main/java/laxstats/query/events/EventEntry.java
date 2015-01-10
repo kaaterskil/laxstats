@@ -1,6 +1,8 @@
 package laxstats.query.events;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +19,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import laxstats.api.events.Conditions;
+import laxstats.api.events.PlayUtils;
 import laxstats.api.events.Schedule;
 import laxstats.api.events.Status;
 import laxstats.api.sites.SiteAlignment;
@@ -25,6 +28,7 @@ import laxstats.query.users.UserEntry;
 
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
+import org.joda.time.LocalTime;
 
 @Entity
 @Table(name = "events", indexes = {
@@ -99,6 +103,17 @@ public class EventEntry {
 	public void deletePlay(PlayEntry play) {
 		play.clear();
 		plays.remove(play.getId());
+	}
+
+	public List<PenaltyEntry> getPenalties() {
+		final List<PenaltyEntry> list = new ArrayList<>();
+		for (final PlayEntry play : plays.values()) {
+			if (play instanceof PenaltyEntry) {
+				list.add((PenaltyEntry) play);
+			}
+		}
+		Collections.sort(list, new PenaltyComparator());
+		return list;
 	}
 
 	/* ---------- Getter/Setters ---------- */
@@ -209,5 +224,16 @@ public class EventEntry {
 
 	public Map<String, PlayEntry> getPlays() {
 		return plays;
+	}
+
+	private static class PenaltyComparator implements Comparator<PenaltyEntry> {
+		@Override
+		public int compare(PenaltyEntry o1, PenaltyEntry o2) {
+			final LocalTime t1 = PlayUtils.getTotalElapsedTime(o1.getPeriod(),
+					o1.getElapsedTime());
+			final LocalTime t2 = PlayUtils.getTotalElapsedTime(o2.getPeriod(),
+					o2.getElapsedTime());
+			return t1.compareTo(t2);
+		}
 	}
 }

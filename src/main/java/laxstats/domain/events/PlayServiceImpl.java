@@ -7,7 +7,13 @@ import java.util.List;
 
 import laxstats.api.events.PlayDTO;
 import laxstats.api.events.PlayParticipantDTO;
+import laxstats.api.events.PlayRole;
+import laxstats.query.events.AttendeeEntry;
+import laxstats.query.events.PenaltyEntry;
+import laxstats.query.events.PlayParticipantEntry;
 
+import org.joda.time.DateTime;
+import org.joda.time.Interval;
 import org.joda.time.LocalTime;
 
 public class PlayServiceImpl implements PlayService {
@@ -43,6 +49,23 @@ public class PlayServiceImpl implements PlayService {
 		if (!participantsRegistered(dto)) {
 			return false;
 		}
+		if (participantsSidelined(dto)) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public boolean canUpdatePlay(PlayDTO dto) {
+		if (!playRecorded(dto)) {
+			return false;
+		}
+		if (!participantsRegistered(dto)) {
+			return false;
+		}
+		if (participantsSidelined(dto)) {
+			return false;
+		}
 		return true;
 	}
 
@@ -70,6 +93,33 @@ public class PlayServiceImpl implements PlayService {
 	protected final boolean participantRegistered(PlayParticipantDTO dto) {
 		final String attendeeId = dto.getAttendee().getId();
 		return getEvent().getAttendees().containsKey(attendeeId);
+	}
+
+	protected boolean participantsSidelined(PlayDTO dto) {
+		final DateTime instant = dto.getInstant();
+		for (final PenaltyEntry penalty : dto.getEvent().getPenalties()) {
+			final Interval interval = penalty.getInterval();
+			final boolean overlaps = interval.contains(instant);
+			final boolean concurrent = interval.getStart().equals(instant);
+
+			if (overlaps && !concurrent) {
+				for (final PlayParticipantDTO pdto : dto.getParticipants()) {
+					final AttendeeEntry target = pdto.getAttendee();
+
+					for (final PlayParticipantEntry p : penalty
+							.getParticipants()) {
+						final AttendeeEntry attendee = p.getAttendee();
+						final PlayRole role = p.getRole();
+
+						if (attendee.equals(target)
+								&& role.equals(PlayRole.PENALTY_COMMITTED_BY)) {
+							return true;
+						}
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 	private static class ElapsedTimeComparator implements Comparator<Play> {

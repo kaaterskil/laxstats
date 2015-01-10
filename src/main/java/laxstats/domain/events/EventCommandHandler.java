@@ -7,6 +7,7 @@ import laxstats.api.events.DeleteEventCommand;
 import laxstats.api.events.DeleteFaceOffCommand;
 import laxstats.api.events.DeleteGoalCommand;
 import laxstats.api.events.DeleteGroundBallCommand;
+import laxstats.api.events.DeletePenaltyCommand;
 import laxstats.api.events.DeleteShotCommand;
 import laxstats.api.events.EventDTO;
 import laxstats.api.events.EventId;
@@ -14,10 +15,17 @@ import laxstats.api.events.RecordClearCommand;
 import laxstats.api.events.RecordFaceoffCommand;
 import laxstats.api.events.RecordGoalCommand;
 import laxstats.api.events.RecordGroundBallCommand;
+import laxstats.api.events.RecordPenaltyCommand;
 import laxstats.api.events.RecordShotCommand;
 import laxstats.api.events.RegisterAttendeeCommand;
 import laxstats.api.events.UpdateAttendeeCommand;
+import laxstats.api.events.UpdateClearCommand;
 import laxstats.api.events.UpdateEventCommand;
+import laxstats.api.events.UpdateFaceOffCommand;
+import laxstats.api.events.UpdateGoalCommand;
+import laxstats.api.events.UpdateGroundBallCommand;
+import laxstats.api.events.UpdatePenaltyCommand;
+import laxstats.api.events.UpdateShotCommand;
 import laxstats.api.teamSeasons.TeamSeasonId;
 import laxstats.domain.teamSeasons.TeamSeason;
 
@@ -138,6 +146,13 @@ public class EventCommandHandler {
 	}
 
 	@CommandHandler
+	public void handle(UpdateClearCommand command) {
+		final EventId identifier = command.getEventId();
+		final Event event = repository.load(identifier);
+		event.updateClear(command.getPlayDTO());
+	}
+
+	@CommandHandler
 	public void handle(DeleteClearCommand command) {
 		final EventId identifier = command.getEventId();
 		final Event event = repository.load(identifier);
@@ -151,6 +166,13 @@ public class EventCommandHandler {
 		final EventId identifier = command.getEventId();
 		final Event event = repository.load(identifier);
 		event.recordFaceOff(command.getPlayDTO());
+	}
+
+	@CommandHandler
+	public void handle(UpdateFaceOffCommand command) {
+		final EventId identifier = command.getEventId();
+		final Event event = repository.load(identifier);
+		event.updateFaceOff(command.getPlayDTO());
 	}
 
 	@CommandHandler
@@ -170,6 +192,13 @@ public class EventCommandHandler {
 	}
 
 	@CommandHandler
+	public void handle(UpdateGoalCommand command) {
+		final EventId identifier = command.getEventId();
+		final Event event = repository.load(identifier);
+		event.updateGoal(command.getPlayDTO());
+	}
+
+	@CommandHandler
 	public void handle(DeleteGoalCommand command) {
 		final EventId identifier = command.getEventId();
 		final Event event = repository.load(identifier);
@@ -186,10 +215,40 @@ public class EventCommandHandler {
 	}
 
 	@CommandHandler
+	public void handle(UpdateGroundBallCommand command) {
+		final EventId identifier = command.getEventId();
+		final Event event = repository.load(identifier);
+		event.updateGroundBall(command.getPlayDTO());
+	}
+
+	@CommandHandler
 	public void handle(DeleteGroundBallCommand command) {
 		final EventId identifier = command.getEventId();
 		final Event event = repository.load(identifier);
 		event.deleteGroundBall(command);
+	}
+
+	/*---------- Penalty commands ----------*/
+
+	@CommandHandler
+	public void handle(RecordPenaltyCommand command) {
+		final EventId identifier = command.getEventId();
+		final Event event = repository.load(identifier);
+		event.recordPenalty(command.getPlayDTO());
+	}
+
+	@CommandHandler
+	public void handle(UpdatePenaltyCommand command) {
+		final EventId identifier = command.getEventId();
+		final Event event = repository.load(identifier);
+		event.updatePenalty(command.getPlayDTO());
+	}
+
+	@CommandHandler
+	public void handle(DeletePenaltyCommand command) {
+		final EventId identifier = command.getEventId();
+		final Event event = repository.load(identifier);
+		event.deletePenalty(command);
 	}
 
 	/* --------- Shot commands ---------- */
@@ -199,6 +258,13 @@ public class EventCommandHandler {
 		final EventId identifier = command.getEventId();
 		final Event event = repository.load(identifier);
 		event.recordShot(command.getPlayDTO());
+	}
+
+	@CommandHandler
+	public void handle(UpdateShotCommand command) {
+		final EventId identifier = command.getEventId();
+		final Event event = repository.load(identifier);
+		event.updateShot(command.getPlayDTO());
 	}
 
 	@CommandHandler

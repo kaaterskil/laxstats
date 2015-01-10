@@ -2,6 +2,7 @@ package laxstats.domain.events;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import laxstats.api.events.DeleteClearCommand;
 import laxstats.api.events.DeleteFaceOffCommand;
 import laxstats.api.events.DeleteGoalCommand;
 import laxstats.api.events.DeleteGroundBallCommand;
+import laxstats.api.events.DeletePenaltyCommand;
 import laxstats.api.events.DeleteShotCommand;
 import laxstats.api.events.EventCreatedEvent;
 import laxstats.api.events.EventDTO;
@@ -35,7 +37,11 @@ import laxstats.api.events.GroundBallDeletedEvent;
 import laxstats.api.events.GroundBallRecordedEvent;
 import laxstats.api.events.GroundBallUpdatedEvent;
 import laxstats.api.events.InvalidPlayException;
+import laxstats.api.events.PenaltyDeletedEvent;
+import laxstats.api.events.PenaltyRecordedEvent;
+import laxstats.api.events.PenaltyUpdatedEvent;
 import laxstats.api.events.PlayDTO;
+import laxstats.api.events.PlayRole;
 import laxstats.api.events.Schedule;
 import laxstats.api.events.ShotDeletedEvent;
 import laxstats.api.events.ShotRecordedEvent;
@@ -47,7 +53,9 @@ import org.axonframework.eventsourcing.annotation.AbstractAnnotatedAggregateRoot
 import org.axonframework.eventsourcing.annotation.AggregateIdentifier;
 import org.axonframework.eventsourcing.annotation.EventSourcedMember;
 import org.axonframework.eventsourcing.annotation.EventSourcingHandler;
+import org.joda.time.Interval;
 import org.joda.time.LocalDateTime;
+import org.joda.time.LocalTime;
 
 public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 	private static final long serialVersionUID = 2833813418469491250L;
@@ -86,6 +94,44 @@ public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 
 	public void delete(EventId eventId) {
 		apply(new EventDeletedEvent(eventId));
+	}
+
+	public List<Penalty> getPenalties() {
+		final List<Penalty> list = new ArrayList<>();
+		for (final Play play : plays.values()) {
+			if (play instanceof Penalty) {
+				list.add((Penalty) play);
+			}
+		}
+		Collections.sort(list, new PenaltyComparator());
+		return list;
+	}
+
+	/**
+	 * Returns true if the given attendee is sidelined with a penalty at the
+	 * specified time, false otherwise.
+	 *
+	 * @param attendeeId
+	 * @param instant
+	 * @return True if the specified player is sidelined with a penalty at the
+	 *         specified time, false otherwise.
+	 */
+	public boolean isPlayerSidelined(String attendeeId, LocalDateTime instant) {
+		for (final Penalty penalty : getPenalties()) {
+			final Interval interval = penalty.getInterval();
+			if (interval.contains(instant.toDateTime())) {
+				for (final PlayParticipant participant : penalty
+						.getParticipants()) {
+					final String participantId = participant.getId();
+					final PlayRole role = participant.getRole();
+					if (participantId.equals(attendeeId)
+							&& role.equals(PlayRole.PENALTY_COMMITTED_BY)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 	/* ---------- Attendee methods ---------- */
@@ -129,6 +175,10 @@ public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 	}
 
 	public void updateClear(PlayDTO dto) {
+		final PlayService service = new ClearService(this);
+		if (!service.canUpdatePlay(dto)) {
+			throw new InvalidPlayException();
+		}
 		apply(new ClearUpdatedEvent(id, dto.getIdentifier(), dto));
 	}
 
@@ -147,6 +197,10 @@ public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 	}
 
 	public void updateFaceOff(PlayDTO dto) {
+		final PlayService service = new PlayServiceImpl(this);
+		if (!service.canUpdatePlay(dto)) {
+			throw new InvalidPlayException();
+		}
 		apply(new FaceOffUpdatedEvent(id, dto.getIdentifier(), dto));
 	}
 
@@ -166,6 +220,10 @@ public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 	}
 
 	public void updateGoal(PlayDTO dto) {
+		final PlayService service = new GoalService(this);
+		if (!service.canUpdatePlay(dto)) {
+			throw new InvalidPlayException();
+		}
 		apply(new GoalUpdatedEvent(id, dto.getIdentifier(), dto));
 	}
 
@@ -184,11 +242,37 @@ public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 	}
 
 	public void updateGroundBall(PlayDTO dto) {
+		final PlayService service = new PlayServiceImpl(this);
+		if (!service.canUpdatePlay(dto)) {
+			throw new InvalidPlayException();
+		}
 		apply(new GroundBallUpdatedEvent(id, dto.getIdentifier(), dto));
 	}
 
 	public void deleteGroundBall(DeleteGroundBallCommand command) {
 		apply(new GroundBallDeletedEvent(id, command.getPlayId()));
+	}
+
+	/*---------- Penalty methods ----------*/
+
+	public void recordPenalty(PlayDTO dto) {
+		final PenaltyService service = new PenaltyService(this);
+		if (!service.canRecordPlay(dto)) {
+			throw new InvalidPlayException();
+		}
+		apply(new PenaltyRecordedEvent(id, dto.getIdentifier(), dto));
+	}
+
+	public void updatePenalty(PlayDTO dto) {
+		final PenaltyService service = new PenaltyService(this);
+		if (!service.canUpdatePlay(dto)) {
+			throw new InvalidPlayException();
+		}
+		apply(new PenaltyUpdatedEvent(id, dto.getIdentifier(), dto));
+	}
+
+	public void deletePenalty(DeletePenaltyCommand command) {
+		apply(new PenaltyDeletedEvent(id, command.getPlayId()));
 	}
 
 	/*---------- Shot methods ----------*/
@@ -202,6 +286,10 @@ public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 	}
 
 	public void updateShot(PlayDTO dto) {
+		final PlayService service = new PlayServiceImpl(this);
+		if (!service.canUpdatePlay(dto)) {
+			throw new InvalidPlayException();
+		}
 		apply(new ShotUpdatedEvent(id, dto.getIdentifier(), dto));
 	}
 
@@ -357,6 +445,26 @@ public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 	}
 
 	@EventSourcingHandler
+	protected void handle(PenaltyRecordedEvent event) {
+		final PlayDTO dto = event.getPlayDTO();
+		final String eventId = id.toString();
+		final String playId = dto.getIdentifier();
+		final String teamId = dto.getTeam().getId();
+
+		final Penalty entity = new Penalty(playId, eventId, teamId, dto
+				.getEvent().getStartsAt(), dto.getPeriod(),
+				dto.getElapsedTime(), dto.getViolation().getId(),
+				dto.getPenaltyDuration(), dto.getComment(),
+				dto.getParticipants());
+		plays.put(playId, entity);
+	}
+
+	@EventSourcingHandler
+	protected void handle(PenaltyDeletedEvent event) {
+		plays.remove(event.getPlayId());
+	}
+
+	@EventSourcingHandler
 	protected void handle(ShotRecordedEvent event) {
 		final PlayDTO dto = event.getPlayDTO();
 		final String eventId = id.toString();
@@ -419,5 +527,15 @@ public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 
 	public Map<String, Play> getPlays() {
 		return plays;
+	}
+
+	private static class PenaltyComparator implements Comparator<Penalty> {
+		@Override
+		public int compare(Penalty o1, Penalty o2) {
+			final LocalTime t1 = o1.getTotalElapsedTime();
+			final LocalTime t2 = o2.getTotalElapsedTime();
+			return t1.compareTo(t2);
+		}
+
 	}
 }

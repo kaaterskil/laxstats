@@ -32,11 +32,13 @@ public class Shot extends Play {
 		if (!event.getPlayId().equals(id)) {
 			return;
 		}
+
 		final PlayDTO dto = event.getPlayDTO();
 		teamId = dto.getTeam().getId();
 		period = dto.getPeriod();
 		elapsedTime = dto.getElapsedTime();
 		comment = dto.getComment();
+
 		scoreAttemptType = dto.getAttemptType();
 		result = dto.getResult();
 		for (final PlayParticipant participant : participants) {

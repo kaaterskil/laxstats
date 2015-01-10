@@ -133,8 +133,8 @@ public class PlayController extends ApplicationController {
 		// Create clear
 		final PlayDTO dto = new PlayDTO(playId, PlayType.CLEAR, PlayKey.PLAY,
 				event, teamSeason, form.getPeriod(), null, null,
-				form.getResult(), form.getComment(), now, user, now, user,
-				participants);
+				form.getResult(), null, 0, form.getComment(), now, user, now,
+				user, participants);
 
 		final RecordClearCommand payload = new RecordClearCommand(new EventId(
 				eventId), playId, dto);
@@ -169,7 +169,8 @@ public class PlayController extends ApplicationController {
 		// Edit clear
 		final PlayDTO dto = new PlayDTO(playId, PlayType.CLEAR, PlayKey.PLAY,
 				event, teamSeason, form.getPeriod(), null, null,
-				form.getResult(), form.getComment(), now, user, participants);
+				form.getResult(), null, 0, form.getComment(), now, user,
+				participants);
 
 		final UpdateClearCommand payload = new UpdateClearCommand(new EventId(
 				eventId), playId, dto);
@@ -251,7 +252,7 @@ public class PlayController extends ApplicationController {
 
 		// Create faceoff
 		final PlayDTO dto = new PlayDTO(playId, PlayType.FACEOFF, PlayKey.PLAY,
-				event, teamSeason, form.getPeriod(), null, null, null,
+				event, teamSeason, form.getPeriod(), null, null, null, null, 0,
 				form.getComment(), now, user, now, user, participants);
 
 		final RecordFaceoffCommand payload = new RecordFaceoffCommand(
@@ -310,7 +311,7 @@ public class PlayController extends ApplicationController {
 		}
 		// Edit faceoff play
 		final PlayDTO dto = new PlayDTO(playId, PlayType.FACEOFF, PlayKey.PLAY,
-				event, teamSeason, form.getPeriod(), null, null, null,
+				event, teamSeason, form.getPeriod(), null, null, null, null, 0,
 				form.getComment(), now, user, participants);
 
 		final UpdateFaceOffCommand payload = new UpdateFaceOffCommand(
@@ -407,8 +408,8 @@ public class PlayController extends ApplicationController {
 		// Create goal
 		final PlayDTO dto = new PlayDTO(playId, PlayType.GOAL, PlayKey.GOAL,
 				event, teamSeason, form.getPeriod(), form.getElapsedTime(),
-				form.getAttemptType(), PlayResult.GOAL, form.getComment(), now,
-				user, now, user, participants);
+				form.getAttemptType(), PlayResult.GOAL, null, 0,
+				form.getComment(), now, user, now, user, participants);
 
 		final RecordGoalCommand payload = new RecordGoalCommand(new EventId(
 				eventId), playId, dto);
@@ -495,8 +496,8 @@ public class PlayController extends ApplicationController {
 		// Create goal
 		final PlayDTO dto = new PlayDTO(playId, PlayType.GOAL, PlayKey.GOAL,
 				event, teamSeason, form.getPeriod(), form.getElapsedTime(),
-				form.getAttemptType(), PlayResult.GOAL, form.getComment(), now,
-				user, participants);
+				form.getAttemptType(), PlayResult.GOAL, null, 0,
+				form.getComment(), now, user, participants);
 
 		final UpdateGoalCommand payload = new UpdateGoalCommand(new EventId(
 				eventId), playId, dto);
@@ -582,7 +583,8 @@ public class PlayController extends ApplicationController {
 		// Create ground ball play
 		final PlayDTO dto = new PlayDTO(playId, PlayType.GROUND_BALL,
 				PlayKey.PLAY, event, teamSeason, form.getPeriod(), null, null,
-				null, form.getComment(), now, user, now, user, participants);
+				null, null, 0, form.getComment(), now, user, now, user,
+				participants);
 
 		final RecordGroundBallCommand payload = new RecordGroundBallCommand(
 				new EventId(eventId), playId, dto);
@@ -631,7 +633,7 @@ public class PlayController extends ApplicationController {
 		// Edit ground ball play
 		final PlayDTO dto = new PlayDTO(playId, PlayType.GROUND_BALL,
 				PlayKey.PLAY, event, teamSeason, form.getPeriod(), null, null,
-				null, form.getComment(), now, user, participants);
+				null, null, 0, form.getComment(), now, user, participants);
 
 		final UpdateGroundBallCommand payload = new UpdateGroundBallCommand(
 				new EventId(eventId), playId, dto);
@@ -711,8 +713,8 @@ public class PlayController extends ApplicationController {
 		// Create shot
 		final PlayDTO dto = new PlayDTO(playId, PlayType.SHOT, PlayKey.PLAY,
 				event, teamSeason, form.getPeriod(), null,
-				form.getAttemptType(), form.getResult(), form.getComment(),
-				now, user, now, user, participants);
+				form.getAttemptType(), form.getResult(), null, 0,
+				form.getComment(), now, user, now, user, participants);
 
 		final RecordShotCommand payload = new RecordShotCommand(new EventId(
 				eventId), playId, dto);
@@ -750,8 +752,8 @@ public class PlayController extends ApplicationController {
 		// Edit shot
 		final PlayDTO dto = new PlayDTO(playId, PlayType.SHOT, PlayKey.PLAY,
 				event, teamSeason, form.getPeriod(), null,
-				form.getAttemptType(), form.getResult(), form.getComment(),
-				now, user, participants);
+				form.getAttemptType(), form.getResult(), null, 0,
+				form.getComment(), now, user, participants);
 
 		final UpdateShotCommand payload = new UpdateShotCommand(new EventId(
 				eventId), playId, dto);
