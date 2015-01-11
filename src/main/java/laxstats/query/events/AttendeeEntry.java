@@ -83,6 +83,23 @@ public class AttendeeEntry {
 	protected AttendeeEntry() {
 	}
 
+	public String label() {
+		final StringBuilder sb = new StringBuilder();
+		boolean concat = false;
+		if (jerseyNumber != null) {
+			sb.append(jerseyNumber);
+			concat = true;
+		}
+		if (name != null) {
+			if (concat) {
+				sb.append(" ");
+			}
+			sb.append(name);
+		}
+		final String result = sb.toString();
+		return result.length() > 0 ? result : "Unknown player";
+	}
+
 	/* ---------- Getter/Setters ---------- */
 
 	public String getId() {

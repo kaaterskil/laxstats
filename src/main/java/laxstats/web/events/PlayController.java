@@ -120,15 +120,20 @@ public class PlayController extends ApplicationController {
 	@RequestMapping(value = "/events/{eventId}/clears/new", method = RequestMethod.GET)
 	public String newClear(@PathVariable String eventId, Model model) {
 		final EventEntry aggregate = eventRepository.findOne(eventId);
+
 		final ClearForm form = new ClearForm();
 		form.setTeams(getTeams(aggregate));
-		model.addAttribute("form", form);
+		form.setResults(getClearResults());
+
+		model.addAttribute("clearForm", form);
+		model.addAttribute("event", aggregate);
 		return "events/clears/newClear";
 	}
 
 	@RequestMapping(value = "/events/{eventId}/clears", method = RequestMethod.POST)
 	public String createClear(@PathVariable String eventId,
-			@ModelAttribute("form") @Valid ClearForm form, BindingResult result) {
+			@ModelAttribute("clearForm") @Valid ClearForm form,
+			BindingResult result) {
 		if (result.hasErrors()) {
 			return "events/clears/newClear";
 		}
@@ -167,7 +172,8 @@ public class PlayController extends ApplicationController {
 	@RequestMapping(value = "/events/{eventId}/clears/{playId}", method = RequestMethod.PUT)
 	public String updateClear(@PathVariable String eventId,
 			@PathVariable String playId,
-			@ModelAttribute("form") @Valid ClearForm form, BindingResult result) {
+			@ModelAttribute("clearForm") @Valid ClearForm form,
+			BindingResult result) {
 		if (result.hasErrors()) {
 			return "events/clears/editClear";
 		}
@@ -203,7 +209,8 @@ public class PlayController extends ApplicationController {
 		form.setComment(play.getComment());
 		form.setTeams(getTeams(aggregate));
 
-		model.addAttribute("form", form);
+		model.addAttribute("clearForm", form);
+		model.addAttribute("event", aggregate);
 		return "events/clears/editClear";
 	}
 
@@ -221,15 +228,18 @@ public class PlayController extends ApplicationController {
 	@RequestMapping(value = "/events/{eventId}/faceOffs/new", method = RequestMethod.GET)
 	public String newFaceOff(@PathVariable String eventId, Model model) {
 		final EventEntry aggregate = eventRepository.findOne(eventId);
+
 		final FaceOffForm form = new FaceOffForm();
-		form.setTeams(getTeams(aggregate));
-		model.addAttribute("form", form);
+		form.setAttendees(aggregate.getAttendees());
+
+		model.addAttribute("faceOffForm", form);
+		model.addAttribute("event", aggregate);
 		return "events/faceOffs/newFaceOff";
 	}
 
 	@RequestMapping(value = "/events/{eventId}/faceOffs", method = RequestMethod.POST)
 	public String createFaceOff(@PathVariable String eventId,
-			@ModelAttribute("form") @Valid FaceOffForm form,
+			@ModelAttribute("faceOffForm") @Valid FaceOffForm form,
 			BindingResult result) {
 		if (result.hasErrors()) {
 			return "events/faceOffs/newFaceOff";
@@ -374,16 +384,20 @@ public class PlayController extends ApplicationController {
 	@RequestMapping(value = "/events/{eventId}/goals/new", method = RequestMethod.GET)
 	public String newGoal(@PathVariable String eventId, Model model) {
 		final EventEntry aggregate = eventRepository.findOne(eventId);
+
 		final GoalForm form = new GoalForm();
 		form.setAttemptType(ScoreAttemptType.REGULAR);
-		form.setTeams(getTeams(aggregate));
-		model.addAttribute("form", form);
+		form.setAttendees(aggregate.getAttendees());
+
+		model.addAttribute("goalForm", form);
+		model.addAttribute("event", aggregate);
 		return "events/goals/newGoal";
 	}
 
 	@RequestMapping(value = "/events/{eventId}/goals", method = RequestMethod.POST)
 	public String createGoal(@PathVariable String eventId,
-			@ModelAttribute("form") @Valid GoalForm form, BindingResult result) {
+			@ModelAttribute("goalForm") @Valid GoalForm form,
+			BindingResult result) {
 		if (result.hasErrors()) {
 			return "events/goals/newGoal";
 		}
@@ -560,15 +574,18 @@ public class PlayController extends ApplicationController {
 	@RequestMapping(value = "/events/{eventId}/groundBalls/new", method = RequestMethod.GET)
 	public String newGroundBall(@PathVariable String eventId, Model model) {
 		final EventEntry aggregate = eventRepository.findOne(eventId);
+
 		final GroundBallForm form = new GroundBallForm();
-		form.setTeams(getTeams(aggregate));
-		model.addAttribute("form", form);
+		form.setAttendees(aggregate.getAttendees());
+
+		model.addAttribute("groundBallForm", form);
+		model.addAttribute("event", aggregate);
 		return "events/groundBalls/newGroundBall";
 	}
 
 	@RequestMapping(value = "/events/{eventId}/groundBalls", method = RequestMethod.POST)
 	public String createGroundBall(@PathVariable String eventId,
-			@ModelAttribute("form") @Valid GroundBallForm form,
+			@ModelAttribute("groundBallForm") @Valid GroundBallForm form,
 			BindingResult result) {
 		if (result.hasErrors()) {
 			return "events/groundBalls/newGroundBall";
@@ -691,16 +708,20 @@ public class PlayController extends ApplicationController {
 	@RequestMapping(value = "/events/{eventId}/penalties/new", method = RequestMethod.GET)
 	public String newPenalty(@PathVariable String eventId, Model model) {
 		final EventEntry aggregate = eventRepository.findOne(eventId);
+
 		final PenaltyForm form = new PenaltyForm();
 		form.setTeams(getTeams(aggregate));
+		form.setAttendees(aggregate.getAttendees());
 		form.setViolationData(getViolations());
-		model.addAttribute("form", form);
+
+		model.addAttribute("penaltyForm", form);
+		model.addAttribute("event", aggregate);
 		return "events/penalties/newPenalty";
 	}
 
 	@RequestMapping(value = "/events/{eventId}/penalties", method = RequestMethod.POST)
 	public String createPenalty(@PathVariable String eventId,
-			@ModelAttribute("form") @Valid PenaltyForm form,
+			@ModelAttribute("penaltyForm") @Valid PenaltyForm form,
 			BindingResult result) {
 		if (result.hasErrors()) {
 			return "events/penalties/newPenalty";
@@ -755,7 +776,7 @@ public class PlayController extends ApplicationController {
 	@RequestMapping(value = "/events/{eventId}/penalties/{playId}", method = RequestMethod.PUT)
 	public String updatePenalty(@PathVariable String eventId,
 			@PathVariable String playId,
-			@ModelAttribute("form") @Valid PenaltyForm form,
+			@ModelAttribute("penaltyForm") @Valid PenaltyForm form,
 			BindingResult result) {
 		if (result.hasErrors()) {
 			return "events/penalties/editPenalty";
@@ -846,7 +867,6 @@ public class PlayController extends ApplicationController {
 				playId);
 
 		final PenaltyForm form = new PenaltyForm();
-		form.setTeamSeasonId(play.getTeam().getId());
 		form.setPeriod(play.getPeriod());
 		form.setElapsedTime(play.getElapsedTime());
 		form.setViolationId(play.getViolation().getId());
@@ -860,10 +880,10 @@ public class PlayController extends ApplicationController {
 				form.setCommittedAgainstId(player.getAttendee().getId());
 			}
 		}
-		form.setTeams(getTeams(aggregate));
+		form.setAttendees(aggregate.getAttendees());
 		form.setViolationData(getViolations());
 
-		model.addAttribute("form", form);
+		model.addAttribute("penaltyForm", form);
 		return "events/penalties/editPenalty";
 	}
 
@@ -885,9 +905,13 @@ public class PlayController extends ApplicationController {
 	@RequestMapping(value = "/events/{eventId}/shots/new", method = RequestMethod.GET)
 	public String newShot(@PathVariable String eventId, Model model) {
 		final EventEntry aggregate = eventRepository.findOne(eventId);
+
 		final ShotForm form = new ShotForm();
-		form.setTeams(getTeams(aggregate));
-		model.addAttribute("form", form);
+		form.setAttendees(aggregate.getAttendees());
+		form.setResults(getShotResults());
+
+		model.addAttribute("shotForm", form);
+		model.addAttribute("event", aggregate);
 		return "events/shots/newShot";
 	}
 
@@ -1032,6 +1056,32 @@ public class PlayController extends ApplicationController {
 			violations = result;
 		}
 		return violations;
+	}
+
+	private List<PlayResult> getClearResults() {
+		final List<PlayResult> list = new ArrayList<>();
+		final PlayResult[] values = PlayResult.values();
+		for (int i = 0; i < values.length; i++) {
+			final PlayResult each = values[i];
+			if (each.equals(PlayResult.CLEAR_FAILED)
+					|| each.equals(PlayResult.CLEAR_SUCCEEDED)) {
+				list.add(each);
+			}
+		}
+		return list;
+	}
+
+	private List<PlayResult> getShotResults() {
+		final List<PlayResult> list = new ArrayList<>();
+		final PlayResult[] values = PlayResult.values();
+		for (int i = 0; i < values.length; i++) {
+			final PlayResult each = values[i];
+			if (!each.equals(PlayResult.CLEAR_FAILED)
+					&& !each.equals(PlayResult.CLEAR_SUCCEEDED)) {
+				list.add(each);
+			}
+		}
+		return list;
 	}
 
 	private List<PlayEntry> getPlays(String type, EventEntry event,

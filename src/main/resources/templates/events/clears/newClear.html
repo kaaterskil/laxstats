@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<head>
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-sm-6 col-xs-12"></div>
+			<div class="col-sm-6 col-xs-12">
+				<h4>Clear Input</h4>
+				<form action="#" 
+					  th:action="@/events/${event.id}/clears" 
+					  th:object="${clearForm}" 
+					  method="post" 
+					  role="form">
+					<div class="form-group">
+						<label for="period">Period</label>
+						<input th:type="text"
+							   id="period" 
+							   class="form-control" 
+							   th:field="*{period}" />
+					</div>
+					<div class="form-group">
+						<label for="team">Team</label> 
+						<select id="team"
+								class="form-control" 
+								th:field="*{teamSeasonId}">
+							<option value="">Select...</option>
+							<option th:each="opt : ${teams.entrySet()}"
+									th:value="${opt.key}"
+									th:text="${opt.value}">Teams</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="result">Result</label> 
+						<select id="result"
+								class="form-control" 
+								th:field="*{result}">
+							<option value="">Select...</option>
+							<option th:each="opt : *{results}" 
+									th:value="${opt.name}" 
+									th:text="${opt.label}">Result</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="comments">Comments</label>
+						<textarea id="comments" 
+								  class="form-control"
+								  rows="3" 
+								  th:field="*{comments}"></textarea>
+					</div>
+					<button th:type="submit" class="btn btn-default">Submit</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

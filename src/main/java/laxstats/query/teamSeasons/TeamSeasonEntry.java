@@ -65,6 +65,9 @@ public class TeamSeasonEntry {
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
 	private LocalDate endsOn;
 
+	@Column(length = 100)
+	private String name;
+
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20, nullable = false)
 	private TeamStatus status;
@@ -156,6 +159,14 @@ public class TeamSeasonEntry {
 
 	public void setAffiliation(LeagueEntry affiliation) {
 		this.affiliation = affiliation;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public LocalDate getStartsOn() {

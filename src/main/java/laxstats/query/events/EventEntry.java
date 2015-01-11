@@ -24,6 +24,7 @@ import laxstats.api.events.Schedule;
 import laxstats.api.events.Status;
 import laxstats.api.sites.SiteAlignment;
 import laxstats.query.sites.SiteEntry;
+import laxstats.query.teamSeasons.TeamSeasonEntry;
 import laxstats.query.users.UserEntry;
 
 import org.hibernate.annotations.Type;
@@ -114,6 +115,23 @@ public class EventEntry {
 		}
 		Collections.sort(list, new PenaltyComparator());
 		return list;
+	}
+
+	public Map<String, List<AttendeeEntry>> getAttendees() {
+		final Map<String, List<AttendeeEntry>> result = new HashMap<>();
+		for (final TeamEvent teamEvent : teams) {
+			final TeamSeasonEntry tse = teamEvent.getTeamSeason();
+
+			final List<AttendeeEntry> list = new ArrayList<AttendeeEntry>();
+			for (final AttendeeEntry attendee : eventAttendees.values()) {
+				if (attendee.getTeamSeason().equals(tse)) {
+					list.add(attendee);
+				}
+			}
+			Collections.sort(list, new AttendeeComparator());
+			result.put(tse.getName(), list);
+		}
+		return result;
 	}
 
 	/* ---------- Getter/Setters ---------- */
@@ -224,6 +242,16 @@ public class EventEntry {
 
 	public Map<String, PlayEntry> getPlays() {
 		return plays;
+	}
+
+	private static class AttendeeComparator implements
+			Comparator<AttendeeEntry> {
+		@Override
+		public int compare(AttendeeEntry o1, AttendeeEntry o2) {
+			final String l1 = o1.label();
+			final String l2 = o2.label();
+			return l1.compareToIgnoreCase(l2);
+		}
 	}
 
 	private static class PenaltyComparator implements Comparator<PenaltyEntry> {

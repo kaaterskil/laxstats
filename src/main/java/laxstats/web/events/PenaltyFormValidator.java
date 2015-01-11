@@ -8,7 +8,7 @@ public class PenaltyFormValidator implements Validator {
 
 	@Override
 	public boolean supports(Class<?> clazz) {
-		return GoalForm.class.equals(clazz);
+		return PenaltyForm.class.equals(clazz);
 	}
 
 	@Override

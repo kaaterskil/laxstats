@@ -1,7 +1,10 @@
 package laxstats.web.events;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import laxstats.query.events.AttendeeEntry;
 
 public abstract class AbstractPlayForm {
 	private String teamSeasonId;
@@ -9,6 +12,7 @@ public abstract class AbstractPlayForm {
 	private String comment;
 	private Map<String, String> teams = new HashMap<String, String>();
 	private Map<String, String> participants = new HashMap<String, String>();
+	private Map<String, List<AttendeeEntry>> attendees = new HashMap<>();
 
 	public String getTeamSeasonId() {
 		return teamSeasonId;
@@ -48,5 +52,13 @@ public abstract class AbstractPlayForm {
 
 	public void setParticipants(Map<String, String> participants) {
 		this.participants = participants;
+	}
+
+	public Map<String, List<AttendeeEntry>> getAttendees() {
+		return attendees;
+	}
+
+	public void setAttendees(Map<String, List<AttendeeEntry>> attendees) {
+		this.attendees = attendees;
 	}
 }

@@ -26,6 +26,7 @@ public class TeamSeasonListener {
 		entity.setId(identifier.toString());
 		entity.setTeam(dto.getTeam());
 		entity.setSeason(dto.getSeason());
+		entity.setName(dto.getTeam().getName());
 		entity.setStartsOn(dto.getStartsOn());
 		entity.setEndsOn(dto.getEndsOn());
 		entity.setStatus(dto.getStatus());
@@ -44,6 +45,7 @@ public class TeamSeasonListener {
 		final TeamSeasonEntry entity = repository
 				.findOne(identifier.toString());
 		entity.setSeason(dto.getSeason());
+		entity.setName(dto.getTeam().getName());
 		entity.setStartsOn(dto.getStartsOn());
 		entity.setEndsOn(dto.getEndsOn());
 		entity.setStatus(dto.getStatus());

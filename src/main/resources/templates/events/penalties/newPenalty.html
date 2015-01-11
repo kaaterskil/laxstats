@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<head>
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-sm-6 col-xs-12"></div>
+			<div class="col-sm-6 col-xs-12">
+				<h4>Penalty Input</h4>
+				<form action="#" 
+					  th:action="@/events/${event.id}/penalties" 
+					  th:object="${faceOffForm}" 
+					  method="post" 
+					  role="form">
+					<div class="form-group">
+						<label for="period">Period</label>
+						<input th:type="text"
+							   id="period" 
+							   class="form-control" 
+							   th:field="*{period}" />
+					</div>
+					<div class="form-group">
+						<label for="clock">Clock</label> 
+						<input th:type="text" 
+							   id="clock"
+							   class="form-control" 
+							   th:field="*{elapsedTime}" />
+					</div>
+					<div class="form-group">
+						<label for="violation">Violation</label> 
+						<select id="violation"
+								class="form-control" 
+								th:field="*{violationId}">
+							<option value="">Select...</option>
+							<option th:each="entry : *{violationData.entrySet()}" 
+									th:value="${entry.key}" 
+									th:text="${entry.value}">Violations</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="violator">Committed By</label> 
+						<select id="violator"
+								class="form-control" 
+								th:field="*{committedById}">
+							<option value="">Select...</option>
+							<optgroup th:each="team : *{attendees.entrySet()}" 
+									  label="${team.key}">
+								<option th:each="opt : ${team.value}"
+										th:value="${opt.getId()}"
+										th:text="${opt.label()}">Attendees</option>
+							</optgroup>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="against">Committed Against</label>
+						<select id="against" 
+								class="form-control"
+								th:field="*{committedAgainstId}">
+							<option value="">Select...</option>
+							<optgroup th:each="team : *{attendees.entrySet()}" 
+									  label="${team.key}">
+								<option th:each="opt : ${team.value}"
+										th:value="${opt.getId()}"
+										th:text="${opt.label()}">Attendees</option>
+							</optgroup>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="duration">Duration</label> 
+						<select id="duration"
+								class="form-control" 
+								th:field="*{duration}">
+							<option value="">Select...</option>
+							<option th:each="opt : ${PenaltyLength.values}" 
+									th:value="${opt.duration}" 
+									th:text="${opt.value}">Duration</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="comments">Comments</label>
+						<textarea id="comments" 
+								  class="form-control"
+								  rows="3" 
+								  th:field="*{comments}"></textarea>
+					</div>
+					<button th:type="submit" class="btn btn-default">Submit</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
