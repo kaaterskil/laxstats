@@ -14,6 +14,7 @@ import laxstats.api.events.DeleteClearCommand;
 import laxstats.api.events.DeleteFaceOffCommand;
 import laxstats.api.events.DeleteGoalCommand;
 import laxstats.api.events.DeleteGroundBallCommand;
+import laxstats.api.events.DeletePenaltyCommand;
 import laxstats.api.events.DeleteShotCommand;
 import laxstats.api.events.EventId;
 import laxstats.api.events.PlayDTO;
@@ -27,13 +28,16 @@ import laxstats.api.events.RecordClearCommand;
 import laxstats.api.events.RecordFaceoffCommand;
 import laxstats.api.events.RecordGoalCommand;
 import laxstats.api.events.RecordGroundBallCommand;
+import laxstats.api.events.RecordPenaltyCommand;
 import laxstats.api.events.RecordShotCommand;
 import laxstats.api.events.ScoreAttemptType;
 import laxstats.api.events.UpdateClearCommand;
 import laxstats.api.events.UpdateFaceOffCommand;
 import laxstats.api.events.UpdateGoalCommand;
 import laxstats.api.events.UpdateGroundBallCommand;
+import laxstats.api.events.UpdatePenaltyCommand;
 import laxstats.api.events.UpdateShotCommand;
+import laxstats.api.violations.PenaltyCategory;
 import laxstats.query.events.AttendeeEntry;
 import laxstats.query.events.ClearEntry;
 import laxstats.query.events.EventEntry;
@@ -41,6 +45,7 @@ import laxstats.query.events.EventQueryRepository;
 import laxstats.query.events.FaceOffEntry;
 import laxstats.query.events.GoalEntry;
 import laxstats.query.events.GroundBallEntry;
+import laxstats.query.events.PenaltyEntry;
 import laxstats.query.events.PlayEntry;
 import laxstats.query.events.PlayParticipantEntry;
 import laxstats.query.events.ShotEntry;
@@ -49,6 +54,8 @@ import laxstats.query.teamSeasons.TeamSeasonEntry;
 import laxstats.query.teamSeasons.TeamSeasonQueryRepository;
 import laxstats.query.users.UserEntry;
 import laxstats.query.users.UserQueryRepository;
+import laxstats.query.violations.ViolationEntry;
+import laxstats.query.violations.ViolationQueryRepository;
 import laxstats.web.ApplicationController;
 
 import org.axonframework.commandhandling.CommandBus;
@@ -71,14 +78,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class PlayController extends ApplicationController {
 	private final EventQueryRepository eventRepository;
 	private final TeamSeasonQueryRepository teamRepository;
+	private final ViolationQueryRepository violationRepository;
+	private Map<String, String> violations;
 
 	@Autowired
 	public PlayController(UserQueryRepository userRepository,
 			CommandBus commandBus, EventQueryRepository eventRepository,
-			TeamSeasonQueryRepository teamRepository) {
+			TeamSeasonQueryRepository teamRepository,
+			ViolationQueryRepository violationRepository) {
 		super(userRepository, commandBus);
 		this.eventRepository = eventRepository;
 		this.teamRepository = teamRepository;
+		this.violationRepository = violationRepository;
 	}
 
 	@InitBinder
@@ -87,6 +98,7 @@ public class PlayController extends ApplicationController {
 		binder.setValidator(new FaceOffFormValidator());
 		binder.setValidator(new GoalFormValidator());
 		binder.setValidator(new GroundBallFormValidator());
+		binder.setValidator(new PenaltyFormValidator());
 		binder.setValidator(new ShotFormValidator());
 	}
 
@@ -661,6 +673,200 @@ public class PlayController extends ApplicationController {
 		return "events/groundBalls/editGoal";
 	}
 
+	/*---------- Penalty actions ----------*/
+
+	@RequestMapping(value = "/events/{eventId}/penalties", method = RequestMethod.GET)
+	public String penaltyIndex(@PathVariable String eventId, Model model) {
+		final EventEntry aggregate = eventRepository.findOne(eventId);
+		final List<PlayEntry> teamOnePlays = getPlays(PlayType.PENALTY,
+				aggregate, aggregate.getTeams().get(0).getId());
+		final List<PlayEntry> teamTwoPlays = getPlays(PlayType.PENALTY,
+				aggregate, aggregate.getTeams().get(1).getId());
+		model.addAttribute("event", aggregate);
+		model.addAttribute("teamOnePlays", teamOnePlays);
+		model.addAttribute("teamTwoPlays", teamTwoPlays);
+		return "events/penalties/index";
+	}
+
+	@RequestMapping(value = "/events/{eventId}/penalties/new", method = RequestMethod.GET)
+	public String newPenalty(@PathVariable String eventId, Model model) {
+		final EventEntry aggregate = eventRepository.findOne(eventId);
+		final PenaltyForm form = new PenaltyForm();
+		form.setTeams(getTeams(aggregate));
+		form.setViolationData(getViolations());
+		model.addAttribute("form", form);
+		return "events/penalties/newPenalty";
+	}
+
+	@RequestMapping(value = "/events/{eventId}/penalties", method = RequestMethod.POST)
+	public String createPenalty(@PathVariable String eventId,
+			@ModelAttribute("form") @Valid PenaltyForm form,
+			BindingResult result) {
+		if (result.hasErrors()) {
+			return "events/penalties/newPenalty";
+		}
+		final LocalDateTime now = LocalDateTime.now();
+		final UserEntry user = getCurrentUser();
+		final String playId = IdentifierFactory.getInstance()
+				.generateIdentifier();
+
+		final EventEntry event = eventRepository.findOne(eventId);
+		final TeamSeasonEntry teamSeason = teamRepository.findOne(form
+				.getTeamSeasonId());
+		final List<PlayParticipantDTO> participants = new ArrayList<>();
+
+		// Create violator
+		final String violatorId = IdentifierFactory.getInstance()
+				.generateIdentifier();
+		final AttendeeEntry violator = event.getAttendee(form
+				.getCommittedById());
+		final PlayParticipantDTO violatorDTO = new PlayParticipantDTO(
+				violatorId, playId, violator, teamSeason,
+				PlayRole.PENALTY_COMMITTED_BY, false, now, user, now, user);
+		participants.add(violatorDTO);
+
+		// Create against
+		final AttendeeEntry against = event.getAttendee(form
+				.getCommittedAgainstId());
+		if (against != null) {
+			final String againstId = IdentifierFactory.getInstance()
+					.generateIdentifier();
+			final PlayParticipantDTO againstDTO = new PlayParticipantDTO(
+					againstId, playId, against, teamSeason,
+					PlayRole.PENALTY_COMMITTED_AGAINST, false, now, user, now,
+					user);
+			participants.add(againstDTO);
+		}
+
+		// Create penalty
+		final ViolationEntry violation = violationRepository.findOne(form
+				.getViolationId());
+		final PlayDTO dto = new PlayDTO(playId, PlayType.PENALTY, PlayKey.PLAY,
+				event, teamSeason, form.getPeriod(), form.getElapsedTime(),
+				null, null, violation, form.getDuration(), form.getComment(),
+				now, user, now, user, participants);
+
+		final RecordPenaltyCommand payload = new RecordPenaltyCommand(
+				new EventId(eventId), playId, dto);
+		commandBus.dispatch(new GenericCommandMessage<>(payload));
+		return "redirect:/events/" + eventId + "/penalties";
+	}
+
+	@RequestMapping(value = "/events/{eventId}/penalties/{playId}", method = RequestMethod.PUT)
+	public String updatePenalty(@PathVariable String eventId,
+			@PathVariable String playId,
+			@ModelAttribute("form") @Valid PenaltyForm form,
+			BindingResult result) {
+		if (result.hasErrors()) {
+			return "events/penalties/editPenalty";
+		}
+		final LocalDateTime now = LocalDateTime.now();
+		final UserEntry user = getCurrentUser();
+
+		final EventEntry event = eventRepository.findOne(eventId);
+		final PenaltyEntry play = (PenaltyEntry) event.getPlays().get(playId);
+		final TeamSeasonEntry teamSeason = teamRepository.findOne(form
+				.getTeamSeasonId());
+		final List<PlayParticipantDTO> participants = new ArrayList<>();
+
+		// Edit violator
+		final PlayParticipantEntry violator = play.getCommittedBy();
+		AttendeeEntry attendee = violator.getAttendee();
+		if (!form.getCommittedById().equals(attendee.getId())) {
+			attendee = event.getAttendee(form.getCommittedById());
+		}
+		final PlayParticipantDTO violatorDTO = new PlayParticipantDTO(
+				violator.getId(), playId, attendee, teamSeason,
+				PlayRole.PENALTY_COMMITTED_BY, false, now, user, now, user);
+		participants.add(violatorDTO);
+
+		// Edit/add against
+		boolean foundAgainst = false;
+		AttendeeEntry against = null;
+		PlayParticipantDTO againstDTO = null;
+		for (final PlayParticipantEntry participant : play.getParticipants()) {
+			final PlayRole role = participant.getRole();
+			if (role.equals(PlayRole.PENALTY_COMMITTED_AGAINST)) {
+				foundAgainst = true;
+				if (form.getCommittedAgainstId() == null) {
+					// Handle this in the model
+				} else {
+					against = participant.getAttendee();
+					if (!form.getCommittedAgainstId().equals(against.getId())) {
+						against = event.getAttendee(form
+								.getCommittedAgainstId());
+					}
+					againstDTO = new PlayParticipantDTO(participant.getId(),
+							playId, against, teamSeason,
+							PlayRole.PENALTY_COMMITTED_AGAINST, false, now,
+							user);
+					participants.add(againstDTO);
+				}
+			}
+		}
+		if (!foundAgainst && form.getCommittedAgainstId() != null) {
+			final String id = IdentifierFactory.getInstance()
+					.generateIdentifier();
+			against = event.getAttendee(form.getCommittedAgainstId());
+			againstDTO = new PlayParticipantDTO(id, playId, against,
+					teamSeason, PlayRole.PENALTY_COMMITTED_AGAINST, false, now,
+					user);
+			participants.add(againstDTO);
+		}
+
+		// Edit penalty
+		final ViolationEntry violation = violationRepository.findOne(form
+				.getViolationId());
+		final PlayDTO dto = new PlayDTO(playId, PlayType.PENALTY, PlayKey.PLAY,
+				event, teamSeason, form.getPeriod(), form.getElapsedTime(),
+				null, null, violation, form.getDuration(), form.getComment(),
+				now, user, participants);
+
+		final UpdatePenaltyCommand payload = new UpdatePenaltyCommand(
+				new EventId(eventId), playId, dto);
+		commandBus.dispatch(new GenericCommandMessage<>(payload));
+		return "redirect:/events/" + eventId + "/penalties";
+	}
+
+	@RequestMapping(value = "/events/{eventId}/penalties/{playId}", method = RequestMethod.DELETE)
+	public String deletePenalty(@PathVariable String eventId,
+			@PathVariable String playId) {
+		final EventId identifier = new EventId(eventId);
+		final DeletePenaltyCommand payload = new DeletePenaltyCommand(
+				identifier, playId);
+		commandBus.dispatch(new GenericCommandMessage<>(payload));
+		return "redirect:/events/" + eventId + "/penalties";
+	}
+
+	@RequestMapping(value = "/events/{eventId}/penalties/{playId}/edit", method = RequestMethod.GET)
+	public String editPenalty(@PathVariable String eventId,
+			@PathVariable String playId, Model model) {
+		final EventEntry aggregate = eventRepository.findOne(eventId);
+		final PenaltyEntry play = (PenaltyEntry) aggregate.getPlays().get(
+				playId);
+
+		final PenaltyForm form = new PenaltyForm();
+		form.setTeamSeasonId(play.getTeam().getId());
+		form.setPeriod(play.getPeriod());
+		form.setElapsedTime(play.getElapsedTime());
+		form.setViolationId(play.getViolation().getId());
+		form.setDuration(play.getDuration());
+		form.setComment(play.getComment());
+		for (final PlayParticipantEntry player : play.getParticipants()) {
+			final PlayRole role = player.getRole();
+			if (role.equals(PlayRole.PENALTY_COMMITTED_BY)) {
+				form.setCommittedById(player.getAttendee().getId());
+			} else if (role.equals(PlayRole.PENALTY_COMMITTED_AGAINST)) {
+				form.setCommittedAgainstId(player.getAttendee().getId());
+			}
+		}
+		form.setTeams(getTeams(aggregate));
+		form.setViolationData(getViolations());
+
+		model.addAttribute("form", form);
+		return "events/penalties/editPenalty";
+	}
+
 	/*---------- Shot actions ----------*/
 
 	@RequestMapping(value = "/events/{eventId}/shots", method = RequestMethod.GET)
@@ -814,6 +1020,20 @@ public class PlayController extends ApplicationController {
 		return list;
 	}
 
+	private Map<String, String> getViolations() {
+		if (violations == null) {
+			final Map<String, String> result = new HashMap<>();
+			final List<ViolationEntry> list = (List<ViolationEntry>) violationRepository
+					.findAll();
+			Collections.sort(list, new ViolationComparator());
+			for (final ViolationEntry each : list) {
+				result.put(each.getId(), each.getName());
+			}
+			violations = result;
+		}
+		return violations;
+	}
+
 	private List<PlayEntry> getPlays(String type, EventEntry event,
 			String teamSeasonId) {
 		final List<PlayEntry> list = new ArrayList<>();
@@ -874,6 +1094,19 @@ public class PlayController extends ApplicationController {
 			final int p2 = o2.getPeriod();
 			return p1 < p2 ? -1 : (p1 > p2 ? 1 : 0);
 		}
+	}
 
+	private static class ViolationComparator implements
+			Comparator<ViolationEntry> {
+		@Override
+		public int compare(ViolationEntry o1, ViolationEntry o2) {
+			final PenaltyCategory p1 = o1.getCategory();
+			final String n1 = o1.getName();
+			final PenaltyCategory p2 = o2.getCategory();
+			final String n2 = o2.getName();
+
+			final int result = p1.compareTo(p2);
+			return result == 0 ? n1.compareTo(n2) : result;
+		}
 	}
 }

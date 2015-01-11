@@ -1,6 +1,7 @@
 package laxstats.domain.events;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import laxstats.api.events.PenaltyUpdatedEvent;
@@ -65,8 +66,49 @@ public class Penalty extends Play {
 		eventStart = dto.getEvent().getStartsAt();
 		violationId = dto.getViolation().getId();
 		duration = dto.getPenaltyDuration();
-		for (final PlayParticipant participant : participants) {
-			updateParticipant(participant, dto.getParticipants());
+
+		// Update existing committedBy and committedAgainst
+		updateParticipants(dto);
+	}
+
+	private void updateParticipants(PlayDTO dto) {
+		// FIrst remove any deleted participants
+		removeParticipant(dto);
+
+		for (final PlayParticipantDTO pdto : dto.getParticipants()) {
+			// Update existing participants
+			boolean found = false;
+			for (final PlayParticipant p : getParticipants()) {
+				if (p.getId().equals(pdto.getId())) {
+					found = true;
+					p.update(pdto);
+				}
+			}
+			// Create new participant (penalty against)
+			if (!found) {
+				final PlayParticipant entity = new PlayParticipant(
+						pdto.getId(), id, pdto.getAttendee().getId(), pdto
+								.getTeamSeason().getId(), pdto.getRole(),
+						pdto.isPointCredit(), pdto.getCumulativeAssists(),
+						pdto.getCumulativeGoals());
+				participants.add(entity);
+			}
+		}
+	}
+
+	private void removeParticipant(PlayDTO dto) {
+		final Iterator<PlayParticipant> iter = getParticipants().iterator();
+		while (iter.hasNext()) {
+			final PlayParticipant p = iter.next();
+			boolean found = false;
+			for (final PlayParticipantDTO pdto : dto.getParticipants()) {
+				if (p.getId().equals(pdto.getId())) {
+					found = true;
+				}
+			}
+			if (!found) {
+				iter.remove();
+			}
 		}
 	}
 
