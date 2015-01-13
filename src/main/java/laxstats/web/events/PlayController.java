@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -199,8 +198,13 @@ public class PlayController extends ApplicationController {
 	@RequestMapping(value = "/events/{eventId}/clears/{playId}/edit", method = RequestMethod.GET)
 	public String editClear(@PathVariable String eventId,
 			@PathVariable String playId, Model model) {
+		final Map<String, Object> attributes = new HashMap<>();
+
 		final EventEntry aggregate = eventRepository.findOne(eventId);
+		attributes.put("event", aggregate);
+
 		final PlayEntry play = aggregate.getPlays().get(playId);
+		attributes.put("play", play);
 
 		final ClearForm form = new ClearForm();
 		form.setTeamSeasonId(play.getTeam().getId());
@@ -208,9 +212,9 @@ public class PlayController extends ApplicationController {
 		form.setResult(play.getResult());
 		form.setComment(play.getComment());
 		form.setTeams(getTeams(aggregate));
+		attributes.put("clearForm", form);
 
-		model.addAttribute("clearForm", form);
-		model.addAttribute("event", aggregate);
+		model.addAllAttributes(attributes);
 		return "events/clears/editClear";
 	}
 
@@ -345,12 +349,19 @@ public class PlayController extends ApplicationController {
 	@RequestMapping(value = "/events/{eventId}/faceOffs/{playId}/edit", method = RequestMethod.GET)
 	public String editFaceOff(@PathVariable String eventId,
 			@PathVariable String playId, Model model) {
+		final Map<String, Object> attributes = new HashMap<>();
+
 		final EventEntry aggregate = eventRepository.findOne(eventId);
+		attributes.put("event", aggregate);
+
 		final FaceOffEntry play = (FaceOffEntry) aggregate.getPlays().get(
 				playId);
+		attributes.put("play", play);
 
 		final FaceOffForm form = new FaceOffForm();
 		form.setTeamSeasonId(play.getTeam().getId());
+		form.setPeriod(play.getPeriod());
+		form.setElapsedTime(play.getElapsedTime());
 		for (final PlayParticipantEntry player : play.getParticipants()) {
 			if (player.getRole().equals(PlayRole.FACEOFF_LOSER)) {
 				form.setLoserId(player.getAttendee().getId());
@@ -358,11 +369,11 @@ public class PlayController extends ApplicationController {
 				form.setWinnerId(player.getAttendee().getId());
 			}
 		}
-		form.setPeriod(play.getPeriod());
 		form.setComment(play.getComment());
-		form.setTeams(getTeams(aggregate));
+		form.setAttendees(aggregate.getAttendees());
+		attributes.put("faceOffForm", form);
 
-		model.addAttribute("form", form);
+		model.addAllAttributes(attributes);
 		return "events/faceOffs/editFaceOff";
 	}
 
@@ -489,10 +500,7 @@ public class PlayController extends ApplicationController {
 		boolean foundAssist = false;
 		AttendeeEntry assist = null;
 		PlayParticipantDTO assistDTO = null;
-		final Iterator<PlayParticipantEntry> iter = play.getParticipants()
-				.iterator();
-		while (iter.hasNext()) {
-			final PlayParticipantEntry participant = iter.next();
+		for (final PlayParticipantEntry participant : play.getParticipants()) {
 			if (participant.getRole().equals(PlayRole.ASSIST)) {
 				foundAssist = true;
 				if (form.getAssistId() == null) {
@@ -534,14 +542,18 @@ public class PlayController extends ApplicationController {
 	@RequestMapping(value = "/events/{eventId}/goals/{playId}/edit", method = RequestMethod.GET)
 	public String editGoal(@PathVariable String eventId,
 			@PathVariable String playId, Model model) {
+		final Map<String, Object> attributes = new HashMap<>();
+
 		final EventEntry aggregate = eventRepository.findOne(eventId);
+		attributes.put("event", aggregate);
+
 		final GoalEntry play = (GoalEntry) aggregate.getPlays().get(playId);
+		attributes.put("play", play);
 
 		final GoalForm form = new GoalForm();
 		form.setTeamSeasonId(play.getTeam().getId());
 		form.setPeriod(play.getPeriod());
 		form.setElapsedTime(play.getElapsedTime());
-		form.setAttemptType(play.getScoreAttemptType());
 		for (final PlayParticipantEntry player : play.getParticipants()) {
 			if (player.getRole().equals(PlayRole.SCORER)) {
 				form.setScorerId(player.getAttendee().getId());
@@ -549,10 +561,12 @@ public class PlayController extends ApplicationController {
 				form.setAssistId(player.getAttendee().getId());
 			}
 		}
+		form.setAttemptType(play.getScoreAttemptType());
 		form.setComment(play.getComment());
-		form.setTeams(getTeams(aggregate));
+		form.setAttendees(aggregate.getAttendees());
+		attributes.put("goalForm", form);
 
-		model.addAttribute("form", form);
+		model.addAllAttributes(attributes);
 		return "events/goals/editGoal";
 	}
 
@@ -673,9 +687,14 @@ public class PlayController extends ApplicationController {
 	@RequestMapping(value = "/events/{eventId}/groundBalls/{playId}/edit", method = RequestMethod.GET)
 	public String editGroundBall(@PathVariable String eventId,
 			@PathVariable String playId, Model model) {
+		final Map<String, Object> attributes = new HashMap<>();
+
 		final EventEntry aggregate = eventRepository.findOne(eventId);
+		attributes.put("event", aggregate);
+
 		final GroundBallEntry play = (GroundBallEntry) aggregate.getPlays()
 				.get(playId);
+		attributes.put("play", play);
 
 		final GroundBallForm form = new GroundBallForm();
 		form.setTeamSeasonId(play.getTeam().getId());
@@ -684,9 +703,10 @@ public class PlayController extends ApplicationController {
 			form.setPlayerId(player.getAttendee().getId());
 		}
 		form.setComment(play.getComment());
-		form.setTeams(getTeams(aggregate));
+		form.setAttendees(aggregate.getAttendees());
+		attributes.put("groundBallForm", form);
 
-		model.addAttribute("form", form);
+		model.addAllAttributes(attributes);
 		return "events/groundBalls/editGoal";
 	}
 
@@ -862,16 +882,19 @@ public class PlayController extends ApplicationController {
 	@RequestMapping(value = "/events/{eventId}/penalties/{playId}/edit", method = RequestMethod.GET)
 	public String editPenalty(@PathVariable String eventId,
 			@PathVariable String playId, Model model) {
+		final Map<String, Object> attributes = new HashMap<>();
+
 		final EventEntry aggregate = eventRepository.findOne(eventId);
+		attributes.put("event", aggregate);
+
 		final PenaltyEntry play = (PenaltyEntry) aggregate.getPlays().get(
 				playId);
+		attributes.put("play", play);
 
 		final PenaltyForm form = new PenaltyForm();
 		form.setPeriod(play.getPeriod());
 		form.setElapsedTime(play.getElapsedTime());
 		form.setViolationId(play.getViolation().getId());
-		form.setDuration(play.getDuration());
-		form.setComment(play.getComment());
 		for (final PlayParticipantEntry player : play.getParticipants()) {
 			final PlayRole role = player.getRole();
 			if (role.equals(PlayRole.PENALTY_COMMITTED_BY)) {
@@ -880,10 +903,13 @@ public class PlayController extends ApplicationController {
 				form.setCommittedAgainstId(player.getAttendee().getId());
 			}
 		}
+		form.setDuration(play.getDuration());
+		form.setComment(play.getComment());
 		form.setAttendees(aggregate.getAttendees());
 		form.setViolationData(getViolations());
+		attributes.put("penaltyForm", form);
 
-		model.addAttribute("penaltyForm", form);
+		model.addAllAttributes(attributes);
 		return "events/penalties/editPenalty";
 	}
 
@@ -1004,22 +1030,28 @@ public class PlayController extends ApplicationController {
 	@RequestMapping(value = "/events/{eventId}/shots/{playId}/edit", method = RequestMethod.GET)
 	public String editShot(@PathVariable String eventId,
 			@PathVariable String playId, Model model) {
+		final Map<String, Object> attributes = new HashMap<>();
+
 		final EventEntry aggregate = eventRepository.findOne(eventId);
+		attributes.put("event", aggregate);
+
 		final ShotEntry play = (ShotEntry) aggregate.getPlays().get(playId);
+		attributes.put("play", play);
 
 		final ShotForm form = new ShotForm();
 		form.setTeamSeasonId(play.getTeam().getId());
 		form.setPeriod(play.getPeriod());
-		form.setAttemptType(play.getScoreAttemptType());
-		form.setResult(play.getResult());
 		for (final PlayParticipantEntry player : play.getParticipants()) {
 			form.setPlayerId(player.getAttendee().getId());
 		}
+		form.setAttemptType(play.getScoreAttemptType());
+		form.setResult(play.getResult());
 		form.setComment(play.getComment());
-		form.setTeams(getTeams(aggregate));
+		form.setAttendees(aggregate.getAttendees());
+		attributes.put("shotForm", form);
 
-		model.addAttribute("form", form);
-		return "events/shots/editGoal";
+		model.addAllAttributes(attributes);
+		return "events/shots/editShot";
 	}
 
 	/*---------- Methods ----------*/
