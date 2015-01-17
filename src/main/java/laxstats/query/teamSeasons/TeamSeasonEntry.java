@@ -102,19 +102,28 @@ public class TeamSeasonEntry {
 		return roster.add(player);
 	}
 
-	public Map<String, String> getRosterData() {
-		final Map<String, String> data = new HashMap<>();
+	public PlayerEntry getPlayer(String id) {
+		for (final PlayerEntry each : roster) {
+			if (each.getId().equals(id)) {
+				return each;
+			}
+		}
+		return null;
+	}
+
+	public Map<String, PlayerEntry> getRosterData() {
+		final Map<String, PlayerEntry> data = new HashMap<>();
 		if (roster.size() > 0) {
 			final List<PlayerEntry> list = new ArrayList<>(roster);
 			Collections.sort(list, new PlayerComparator());
 			for (final PlayerEntry each : list) {
-				data.put(each.getId(), each.getPerson().getFullName());
+				data.put(each.getId(), each);
 			}
 		}
 		return data;
 	}
 
-	private class PlayerComparator implements Comparator<PlayerEntry> {
+	private static class PlayerComparator implements Comparator<PlayerEntry> {
 		@Override
 		public int compare(PlayerEntry o1, PlayerEntry o2) {
 			final PersonEntry p1 = o1.getPerson();

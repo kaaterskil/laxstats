@@ -19,21 +19,12 @@ public class AttendeeFormValidator implements Validator {
 		final AttendeeForm form = (AttendeeForm) target;
 
 		// Test for invariants
-		final String teamSeasonId = form.getTeamSeasonId();
 		final String playerId = form.getPlayerId();
-		if (teamSeasonId == null) {
-			if (playerId != null) {
-				errors.reject("attendee.teamRequiredForPlayer");
-			}
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name",
-					"attendee.officialNameRequired");
-		} else {
-			ValidationUtils.rejectIfEmpty(errors, "playerId",
-					"attendee.player.required");
-			if (form.getRole().equals(Role.ATHLETE)) {
-				ValidationUtils.rejectIfEmpty(errors, "status",
-						"attendee.status.required");
-			}
+		ValidationUtils.rejectIfEmpty(errors, "playerId",
+				"attendee.player.required");
+		if (form.getRole().equals(Role.ATHLETE)) {
+			ValidationUtils.rejectIfEmpty(errors, "status",
+					"attendee.status.required");
 		}
 	}
 

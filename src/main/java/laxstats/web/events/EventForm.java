@@ -1,6 +1,7 @@
 package laxstats.web.events;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
@@ -8,6 +9,8 @@ import laxstats.api.events.Conditions;
 import laxstats.api.events.Schedule;
 import laxstats.api.events.Status;
 import laxstats.api.sites.SiteAlignment;
+import laxstats.query.seasons.SeasonEntry;
+import laxstats.query.sites.SiteEntry;
 
 import org.joda.time.LocalDateTime;
 
@@ -26,16 +29,9 @@ public class EventForm {
 	private SiteAlignment alignment;
 	private String description;
 	private Conditions conditions;
-	private final Map<String, String> siteData;
-	private final Map<String, String> teamOneData;
-	private final Map<String, String> teamTwoData;
-
-	public EventForm(Map<String, String> siteData,
-			Map<String, String> teamOneData, Map<String, String> teamTwoData) {
-		this.siteData = siteData;
-		this.teamOneData = teamOneData;
-		this.teamTwoData = teamTwoData;
-	}
+	private List<SiteEntry> sites = new ArrayList<>();
+	private List<SeasonEntry> seasons = new ArrayList<>();
+	private List<TeamSeasonSelect> teams = new ArrayList<>();
 
 	public LocalDateTime getStartsAt() {
 		return startsAt;
@@ -125,15 +121,28 @@ public class EventForm {
 		this.conditions = conditions;
 	}
 
-	public Map<String, String> getSiteData() {
-		return siteData;
+	public List<SiteEntry> getSites() {
+		return sites;
 	}
 
-	public Map<String, String> getTeamOneData() {
-		return teamOneData;
+	public void setSites(List<SiteEntry> sites) {
+		this.sites = sites;
 	}
 
-	public Map<String, String> getTeamTwoData() {
-		return teamTwoData;
+	public List<SeasonEntry> getSeasons() {
+		return seasons;
 	}
+
+	public void setSeasons(List<SeasonEntry> seasons) {
+		this.seasons = seasons;
+	}
+
+	public List<TeamSeasonSelect> getTeams() {
+		return teams;
+	}
+
+	public void setTeams(List<TeamSeasonSelect> teams) {
+		this.teams = teams;
+	}
+
 }

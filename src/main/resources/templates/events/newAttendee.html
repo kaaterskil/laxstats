@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<head>
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-sm-6 col-xs-12"></div>
+			<div class="col-sm-6 col-xs-12">
+				<h4>New Attendee</h4>
+				<form action="#" 
+					  th:action="@/events/${eventId}/teamSeasons/${teamSeasonId}" 
+					  th:object="${attendeeForm}" 
+					  method="post"
+					  role="form">
+					<div class="form-group">
+						<label for="player">Roster</label> 
+						<select id="player"
+								class="form-control" 
+								th:field="*{playerId}">
+							<option value="">Select...</option>
+							<option th:each="opt : *{roster.entrySet()}"
+									th:value="${opt.key}"
+									th:text="${opt.value.getFullName()}">Roster</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="role">Role</label>
+						<select id="role"
+								class="form-control" 
+								th:field="*{role}">
+							<option value="">Select...</option>
+							<option th:each="opt : ${Role.values}"
+									th:value="${opt.name}"
+									th:text="${opt.label}">Roles</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="status">Status</label> 
+						<select id="status"
+								class="form-control" 
+								th:field="*{status}">
+							<option value="">Select...</option>
+							<option th:each="opt : *{status}"
+									th:value="${opt.name}"
+									th:text="${opt.label}">Status</option>
+						</select>
+					</div>
+					<button th:type="submit" class="btn btn-default">Submit</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

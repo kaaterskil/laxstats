@@ -6,16 +6,15 @@ import javax.validation.constraints.NotNull;
 
 import laxstats.api.events.AthleteStatus;
 import laxstats.api.players.Role;
+import laxstats.query.players.PlayerEntry;
 
 public class AttendeeForm {
+	@NotNull
 	private String playerId;
-	private String teamSeasonId;
-	private String name;
 	@NotNull
 	private Role role;
 	private AthleteStatus status;
-	private Map<String, String> playerData;
-	private Map<String, String> teamSeasonData;
+	private Map<String, PlayerEntry> roster;
 
 	public String getPlayerId() {
 		return playerId;
@@ -23,22 +22,6 @@ public class AttendeeForm {
 
 	public void setPlayerId(String playerId) {
 		this.playerId = playerId;
-	}
-
-	public String getTeamSeasonId() {
-		return teamSeasonId;
-	}
-
-	public void setTeamSeasonId(String teamSeasonId) {
-		this.teamSeasonId = teamSeasonId;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public Role getRole() {
@@ -57,19 +40,11 @@ public class AttendeeForm {
 		this.status = status;
 	}
 
-	public Map<String, String> getPlayerData() {
-		return playerData;
+	public Map<String, PlayerEntry> getRoster() {
+		return roster;
 	}
 
-	public void setPlayerData(Map<String, String> playerData) {
-		this.playerData = playerData;
-	}
-
-	public Map<String, String> getTeamSeasonData() {
-		return teamSeasonData;
-	}
-
-	public void setTeamSeasonData(Map<String, String> teamSeasonData) {
-		this.teamSeasonData = teamSeasonData;
+	public void setRoster(Map<String, PlayerEntry> roster) {
+		this.roster = roster;
 	}
 }

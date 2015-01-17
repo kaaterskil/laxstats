@@ -45,6 +45,9 @@ public class PlayerEntry {
 	@JoinColumn(nullable = false)
 	private TeamSeasonEntry teamSeason;
 
+	@Column(length = 100)
+	private String fullName;
+
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20)
 	private Role role;
@@ -101,6 +104,14 @@ public class PlayerEntry {
 
 	public void setTeamSeason(TeamSeasonEntry teamSeason) {
 		this.teamSeason = teamSeason;
+	}
+
+	public String getFullName() {
+		return fullName;
+	}
+
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
 	}
 
 	public Role getRole() {

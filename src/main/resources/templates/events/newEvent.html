@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<head>
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-sm-6 col-xs-12"></div>
+			<div class="col-sm-6 col-xs-12">
+				<h4>New Game</h4>
+				<form action="#" 
+					  th:action="@/events" 
+					  th:object="${eventForm}" 
+					  method="post" 
+					  role="form">
+					<div class="form-group">
+						<label for="startsAt">Date and Time</label>
+						<input th:type="text"
+							   id="startsAt" 
+							   class="form-control" 
+							   th:field="*{startsAt}" />
+					</div>
+					<div class="form-group">
+						<label for="schedule">Schedule Type</label> 
+						<select id="schedule"
+								class="form-control" 
+								th:field="*{schedule}">
+							<option value="">Select...</option>
+							<option th:each="opt : ${Schedule.values}"
+									th:value="${opt.name}"
+									th:text="${opt.label}">Schedule</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="status">Status</label> 
+						<select id="status"
+								class="form-control" 
+								th:field="*{status}">
+							<option value="">Select...</option>
+							<option th:each="opt : ${Status.values}"
+									th:value="${opt.name}"
+									th:text="${opt.label}">Status</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="description">Description</label>
+						<input type="text"
+							   id="description"
+							   class="form-control"
+							   th:field="*{description}">
+					</div>
+					<div class="form-group">
+						<label for="team">Field</label> 
+						<select id="team"
+								class="form-control" 
+								th:field="*{siteId}">
+							<option value="">Select...</option>
+							<option th:each="opt : *{sites}"
+									th:value="${opt.id}"
+									th:text="${opt.name}">Fields</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="team">Site Alignment</label> 
+						<select id="team"
+								class="form-control" 
+								th:field="*{alignment}">
+							<option value="">Select...</option>
+							<option th:each="opt : ${SiteAlignment.values}"
+									th:value="${opt.value}"
+									th:text="${opt.name}">Alignments</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="season">Season</label> 
+						<select id="season"
+								class="form-control">
+							<option value="">Select...</option>
+							<option th:each="opt : *{seasons)}"
+									th:value="${opt.id}"
+									th:text="${opt.name}">Seasons</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="team-one">Team One</label> 
+						<select id="team-one"
+								class="form-control" 
+								th:field="*{teamOneId}">
+							<option value="">Select...</option>
+							<option th:each="opt : *{teams)}"
+									th:value="${opt.id}"
+									th:text="${opt.name}">Teams</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="team-one-home">Home Team?</label>
+						<input type="checkbox"
+							   id="team-one-home" 
+							   class="form-control"
+							   th:field="*{teamOneHome}">
+					</div>
+					<div class="form-group">
+						<label for="team-two">Team Two</label> 
+						<select id="team-two"
+								class="form-control" 
+								th:field="*{teamTwoId}">
+							<option value="">Select...</option>
+							<option th:each="opt : *{teams}"
+									th:value="${opt.id}"
+									th:text="${opt.name}">Teams</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="team-two-home">Home Team?</label>
+						<input type="checkbox"
+							   id="team-two-home" 
+							   class="form-control"
+							   th:field="*{teamTwoHome}">
+					</div>
+					<div class="form-group">
+						<label for="result">Conditions</label> 
+						<select id="result"
+								class="form-control" 
+								th:field="*{conditions}">
+							<option value="">Select...</option>
+							<option th:each="opt : ${Conditions.values}" 
+									th:value="${opt.name}" 
+									th:text="${opt.label}">Result</option>
+						</select>
+					</div>
+					<button th:type="submit" class="btn btn-default">Submit</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

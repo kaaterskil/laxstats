@@ -10,6 +10,7 @@ public class PlayerDTO {
 	private final PlayerId id;
 	private final PersonEntry person;
 	private final TeamSeasonEntry team;
+	private final String fullName;
 	private final Role role;
 	private final PlayerStatus status;
 	private final String jerseyNumber;
@@ -24,13 +25,14 @@ public class PlayerDTO {
 	private final UserEntry modifiedBy;
 
 	public PlayerDTO(PlayerId id, PersonEntry person, TeamSeasonEntry team,
-			Role role, PlayerStatus status, String jerseyNumber,
-			Position position, boolean isCaptain, int depth, int height,
-			int weight, LocalDateTime createdAt, UserEntry createdBy,
-			LocalDateTime modifiedAt, UserEntry modifiedBy) {
+			String fullName, Role role, PlayerStatus status,
+			String jerseyNumber, Position position, boolean isCaptain,
+			int depth, int height, int weight, LocalDateTime createdAt,
+			UserEntry createdBy, LocalDateTime modifiedAt, UserEntry modifiedBy) {
 		this.id = id;
 		this.person = person;
 		this.team = team;
+		this.fullName = fullName;
 		this.role = role;
 		this.status = status;
 		this.jerseyNumber = jerseyNumber;
@@ -46,11 +48,13 @@ public class PlayerDTO {
 	}
 
 	public PlayerDTO(PlayerId id, PersonEntry person, TeamSeasonEntry team,
-			Role role, PlayerStatus status, String jerseyNumber,
-			Position position, boolean isCaptain, int depth, int height,
-			int weight, LocalDateTime modifiedAt, UserEntry modifiedBy) {
-		this(id, person, team, role, status, jerseyNumber, position, isCaptain,
-				depth, height, weight, null, null, modifiedAt, modifiedBy);
+			String fullName, Role role, PlayerStatus status,
+			String jerseyNumber, Position position, boolean isCaptain,
+			int depth, int height, int weight, LocalDateTime modifiedAt,
+			UserEntry modifiedBy) {
+		this(id, person, team, fullName, role, status, jerseyNumber, position,
+				isCaptain, depth, height, weight, null, null, modifiedAt,
+				modifiedBy);
 	}
 
 	public PlayerId getId() {
@@ -63,6 +67,10 @@ public class PlayerDTO {
 
 	public TeamSeasonEntry getTeam() {
 		return team;
+	}
+
+	public String getFullName() {
+		return fullName;
 	}
 
 	public Role getRole() {

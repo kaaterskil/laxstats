@@ -72,9 +72,10 @@ public class PlayerController extends ApplicationController {
 		final PlayerId playerId = new PlayerId();
 
 		final PlayerDTO dto = new PlayerDTO(playerId, person, team,
-				form.getRole(), form.getStatus(), form.getJerseyNumber(),
-				form.getPosition(), form.isCaptain(), form.getDepth(),
-				form.getHeight(), form.getWeight(), now, user, now, user);
+				person.getFullName(), form.getRole(), form.getStatus(),
+				form.getJerseyNumber(), form.getPosition(), form.isCaptain(),
+				form.getDepth(), form.getHeight(), form.getWeight(), now, user,
+				now, user);
 		final RegisterPlayerCommand payload = new RegisterPlayerCommand(
 				identifier, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
@@ -104,9 +105,9 @@ public class PlayerController extends ApplicationController {
 		final PlayerId playerIdentifier = new PlayerId(playerId);
 
 		final PlayerDTO dto = new PlayerDTO(playerIdentifier, person, team,
-				form.getRole(), form.getStatus(), form.getJerseyNumber(),
-				form.getPosition(), form.isCaptain(), form.getDepth(),
-				form.getHeight(), form.getWeight(), now, user);
+				person.getFullName(), form.getRole(), form.getStatus(),
+				form.getJerseyNumber(), form.getPosition(), form.isCaptain(),
+				form.getDepth(), form.getHeight(), form.getWeight(), now, user);
 		final EditPlayerCommand payload = new EditPlayerCommand(identifier, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
 		return "redirect:/teamSeasons/" + teamSeasonId + "/roster";
