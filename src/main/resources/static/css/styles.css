@@ -30,6 +30,10 @@ body {
 	text-decoration: none;
 }
 
+a:hover {
+	color: rgb(50, 205, 50);
+}
+
 h1, h2 {
 	color: rgb(102, 102, 51);
 	font-family: 'Proxima Nova', sans-serif;
@@ -44,9 +48,22 @@ h2 {
 	font-size: 13px;
 }
 
+.red {
+	color: rgb(255, 0 , 0);
+}
+
 .ls-error, ls-logout {
 	color: rgb(255, 51, 0);
 	padding: 5px 0;
+}
+
+.lax-btn-new {
+	margin-top: 10px;
+}
+
+.lax-btn-delete {
+	border: none !important;
+	padding: 0 !important;
 }
 
 /*---------- Navigation styles ----------*/
@@ -66,7 +83,7 @@ header .navbar-nav>li>a {
 }
 
 footer .navbar-fixed-bottom {
-	background: rgb(204, 255, 153);
+	background: rgb(233, 233, 233);
 	padding: 20px 0;
 }
 
@@ -87,5 +104,6 @@ footer .navbar-nav>li>a {
 
 .lax-footer-copyright {
 	color: rgb(119, 119, 119);
+	padding-bottom: 25px;
 	padding-left: 15px;
 }

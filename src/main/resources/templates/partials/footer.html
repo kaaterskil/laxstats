@@ -19,8 +19,10 @@
 							<li><a href="#">Subscription Information</a></li>
 						</ul>
 					</div>
-					<div class="lax-footer-copyright">Copyright &copy; 2005-2014 Kaaterskil Management, LLC.
-								All rights reserved.</div>
+					<div class="lax-footer-copyright">
+						Copyright &copy;
+						<span th:text="'2004-' + ${#dates.format(#dates.createNow(), 'YYYY')} ">Year</span> 
+						Kaaterskil Management, LLC. All rights reserved.</div>
 				</div>
 			</nav>
 		</footer>
