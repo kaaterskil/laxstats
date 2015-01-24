@@ -19,7 +19,6 @@ public class AttendeeFormValidator implements Validator {
 		final AttendeeForm form = (AttendeeForm) target;
 
 		// Test for invariants
-		final String playerId = form.getPlayerId();
 		ValidationUtils.rejectIfEmpty(errors, "playerId",
 				"attendee.player.required");
 		if (form.getRole().equals(Role.ATHLETE)) {

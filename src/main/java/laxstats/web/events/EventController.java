@@ -364,13 +364,22 @@ public class EventController extends ApplicationController {
 	}
 
 	private List<TeamSeasonSelect> getTeams(String seasonId) {
+		final List<TeamSeasonEntry> teams = teamRepository.findBySeasonId(
+				seasonId, getTeamSorter());
+
 		final List<TeamSeasonSelect> list = new ArrayList<>();
-		for (final TeamSeasonEntry each : teamRepository
-				.findBySeasonId(seasonId)) {
+		for (final TeamSeasonEntry each : teams) {
 			final TeamSeasonSelect entry = new TeamSeasonSelect(each.getId(),
 					each.getName());
 			list.add(entry);
 		}
 		return list;
+	}
+
+	private Sort getTeamSorter() {
+		final List<Sort.Order> sort = new ArrayList<>();
+		sort.add(new Sort.Order("affiliation.name"));
+		sort.add(new Sort.Order("name"));
+		return new Sort(sort);
 	}
 }

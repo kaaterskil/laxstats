@@ -49,7 +49,7 @@ public class PlayerController extends ApplicationController {
 		this.teamSeasonRepository = teamSeasonRepository;
 	}
 
-	@RequestMapping(value = "teamSeasons/{teamSeasonId}/roster", method = RequestMethod.GET)
+	@RequestMapping(value = "/teamSeasons/{teamSeasonId}/roster", method = RequestMethod.GET)
 	public String index(@PathVariable String teamSeasonId, Model model) {
 		final TeamSeasonEntry teamSeason = teamSeasonRepository
 				.findOne(teamSeasonId);
@@ -82,7 +82,7 @@ public class PlayerController extends ApplicationController {
 		return "redirect:/teamSeasons/" + teamSeasonId + "roster";
 	}
 
-	@RequestMapping(value = "teamSeasons/{teamSeasonId}/roster/{playerId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/teamSeasons/{teamSeasonId}/roster/{playerId}", method = RequestMethod.GET)
 	public String showPlayer(@PathVariable String teamSeasonId,
 			@PathVariable String playerId, Model model) {
 		final PlayerEntry player = playerRepository.findOne(playerId);
@@ -90,7 +90,7 @@ public class PlayerController extends ApplicationController {
 		return "players/showPlayer";
 	}
 
-	@RequestMapping(value = "teamSeasons/{teamSeasonId}/roster/{playerId}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/teamSeasons/{teamSeasonId}/roster/{playerId}", method = RequestMethod.PUT)
 	public String updatePlayer(@PathVariable String teamSeasonId,
 			@PathVariable String playerId,
 			@ModelAttribute("form") @Valid PlayerForm form, BindingResult result) {
@@ -113,7 +113,7 @@ public class PlayerController extends ApplicationController {
 		return "redirect:/teamSeasons/" + teamSeasonId + "/roster";
 	}
 
-	@RequestMapping(value = "teamSeasons/{teamSeasonId}/roster/{playerId}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/teamSeasons/{teamSeasonId}/roster/{playerId}", method = RequestMethod.DELETE)
 	public String deletePlayer(@PathVariable String teamSeasonId,
 			@PathVariable String playerId) {
 		final TeamSeasonId identifier = new TeamSeasonId(teamSeasonId);
@@ -124,7 +124,7 @@ public class PlayerController extends ApplicationController {
 		return "redirect:/teamSeasons/" + teamSeasonId + "/roster";
 	}
 
-	@RequestMapping(value = "teamSeasons/{teamSeasonId}/roster/new", method = RequestMethod.GET)
+	@RequestMapping(value = "/teamSeasons/{teamSeasonId}/roster/new", method = RequestMethod.GET)
 	public String newPlayer(@PathVariable String teamSeasonId, Model model) {
 		final PlayerForm form = new PlayerForm();
 		model.addAttribute("form", form);
@@ -132,7 +132,7 @@ public class PlayerController extends ApplicationController {
 		return "players/newPlayer";
 	}
 
-	@RequestMapping(value = "teamSeasons/{teamSeasonId}/roster/{playerId}/edit", method = RequestMethod.GET)
+	@RequestMapping(value = "/teamSeasons/{teamSeasonId}/roster/{playerId}/edit", method = RequestMethod.GET)
 	public String editPlayer(@PathVariable String teamSeasonId,
 			@PathVariable String playerId, Model model) {
 		final PlayerEntry player = playerRepository.findOne(playerId);
