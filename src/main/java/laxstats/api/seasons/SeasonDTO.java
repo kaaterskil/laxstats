@@ -1,80 +1,69 @@
 package laxstats.api.seasons;
 
 import laxstats.query.users.UserEntry;
+
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
 public class SeasonDTO {
-  private SeasonId seasonId;
-  private String description;
-  private LocalDate startsOn;
-  private LocalDate endsOn;
-  private LocalDateTime createdAt;
-  private UserEntry createdBy;
-  private LocalDateTime modifiedAt;
-  private UserEntry modifiedBy;
+	private final SeasonId seasonId;
+	private final String description;
+	private final LocalDate startsOn;
+	private final LocalDate endsOn;
+	private final LocalDateTime createdAt;
+	private final UserEntry createdBy;
+	private final LocalDateTime modifiedAt;
+	private final UserEntry modifiedBy;
 
-  public SeasonId getSeasonId() {
-    return seasonId;
-  }
+	public SeasonDTO(SeasonId seasonId, String description, LocalDate startsOn,
+			LocalDate endsOn, LocalDateTime createdAt, UserEntry createdBy,
+			LocalDateTime modifiedAt, UserEntry modifiedBy) {
+		super();
+		this.seasonId = seasonId;
+		this.description = description;
+		this.startsOn = startsOn;
+		this.endsOn = endsOn;
+		this.createdAt = createdAt;
+		this.createdBy = createdBy;
+		this.modifiedAt = modifiedAt;
+		this.modifiedBy = modifiedBy;
+	}
 
-  public void setSeasonId(SeasonId seasonId) {
-    this.seasonId = seasonId;
-  }
+	public SeasonDTO(SeasonId seasonId, String description, LocalDate startsOn,
+			LocalDate endsOn, LocalDateTime modifiedAt, UserEntry modifiedBy) {
+		this(seasonId, description, startsOn, endsOn, null, null, modifiedAt,
+				modifiedBy);
+	}
 
-  public String getDescription() {
-    return description;
-  }
+	public SeasonId getSeasonId() {
+		return seasonId;
+	}
 
-  public void setDescription(String description) {
-    this.description = description;
-  }
+	public String getDescription() {
+		return description;
+	}
 
-  public LocalDate getStartsOn() {
-    return startsOn;
-  }
+	public LocalDate getStartsOn() {
+		return startsOn;
+	}
 
-  public void setStartsOn(LocalDate startsOn) {
-    this.startsOn = startsOn;
-  }
+	public LocalDate getEndsOn() {
+		return endsOn;
+	}
 
-  public LocalDate getEndsOn() {
-    return endsOn;
-  }
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
 
-  public void setEndsOn(LocalDate endsOn) {
-    this.endsOn = endsOn;
-  }
+	public UserEntry getCreatedBy() {
+		return createdBy;
+	}
 
-  public LocalDateTime getCreatedAt() {
-    return createdAt;
-  }
+	public LocalDateTime getModifiedAt() {
+		return modifiedAt;
+	}
 
-  public void setCreatedAt(LocalDateTime createdAt) {
-    this.createdAt = createdAt;
-  }
-
-  public UserEntry getCreatedBy() {
-    return createdBy;
-  }
-
-  public void setCreatedBy(UserEntry createdBy) {
-    this.createdBy = createdBy;
-  }
-
-  public LocalDateTime getModifiedAt() {
-    return modifiedAt;
-  }
-
-  public void setModifiedAt(LocalDateTime modifiedAt) {
-    this.modifiedAt = modifiedAt;
-  }
-
-  public UserEntry getModifiedBy() {
-    return modifiedBy;
-  }
-
-  public void setModifiedBy(UserEntry modifiedBy) {
-    this.modifiedBy = modifiedBy;
-  }
+	public UserEntry getModifiedBy() {
+		return modifiedBy;
+	}
 }

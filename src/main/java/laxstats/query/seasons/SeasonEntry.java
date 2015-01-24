@@ -11,6 +11,8 @@ import javax.persistence.UniqueConstraint;
 import laxstats.query.users.UserEntry;
 
 import org.hibernate.annotations.Type;
+import org.joda.time.DateTime;
+import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
@@ -33,7 +35,7 @@ public class SeasonEntry {
 	private LocalDate startsOn;
 
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
-	private LocalDate endsOn = new LocalDate(Long.MAX_VALUE);
+	private LocalDate endsOn;
 
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime createdAt;
@@ -48,6 +50,51 @@ public class SeasonEntry {
 	private UserEntry modifiedBy;
 
 	// ---------- Methods ----------//
+
+	public Interval getInterval() {
+		final DateTime start = getStartsOn().toDateTimeAtStartOfDay();
+		DateTime end;
+		try {
+			end = getEndsOn().toDateTimeAtStartOfDay();
+		} catch (final Exception e) {
+			end = new DateTime(Long.MAX_VALUE);
+		}
+		return new Interval(start, end);
+	}
+
+	public boolean overlaps(SeasonEntry target) {
+		if (target != null) {
+			return overlaps(target.getStartsOn(), target.getEndsOn());
+		}
+		return false;
+	}
+
+	public boolean overlaps(Interval interval) {
+		if (interval != null) {
+			final LocalDate otherStart = interval.getStart().toLocalDate();
+			LocalDate otherEnd;
+			try {
+				otherEnd = interval.getEnd().toLocalDate();
+			} catch (final Exception e) {
+				otherEnd = new LocalDate(Long.MAX_VALUE);
+			}
+			return overlaps(otherStart, otherEnd);
+		}
+		return false;
+	}
+
+	public boolean overlaps(LocalDate otherStart, LocalDate otherEnd) {
+		final LocalDate thisStart = getStartsOn();
+		final LocalDate thisEnd = getEndsOn();
+		if (otherEnd == null) {
+			otherEnd = new LocalDate(Long.MAX_VALUE);
+		}
+
+		if (otherStart != null) {
+			return thisStart.isBefore(otherEnd) && otherStart.isBefore(thisEnd);
+		}
+		return false;
+	}
 
 	// ---------- Getter/Setters ----------//
 

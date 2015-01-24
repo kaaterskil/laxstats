@@ -8,60 +8,61 @@
 	<div layout:fragment="content">
 		<div class="row">
 			<div class="col-sm-3 col-sm-offset-3 col-xs-12">
-				<h1>New Season</h1>
+				<h1>Edit Season</h1>
 			</div>
 		</div>
 
 		<div class="row">
 			<div class="col-sm-3 col-sm-offset-3 col-xs-12">
-				<form action="#" 
-					  th:action="@{/seasons}" 
+				<form name="edit-season-form" 
+					  action="#"
+					  th:action="@{'/seasons/' + ${seasonId}}" 
 					  th:object="${seasonForm}"
-					  method="post" 
+					  th:method="put" 
 					  role="form">
 					<div class="form-group">
-						<label for="description">Description</label>
-						<input th:type="text" 
+						<label for="description">Description</label> 
+						<input th:type="text"
 							   id="description" 
-							   class="form-control" 
+							   class="form-control"
 							   aria-described-by="descriptionError" 
 							   th:field="*{description}"
-							   th:placeholder="Description"
+							   th:placeholder="Description" 
 							   required="required"
 							   aria-required="true" />
 						<div th:if="${#fields.hasErrors('description')}"
-							 id="descriptionError"
-							 class="ls-error"
+							 id="descriptionError" 
+							 class="ls-error" 
 							 th:errors="*{description}">Incorrect description</div>
 					</div>
 					<div class="form-group">
-						<label for="starts-on">Start Date</label>
-						<input th:type="date" 
+						<label for="starts-on">Start Date</label> 
+						<input th:type="date"
 							   id="starts-on" 
-							   class="form-control" 
+							   class="form-control"
 							   aria-described-by="startsOnError" 
 							   th:field="*{startsOn}"
-							   required="required"
+							   required="required" 
 							   aria-required="true" />
-						<div th:if="${#fields.hasErrors('startsOn')}"
+						<div th:if="${#fields.hasErrors('startsOn')}" 
 							 id="startsOnError"
-							 class="ls-error"
+							 class="ls-error" 
 							 th:errors="*{startsOn}">Incorrect start date</div>
 					</div>
 					<div class="form-group">
-						<label for="ends-on">End Date</label>
+						<label for="ends-on">End Date</label> 
 						<input th:type="date"
 							   id="ends-on" 
-							   class="form-control"
-							   aria-described-by="endsOnError" 
+							   class="form-control" 
+							   aria-described-by="endsOnError"
 							   th:field="*{endsOn}" />
-						<div th:if="${#fields.hasErrors('endsOn')}"
+						<div th:if="${#fields.hasErrors('endsOn')}" 
 							 id="endsOnError"
-							 class="ls-error"
+							 class="ls-error" 
 							 th:errors="*{endsOn}">Incorrect end date</div>
 					</div>
 					<button th:type="submit" 
-							class="btn btn-default">Save</button>
+							class="btn btn-default">Update</button>
 				</form>
 			</div>
 		</div>

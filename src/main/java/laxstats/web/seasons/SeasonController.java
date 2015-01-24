@@ -1,27 +1,44 @@
 package laxstats.web.seasons;
 
-import laxstats.api.seasons.*;
+import javax.validation.Valid;
+
+import laxstats.api.seasons.CreateSeasonCommand;
+import laxstats.api.seasons.DeleteSeasonCommand;
+import laxstats.api.seasons.SeasonDTO;
+import laxstats.api.seasons.SeasonId;
+import laxstats.api.seasons.UpdateSeasonCommand;
 import laxstats.query.seasons.SeasonEntry;
 import laxstats.query.seasons.SeasonQueryRepository;
 import laxstats.query.users.UserEntry;
 import laxstats.query.users.UserQueryRepository;
 import laxstats.web.ApplicationController;
+
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.commandhandling.GenericCommandMessage;
+import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
-@RequestMapping("/seasons")
 public class SeasonController extends ApplicationController {
 	private final SeasonQueryRepository seasonRepository;
+	private SeasonFormValidator seasonValidator;
+
+	@InitBinder(value = "SeasonForm")
+	protected void initBinder(WebDataBinder binder) {
+		binder.setValidator(seasonValidator);
+	}
 
 	@Autowired
 	public SeasonController(SeasonQueryRepository seasonRepository,
@@ -30,97 +47,106 @@ public class SeasonController extends ApplicationController {
 		this.seasonRepository = seasonRepository;
 	}
 
-	@InitBinder
-	protected void initBinder(WebDataBinder binder) {
-		binder.setValidator(new SeasonFormValidator());
+	@Autowired
+	public void setSeasonValidator(SeasonFormValidator seasonValidator) {
+		this.seasonValidator = seasonValidator;
 	}
 
-	@RequestMapping(method = RequestMethod.GET)
+	@RequestMapping(value = "/seasons", method = RequestMethod.GET)
 	public String index(Model model) {
-		model.addAttribute("items", seasonRepository.findAll());
+		final Iterable<SeasonEntry> list = seasonRepository.findAll(new Sort(
+				Direction.DESC, "startsOn"));
+		model.addAttribute("items", list);
 		return "seasons/index";
 	}
 
-	@RequestMapping(value = "/{seasonId}", method = RequestMethod.GET)
-	public String showSeason(@PathVariable String seasonId, Model model) {
-		SeasonEntry season = seasonRepository.findOne(seasonId);
-		model.addAttribute("item", season);
-		return "seasons/show";
+	@RequestMapping(value = "/seasons", method = RequestMethod.POST)
+	public String createSeason(
+			@ModelAttribute("seasonForm") @Valid SeasonForm form,
+			BindingResult result) {
+		if (result.hasErrors()) {
+			return "seasons/newSeason";
+		}
+
+		final LocalDateTime now = LocalDateTime.now();
+		final UserEntry user = getCurrentUser();
+		final SeasonId identifier = new SeasonId();
+		final LocalDate endsOn = testEndsOn(form.getEndsOn());
+
+		final SeasonDTO dto = new SeasonDTO(identifier, form.getDescription(),
+				form.getStartsOn(), endsOn, now, user, now, user);
+
+		final CreateSeasonCommand payload = new CreateSeasonCommand(identifier,
+				dto);
+		commandBus.dispatch(new GenericCommandMessage<>(payload));
+		return "redirect:/seasons";
 	}
 
-	@RequestMapping(value = "/new", method = RequestMethod.GET)
+	@RequestMapping(value = "/seasons/{seasonId}", method = RequestMethod.GET)
+	public String showSeason(@PathVariable String seasonId, Model model) {
+		final SeasonEntry aggregate = seasonRepository.findOne(seasonId);
+		model.addAttribute("item", aggregate);
+		return "seasons/showSeason";
+	}
+
+	@RequestMapping(value = "/seasons/{seasonId}", method = RequestMethod.PUT)
+	public String updateSeason(@PathVariable String seasonId,
+			@ModelAttribute("seasonForm") @Valid SeasonForm form,
+			BindingResult bindingResult) {
+		if (bindingResult.hasErrors()) {
+			return "seasons/editSeason";
+		}
+		final LocalDateTime now = LocalDateTime.now();
+		final UserEntry user = getCurrentUser();
+		final SeasonId identifier = new SeasonId(seasonId);
+		final LocalDate endsOn = testEndsOn(form.getEndsOn());
+
+		final SeasonDTO dto = new SeasonDTO(identifier, form.getDescription(),
+				form.getStartsOn(), endsOn, now, user);
+
+		final UpdateSeasonCommand payload = new UpdateSeasonCommand(identifier,
+				dto);
+		commandBus.dispatch(new GenericCommandMessage<>(payload));
+		return "redirect:/seasons";
+	}
+
+	@RequestMapping(value = "/seasons/{seasonId}", method = RequestMethod.DELETE)
+	public String deleteSeason(@PathVariable String seasonId) {
+		final SeasonId identifier = new SeasonId(seasonId);
+
+		final DeleteSeasonCommand payload = new DeleteSeasonCommand(identifier);
+		commandBus.dispatch(new GenericCommandMessage<>(payload));
+		return "redirect:/seasons";
+	}
+
+	@RequestMapping(value = "/seasons/new", method = RequestMethod.GET)
 	public String newSeason(Model model) {
-		SeasonForm form = new SeasonForm();
+		final SeasonForm form = new SeasonForm();
 		model.addAttribute("seasonForm", form);
 		return "seasons/newSeason";
 	}
 
-	@RequestMapping(method = RequestMethod.POST)
-	public String createSeason(@ModelAttribute("seasonForm") @Valid SeasonForm form,
-							   BindingResult bindingResult) {
-		if (bindingResult.hasErrors()) {
-			return "seasons/new";
-		}
-		LocalDateTime now = LocalDateTime.now();
-		UserEntry user = getCurrentUser();
-		SeasonId identifier = new SeasonId();
-
-		SeasonDTO dto = new SeasonDTO();
-		dto.setSeasonId(identifier);
-		dto.setCreatedAt(now);
-		dto.setCreatedBy(user);
-		dto.setDescription(form.getDescription());
-		dto.setEndsOn(form.getEndsOn());
-		dto.setModifiedAt(now);
-		dto.setModifiedBy(user);
-		dto.setStartsOn(form.getStartsOn());
-
-		CreateSeasonCommand payload = new CreateSeasonCommand(identifier, dto);
-		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/seasons";
-	}
-	
-	@RequestMapping(value = "/{seasonId}/edit", method = RequestMethod.GET)
+	@RequestMapping(value = "/seasons/{seasonId}/edit", method = RequestMethod.GET)
 	public String editSeason(@PathVariable String seasonId, Model model) {
-		SeasonEntry season = seasonRepository.findOne(seasonId);
-		
-		SeasonForm form = new SeasonForm();
-		form.setDescription(season.getDescription());
-		form.setStartsOn(season.getStartsOn());
-		form.setEndsOn(season.getEndsOn());
+		final SeasonEntry aggregate = seasonRepository.findOne(seasonId);
+
+		final SeasonForm form = new SeasonForm();
+		form.setDescription(aggregate.getDescription());
+		form.setStartsOn(aggregate.getStartsOn());
+		form.setEndsOn(aggregate.getEndsOn());
+
 		model.addAttribute("seasonForm", form);
-		return "seasons/edit";
+		model.addAttribute("seasonId", seasonId);
+		return "seasons/editSeason";
 	}
 
-	@RequestMapping(value = "/{seasonId}", method = RequestMethod.PUT)
-	public String updateSeason(@ModelAttribute("seasonForm") @Valid SeasonForm form,
-							   @PathVariable String seasonId,
-							   BindingResult bindingResult) {
-		if (bindingResult.hasErrors()) {
-			return "seasons/edit";
+	/*---------- Utilities ----------*/
+
+	private LocalDate testEndsOn(LocalDate endsOn) {
+		LocalDate result = endsOn;
+		if (result == null) {
+			result = new LocalDate(Long.MAX_VALUE);
 		}
-		LocalDateTime now = LocalDateTime.now();
-		UserEntry user = getCurrentUser();
-		SeasonId identifier = new SeasonId(seasonId);
-
-		SeasonDTO dto = new SeasonDTO();
-		dto.setSeasonId(identifier);
-		dto.setDescription(form.getDescription());
-		dto.setEndsOn(form.getEndsOn());
-		dto.setModifiedAt(now);
-		dto.setModifiedBy(user);
-		dto.setStartsOn(form.getStartsOn());
-
-		UpdateSeasonCommand payload = new UpdateSeasonCommand(identifier, dto);
-		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/seasons";
-	}
-
-	@RequestMapping(value = "/{seasonId}", method = RequestMethod.DELETE)
-	public String deleteSeason(@PathVariable String seasonId) {
-		SeasonId identifier = new SeasonId(seasonId);
-		DeleteSeasonCommand payload = new DeleteSeasonCommand(identifier);
-		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/seasons";
+		return result;
 	}
 }
