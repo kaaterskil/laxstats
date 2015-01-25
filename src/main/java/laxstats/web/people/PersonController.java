@@ -131,21 +131,10 @@ public class PersonController extends ApplicationController {
 		final String addressId = IdentifierFactory.getInstance()
 				.generateIdentifier();
 
-		final AddressDTO dto = new AddressDTO();
-		dto.setId(addressId);
-		dto.setPerson(person);
-		dto.setAddress1(form.getAddress1());
-		dto.setAddress2(form.getAddress2());
-		dto.setCity(form.getCity());
-		dto.setRegion(form.getRegion());
-		dto.setPostalCode(form.getPostalCode());
-		dto.setAddressType(form.getType());
-		dto.setPrimary(form.isPrimary());
-		dto.setDoNotUse(false);
-		dto.setCreatedAt(now);
-		dto.setCreatedBy(user);
-		dto.setModifiedAt(now);
-		dto.setModifiedBy(user);
+		final AddressDTO dto = new AddressDTO(addressId, null, person,
+				form.getType(), form.getAddress1(), form.getAddress2(),
+				form.getCity(), form.getRegion(), form.getPostalCode(),
+				form.isPrimary(), form.isDoNotUse(), user, now, user, now);
 
 		final RegisterAddressCommand payload = new RegisterAddressCommand(
 				identifier, dto);
@@ -176,19 +165,10 @@ public class PersonController extends ApplicationController {
 		final PersonEntry person = personRepository.findOne(personId);
 		final PersonId identifier = new PersonId(personId);
 
-		final AddressDTO dto = new AddressDTO();
-		dto.setId(addressId);
-		dto.setPerson(person);
-		dto.setAddress1(form.getAddress1());
-		dto.setAddress2(form.getAddress2());
-		dto.setCity(form.getCity());
-		dto.setRegion(form.getRegion());
-		dto.setPostalCode(form.getPostalCode());
-		dto.setAddressType(form.getType());
-		dto.setPrimary(form.isPrimary());
-		dto.setDoNotUse(form.isDoNotUse());
-		dto.setModifiedAt(now);
-		dto.setModifiedBy(user);
+		final AddressDTO dto = new AddressDTO(addressId, null, person,
+				form.getType(), form.getAddress1(), form.getAddress2(),
+				form.getCity(), form.getRegion(), form.getPostalCode(),
+				form.isPrimary(), form.isDoNotUse(), user, now);
 
 		final UpdateAddressCommand payload = new UpdateAddressCommand(
 				identifier, dto);

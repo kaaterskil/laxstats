@@ -1,5 +1,14 @@
 package laxstats.api.sites;
 
 public enum SiteStyle {
-	COMPETITION, PRACTICE
+	UNKNOWN("Unknown"), COMPETITION("Competition"), PRACTICE("Practice");
+	private String value;
+
+	private SiteStyle(String value) {
+		this.value = value;
+	}
+
+	public String getValue() {
+		return value;
+	}
 }

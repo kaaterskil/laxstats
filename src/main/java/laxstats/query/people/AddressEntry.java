@@ -7,6 +7,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import laxstats.api.Region;
@@ -33,7 +34,7 @@ public class AddressEntry implements Contactable {
 	@ManyToOne
 	private PersonEntry person;
 
-	@ManyToOne
+	@OneToOne
 	private SiteEntry site;
 
 	@Enumerated(EnumType.STRING)
@@ -49,7 +50,8 @@ public class AddressEntry implements Contactable {
 	@Column(length = 30, nullable = false)
 	private String city;
 
-	@ManyToOne
+	@Enumerated(EnumType.STRING)
+	@Column(length = 20, nullable = false)
 	private Region region;
 
 	@Column(length = 10)

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<head>
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-sm-4 col-sm-offset-3 col-xs-12">
+				<h1>Sites</h1>
+			</div>
+			<div class="col-sm-2 col-xs-12">
+				<a href="#" th:href="@{/sites/new}"
+					class="btn btn-default btn-sm lax-btn-new pull-right">New Site</a>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-sm-6 col-sm-offset-3 col-xs-12">
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<td></td>
+							<td>Name</td>
+							<td>Address</td>
+							<td>City</td>
+							<td>Region</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="item : ${items}">
+							<td>
+								<form th:object="${item}" th:action="@{'/sites/' + ${item.id}}"
+									th:method="delete">
+									<button type="submit" class="btn btn-link lax-btn-delete">
+										<span class="glyphicon glyphicon-remove red"></span>
+									</button>
+								</form>
+							</td>
+							<td><a href="#"
+								th:href="@{'/sites/' + ${item.id} + '/edit'}"
+								th:text="${item.name}">Name</a></td>
+							<td th:text="${item.address} ? ${item.address.address1}">Address</td>
+							<td th:text="${item.address} ? ${item.address.city}">City</td>
+							<td th:text="${item.address} ? ${item.address.region.name()}">Region</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

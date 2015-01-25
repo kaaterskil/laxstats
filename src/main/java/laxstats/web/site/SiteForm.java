@@ -1,91 +1,153 @@
 package laxstats.web.site;
 
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
+import laxstats.api.Region;
 import laxstats.api.sites.SiteStyle;
 import laxstats.api.sites.Surface;
-import laxstats.api.Region;
 
 public class SiteForm {
 
-    private String name;
-    private SiteStyle style;
-    private Surface surface;
-    private String directions;
-    private String address1;
-    private String address2;
-    private String city;
-    private Region region;
-    private String postalCode;
+	@NotNull
+	@Size(min = 5, max = 100)
+	private String name;
+	private SiteStyle style;
+	private Surface surface;
+	private String directions;
+	private String address1;
+	private String address2;
 
-    public String getName() {
-        return name;
-    }
+	@NotNull
+	@Size(min = 5, max = 30)
+	private String city;
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	@NotNull
+	private Region region;
+	private String postalCode;
 
-    public SiteStyle getStyle() {
-        return style;
-    }
+	private List<SiteStyle> styles;
+	private List<Surface> surfaces;
+	private List<Region> regions;
 
-    public void setStyle(SiteStyle style) {
-        this.style = style;
-    }
+	/*---------- Methods ----------*/
 
-    public Surface getSurface() {
-        return surface;
-    }
+	public List<SiteStyle> getStyles() {
+		if (styles == null) {
+			final List<SiteStyle> list = new ArrayList<>();
 
-    public void setSurface(Surface surface) {
-        this.surface = surface;
-    }
+			final SiteStyle[] arr = SiteStyle.values();
+			final int len = arr.length;
+			for (int i = 0; i < len; i++) {
+				list.add(arr[i]);
+			}
+			styles = list;
+		}
+		return styles;
+	}
 
-    public String getDirections() {
-        return directions;
-    }
+	public List<Surface> getSurfaces() {
+		if (surfaces == null) {
+			final List<Surface> list = new ArrayList<>();
 
-    public void setDirections(String directions) {
-        this.directions = directions;
-    }
+			final Surface[] arr = Surface.values();
+			final int len = arr.length;
+			for (int i = 0; i < len; i++) {
+				list.add(arr[i]);
+			}
+			surfaces = list;
+		}
+		return surfaces;
+	}
 
-    public String getAddress1() {
-        return address1;
-    }
+	public List<Region> getRegions() {
+		if (regions == null) {
+			final List<Region> list = new ArrayList<>();
 
-    public void setAddress1(String address1) {
-        this.address1 = address1;
-    }
+			final Region[] arr = Region.values();
+			final int len = arr.length;
+			for (int i = 0; i < len; i++) {
+				list.add(arr[i]);
+			}
+			regions = list;
+		}
+		return regions;
+	}
 
-    public String getAddress2() {
-        return address2;
-    }
+	/*---------- Getter/Setters ----------*/
 
-    public void setAddress2(String address2) {
-        this.address2 = address2;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public String getCity() {
-        return city;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setCity(String city) {
-        this.city = city;
-    }
+	public SiteStyle getStyle() {
+		return style;
+	}
 
-    public Region getRegion() {
-        return region;
-    }
+	public void setStyle(SiteStyle style) {
+		this.style = style;
+	}
 
-    public void setRegion(Region region) {
-        this.region = region;
-    }
+	public Surface getSurface() {
+		return surface;
+	}
 
-    public String getPostalCode() {
-        return postalCode;
-    }
+	public void setSurface(Surface surface) {
+		this.surface = surface;
+	}
 
-    public void setPostalCode(String postalCode) {
-        this.postalCode = postalCode;
-    }
+	public String getDirections() {
+		return directions;
+	}
+
+	public void setDirections(String directions) {
+		this.directions = directions;
+	}
+
+	public String getAddress1() {
+		return address1;
+	}
+
+	public void setAddress1(String address1) {
+		this.address1 = address1;
+	}
+
+	public String getAddress2() {
+		return address2;
+	}
+
+	public void setAddress2(String address2) {
+		this.address2 = address2;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public Region getRegion() {
+		return region;
+	}
+
+	public void setRegion(Region region) {
+		this.region = region;
+	}
+
+	public String getPostalCode() {
+		return postalCode;
+	}
+
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
 }

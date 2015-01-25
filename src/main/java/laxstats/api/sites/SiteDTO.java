@@ -6,95 +6,77 @@ import laxstats.query.users.UserEntry;
 import org.joda.time.LocalDateTime;
 
 public class SiteDTO {
+	private final SiteId siteId;
+	private final String name;
+	private final SiteStyle style;
+	private final Surface surface;
+	private final AddressDTO address;
+	private final String directions;
+	private final LocalDateTime createdAt;
+	private final UserEntry createdBy;
+	private final LocalDateTime modifiedAt;
+	private final UserEntry modifiedBy;
 
-	private SiteId siteId;
-	private String name;
-	private SiteStyle style;
-	private Surface surface;
-	private AddressDTO address;
-	private String directions;
-	private LocalDateTime createdAt;
-	private UserEntry createdBy;
-	private LocalDateTime modifiedAt;
-	private UserEntry modifiedBy;
+	public SiteDTO(SiteId siteId, String name, SiteStyle style,
+			Surface surface, AddressDTO address, String directions,
+			LocalDateTime createdAt, UserEntry createdBy,
+			LocalDateTime modifiedAt, UserEntry modifiedBy) {
+		this.siteId = siteId;
+		this.name = name;
+		this.style = style;
+		this.surface = surface;
+		this.address = address;
+		this.directions = directions;
+		this.createdAt = createdAt;
+		this.createdBy = createdBy;
+		this.modifiedAt = modifiedAt;
+		this.modifiedBy = modifiedBy;
+	}
+
+	public SiteDTO(SiteId siteId, String name, SiteStyle style,
+			Surface surface, AddressDTO address, String directions,
+			LocalDateTime modifiedAt, UserEntry modifiedBy) {
+		this(siteId, name, style, surface, address, directions, null, null,
+				modifiedAt, modifiedBy);
+	}
 
 	public SiteId getSiteId() {
 		return siteId;
-	}
-
-	public void setSiteId(SiteId siteId) {
-		this.siteId = siteId;
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	public SiteStyle getStyle() {
 		return style;
-	}
-
-	public void setStyle(SiteStyle style) {
-		this.style = style;
 	}
 
 	public Surface getSurface() {
 		return surface;
 	}
 
-	public void setSurface(Surface surface) {
-		this.surface = surface;
-	}
-
 	public AddressDTO getAddress() {
 		return address;
-	}
-
-	public void setAddress(AddressDTO address) {
-		this.address = address;
 	}
 
 	public String getDirections() {
 		return directions;
 	}
 
-	public void setDirections(String directions) {
-		this.directions = directions;
-	}
-
 	public LocalDateTime getCreatedAt() {
 		return createdAt;
-	}
-
-	public void setCreatedAt(LocalDateTime createdAt) {
-		this.createdAt = createdAt;
 	}
 
 	public UserEntry getCreatedBy() {
 		return createdBy;
 	}
 
-	public void setCreatedBy(UserEntry createdBy) {
-		this.createdBy = createdBy;
-	}
-
 	public LocalDateTime getModifiedAt() {
 		return modifiedAt;
 	}
 
-	public void setModifiedAt(LocalDateTime modifiedAt) {
-		this.modifiedAt = modifiedAt;
-	}
-
 	public UserEntry getModifiedBy() {
 		return modifiedBy;
-	}
-
-	public void setModifiedBy(UserEntry modifiedBy) {
-		this.modifiedBy = modifiedBy;
 	}
 }

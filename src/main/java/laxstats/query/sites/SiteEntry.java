@@ -1,5 +1,6 @@
 package laxstats.query.sites;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -39,7 +40,7 @@ public class SiteEntry {
 	@Column(length = 20)
 	private Surface surface;
 
-	@OneToOne(mappedBy = "site")
+	@OneToOne(mappedBy = "site", cascade = CascadeType.ALL)
 	private AddressEntry address;
 
 	@Column(columnDefinition = "text")

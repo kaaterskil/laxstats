@@ -1,50 +1,34 @@
 package laxstats.api;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Index;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-import javax.validation.constraints.NotNull;
+public enum Region {
+	AL("Alabama"), AK("Alaska"), AZ("Arizona"), AR("Arkansas"), CA("California"), CO(
+			"Colorado"), CT("Connecticut"), DE("Delaware"), FL("Florida"), GA(
+			"Georgia"), HI("Hawaii"), ID("Idaho"), IL("Illinois"), IN("Indiana"), IA(
+			"Iowa"), KS("Kansas"), KY("Kentucky"), LA("Louisiana"), ME("Maine"), MD(
+			"Maryland"), MA("Massachusetts"), MI("Michigan"), MN("Minnesota"), MS(
+			"Mississippi"), MO("Missouri"), MT("Montana"), NE("Nebraska"), NV(
+			"Nevada"), NH("New Hampshire"), NJ("New Jersey"), NM("New Mexico"), NY(
+			"New York"), NC("North Carolina"), ND("North Dakota"), OH("Ohio"), OK(
+			"Oklahoma"), OR("Oregon"), PA("Pennsylvania"), RI("Rhode Island"), SC(
+			"South Carolina"), SD("South Dakota"), TN("Tennessee"), TX("Texas"), UT(
+			"Utah"), VT("Vermont"), VA("Virginia"), WA("Washington"), WV(
+			"West Virginia"), WI("Wisconsin"), WY("Wyoming"), AS(
+			"American Samoa"), DC("Distric of Columbia"), FM(
+			"Federated States of Micronesia"), GU("Guam"), MH(
+			"Marshall Islands"), MP("Northern Mariana Islands"), PW("Palau"), PR(
+			"Puerto Rico"), VI("Virgin Islands");
 
-@Entity
-@Table(
-	indexes = {
-		@Index(name = "region_idx1", columnList = "name")
-	},
-	uniqueConstraints = {
-		@UniqueConstraint(name = "region_uk1", columnNames = {"abbreviation"})
-	}
-)
-public class Region {
+	private String label;
 
-	@Id
-	@Column(length = 36)
-	private String id;
-	
-	@NotNull
-	@Column(length = 100, nullable = false)
-	private String name;
-	
-	@Column(length = 2)
-	private String abbreviation;
-	
-	//---------- Getter/Setters ----------//
-
-	public String getName() {
-		return name;
+	private Region(String label) {
+		this.label = label;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public String getLabel() {
+		return label;
 	}
 
 	public String getAbbreviation() {
-		return abbreviation;
-	}
-
-	public void setAbbreviation(String abbreviation) {
-		this.abbreviation = abbreviation;
+		return name();
 	}
 }
