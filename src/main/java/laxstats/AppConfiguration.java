@@ -1,6 +1,7 @@
 package laxstats;
 
 import laxstats.web.seasons.SeasonFormValidator;
+import laxstats.web.site.SiteFormValidator;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,14 +19,18 @@ public class AppConfiguration extends WebMvcConfigurerAdapter {
 
 	@Bean
 	public FormattingConversionService conversionService() {
+
+		// Use the default formatting service but do not register defaults
 		final DefaultFormattingConversionService conversionService = new DefaultFormattingConversionService();
 
+		// Register default @NumberFormat
 		conversionService
 				.addFormatterForFieldAnnotation(new NumberFormatAnnotationFormatterFactory());
 
 		final DateTimeFormatterFactoryBean factory = new DateTimeFormatterFactoryBean();
 		final JodaTimeFormatterRegistrar registrar = new JodaTimeFormatterRegistrar();
 
+		// Register date converters
 		factory.setPattern("MM/dd/yyyy");
 		registrar.setDateFormatter(factory.createDateTimeFormatter());
 
@@ -48,5 +53,10 @@ public class AppConfiguration extends WebMvcConfigurerAdapter {
 	@Bean
 	public Validator seasonValidator() {
 		return new SeasonFormValidator();
+	}
+
+	@Bean
+	public Validator siteValidator() {
+		return new SiteFormValidator();
 	}
 }

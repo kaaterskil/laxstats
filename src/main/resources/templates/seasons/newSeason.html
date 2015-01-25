@@ -31,7 +31,7 @@
 							   aria-required="true" />
 						<div th:if="${#fields.hasErrors('description')}"
 							 id="descriptionError"
-							 class="ls-error"
+							 class="lax-error"
 							 th:errors="*{description}">Incorrect description</div>
 					</div>
 					<div class="form-group">
@@ -45,7 +45,7 @@
 							   aria-required="true" />
 						<div th:if="${#fields.hasErrors('startsOn')}"
 							 id="startsOnError"
-							 class="ls-error"
+							 class="lax-error"
 							 th:errors="*{startsOn}">Incorrect start date</div>
 					</div>
 					<div class="form-group">
@@ -57,7 +57,7 @@
 							   th:field="*{endsOn}" />
 						<div th:if="${#fields.hasErrors('endsOn')}"
 							 id="endsOnError"
-							 class="ls-error"
+							 class="lax-error"
 							 th:errors="*{endsOn}">Incorrect end date</div>
 					</div>
 					<button th:type="submit" 

@@ -26,8 +26,10 @@
 <body role="document">
 	<div th:replace="partials/header :: header">Header</div>
 
-	<div class="container">
-		<div layout:fragment="content">Content</div>
+	<div class="main-content">
+		<div class="container">
+			<div layout:fragment="content">Content</div>
+		</div>
 	</div>
 
 	<div th:replace="partials/footer :: footer">Footer</div>

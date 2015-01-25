@@ -73,7 +73,7 @@ public class TeamEntry {
 		boolean addSpace = false;
 
 		if (homeSite != null && homeSite.getAddress() != null) {
-			sb.append(homeSite.getAddress().getRegion().getName());
+			sb.append(homeSite.getAddress().getRegion().getAbbreviation());
 			addSpace = true;
 		}
 		if (addSpace) {
