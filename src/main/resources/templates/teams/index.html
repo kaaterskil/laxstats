@@ -2,10 +2,51 @@
 <html xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
 	layout:decorator="layout">
-<head></head>
+<head>
+</head>
 <body>
 	<div layout:fragment="content">
-		<h1>This is the Team Index page</h1>
+		<div class="row">
+			<div class="col-sm-4 col-sm-offset-3 col-xs-12">
+				<h1>Teams</h1>
+			</div>
+			<div class="col-sm-2 col-xs-12">
+				<a href="#" th:href="@{/teams/new}"
+					class="btn btn-default btn-sm lax-btn-new pull-right">New Team</a>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-sm-6 col-sm-offset-3 col-xs-12">
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<td></td>
+							<td>Name</td>
+							<td>Type</td>
+							<td>Letter</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="item : ${items}">
+							<td>
+								<form th:object="${item}" th:action="@{'/teams/' + ${item.id}}"
+									th:method="delete">
+									<button type="submit" class="btn btn-link lax-btn-delete">
+										<span class="glyphicon glyphicon-remove red"></span>
+									</button>
+								</form>
+							</td>
+							<td><a href="#"
+								th:href="@{'/teams/' + ${item.id} + '/edit'}"
+								th:text="${item.getFullName()}">Name</a></td>
+							<td th:text="${item.gender.label}">Team Type</td>
+							<td th:text="${item.letter.label}">Letter</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
 	</div>
 </body>
 </html>

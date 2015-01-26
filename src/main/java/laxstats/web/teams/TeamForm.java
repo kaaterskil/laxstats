@@ -1,20 +1,53 @@
 package laxstats.web.teams;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
-import laxstats.api.people.Gender;
+import laxstats.api.Region;
+import laxstats.api.teams.Letter;
+import laxstats.api.teams.TeamGender;
+import laxstats.query.leagues.LeagueEntry;
+import laxstats.query.sites.SiteEntry;
 
 public class TeamForm {
 	@NotNull
+	@Size(min = 5, max = 100)
+	private String sponsor;
+
+	@Size(min = 3, max = 100)
 	private String name;
 
+	@Size(max = 5)
+	private String abbreviation;
+
 	@NotNull
-	private Gender gender;
-	private String siteId;
-	private Map<String, String> sites = new HashMap<>();
+	private TeamGender gender;
+
+	@NotNull
+	private Letter letter;
+
+	@NotNull
+	private Region region;
+
+	private String homeSite;
+	private String affiliation;
+
+	private List<TeamGender> genders;
+	private List<Letter> letters;
+	private List<SiteEntry> sites;
+	private List<Region> regions;
+	private List<LeagueEntry> affiliations;
+
+	public String getSponsor() {
+		return sponsor;
+	}
+
+	public void setSponsor(String sponsor) {
+		this.sponsor = sponsor;
+	}
 
 	public String getName() {
 		return name;
@@ -24,27 +57,90 @@ public class TeamForm {
 		this.name = name;
 	}
 
-	public Gender getGender() {
+	public String getAbbreviation() {
+		return abbreviation;
+	}
+
+	public void setAbbreviation(String abbreviation) {
+		this.abbreviation = abbreviation;
+	}
+
+	public TeamGender getGender() {
 		return gender;
 	}
 
-	public void setGender(Gender gender) {
+	public void setGender(TeamGender gender) {
 		this.gender = gender;
 	}
 
-	public String getSiteId() {
-		return siteId;
+	public Letter getLetter() {
+		return letter;
 	}
 
-	public void setSiteId(String siteId) {
-		this.siteId = siteId;
+	public void setLetter(Letter letter) {
+		this.letter = letter;
 	}
 
-	public Map<String, String> getSites() {
+	public Region getRegion() {
+		return region;
+	}
+
+	public void setRegion(Region region) {
+		this.region = region;
+	}
+
+	public String getHomeSite() {
+		return homeSite;
+	}
+
+	public void setHomeSite(String homeSite) {
+		this.homeSite = homeSite;
+	}
+
+	public String getAffiliation() {
+		return affiliation;
+	}
+
+	public void setAffiliation(String affiliation) {
+		this.affiliation = affiliation;
+	}
+
+	/*---------- Drop down lists ----------*/
+
+	public List<TeamGender> getGenders() {
+		if (genders == null) {
+			genders = Arrays.asList(TeamGender.values());
+		}
+		return genders;
+	}
+
+	public List<Letter> getLetters() {
+		if (letters == null) {
+			letters = Arrays.asList(Letter.values());
+		}
+		return letters;
+	}
+
+	public List<Region> getRegions() {
+		if (regions == null) {
+			regions = Arrays.asList(Region.values());
+		}
+		return regions;
+	}
+
+	public void setSites(List<SiteEntry> sites) {
+		this.sites = sites;
+	}
+
+	public List<SiteEntry> getSites() {
 		return sites;
 	}
 
-	public void setSites(Map<String, String> sites) {
-		this.sites = sites;
+	public List<LeagueEntry> getAffiliations() {
+		return affiliations;
+	}
+
+	public void setAffiliations(List<LeagueEntry> affiliations) {
+		this.affiliations = affiliations;
 	}
 }

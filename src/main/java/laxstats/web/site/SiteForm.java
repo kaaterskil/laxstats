@@ -1,6 +1,6 @@
 package laxstats.web.site;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.validation.constraints.NotNull;
@@ -35,46 +35,25 @@ public class SiteForm {
 
 	/*---------- Methods ----------*/
 
+	public List<Region> getRegions() {
+		if (regions == null) {
+			regions = Arrays.asList(Region.values());
+		}
+		return regions;
+	}
+
 	public List<SiteStyle> getStyles() {
 		if (styles == null) {
-			final List<SiteStyle> list = new ArrayList<>();
-
-			final SiteStyle[] arr = SiteStyle.values();
-			final int len = arr.length;
-			for (int i = 0; i < len; i++) {
-				list.add(arr[i]);
-			}
-			styles = list;
+			styles = Arrays.asList(SiteStyle.values());
 		}
 		return styles;
 	}
 
 	public List<Surface> getSurfaces() {
 		if (surfaces == null) {
-			final List<Surface> list = new ArrayList<>();
-
-			final Surface[] arr = Surface.values();
-			final int len = arr.length;
-			for (int i = 0; i < len; i++) {
-				list.add(arr[i]);
-			}
-			surfaces = list;
+			surfaces = Arrays.asList(Surface.values());
 		}
 		return surfaces;
-	}
-
-	public List<Region> getRegions() {
-		if (regions == null) {
-			final List<Region> list = new ArrayList<>();
-
-			final Region[] arr = Region.values();
-			final int len = arr.length;
-			for (int i = 0; i < len; i++) {
-				list.add(arr[i]);
-			}
-			regions = list;
-		}
-		return regions;
 	}
 
 	/*---------- Getter/Setters ----------*/

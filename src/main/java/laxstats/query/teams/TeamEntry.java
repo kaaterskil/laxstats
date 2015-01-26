@@ -13,9 +13,11 @@ import javax.persistence.Index;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+import javax.persistence.UniqueConstraint;
 
-import laxstats.api.people.Gender;
+import laxstats.api.Region;
+import laxstats.api.teams.Letter;
+import laxstats.api.teams.TeamGender;
 import laxstats.query.leagues.LeagueEntry;
 import laxstats.query.sites.SiteEntry;
 import laxstats.query.teamSeasons.TeamSeasonEntry;
@@ -26,21 +28,39 @@ import org.joda.time.LocalDateTime;
 
 @Entity
 @Table(name = "teams", indexes = {
-		@Index(name = "team_idx1", columnList = "gender"),
-		@Index(name = "team_idx2", columnList = "name") })
+		@Index(name = "team_idx1", columnList = "sponsor"),
+		@Index(name = "team_idx2", columnList = "name"),
+		@Index(name = "team_idx3", columnList = "abbreviation"),
+		@Index(name = "team_idx4", columnList = "gender"),
+		@Index(name = "team_idx5", columnList = "letter"),
+		@Index(name = "team_idx6", columnList = "region") }, uniqueConstraints = { @UniqueConstraint(name = "team_uk1", columnNames = {
+		"sponsor", "name", "gender", "letter" }) })
 public class TeamEntry {
 
 	@Id
 	@Column(length = 36)
 	private String id;
 
-	@NotNull
+	@Column(length = 100, nullable = false)
+	private String sponsor;
+
 	@Column(length = 100, nullable = false)
 	private String name;
 
+	@Column(length = 5)
+	private String abbreviation;
+
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20, nullable = false)
-	private Gender gender;
+	private TeamGender gender;
+
+	@Enumerated(EnumType.STRING)
+	@Column(length = 20, nullable = false)
+	private Letter letter;
+
+	@Enumerated(EnumType.STRING)
+	@Column(length = 20, nullable = false)
+	private Region region;
 
 	@ManyToOne
 	private LeagueEntry affiliation;
@@ -66,24 +86,19 @@ public class TeamEntry {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "team")
 	private final List<TeamSeasonEntry> seasons = new ArrayList<>();
 
-	// ---------- Methods ----------//
+	/*---------- Methods ----------*/
 
 	public String getFullName() {
 		final StringBuilder sb = new StringBuilder();
-		boolean addSpace = false;
 
-		if (homeSite != null && homeSite.getAddress() != null) {
-			sb.append(homeSite.getAddress().getRegion().getAbbreviation());
-			addSpace = true;
+		sb.append(sponsor);
+		if (name != null) {
+			sb.append(" ").append(name);
 		}
-		if (addSpace) {
-			sb.append(" ");
-		}
-		sb.append(name);
 		return sb.toString();
 	}
 
-	// ---------- Getter/Setters ----------//
+	/*---------- Getter/Setters ----------*/
 
 	public String getId() {
 		return id;
@@ -91,6 +106,14 @@ public class TeamEntry {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getSponsor() {
+		return sponsor;
+	}
+
+	public void setSponsor(String sponsor) {
+		this.sponsor = sponsor;
 	}
 
 	public String getName() {
@@ -101,12 +124,36 @@ public class TeamEntry {
 		this.name = name;
 	}
 
-	public Gender getGender() {
+	public String getAbbreviation() {
+		return abbreviation;
+	}
+
+	public void setAbbreviation(String abbreviation) {
+		this.abbreviation = abbreviation;
+	}
+
+	public TeamGender getGender() {
 		return gender;
 	}
 
-	public void setGender(Gender gender) {
+	public void setGender(TeamGender gender) {
 		this.gender = gender;
+	}
+
+	public Letter getLetter() {
+		return letter;
+	}
+
+	public void setLetter(Letter letter) {
+		this.letter = letter;
+	}
+
+	public Region getRegion() {
+		return region;
+	}
+
+	public void setRegion(Region region) {
+		this.region = region;
 	}
 
 	public LeagueEntry getAffiliation() {

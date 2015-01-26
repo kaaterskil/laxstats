@@ -1,9 +1,6 @@
 package laxstats.web.teams;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.validation.Valid;
 
@@ -14,6 +11,8 @@ import laxstats.api.teams.TeamDTO;
 import laxstats.api.teams.TeamId;
 import laxstats.api.teams.UpdateTeamCommand;
 import laxstats.api.teams.UpdateTeamPasswordCommand;
+import laxstats.query.leagues.LeagueEntry;
+import laxstats.query.leagues.LeagueQueryRepository;
 import laxstats.query.sites.SiteEntry;
 import laxstats.query.sites.SiteQueryRepository;
 import laxstats.query.teams.TeamEntry;
@@ -31,6 +30,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,39 +41,62 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class TeamController extends ApplicationController {
 	private final TeamQueryRepository teamRepository;
 	private final SiteQueryRepository siteRepository;
+	private final LeagueQueryRepository leagueRepository;
+	private TeamFormValidator teamValidator;
+
+	@InitBinder("TeamForm")
+	protected void initBinder(WebDataBinder binder) {
+		binder.setValidator(teamValidator);
+	}
 
 	@Autowired
 	public TeamController(TeamQueryRepository teamRepository,
 			SiteQueryRepository siteRepository,
+			LeagueQueryRepository leagueRepository,
 			UserQueryRepository userRepository, CommandBus commandBus) {
 		super(userRepository, commandBus);
 		this.teamRepository = teamRepository;
 		this.siteRepository = siteRepository;
+		this.leagueRepository = leagueRepository;
 	}
+
+	@Autowired
+	public void setTeamValidator(TeamFormValidator teamValidator) {
+		this.teamValidator = teamValidator;
+	}
+
+	/*---------- Action methods ----------*/
 
 	@RequestMapping(value = "/teams", method = RequestMethod.GET)
 	public String index(Model model) {
-		final Sort sort = getTeamSorter();
-		final Iterable<TeamEntry> teams = teamRepository.findAll(sort);
+		final Iterable<TeamEntry> teams = teamRepository.findAll(new Sort(
+				"region", "sponsor"));
 		model.addAttribute("items", teams);
 		return "teams/index";
 	}
 
 	@RequestMapping(value = "/teams", method = RequestMethod.POST)
-	public String createTeam(@ModelAttribute("form") @Valid TeamForm form,
-			BindingResult result) {
+	public String createTeam(@Valid TeamForm form, BindingResult result) {
 		if (result.hasErrors()) {
-			return "teams/new";
+			return "teams/newTeam";
 		}
 		final LocalDateTime now = LocalDateTime.now();
 		final UserEntry user = getCurrentUser();
 		final TeamId identifier = new TeamId();
-		final String siteId = form.getSiteId();
+
+		final String siteId = form.getHomeSite();
 		final SiteEntry homeSite = siteId == null ? null : siteRepository
 				.findOne(siteId);
 
-		final TeamDTO dto = new TeamDTO(identifier, form.getName(),
-				form.getGender(), homeSite, now, user, now, user);
+		final String leagueId = form.getAffiliation();
+		final LeagueEntry league = leagueId == null ? null : leagueRepository
+				.findOne(leagueId);
+
+		final TeamDTO dto = new TeamDTO(identifier, form.getSponsor(),
+				form.getName(), form.getAbbreviation(), form.getGender(),
+				form.getLetter(), form.getRegion(), league, homeSite, now,
+				user, now, user);
+
 		final CreateTeamCommand command = new CreateTeamCommand(identifier, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(command));
 		return "redirect:/teams";
@@ -86,23 +110,30 @@ public class TeamController extends ApplicationController {
 	}
 
 	@RequestMapping(value = "/teams/{teamId}", method = RequestMethod.PUT)
-	public String updateTeam(@PathVariable String teamId,
-			@ModelAttribute("form") @Valid TeamForm form, BindingResult result) {
+	public String updateTeam(@PathVariable String teamId, @Valid TeamForm form,
+			BindingResult result) {
 		if (result.hasErrors()) {
-			return "teams/edit";
+			return "teams/editTeam";
 		}
 		final LocalDateTime now = LocalDateTime.now();
 		final UserEntry user = getCurrentUser();
 		final TeamId identifier = new TeamId(teamId);
-		final String siteId = form.getSiteId();
+
+		final String siteId = form.getHomeSite();
 		final SiteEntry homeSite = siteId == null ? null : siteRepository
 				.findOne(siteId);
 
-		final TeamDTO dto = new TeamDTO(identifier, form.getName(),
-				form.getGender(), homeSite, now, user);
+		final String leagueId = form.getAffiliation();
+		final LeagueEntry league = leagueId == null ? null : leagueRepository
+				.findOne(leagueId);
+
+		final TeamDTO dto = new TeamDTO(identifier, form.getSponsor(),
+				form.getName(), form.getAbbreviation(), form.getGender(),
+				form.getLetter(), form.getRegion(), league, homeSite, now, user);
+
 		final UpdateTeamCommand command = new UpdateTeamCommand(identifier, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(command));
-		return "redirect:";
+		return "redirect:/teams";
 	}
 
 	@RequestMapping(value = "/teams/{teamId}", method = RequestMethod.DELETE)
@@ -110,27 +141,39 @@ public class TeamController extends ApplicationController {
 		final TeamId identifier = new TeamId(teamId);
 		final DeleteTeamCommand command = new DeleteTeamCommand(identifier);
 		commandBus.dispatch(new GenericCommandMessage<>(command));
-		return "redirect:";
+		return "redirect:/teams";
 	}
 
 	@RequestMapping(value = "teams/new", method = RequestMethod.GET)
 	public String newTeam(Model model) {
 		final TeamForm form = new TeamForm();
-		form.setSites(getSiteData());
-		model.addAttribute("form", form);
-		return "teams/new";
+		form.setSites(getSites());
+
+		model.addAttribute("teamForm", form);
+		return "teams/newTeam";
 	}
 
 	@RequestMapping(value = "/teams/{teamId}/edit", method = RequestMethod.GET)
 	public String editTeam(@PathVariable String teamId, Model model) {
 		final TeamEntry team = teamRepository.findOne(teamId);
+
 		final TeamForm form = new TeamForm();
+		form.setSponsor(team.getSponsor());
 		form.setName(team.getName());
+		form.setAbbreviation(team.getAbbreviation());
 		form.setGender(team.getGender());
-		form.setSiteId(team.getHomeSite().getId());
-		form.setSites(getSiteData());
-		model.addAttribute("form", form);
-		return "teams/edit";
+		form.setLetter(team.getLetter());
+		form.setRegion(team.getRegion());
+		if (team.getAffiliation() != null) {
+			form.setAffiliation(team.getAffiliation().getId());
+		}
+		if (team.getHomeSite() != null) {
+			form.setHomeSite(team.getHomeSite().getId());
+		}
+		form.setSites(getSites());
+
+		model.addAttribute("teamForm", form);
+		return "teams/editTeam";
 	}
 
 	// ---------- Password actions ---------- //
@@ -197,29 +240,7 @@ public class TeamController extends ApplicationController {
 		return "teams/show";
 	}
 
-	private Map<String, String> getSiteData() {
-		final Sort sort = getSiteSorter();
-		final Iterable<SiteEntry> sites = siteRepository.findAll(sort);
-		final Map<String, String> result = new HashMap<>();
-		for (final SiteEntry each : sites) {
-			result.put(each.getId(), each.getName());
-		}
-		return result;
-	}
-
-	private Sort getTeamSorter() {
-		final List<Sort.Order> sort = new ArrayList<>();
-		sort.add(new Sort.Order("gender"));
-		sort.add(new Sort.Order("homeSite.address.region.name"));
-		sort.add(new Sort.Order("name"));
-		return new Sort(sort);
-
-	}
-
-	private Sort getSiteSorter() {
-		final List<Sort.Order> sort = new ArrayList<>();
-		sort.add(new Sort.Order("address.region.name"));
-		sort.add(new Sort.Order("name"));
-		return new Sort(sort);
+	private List<SiteEntry> getSites() {
+		return (List<SiteEntry>) siteRepository.findAll(new Sort("name"));
 	}
 }

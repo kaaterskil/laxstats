@@ -22,6 +22,24 @@ public class TeamSeasonInfo {
 		this.status = status;
 	}
 
+	/*---------- Methods ----------*/
+
+	@Override
+	public int hashCode() {
+		return id.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj != null && obj instanceof TeamSeasonInfo) {
+			final TeamSeasonInfo that = (TeamSeasonInfo) obj;
+			return this.id.equals(that.id);
+		}
+		return false;
+	}
+
+	/*---------- Getters ----------*/
+
 	public String getId() {
 		return id;
 	}
@@ -44,19 +62,5 @@ public class TeamSeasonInfo {
 
 	public TeamStatus getStatus() {
 		return status;
-	}
-
-	@Override
-	public int hashCode() {
-		return id.hashCode();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj != null && obj instanceof TeamSeasonInfo) {
-			final TeamSeasonInfo that = (TeamSeasonInfo) obj;
-			return this.id.equals(that.id);
-		}
-		return false;
 	}
 }

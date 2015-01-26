@@ -35,6 +35,8 @@ public class TeamCommandHandler {
 		this.teamSeasonRepository = teamSeasonRepository;
 	}
 
+	/*---------- Team commands ----------*/
+
 	@CommandHandler
 	protected TeamId handle(CreateTeamCommand command) {
 		final TeamId identifier = command.getTeamId();
@@ -57,7 +59,7 @@ public class TeamCommandHandler {
 		team.delete(identifier);
 	}
 
-	// ---------- Team Season commands ----------//
+	/*---------- Team Season commands ----------*/
 
 	@CommandHandler
 	protected void handle(RegisterTeamSeasonCommand command) {
@@ -90,7 +92,7 @@ public class TeamCommandHandler {
 		teamSeason.update(dto.getTeamSeasonId(), dto);
 	}
 
-	// ---------- Password commands ----------//
+	/*---------- Password commands ----------*/
 
 	@CommandHandler
 	protected void handle(CreateTeamPasswordCommand command) {

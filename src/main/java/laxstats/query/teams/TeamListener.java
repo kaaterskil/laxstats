@@ -3,7 +3,6 @@ package laxstats.query.teams;
 import laxstats.api.teams.TeamCreatedEvent;
 import laxstats.api.teams.TeamDTO;
 import laxstats.api.teams.TeamDeletedEvent;
-import laxstats.api.teams.TeamId;
 import laxstats.api.teams.TeamPasswordCreatedEvent;
 import laxstats.api.teams.TeamPasswordUpdatedEvent;
 import laxstats.api.teams.TeamUpdatedEvent;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class TeamListener {
-
 	private TeamQueryRepository teamRepository;
 
 	@Autowired
@@ -26,32 +24,42 @@ public class TeamListener {
 	protected void handle(TeamCreatedEvent event) {
 		final TeamDTO dto = event.getTeamDTO();
 
-		final TeamEntry entry = new TeamEntry();
-		entry.setId(event.getTeamId().toString());
-		entry.setName(dto.getName());
-		entry.setGender(dto.getGender());
-		entry.setHomeSite(dto.getHomeSite());
-		entry.setEncodedPassword(dto.getEncodedPassword());
-		entry.setCreatedAt(dto.getCreatedAt());
-		entry.setCreatedBy(dto.getCreatedBy());
-		entry.setModifiedAt(dto.getModifiedAt());
-		entry.setModifiedBy(dto.getModifiedBy());
-		teamRepository.save(entry);
+		final TeamEntry team = new TeamEntry();
+		team.setId(event.getTeamId().toString());
+		team.setSponsor(dto.getSponsor());
+		team.setName(dto.getName());
+		team.setAbbreviation(dto.getAbbreviation());
+		team.setGender(dto.getGender());
+		team.setLetter(dto.getLetter());
+		team.setRegion(dto.getRegion());
+		team.setAffiliation(dto.getAffiliation());
+		team.setHomeSite(dto.getHomeSite());
+		team.setCreatedAt(dto.getCreatedAt());
+		team.setCreatedBy(dto.getCreatedBy());
+		team.setModifiedAt(dto.getModifiedAt());
+		team.setModifiedBy(dto.getModifiedBy());
+
+		teamRepository.save(team);
 	}
 
 	@EventHandler
 	protected void handle(TeamUpdatedEvent event) {
 		final TeamDTO dto = event.getTeamDTO();
-		final TeamEntry entry = teamRepository.findOne(event.getTeamId()
-				.toString());
+		final String id = event.getTeamId().toString();
 
-		entry.setEncodedPassword(dto.getEncodedPassword());
-		entry.setGender(dto.getGender());
-		entry.setHomeSite(dto.getHomeSite());
-		entry.setModifiedAt(dto.getModifiedAt());
-		entry.setModifiedBy(dto.getModifiedBy());
-		entry.setName(dto.getName());
-		teamRepository.save(entry);
+		final TeamEntry team = teamRepository.findOne(id);
+		team.setSponsor(dto.getSponsor());
+		team.setName(dto.getName());
+		team.setAbbreviation(dto.getAbbreviation());
+		team.setGender(dto.getGender());
+		team.setLetter(dto.getLetter());
+		team.setRegion(dto.getRegion());
+		team.setAffiliation(dto.getAffiliation());
+		team.setHomeSite(dto.getHomeSite());
+		team.setModifiedAt(dto.getModifiedAt());
+		team.setModifiedBy(dto.getModifiedBy());
+
+		teamRepository.save(team);
 	}
 
 	@EventHandler
@@ -61,25 +69,27 @@ public class TeamListener {
 
 	@EventHandler
 	protected void handle(TeamPasswordCreatedEvent event) {
-		final TeamId identifier = event.getTeamId();
-		final TeamEntry entry = teamRepository.findOne(identifier.toString());
-
 		final TeamDTO dto = event.getTeamDTO();
-		entry.setEncodedPassword(dto.getEncodedPassword());
-		entry.setModifiedAt(dto.getModifiedAt());
-		entry.setModifiedBy(dto.getModifiedBy());
-		teamRepository.save(entry);
+		final String id = event.getTeamId().toString();
+
+		final TeamEntry team = teamRepository.findOne(id);
+		team.setEncodedPassword(dto.getEncodedPassword());
+		team.setModifiedAt(dto.getModifiedAt());
+		team.setModifiedBy(dto.getModifiedBy());
+
+		teamRepository.save(team);
 	}
 
 	@EventHandler
 	protected void handle(TeamPasswordUpdatedEvent event) {
-		final TeamId identifier = event.getTeamId();
-		final TeamEntry entry = teamRepository.findOne(identifier.toString());
-
 		final TeamDTO dto = event.getTeamDTO();
-		entry.setEncodedPassword(dto.getEncodedPassword());
-		entry.setModifiedAt(dto.getModifiedAt());
-		entry.setModifiedBy(dto.getModifiedBy());
-		teamRepository.save(entry);
+		final String id = event.getTeamId().toString();
+
+		final TeamEntry team = teamRepository.findOne(id);
+		team.setEncodedPassword(dto.getEncodedPassword());
+		team.setModifiedAt(dto.getModifiedAt());
+		team.setModifiedBy(dto.getModifiedBy());
+
+		teamRepository.save(team);
 	}
 }

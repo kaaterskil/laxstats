@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<head>
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-sm-8 col-sm-offset-2 col-xs-12">
+				<h1>New Team</h1>
+				
+				<form action="#" 
+					  th:action="@{/teams}" 
+					  th:method="post" 
+					  th:object="${teamForm}" 
+					  name="new-team-form" 
+					  id="new-team-form" 
+					  role="form">
+					<div class="row">
+						<div class="col-sm-6 col-xs-12">
+							<div class="form-group required">
+								<label for="region">Region</label>
+								<select th:id="region" 
+										th:class="form-control" 
+										th:field="*{region}"
+										th:required="required"
+										aria-required="true"
+										aria-described-by="regionError">
+									<option value="">Select...</option>
+									<option th:each="opt : *{regions}" 
+											th:value="${opt}" 
+											th:text="${opt.getLabel()}">Region</option>
+								</select>
+								<div th:if="${#fields.hasErrors('region')}" 
+									 th:id="regionError" 
+									 th:class="lax-error" 
+									 th:errors="*{region}">Invalid region</div>
+							</div>
+							<div class="form-group required">
+								<label for="sponsor">Town or School</label>
+								<input type="text" 
+									   th:type="text" 
+									   th:id="sponsor" 
+									   th:class="form-control" 
+									   th:placeholder="'Town or School'" 
+									   th:required="required" 
+									   th:field="*{sponsor}" 
+									   aria-required="true" 
+									   aria-described-by="sponsorError" />
+								<div th:if="${#fields.hasErrors('sponsor')}" 
+									 th:id="sponsorError" 
+									 th:class="lax-error" 
+									 th:errors="*{sponsor}">Invalid sponsor</div>
+							</div>
+							<div class="form-group">
+								<label for="name">Team Name</label>
+								<input type="text"
+									   th:type="text"
+									   th:id="name"
+									   th:class="form-control"
+									   th:placeholder="'Team name'"
+									   th:required="required"
+									   th:field="*{name}"
+									   aria-required="true"
+									   aria-described-by="nameError" />
+								<div th:if="${#fields.hasErrors('name')}"
+									 th:id="nameError"
+									 th:class="lax-error"
+									 th:errors="*{name}">Invalid name</div>
+							</div>
+						</div>
+						
+						<div class="col-sm-6 col-xs-12">
+							<div class="row">
+								<div class="col-sm-6 col-xs-12 form-group">
+									<label for="abbreviation">Team Abbreviation</label>
+									<input type="text"
+										   th:type="text"
+										   th:id="abbreviation"
+										   th:class="form-control"
+										   th:maxlength="5"
+										   th:placeholder="Abbreviation"
+										   th:field="*{abbreviation}" />
+								</div>
+							</div>
+							
+							<div class="row">
+								<div class="col-sm-6 col-xs-12 form-group required">
+									<label for="type">Gender</label>
+									<select th:id="gender" 
+											th:class="form-control"
+											th:required="required" 
+											th:field="*{gender}"
+											aria-required="true"
+											aria-described-by="genderError">
+										<option value="">Select...</option>
+										<option th:each="opt : *{genders}" 
+												th:value="${opt}" 
+												th:text="${opt.getLabel()}">Gender</option>
+									</select>
+								</div>
+								<div class="col-sm-6 col-xs-12 form-group required">
+									<label for="type">Letter</label>
+									<select th:id="letter" 
+											th:class="form-control"
+											th:required="required" 
+											th:field="*{letter}"
+											aria-required="true"
+											aria-described-by="letterError">
+										<option value="">Select...</option>
+										<option th:each="opt : *{letters}" 
+												th:value="${opt}" 
+												th:text="${opt.getLabel()}">Letter</option>
+									</select>
+								</div>
+								<div th:if="${#fields.hasErrors('gender')}"
+									 th:id="genderError"
+									 th:class="lax-error"
+									 th:errors="*{gender}">Invalid gender</div>
+								<div th:if="${#fields.hasErrors('letter')}"
+									 th:id="letterError"
+									 th:class="lax-error"
+									 th:errors="*{letter}">Invalid letter</div>
+							</div>
+							
+							<div class="form-group">
+								<label for="home-site">Home Site</label>
+								<select th:id="home-site"
+										th:class="form-control"
+										th:field="*{homeSite}">
+									<option value="">Select...</option>
+									<option th:each="opt : *{sites}"
+											th:value="${opt.id}"
+											th:text="${opt.name}">Site</option>
+								</select>
+							</div>
+						</div>
+					</div>
+					<button type="submit" 
+							th:type="submit" 
+							class="btn btn-default">Save</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

@@ -58,7 +58,7 @@ public class SiteEntry {
 	@ManyToOne
 	private UserEntry modifiedBy;
 
-	// ---------- Getter/Setters ----------//
+	/*---------- Getter/Setters ----------*/
 
 	public String getId() {
 		return id;

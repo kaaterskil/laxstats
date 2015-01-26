@@ -3,11 +3,11 @@ package laxstats.domain.teams;
 import java.util.ArrayList;
 import java.util.List;
 
-import laxstats.api.people.Gender;
 import laxstats.api.teamSeasons.TeamSeasonDTO;
 import laxstats.api.teams.TeamCreatedEvent;
 import laxstats.api.teams.TeamDTO;
 import laxstats.api.teams.TeamDeletedEvent;
+import laxstats.api.teams.TeamGender;
 import laxstats.api.teams.TeamId;
 import laxstats.api.teams.TeamPasswordCreatedEvent;
 import laxstats.api.teams.TeamPasswordUpdatedEvent;
@@ -26,7 +26,7 @@ public class Team extends AbstractAnnotatedAggregateRoot<TeamId> {
 	private TeamId teamId;
 
 	private String name;
-	private Gender gender;
+	private TeamGender gender;
 	private String homeSiteId;
 	private String encodedPassword;
 	private final List<TeamSeasonInfo> seasons = new ArrayList<>();
@@ -38,7 +38,7 @@ public class Team extends AbstractAnnotatedAggregateRoot<TeamId> {
 	protected Team() {
 	}
 
-	// ---------- Methods ----------//
+	/*---------- Methods ----------*/
 
 	public void update(TeamId teamId, TeamDTO teamDTO) {
 		apply(new TeamUpdatedEvent(teamId, teamDTO));
@@ -76,7 +76,7 @@ public class Team extends AbstractAnnotatedAggregateRoot<TeamId> {
 		apply(new TeamSeasonEditedEvent(teamId, dto));
 	}
 
-	// ---------- Event handlers ----------//
+	/*---------- Event handlers ----------*/
 
 	@EventSourcingHandler
 	protected void handle(TeamCreatedEvent event) {
@@ -84,7 +84,9 @@ public class Team extends AbstractAnnotatedAggregateRoot<TeamId> {
 		teamId = event.getTeamId();
 		name = dto.getName();
 		gender = dto.getGender();
-		homeSiteId = dto.getHomeSite().toString();
+		if (dto.getHomeSite() != null) {
+			homeSiteId = dto.getHomeSite().toString();
+		}
 	}
 
 	@EventSourcingHandler
@@ -92,7 +94,9 @@ public class Team extends AbstractAnnotatedAggregateRoot<TeamId> {
 		final TeamDTO dto = event.getTeamDTO();
 		name = dto.getName();
 		gender = dto.getGender();
-		homeSiteId = dto.getHomeSite().toString();
+		if (dto.getHomeSite() != null) {
+			homeSiteId = dto.getHomeSite().toString();
+		}
 	}
 
 	@EventSourcingHandler
@@ -138,7 +142,7 @@ public class Team extends AbstractAnnotatedAggregateRoot<TeamId> {
 		encodedPassword = dto.getEncodedPassword();
 	}
 
-	// ---------- Getters ----------//
+	/*---------- Getters ----------*/
 
 	@Override
 	public TeamId getIdentifier() {
@@ -149,7 +153,7 @@ public class Team extends AbstractAnnotatedAggregateRoot<TeamId> {
 		return name;
 	}
 
-	public Gender getGender() {
+	public TeamGender getGender() {
 		return gender;
 	}
 
