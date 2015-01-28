@@ -1,6 +1,7 @@
 package laxstats.domain.teams;
 
 import laxstats.api.teamSeasons.TeamSeasonDTO;
+import laxstats.api.teamSeasons.TeamSeasonId;
 import laxstats.api.teams.CreateTeamCommand;
 import laxstats.api.teams.CreateTeamPasswordCommand;
 import laxstats.api.teams.DeleteTeamCommand;
@@ -40,50 +41,52 @@ public class TeamCommandHandler {
 	@CommandHandler
 	protected TeamId handle(CreateTeamCommand command) {
 		final TeamId identifier = command.getTeamId();
-		final Team team = new Team(identifier, command.getTeamDTO());
-		repository.add(team);
+		final Team aggregate = new Team(identifier, command.getTeamDTO());
+		repository.add(aggregate);
 		return identifier;
 	}
 
 	@CommandHandler
 	protected void handle(UpdateTeamCommand command) {
 		final TeamId identifier = command.getTeamId();
-		final Team team = repository.load(identifier);
-		team.update(identifier, command.getTeamDTO());
+		final Team aggregate = repository.load(identifier);
+		aggregate.update(identifier, command.getTeamDTO());
 	}
 
 	@CommandHandler
 	protected void handle(DeleteTeamCommand command) {
 		final TeamId identifier = command.getTeamId();
-		final Team team = repository.load(identifier);
-		team.delete(identifier);
+		final Team aggregate = repository.load(identifier);
+		aggregate.delete(identifier);
 	}
 
 	/*---------- Team Season commands ----------*/
 
 	@CommandHandler
-	protected void handle(RegisterTeamSeasonCommand command) {
+	protected TeamSeasonId handle(RegisterTeamSeasonCommand command) {
 		final TeamId identifier = command.getTeamId();
-		final Team team = repository.load(identifier);
-		try {
-			// Test and create the team value object
-			team.registerSeason(command.getTeamSeasonDTO());
+		final Team aggregate = repository.load(identifier);
 
-			// Create the aggregate
-			final TeamSeasonDTO dto = command.getTeamSeasonDTO();
-			final TeamSeason entity = new TeamSeason(dto.getTeamSeasonId(), dto);
-			teamSeasonRepository.add(entity);
-		} catch (final Exception e) {
-			// TODO: handle exception
+		final TeamSeasonDTO dto = command.getTeamSeasonDTO();
+		final TeamSeasonId seasonId = dto.getTeamSeasonId();
+
+		final boolean canRegister = aggregate.canRegisterSeason(seasonId
+				.toString());
+		if (!canRegister) {
+			throw new IllegalArgumentException("teamSeason.isRegistered");
 		}
+
+		final TeamSeason entity = new TeamSeason(seasonId, dto);
+		teamSeasonRepository.add(entity);
+		return seasonId;
 	}
 
 	@CommandHandler
 	protected void handle(EditTeamSeasonCommand command) {
 		// Update the team value object
 		final TeamId identifier = command.getTeamId();
-		final Team team = repository.load(identifier);
-		team.updateSeason(command.getTeamSeasonDTO());
+		final Team aggregate = repository.load(identifier);
+		aggregate.updateSeason(command.getTeamSeasonDTO());
 
 		// Update the aggregate
 		final TeamSeasonDTO dto = command.getTeamSeasonDTO();
@@ -97,15 +100,15 @@ public class TeamCommandHandler {
 	@CommandHandler
 	protected void handle(CreateTeamPasswordCommand command) {
 		final TeamId identifier = command.getTeamId();
-		final Team team = repository.load(identifier);
-		team.createPassword(identifier, command.getTeamDTO());
+		final Team aggregate = repository.load(identifier);
+		aggregate.createPassword(identifier, command.getTeamDTO());
 	}
 
 	@CommandHandler
 	protected void handle(UpdateTeamPasswordCommand command) {
 		final TeamId identifier = command.getTeamId();
-		final Team team = repository.load(identifier);
-		team.updatePassword(identifier, command.getTeamDTO());
+		final Team aggregate = repository.load(identifier);
+		aggregate.updatePassword(identifier, command.getTeamDTO());
 	}
 
 }

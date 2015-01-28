@@ -2,6 +2,8 @@ package laxstats;
 
 import laxstats.web.seasons.SeasonFormValidator;
 import laxstats.web.site.SiteFormValidator;
+import laxstats.web.teamSeasons.TeamSeasonFormValidator;
+import laxstats.web.teams.TeamFormValidator;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -58,5 +60,15 @@ public class AppConfiguration extends WebMvcConfigurerAdapter {
 	@Bean
 	public Validator siteValidator() {
 		return new SiteFormValidator();
+	}
+
+	@Bean
+	public Validator teamValidator() {
+		return new TeamFormValidator();
+	}
+
+	@Bean
+	public Validator teamSeasonValidator() {
+		return new TeamSeasonFormValidator();
 	}
 }

@@ -19,7 +19,7 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
 @Entity
-@Table(indexes = { @Index(name = "team_affiliation_idx1", columnList = "startingOn") })
+@Table(name = "team_affiliations", indexes = { @Index(name = "team_affiliation_idx1", columnList = "startingOn") })
 public class TeamAffiliation {
 
 	@Embeddable

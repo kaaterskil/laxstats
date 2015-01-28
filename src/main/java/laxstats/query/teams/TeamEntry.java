@@ -98,6 +98,24 @@ public class TeamEntry {
 		return sb.toString();
 	}
 
+	public String getTitle() {
+		final StringBuilder sb = new StringBuilder();
+		sb.append(sponsor).append(" ").append(gender.getLabel()).append(" ")
+				.append(letter.getLabel());
+		return sb.toString();
+	}
+
+	public TeamSeasonEntry getSeason(String id) {
+		TeamSeasonEntry result = null;
+		for (final TeamSeasonEntry each : seasons) {
+			if (each.getId().equals(id)) {
+				result = each;
+				break;
+			}
+		}
+		return result;
+	}
+
 	/*---------- Getter/Setters ----------*/
 
 	public String getId() {

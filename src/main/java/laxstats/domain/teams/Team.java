@@ -57,13 +57,10 @@ public class Team extends AbstractAnnotatedAggregateRoot<TeamId> {
 	}
 
 	public void registerSeason(TeamSeasonDTO dto) {
-		if (!canTeamRegisterSeason(dto.getSeason().getId())) {
-			throw new IllegalArgumentException("season already registered");
-		}
 		apply(new TeamSeasonRegisteredEvent(teamId, dto));
 	}
 
-	private boolean canTeamRegisterSeason(String seasonId) {
+	public boolean canRegisterSeason(String seasonId) {
 		for (final TeamSeasonInfo each : seasons) {
 			if (each.getSeasonId().equals(seasonId)) {
 				return false;

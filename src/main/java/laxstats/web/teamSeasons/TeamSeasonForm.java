@@ -1,32 +1,74 @@
 package laxstats.web.teamSeasons;
 
-import java.util.Map;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
 import laxstats.api.teamSeasons.TeamStatus;
+import laxstats.query.leagues.LeagueEntry;
+import laxstats.query.seasons.SeasonEntry;
 
 import org.joda.time.LocalDate;
+import org.springframework.format.annotation.DateTimeFormat;
 
 public class TeamSeasonForm {
+	private String id;
 
 	@NotNull
-	private String seasonId;
+	private String team;
 
 	@NotNull
+	private String season;
+
+	private String affiliation;
+
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDate startsOn;
 
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDate endsOn;
-	private TeamStatus status;
-	private Map<String, String> teams;
-	private Map<String, String> seasons;
 
-	public String getSeasonId() {
-		return seasonId;
+	private String name;
+
+	@NotNull
+	private TeamStatus status;
+
+	private String teamTitle;
+	private List<SeasonEntry> seasons;
+	private List<LeagueEntry> leagues;
+	private List<TeamStatus> statuses;
+
+	public String getId() {
+		return id;
 	}
 
-	public void setSeasonId(String seasonId) {
-		this.seasonId = seasonId;
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getTeam() {
+		return team;
+	}
+
+	public void setTeam(String team) {
+		this.team = team;
+	}
+
+	public String getSeason() {
+		return season;
+	}
+
+	public void setSeason(String season) {
+		this.season = season;
+	}
+
+	public String getAffiliation() {
+		return affiliation;
+	}
+
+	public void setAffiliation(String affiliation) {
+		this.affiliation = affiliation;
 	}
 
 	public LocalDate getStartsOn() {
@@ -45,6 +87,14 @@ public class TeamSeasonForm {
 		this.endsOn = endsOn;
 	}
 
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	public TeamStatus getStatus() {
 		return status;
 	}
@@ -53,19 +103,34 @@ public class TeamSeasonForm {
 		this.status = status;
 	}
 
-	public Map<String, String> getTeams() {
-		return teams;
+	public String getTeamTitle() {
+		return teamTitle;
 	}
 
-	public void setTeams(Map<String, String> teams) {
-		this.teams = teams;
+	public void setTeamTitle(String teamTitle) {
+		this.teamTitle = teamTitle;
 	}
 
-	public Map<String, String> getSeasons() {
+	public List<SeasonEntry> getSeasons() {
 		return seasons;
 	}
 
-	public void setSeasons(Map<String, String> seasons) {
+	public void setSeasons(List<SeasonEntry> seasons) {
 		this.seasons = seasons;
+	}
+
+	public List<LeagueEntry> getLeagues() {
+		return leagues;
+	}
+
+	public void setLeagues(List<LeagueEntry> leagues) {
+		this.leagues = leagues;
+	}
+
+	public List<TeamStatus> getStatuses() {
+		if (statuses == null) {
+			statuses = Arrays.asList(TeamStatus.values());
+		}
+		return statuses;
 	}
 }

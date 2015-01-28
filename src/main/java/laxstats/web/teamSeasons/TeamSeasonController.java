@@ -1,20 +1,19 @@
 package laxstats.web.teamSeasons;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import javax.validation.Valid;
 
 import laxstats.api.teamSeasons.DeleteTeamSeasonCommand;
 import laxstats.api.teamSeasons.TeamSeasonDTO;
 import laxstats.api.teamSeasons.TeamSeasonId;
+import laxstats.api.teamSeasons.TeamStatus;
 import laxstats.api.teams.EditTeamSeasonCommand;
 import laxstats.api.teams.RegisterTeamSeasonCommand;
 import laxstats.api.teams.TeamId;
 import laxstats.query.seasons.SeasonEntry;
 import laxstats.query.seasons.SeasonQueryRepository;
 import laxstats.query.teamSeasons.TeamSeasonEntry;
-import laxstats.query.teamSeasons.TeamSeasonQueryRepository;
 import laxstats.query.teams.TeamEntry;
 import laxstats.query.teams.TeamQueryRepository;
 import laxstats.query.users.UserEntry;
@@ -26,80 +25,82 @@ import org.axonframework.commandhandling.GenericCommandMessage;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
+@RequestMapping(value = "/teams/{teamId}")
 public class TeamSeasonController extends ApplicationController {
 	private final TeamQueryRepository teamRepository;
 	private final SeasonQueryRepository seasonRepository;
-	private final TeamSeasonQueryRepository teamSeasonRepository;
+	private TeamSeasonFormValidator teamSeasonValidator;
+
+	@InitBinder("TeamSeasonForm")
+	protected void initBinder(WebDataBinder binder) {
+		binder.setValidator(teamSeasonValidator);
+	}
 
 	@Autowired
 	public TeamSeasonController(UserQueryRepository userRepository,
 			CommandBus commandBus, TeamQueryRepository teamRepository,
-			SeasonQueryRepository seasonRepository,
-			TeamSeasonQueryRepository teamSeasonRepository) {
+			SeasonQueryRepository seasonRepository) {
 		super(userRepository, commandBus);
 		this.teamRepository = teamRepository;
 		this.seasonRepository = seasonRepository;
-		this.teamSeasonRepository = teamSeasonRepository;
 	}
 
-	@InitBinder
-	protected void initBinder(WebDataBinder binder) {
-		binder.setValidator(new TeamSeasonFormValidator());
+	@Autowired
+	public void setTeamSeasonValidator(
+			TeamSeasonFormValidator teamSeasonValidator) {
+		this.teamSeasonValidator = teamSeasonValidator;
 	}
 
-	@RequestMapping(value = "/teams/{teamId}/seasons", method = RequestMethod.GET)
+	/*---------- Action methods ----------*/
+
+	@RequestMapping(value = "/seasons", method = RequestMethod.GET)
 	public String index(@PathVariable String teamId, Model model) {
 		final TeamEntry team = teamRepository.findOne(teamId);
-		model.addAttribute("items", team.getSeasons());
+		model.addAttribute("team", team);
 		return "/teamSeasons/index";
 	}
 
-	@RequestMapping(value = "/teams/{teamId}/seasons", method = RequestMethod.POST)
+	@RequestMapping(value = "/seasons", method = RequestMethod.POST)
 	public String createTeamSeason(@PathVariable String teamId,
-			@ModelAttribute("form") @Valid TeamSeasonForm form,
-			BindingResult result) {
+			@Valid TeamSeasonForm form, BindingResult result) {
 		if (result.hasErrors()) {
-			return "seasons/newTeamSeason";
+			return "teamSeasons/newTeamSeason";
 		}
 		final LocalDateTime now = LocalDateTime.now();
 		final UserEntry user = getCurrentUser();
 		final TeamEntry team = teamRepository.findOne(teamId);
-		final SeasonEntry season = seasonRepository.findOne(form.getSeasonId());
+		final SeasonEntry season = seasonRepository.findOne(form.getSeason());
 		final TeamSeasonId identifier = new TeamSeasonId();
 
 		final TeamSeasonDTO dto = new TeamSeasonDTO(identifier, team, season,
-				form.getStartsOn(), form.getEndsOn(), form.getStatus(), user,
-				now, user, now);
+				null, form.getStartsOn(), form.getEndsOn(), form.getName(),
+				form.getStatus(), user, now, user, now);
+
 		final RegisterTeamSeasonCommand payload = new RegisterTeamSeasonCommand(
 				new TeamId(teamId), dto);
-		commandBus.dispatch(new GenericCommandMessage<>(payload));
+		try {
+			commandBus.dispatch(new GenericCommandMessage<>(payload));
+		} catch (final Exception e) {
+			result.reject(e.getMessage());
+			return "teamSeasons/newTeamSeason";
+		}
 		return "redirect:/teams/" + teamId + "/seasons";
 	}
 
-	@RequestMapping(value = "/teams/{teamId}/seasons/{teamSeasonId}", method = RequestMethod.GET)
-	public String showTeamSeason(@PathVariable String teamId,
-			@PathVariable String teamSeasonId, Model model) {
-		final TeamSeasonEntry teamSeason = teamSeasonRepository
-				.findOne(teamSeasonId);
-		model.addAttribute("item", teamSeason);
-		return "teamSeasons/showTeamSeason";
-	}
-
-	@RequestMapping(value = "/teams/{teamId}/seasons/{teamSeasonId}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/seasons/{teamSeasonId}", method = RequestMethod.PUT)
 	public String updateTeamSeason(@PathVariable String teamId,
-			@PathVariable String teamSeasonId,
-			@ModelAttribute("form") @Valid TeamSeasonForm form,
+			@PathVariable String teamSeasonId, @Valid TeamSeasonForm form,
 			BindingResult result) {
 		if (result.hasErrors()) {
 			return "teamSeasons/editTeamSeason";
@@ -107,63 +108,74 @@ public class TeamSeasonController extends ApplicationController {
 		final LocalDateTime now = LocalDateTime.now();
 		final UserEntry user = getCurrentUser();
 		final TeamEntry team = teamRepository.findOne(teamId);
-		final SeasonEntry season = seasonRepository.findOne(form.getSeasonId());
+		final SeasonEntry season = seasonRepository.findOne(form.getSeason());
 		final TeamSeasonId identifier = new TeamSeasonId(teamSeasonId);
 
 		final TeamSeasonDTO dto = new TeamSeasonDTO(identifier, team, season,
-				form.getStartsOn(), form.getEndsOn(), form.getStatus(), user,
-				now);
+				null, form.getStartsOn(), form.getEndsOn(), form.getName(),
+				form.getStatus(), user, now);
+
 		final EditTeamSeasonCommand payload = new EditTeamSeasonCommand(
 				new TeamId(teamId), dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
 		return "redirect:/teams/" + teamId + "/seasons";
 	}
 
-	@RequestMapping(value = "/teams/{teamId}/seasons/{teamSeasonId}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/seasons/{teamSeasonId}", method = RequestMethod.DELETE)
 	public String deleteTeamSeason(@PathVariable String teamId,
 			@PathVariable String teamSeasonId) {
 		final TeamSeasonId identifier = new TeamSeasonId(teamSeasonId);
 		final DeleteTeamSeasonCommand payload = new DeleteTeamSeasonCommand(
 				identifier);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:";
+		return "redirect:/teams/" + teamId + "/seasons";
 	}
 
-	@RequestMapping(value = "/teams/{teamId}/seasons/new", method = RequestMethod.GET)
+	@RequestMapping(value = "/seasons/new", method = RequestMethod.GET)
 	public String newTeamSeason(@PathVariable String teamId, Model model) {
-		final TeamSeasonForm form = new TeamSeasonForm();
-		form.setSeasons(getSeasonData());
+		final TeamEntry team = teamRepository.findOne(teamId);
+		final List<SeasonEntry> seasons = (List<SeasonEntry>) seasonRepository
+				.findAll(new Sort(Direction.DESC, "startsOn"));
 
-		model.addAttribute("form", form);
+		final TeamSeasonForm form = new TeamSeasonForm();
+		form.setTeam(team.getId());
+		form.setTeamTitle(team.getTitle());
+		form.setName(team.getName());
+		form.setStatus(TeamStatus.ACTIVE);
+		if (team.getAffiliation() != null) {
+			form.setAffiliation(team.getAffiliation().getId());
+		}
+		form.setSeasons(seasons);
+
+		model.addAttribute("teamSeasonForm", form);
 		model.addAttribute("teamId", teamId);
-		return "seasons/newTeamSeason";
+		return "teamSeasons/newTeamSeason";
 	}
 
-	@RequestMapping(value = "/teams/{teamId}/seasons/{teamSeasonId}/edit", method = RequestMethod.GET)
+	@RequestMapping(value = "/seasons/{teamSeasonId}/edit", method = RequestMethod.GET)
 	public String editTeamSeason(@PathVariable String teamId,
 			@PathVariable String teamSeasonId, Model model) {
-		final TeamSeasonEntry teamSeason = teamSeasonRepository
-				.findOne(teamSeasonId);
+		final TeamEntry team = teamRepository.findOne(teamId);
+		final TeamSeasonEntry teamSeason = team.getSeason(teamSeasonId);
+		final List<SeasonEntry> seasons = (List<SeasonEntry>) seasonRepository
+				.findAll(new Sort(Direction.DESC, "startsOn"));
 
 		final TeamSeasonForm form = new TeamSeasonForm();
-		form.setSeasonId(teamSeason.getSeason().getId());
+		form.setTeam(teamId);
+		form.setTeamTitle(team.getTitle());
+		form.setName(teamSeason.getName());
+		form.setSeason(teamSeason.getSeason().getId());
 		form.setStartsOn(teamSeason.getStartsOn());
 		form.setEndsOn(teamSeason.getEndsOn());
 		form.setStatus(teamSeason.getStatus());
-		form.setSeasons(getSeasonData());
-
-		model.addAttribute("form", form);
-		model.addAttribute("teamId", teamId);
-		return "seasons/editTeamSeason";
-	}
-
-	private Map<String, String> getSeasonData() {
-		final Map<String, String> result = new HashMap<>();
-		final Iterable<SeasonEntry> seasons = seasonRepository
-				.findAll(new Sort(new Sort.Order("startsOn")));
-		for (final SeasonEntry each : seasons) {
-			result.put(each.getId(), each.getDescription());
+		if (teamSeason.getAffiliation() != null) {
+			form.setAffiliation(teamSeason.getAffiliation().getId());
 		}
-		return result;
+		form.setSeasons(seasons);
+
+		model.addAttribute("teamSeasonForm", form);
+		model.addAttribute("teamId", teamId);
+		model.addAttribute("teamSeasonId", teamSeasonId);
+		return "teamSeasons/editTeamSeason";
 	}
 }

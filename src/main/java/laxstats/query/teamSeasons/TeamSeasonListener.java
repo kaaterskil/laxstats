@@ -8,7 +8,9 @@ import laxstats.api.teamSeasons.TeamSeasonUpdatedEvent;
 
 import org.axonframework.eventhandling.annotation.EventHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class TeamSeasonListener {
 	private TeamSeasonQueryRepository repository;
 
@@ -26,14 +28,16 @@ public class TeamSeasonListener {
 		entity.setId(identifier.toString());
 		entity.setTeam(dto.getTeam());
 		entity.setSeason(dto.getSeason());
-		entity.setName(dto.getTeam().getName());
+		entity.setAffiliation(dto.getAffiliation());
 		entity.setStartsOn(dto.getStartsOn());
 		entity.setEndsOn(dto.getEndsOn());
+		entity.setName(dto.getTeam().getName());
 		entity.setStatus(dto.getStatus());
 		entity.setCreatedAt(dto.getCreatedAt());
 		entity.setCreatedBy(dto.getCreatedBy());
 		entity.setModifiedAt(dto.getModifiedAt());
 		entity.setModifiedBy(dto.getModifiedBy());
+
 		repository.save(entity);
 	}
 
@@ -44,13 +48,16 @@ public class TeamSeasonListener {
 
 		final TeamSeasonEntry entity = repository
 				.findOne(identifier.toString());
+
 		entity.setSeason(dto.getSeason());
-		entity.setName(dto.getTeam().getName());
+		entity.setAffiliation(dto.getAffiliation());
 		entity.setStartsOn(dto.getStartsOn());
 		entity.setEndsOn(dto.getEndsOn());
+		entity.setName(dto.getTeam().getName());
 		entity.setStatus(dto.getStatus());
 		entity.setModifiedAt(dto.getModifiedAt());
 		entity.setModifiedBy(dto.getModifiedBy());
+
 		repository.save(entity);
 	}
 

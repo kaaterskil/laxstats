@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<head>
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-sm-4 col-sm-offset-4 col-xs-12">
+				<h1>New Season</h1>
+
+				<form action="#" 
+					  method="post" 
+					  id="new-team-season-form" 
+					  name="new-team-season-form" 
+					  role="form"
+					  th:action="@{'/teams/' + ${teamId} + '/seasons'}" 
+					  th:object="${teamSeasonForm}">
+					<div class="form-group">
+						<label for="team">Team</label>
+						<div th:text="*{teamTitle}"></div>
+						<input type="hidden" 
+							   name="team" 
+							   th:value="*{team}" />
+					</div>
+					<div class="form-group">
+						<label for="name">Name</label>
+						<input type="text" 
+							   id="name" 
+							   class="form-control" 
+							   placeholder="Team name" 
+							   th:field="*{name}" />
+					</div>
+					<div class="form-group required">
+						<label for="season">Season</label>
+						<select id="season" 
+								class="form-control" 
+								required="required" 
+								th:field="*{season}" 
+								aria-required="true" 
+								aria-described-by="seasonError">
+							<option value="">Select...</option>
+							<option th:each="opt : *{seasons}" 
+									th:value="${opt.getId()}" 
+									th:text="${opt.getDescription()}">Season</option>
+						</select>
+						<div th:if="${#fields.hasErrors('season')}" 
+							 id="seasonError" 
+							 class="lax-error" 
+							 th:errors="*{season}">Invalid season</div>
+					</div>
+
+					<div class="row">
+						<div class="col-sm-6 col-xs-12 form-group">
+							<label for="starts-on">Start</label> 
+							<input type="date" 
+								   id="starts-on" 
+								   class="form-control" 
+								   th:field="*{startsOn}" />
+						</div>
+						<div class="col-sm-6 col-xs-12 form-group">
+							<label for="ends-on">End</label>
+							<input type="date" 
+								   id="ends-on" 
+								   class="form-control" 
+								   th:field="*{endsOn}" />
+						</div>
+					</div>
+
+					<div class="form-group required">
+						<label for="status">Status</label> 
+						<select id="status" 
+								class="form-control" 
+								th:field="*{status}" 
+								required="required" 
+								aria-required="true" 
+								aria-described-by="statusError">
+							<option value="">Select...</option>
+							<option th:each="opt : *{statuses}" 
+									th:value="${opt}"
+									th:text="${opt.getLabel()}">Status</option>
+						</select>
+						<div th:if="${#fields.hasErrors('status')}" 
+							 id="statusError" 
+							 class="lax-error" 
+							 th:errors="*{status}">Invalid status</div>
+					</div>
+					<button type="submit" 
+							class="btn btn-default">Save</button>
+				</form>
+			</div>
+		</div>
+		
+		<script type="text/javascript">
+		(function() {
+			$('#season').change(function() {
+				var val = $(this).val();
+				if (val != '') {
+					$.get('/ajax/seasons/' + val)
+						.done(function(data) {
+							$('#starts-on').val(data.startsOn);
+							$('#ends-on').val(data.endsOn);
+						})
+						.fail(function() {
+							console.log('ajax call failed');
+						});
+				}
+			});
+		})();
+		</script>
+	</div>
+</body>
+</html>

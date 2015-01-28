@@ -25,10 +25,10 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class SeasonController extends ApplicationController {
@@ -52,6 +52,8 @@ public class SeasonController extends ApplicationController {
 		this.seasonValidator = seasonValidator;
 	}
 
+	/*---------- Action methods ----------*/
+
 	@RequestMapping(value = "/seasons", method = RequestMethod.GET)
 	public String index(Model model) {
 		final Iterable<SeasonEntry> list = seasonRepository.findAll(new Sort(
@@ -61,9 +63,7 @@ public class SeasonController extends ApplicationController {
 	}
 
 	@RequestMapping(value = "/seasons", method = RequestMethod.POST)
-	public String createSeason(
-			@ModelAttribute("seasonForm") @Valid SeasonForm form,
-			BindingResult result) {
+	public String createSeason(@Valid SeasonForm form, BindingResult result) {
 		if (result.hasErrors()) {
 			return "seasons/newSeason";
 		}
@@ -91,8 +91,7 @@ public class SeasonController extends ApplicationController {
 
 	@RequestMapping(value = "/seasons/{seasonId}", method = RequestMethod.PUT)
 	public String updateSeason(@PathVariable String seasonId,
-			@ModelAttribute("seasonForm") @Valid SeasonForm form,
-			BindingResult bindingResult) {
+			@Valid SeasonForm form, BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
 			return "seasons/editSeason";
 		}
@@ -138,6 +137,16 @@ public class SeasonController extends ApplicationController {
 		model.addAttribute("seasonForm", form);
 		model.addAttribute("seasonId", seasonId);
 		return "seasons/editSeason";
+	}
+
+	/*---------- Ajax methods ----------*/
+
+	@RequestMapping(value = "/ajax/seasons/{seasonId}", method = RequestMethod.GET)
+	public @ResponseBody SeasonInfo getSeason(@PathVariable String seasonId) {
+		final SeasonEntry season = seasonRepository.findOne(seasonId);
+		return new SeasonInfo(season.getId(), season.getDescription(), season
+				.getStartsOn().toString("yyyy-MM-dd"), season.getEndsOn()
+				.toString("yyyy-MM-dd"));
 	}
 
 	/*---------- Utilities ----------*/

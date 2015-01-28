@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<head>
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-sm-6 col-sm-offset-3 col-xs-12">
+				<h1>Team Seasons</h1>
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<td>Town or School</td>
+							<td>Name</td>
+							<td>Gender</td>
+							<td>Letter</td>
+							<td>League</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>
+								<a href="#" 
+								   th:href="@{'/teams/' + ${team.id} + '/edit'}" 
+								   th:text="${team.sponsor}">Town or School</a>
+							</td>
+							<td th:text="${team.name}">Name</td>
+							<td th:text="${team.gender.getLabel()}">Gender</td>
+							<td th:text="${team.letter.getLabel()}">Letter</td>
+							<td th:text="${team.affiliation}">League</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-sm-4 col-sm-offset-4 col-xs-12">
+				<a href="#" 
+				   th:href="@{'/teams/' + ${team.getId()} + '/seasons/new'}" 
+				   class="btn btn-default btn-sm lax-btn-new pull-right">New Season</a>
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<td></td>
+							<td>Season</td>
+							<td>Name</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="item : ${team.getSeasons()}">
+							<td>
+								<form th:object="${item}" th:action="@{'/teams/' + ${team.getId()} + '/seasons/' + ${item.id}}"
+									th:method="delete">
+									<button type="submit" class="btn btn-link lax-btn-delete">
+										<span class="glyphicon glyphicon-remove red"></span>
+									</button>
+								</form>
+							</td>
+							<td><a href="#"
+								th:href="@{'/teams/' + ${team.getId()} + '/seasons/' + ${item.id} + '/edit'}"
+								th:text="${item.getSeason().getDescription()}">Season</a></td>
+							<td th:text="${item.name}">Name</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

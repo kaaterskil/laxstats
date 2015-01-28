@@ -58,7 +58,29 @@ public class LeagueEntry {
 	@OneToMany(mappedBy = "affiliation")
 	private final Set<TeamAffiliation> affiliatedTeams = new HashSet<>();
 
-	// ---------- Getter/Setters ----------//
+	/*----------- Methods ----------*/
+
+	public String getQualifiedName() {
+		final StringBuilder sb = new StringBuilder();
+		boolean concat = false;
+
+		while (this.parent != null) {
+			if (concat) {
+				sb.append(".");
+			}
+			sb.append(parent.getQualifiedName());
+			if (sb.length() > 0) {
+				concat = true;
+			}
+		}
+		if (concat) {
+			sb.append(".");
+		}
+		sb.append(name);
+		return sb.toString();
+	}
+
+	/*----------- Getter/Setters ----------*/
 
 	public String getId() {
 		return id;

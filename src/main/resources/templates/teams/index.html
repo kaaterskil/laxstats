@@ -22,6 +22,7 @@
 					<thead>
 						<tr>
 							<td></td>
+							<td></td>
 							<td>Name</td>
 							<td>Type</td>
 							<td>Letter</td>
@@ -37,9 +38,15 @@
 									</button>
 								</form>
 							</td>
-							<td><a href="#"
-								th:href="@{'/teams/' + ${item.id} + '/edit'}"
-								th:text="${item.getFullName()}">Name</a></td>
+							<td>
+								<a href="#" 
+								   th:href="@{'/teams/' + ${item.id} + '/seasons'}">Seasons</a>
+							</td>
+							<td>
+								<a href="#"
+								   th:href="@{'/teams/' + ${item.id} + '/edit'}" 
+								   th:text="${item.getFullName()}">Name</a>
+							</td>
 							<td th:text="${item.gender.label}">Team Type</td>
 							<td th:text="${item.letter.label}">Letter</td>
 						</tr>
