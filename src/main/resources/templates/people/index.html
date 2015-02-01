@@ -5,16 +5,166 @@
 <head></head>
 <body>
 	<div layout:fragment="content">
-		<h1>This is the People Index page</h1>
-		<form id="people_finder" action="#" role="form">
-			<div class="form-group">
-				<label for="search_people">Search</label>
-				<input type="text" 
-					id="search_people" 
-					class="form-control" 
-					placeholder="Search..." />
+		<div class="row">
+			<div class="col-sm-7 col-sm-offset-2 col-xs-12">
+				<a href="#" 
+				   th:href="@{'/people/new'}" 
+				   class="btn btn-default btn-sm lax-btn-new pull-right">New Person</a>
+				<h1>People</h1>
+				<h4 class="">Search</h4>
 			</div>
-		</form>
+			
+			<div class="col-sm-6 col-sm-offset-3 col-xs-12 search-people-form">
+				<form action="#" 
+					  th:action="@{'/api/people/search'}" 
+					  method="post" 
+					  name="search-people-form" 
+					  id="search-people-form" 
+					  th:object="${searchForm}"
+					  role="form">
+					<div class="row">
+						<div class="col-sm-4 col-xs-12 form-group">
+							<label for="first-name">First Name</label>
+							<input type="text" 
+								   id="first-name" 
+								   class="form-control" 
+								   th:field="*{firstName}" />
+						</div>
+						<div class="col-sm-4 col-xs-12 form-group">
+							<label for="last-name">Last Name</label>
+							<input type="text" 
+								   id="last-name" 
+								   class="form-control" 
+								   th:field="*{lastName}" />
+						</div>
+						<div class="col-sm-4 col-xs-12 form-group">
+							<label for="contact">Contact</label>
+							<input type="text" 
+								   id="contact" 
+								   class="form-control" 
+								   th:field="*{contact}" />
+						</div>
+					</div>
+					
+					<div class="row">
+						<div class="col-sm-6 col-xs-12 form-group">
+							<label for="city">City</label>
+							<input type="text" 
+								   id="city" 
+								   class="form-control" 
+								   th:field="*{city}" />
+						</div>
+						<div class="col-sm-3 col-xs-6 form-group">
+							<label for="region">Region</label>
+							<select id="region" 
+									class="form-control" 
+									th:field="*{region}">
+								<option value="">Select...</option>
+								<option th:each="opt : *{regions}" 
+										th:value="${opt}" 
+										th:text="${opt.getAbbreviation()}">Region</option>
+							</select>
+						</div>
+						<div class="col-sm-3 col-xs-6 form-group">
+							<label for="postal-code">ZIP Code</label>
+							<input type="text" 
+								   id="postal-code" 
+								   class="form-control" 
+								   th:field="*{postalCode}" />
+						</div>
+					</div>
+					<button type="submit" 
+							class="btn btn-default">Search</button>
+				</form>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-sm-8 col-sm-offset-2 col-xs-12 search-people-results">
+				<h4 class="">Results</h4>
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<td></td>
+							<td>Name</td>
+							<td>City</td>
+							<td>Region</td>
+							<td>ZIP Code</td>
+							<td>Contact</td>
+						</tr>
+					</thead>
+					<tbody id="search-results"></tbody>
+				</table>
+			</div>
+		</div>
+		
+		<script type="text/javascript">
+			(function(){
+				function stripNull(str) {
+					return str == null ? '' : str;
+				}
+				
+				function getTableRow(elem) {
+					var html = '<tr>' + 
+							'<td>' +
+									'<form action="/people/' + elem.id + '" method="delete">' + 
+									 	'<button type="submit" class="btn btn-link lax-btn-delete">' + 
+									 		'<span class="glyphicon glyphicon-remove red"></span>' + 
+									 	'</button>' + 
+								 	'</form>' + 
+							 	'</td>' + 
+							 	'<td><a href="/people/' + elem.id + '/edit">' + elem.fullName + '</a></td>' + 
+							 	'<td>' + stripNull(elem.city) + '</td>' + 
+							 	'<td>' + stripNull(elem.region) + '</td>' + 
+							 	'<td>' + stripNull(elem.postalCode) + '</td>' + 
+							 	'<td>' + stripNull(elem.contact) + '</td>' + 
+							 '</tr>' + "\n";
+					return html;
+				}
+				
+				$('#search-people-form').submit(function(event){
+					var $form = $(this),
+						token = $form.find("input[name='_csrf']").val(),
+						data = {
+							firstName: $('#first-name').val(),
+							lastName: $('#last-name').val(),
+							city: $('#city').val(),
+							region: $('#region').val(),
+							postalCode: $('#postal-code').val(),
+							contact: $('#contact').val()
+						};
+					
+					event.preventDefault();
+					$.ajax({
+						type: 'POST',
+						url: '/people/ajax/search',
+						data: JSON.stringify(data),
+						dataType: 'json',
+						contentType: 'application/json',
+						headers: { 'X-CSRF-TOKEN': token }
+					})
+					.success(function(data){
+						var html = '';
+						data = Array.isArray(data) ? data : [data];
+						if(data.length) {
+							data.forEach(function(elem){
+								html += getTableRow(elem);
+							});
+						} else {
+							html = '<tr><td></td><td colspan="5">No records found.</td></tr>';
+						}
+						$('#search-results').html(html);
+					})
+					.fail(function(jqXHR, status, error){
+						var msg = '<tr><td></td><td colspan="5">Error Status ' 
+								+ jqXHR.status + ': ' + jqXHR.responseText 
+								+ '</td></tr>';
+						$('#search-results').html(msg);
+					});
+					return false;
+				});
+			})();
+		</script>
 	</div>
 </body>
 </html>

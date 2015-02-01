@@ -3,7 +3,7 @@ package laxstats.api.events;
 import java.util.ArrayList;
 import java.util.List;
 
-import laxstats.query.events.EventEntry;
+import laxstats.query.events.GameEntry;
 import laxstats.query.teamSeasons.TeamSeasonEntry;
 import laxstats.query.users.UserEntry;
 import laxstats.query.violations.ViolationEntry;
@@ -16,7 +16,7 @@ public class PlayDTO {
 	private final String identifier;
 	private final String discriminator;
 	private final PlayKey playKey;
-	private final EventEntry event;
+	private final GameEntry event;
 	private final TeamSeasonEntry team;
 	private final int period;
 	private final LocalTime elapsedTime;
@@ -40,7 +40,7 @@ public class PlayDTO {
 	private TeamSeasonEntry manUpTeam;
 
 	public PlayDTO(String identifier, String discriminator, PlayKey playKey,
-			EventEntry event, TeamSeasonEntry team, int period,
+			GameEntry event, TeamSeasonEntry team, int period,
 			LocalTime elapsedTime, ScoreAttemptType attemptType,
 			PlayResult result, ViolationEntry violation, int duration,
 			String comment, LocalDateTime createdAt, UserEntry createdBy,
@@ -66,7 +66,7 @@ public class PlayDTO {
 	}
 
 	public PlayDTO(String identifier, String discriminator, PlayKey playKey,
-			EventEntry event, TeamSeasonEntry team, int period,
+			GameEntry event, TeamSeasonEntry team, int period,
 			LocalTime elapsedTime, ScoreAttemptType attemptType,
 			PlayResult result, ViolationEntry violation, int duration,
 			String comment, LocalDateTime modifiedAt, UserEntry modifiedBy,
@@ -100,7 +100,7 @@ public class PlayDTO {
 		return playKey;
 	}
 
-	public EventEntry getEvent() {
+	public GameEntry getEvent() {
 		return event;
 	}
 

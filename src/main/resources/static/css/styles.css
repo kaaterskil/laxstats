@@ -73,6 +73,10 @@ h2 {
 	padding: 0 !important;
 }
 
+.checkbox {
+	margin-top: 27px;
+}
+
 .main-content {
 	background-color: rgb(255, 255, 255);
 	min-height: 450px;

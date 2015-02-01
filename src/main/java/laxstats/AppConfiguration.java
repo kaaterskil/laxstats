@@ -7,6 +7,7 @@ import laxstats.web.teams.TeamFormValidator;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.format.datetime.joda.DateTimeFormatterFactoryBean;
 import org.springframework.format.datetime.joda.JodaTimeFormatterRegistrar;
 import org.springframework.format.number.NumberFormatAnnotationFormatterFactory;
@@ -17,6 +18,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 @Configuration
+@EnableSpringDataWebSupport
 public class AppConfiguration extends WebMvcConfigurerAdapter {
 
 	@Bean

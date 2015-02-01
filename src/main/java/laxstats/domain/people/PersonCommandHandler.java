@@ -1,11 +1,13 @@
 package laxstats.domain.people;
 
 import laxstats.api.people.CreatePersonCommand;
+import laxstats.api.people.DeletePersonCommand;
 import laxstats.api.people.PersonId;
 import laxstats.api.people.RegisterAddressCommand;
 import laxstats.api.people.RegisterContactCommand;
 import laxstats.api.people.UpdateAddressCommand;
 import laxstats.api.people.UpdateContactCommand;
+import laxstats.api.people.UpdatePersonCommand;
 
 import org.axonframework.commandhandling.annotation.CommandHandler;
 import org.axonframework.repository.Repository;
@@ -26,9 +28,23 @@ public class PersonCommandHandler {
 	@CommandHandler
 	public PersonId handle(final CreatePersonCommand command) {
 		final PersonId identifier = command.getPersonId();
-		final Person person = new Person(identifier, command.getPersonDTO());
-		repository.add(person);
+		final Person aggregate = new Person(identifier, command.getPersonDTO());
+		repository.add(aggregate);
 		return identifier;
+	}
+
+	@CommandHandler
+	public void handle(UpdatePersonCommand command) {
+		final PersonId identifier = command.getPersonId();
+		final Person aggregate = repository.load(identifier);
+		aggregate.update(identifier, command.getPersonDTO());
+	}
+
+	@CommandHandler
+	public void handle(DeletePersonCommand command) {
+		final PersonId identifier = command.getPersonId();
+		final Person aggregate = repository.load(identifier);
+		aggregate.delete(identifier);
 	}
 
 	// ---------- Addresses ----------//

@@ -36,7 +36,7 @@ public class TeamEvent {
 
 	@ManyToOne
 	@JoinColumn(nullable = false)
-	private EventEntry event;
+	private GameEntry event;
 
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20, nullable = false)
@@ -71,7 +71,7 @@ public class TeamEvent {
 	public TeamEvent() {
 	}
 
-	public TeamEvent(String id, TeamSeasonEntry teamSeason, EventEntry event,
+	public TeamEvent(String id, TeamSeasonEntry teamSeason, GameEntry event,
 			int eventIndex) {
 		this.id = id;
 		this.teamSeason = teamSeason;
@@ -95,11 +95,11 @@ public class TeamEvent {
 		this.teamSeason = teamSeason;
 	}
 
-	public EventEntry getEvent() {
+	public GameEntry getEvent() {
 		return event;
 	}
 
-	public void setEvent(EventEntry event) {
+	public void setEvent(GameEntry event) {
 		this.event = event;
 	}
 

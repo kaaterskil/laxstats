@@ -1,5 +1,6 @@
 package laxstats.query.events;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -32,13 +33,14 @@ import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 
 @Entity
-@Table(name = "events", indexes = {
+@Table(name = "games", indexes = {
 		@Index(name = "event_idx1", columnList = "schedule"),
 		@Index(name = "event_idx2", columnList = "startsAt"),
 		@Index(name = "event_idx3", columnList = "alignment"),
 		@Index(name = "event_idx4", columnList = "status"),
 		@Index(name = "event_idx5", columnList = "conditions") })
-public class EventEntry {
+public class GameEntry implements Serializable {
+	private static final long serialVersionUID = 3864013780705615870L;
 
 	@Id
 	@Column(length = 36)

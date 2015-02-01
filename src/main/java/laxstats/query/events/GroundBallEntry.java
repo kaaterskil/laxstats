@@ -9,6 +9,7 @@ import laxstats.api.events.PlayType;
 @Entity
 @DiscriminatorValue(PlayType.GROUND_BALL)
 public class GroundBallEntry extends PlayEntry {
+	private static final long serialVersionUID = 4394861925132487037L;
 
 	public GroundBallEntry() {
 		playKey = PlayKey.PLAY;

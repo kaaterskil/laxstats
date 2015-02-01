@@ -1,10 +1,11 @@
 package laxstats.api.people;
 
+import laxstats.query.users.UserEntry;
+
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
 public class PersonDTO {
-
 	private final PersonId personId;
 	private final String prefix;
 	private final String firstName;
@@ -19,12 +20,10 @@ public class PersonDTO {
 	private final LocalDate parentReleaseSentOn;
 	private final LocalDate parentReleaseReceivedOn;
 	private final LocalDate birthdate;
-	private final String photo;
 	private final String college;
-	private final String collegeUrl;
-	private final String createdBy;
+	private final UserEntry createdBy;
 	private final LocalDateTime createdAt;
-	private final String modifiedBy;
+	private final UserEntry modifiedBy;
 	private final LocalDateTime modifiedAt;
 
 	public PersonDTO(PersonId personId, String prefix, String firstName,
@@ -32,8 +31,8 @@ public class PersonDTO {
 			String fullName, Gender gender, DominantHand dominantHand,
 			boolean isParentReleased, LocalDate parentReleaseSentOn,
 			LocalDate parentReleaseReceivedOn, LocalDate birthdate,
-			String photo, String college, String collegeUrl, String createdBy,
-			LocalDateTime createdAt, String modifiedBy, LocalDateTime modifiedAt) {
+			String college, UserEntry createdBy, LocalDateTime createdAt,
+			UserEntry modifiedBy, LocalDateTime modifiedAt) {
 		this.personId = personId;
 		this.prefix = prefix;
 		this.firstName = firstName;
@@ -48,14 +47,26 @@ public class PersonDTO {
 		this.parentReleaseSentOn = parentReleaseSentOn;
 		this.parentReleaseReceivedOn = parentReleaseReceivedOn;
 		this.birthdate = birthdate;
-		this.photo = photo;
 		this.college = college;
-		this.collegeUrl = collegeUrl;
 		this.createdBy = createdBy;
 		this.createdAt = createdAt;
 		this.modifiedBy = modifiedBy;
 		this.modifiedAt = modifiedAt;
 	}
+
+	public PersonDTO(PersonId personId, String prefix, String firstName,
+			String middleName, String lastName, String suffix, String nickname,
+			String fullName, Gender gender, DominantHand dominantHand,
+			boolean isParentReleased, LocalDate parentReleaseSentOn,
+			LocalDate parentReleaseReceivedOn, LocalDate birthdate,
+			String college, UserEntry modifiedBy, LocalDateTime modifiedAt) {
+		this(personId, prefix, firstName, middleName, lastName, suffix,
+				nickname, fullName, gender, dominantHand, isParentReleased,
+				parentReleaseSentOn, parentReleaseReceivedOn, birthdate,
+				college, null, null, modifiedBy, modifiedAt);
+	}
+
+	/*---------- Methods ----------*/
 
 	public String fullName() {
 		final StringBuilder sb = new StringBuilder();
@@ -95,32 +106,34 @@ public class PersonDTO {
 		return sb.toString();
 	}
 
-	public LocalDate getBirthdate() {
-		return birthdate;
+	/*---------- Getters ----------*/
+
+	public PersonId getPersonId() {
+		return personId;
 	}
 
-	public String getCollege() {
-		return college;
-	}
-
-	public String getCollegeUrl() {
-		return collegeUrl;
-	}
-
-	public LocalDateTime getCreatedAt() {
-		return createdAt;
-	}
-
-	public String getCreatedBy() {
-		return createdBy;
-	}
-
-	public DominantHand getDominantHand() {
-		return dominantHand;
+	public String getPrefix() {
+		return prefix;
 	}
 
 	public String getFirstName() {
 		return firstName;
+	}
+
+	public String getMiddleName() {
+		return middleName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public String getSuffix() {
+		return suffix;
+	}
+
+	public String getNickname() {
+		return nickname;
 	}
 
 	public String getFullName() {
@@ -131,51 +144,43 @@ public class PersonDTO {
 		return gender;
 	}
 
-	public String getLastName() {
-		return lastName;
+	public DominantHand getDominantHand() {
+		return dominantHand;
 	}
 
-	public String getMiddleName() {
-		return middleName;
-	}
-
-	public LocalDateTime getModifiedAt() {
-		return modifiedAt;
-	}
-
-	public String getModifiedBy() {
-		return modifiedBy;
-	}
-
-	public String getNickname() {
-		return nickname;
-	}
-
-	public LocalDate getParentReleaseReceivedOn() {
-		return parentReleaseReceivedOn;
+	public boolean isParentReleased() {
+		return isParentReleased;
 	}
 
 	public LocalDate getParentReleaseSentOn() {
 		return parentReleaseSentOn;
 	}
 
-	public PersonId getPersonId() {
-		return personId;
+	public LocalDate getParentReleaseReceivedOn() {
+		return parentReleaseReceivedOn;
 	}
 
-	public String getPhoto() {
-		return photo;
+	public LocalDate getBirthdate() {
+		return birthdate;
 	}
 
-	public String getPrefix() {
-		return prefix;
+	public String getCollege() {
+		return college;
 	}
 
-	public String getSuffix() {
-		return suffix;
+	public UserEntry getCreatedBy() {
+		return createdBy;
 	}
 
-	public boolean isParentReleased() {
-		return isParentReleased;
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
+
+	public UserEntry getModifiedBy() {
+		return modifiedBy;
+	}
+
+	public LocalDateTime getModifiedAt() {
+		return modifiedAt;
 	}
 }

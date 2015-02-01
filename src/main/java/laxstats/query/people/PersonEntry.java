@@ -40,6 +40,8 @@ import org.joda.time.LocalDateTime;
 		@Index(name = "people_idx4", columnList = "parentReleaseReceivedOn") })
 public class PersonEntry {
 
+	/*---------- Properties ----------*/
+
 	@Id
 	@Column(length = 36)
 	private String id;
@@ -95,14 +97,14 @@ public class PersonEntry {
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime createdAt;
 
-	@ManyToOne(targetEntity = UserEntry.class)
-	private String createdBy;
+	@ManyToOne
+	private UserEntry createdBy;
 
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime modifiedAt;
 
-	@ManyToOne(targetEntity = UserEntry.class)
-	private String modifiedBy;
+	@ManyToOne
+	private UserEntry modifiedBy;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "person")
 	private final Map<String, AddressEntry> addresses = new HashMap<>();
@@ -217,183 +219,191 @@ public class PersonEntry {
 		contacts.put(contact.getId(), contact);
 	}
 
-	public Map<String, AddressEntry> getAddresses() {
-		return addresses;
-	}
-
-	public LocalDate getBirthdate() {
-		return birthdate;
-	}
-
-	public String getCollege() {
-		return college;
-	}
-
-	public String getCollegeUrl() {
-		return collegeUrl;
-	}
-
-	public Map<String, ContactEntry> getContacts() {
-		return contacts;
-	}
-
-	public LocalDateTime getCreatedAt() {
-		return createdAt;
-	}
-
-	public String getCreatedBy() {
-		return createdBy;
-	}
-
-	public DominantHand getDominantHand() {
-		return dominantHand;
-	}
-
-	public String getFirstName() {
-		return firstName;
-	}
-
-	public String getFullName() {
-		return fullName;
-	}
-
-	public Gender getGender() {
-		return gender;
-	}
-
 	public String getId() {
 		return id;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public String getMiddleName() {
-		return middleName;
-	}
-
-	public LocalDateTime getModifiedAt() {
-		return modifiedAt;
-	}
-
-	public String getModifiedBy() {
-		return modifiedBy;
-	}
-
-	public String getNickname() {
-		return nickname;
-	}
-
-	public LocalDate getParentReleaseReceivedOn() {
-		return parentReleaseReceivedOn;
-	}
-
-	public LocalDate getParentReleaseSentOn() {
-		return parentReleaseSentOn;
-	}
-
-	public String getPhoto() {
-		return photo;
-	}
-
-	public Set<PlayerEntry> getPlayedSeasons() {
-		return playedSeasons;
-	}
-
-	public String getPrefix() {
-		return prefix;
-	}
-
-	public String getSuffix() {
-		return suffix;
-	}
-
-	public boolean isParentReleased() {
-		return isParentReleased;
-	}
-
-	public void setBirthdate(LocalDate birthdate) {
-		this.birthdate = birthdate;
-	}
-
-	public void setCollege(String college) {
-		this.college = college;
-	}
-
-	public void setCollegeUrl(String collegeUrl) {
-		this.collegeUrl = collegeUrl;
-	}
-
-	public void setCreatedAt(LocalDateTime createdAt) {
-		this.createdAt = createdAt;
-	}
-
-	public void setCreatedBy(String createdBy) {
-		this.createdBy = createdBy;
-	}
-
-	public void setDominantHand(DominantHand dominantHand) {
-		this.dominantHand = dominantHand;
-	}
-
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	public void setFullName(String fullName) {
-		this.fullName = fullName;
-	}
-
-	public void setGender(Gender gender) {
-		this.gender = gender;
 	}
 
 	public void setId(String id) {
 		this.id = id;
 	}
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-
-	public void setMiddleName(String middleName) {
-		this.middleName = middleName;
-	}
-
-	public void setModifiedAt(LocalDateTime modifiedAt) {
-		this.modifiedAt = modifiedAt;
-	}
-
-	public void setModifiedBy(String modifiedBy) {
-		this.modifiedBy = modifiedBy;
-	}
-
-	public void setNickname(String nickname) {
-		this.nickname = nickname;
-	}
-
-	public void setParentReleased(boolean isParentReleased) {
-		this.isParentReleased = isParentReleased;
-	}
-
-	public void setParentReleaseReceivedOn(LocalDate parentReleaseReceivedOn) {
-		this.parentReleaseReceivedOn = parentReleaseReceivedOn;
-	}
-
-	public void setParentReleaseSentOn(LocalDate parentReleaseSentOn) {
-		this.parentReleaseSentOn = parentReleaseSentOn;
-	}
-
-	public void setPhoto(String photo) {
-		this.photo = photo;
+	public String getPrefix() {
+		return prefix;
 	}
 
 	public void setPrefix(String prefix) {
 		this.prefix = prefix;
 	}
 
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getMiddleName() {
+		return middleName;
+	}
+
+	public void setMiddleName(String middleName) {
+		this.middleName = middleName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public String getSuffix() {
+		return suffix;
+	}
+
 	public void setSuffix(String suffix) {
 		this.suffix = suffix;
+	}
+
+	public String getNickname() {
+		return nickname;
+	}
+
+	public void setNickname(String nickname) {
+		this.nickname = nickname;
+	}
+
+	public String getFullName() {
+		return fullName;
+	}
+
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
+	}
+
+	public Gender getGender() {
+		return gender;
+	}
+
+	public void setGender(Gender gender) {
+		this.gender = gender;
+	}
+
+	public DominantHand getDominantHand() {
+		return dominantHand;
+	}
+
+	public void setDominantHand(DominantHand dominantHand) {
+		this.dominantHand = dominantHand;
+	}
+
+	public boolean isParentReleased() {
+		return isParentReleased;
+	}
+
+	public void setParentReleased(boolean isParentReleased) {
+		this.isParentReleased = isParentReleased;
+	}
+
+	public LocalDate getParentReleaseSentOn() {
+		return parentReleaseSentOn;
+	}
+
+	public void setParentReleaseSentOn(LocalDate parentReleaseSentOn) {
+		this.parentReleaseSentOn = parentReleaseSentOn;
+	}
+
+	public LocalDate getParentReleaseReceivedOn() {
+		return parentReleaseReceivedOn;
+	}
+
+	public void setParentReleaseReceivedOn(LocalDate parentReleaseReceivedOn) {
+		this.parentReleaseReceivedOn = parentReleaseReceivedOn;
+	}
+
+	public LocalDate getBirthdate() {
+		return birthdate;
+	}
+
+	public void setBirthdate(LocalDate birthdate) {
+		this.birthdate = birthdate;
+	}
+
+	public String getPhoto() {
+		return photo;
+	}
+
+	public void setPhoto(String photo) {
+		this.photo = photo;
+	}
+
+	public String getCollege() {
+		return college;
+	}
+
+	public void setCollege(String college) {
+		this.college = college;
+	}
+
+	public String getCollegeUrl() {
+		return collegeUrl;
+	}
+
+	public void setCollegeUrl(String collegeUrl) {
+		this.collegeUrl = collegeUrl;
+	}
+
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public UserEntry getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(UserEntry createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public LocalDateTime getModifiedAt() {
+		return modifiedAt;
+	}
+
+	public void setModifiedAt(LocalDateTime modifiedAt) {
+		this.modifiedAt = modifiedAt;
+	}
+
+	public UserEntry getModifiedBy() {
+		return modifiedBy;
+	}
+
+	public void setModifiedBy(UserEntry modifiedBy) {
+		this.modifiedBy = modifiedBy;
+	}
+
+	public Map<String, AddressEntry> getAddresses() {
+		return addresses;
+	}
+
+	public Map<String, ContactEntry> getContacts() {
+		return contacts;
+	}
+
+	public Set<RelationshipEntry> getChildRelationships() {
+		return childRelationships;
+	}
+
+	public Set<RelationshipEntry> getParentRelationships() {
+		return parentRelationships;
+	}
+
+	public Set<PlayerEntry> getPlayedSeasons() {
+		return playedSeasons;
 	}
 }

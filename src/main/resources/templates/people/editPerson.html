@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<head>
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-sm-8 col-sm-offset-2 col-xs-12">
+				<h1>Edit Person</h1>
+				<form action="#" 
+					  th:action="@{'/people/' + ${personId}}" 
+					  th:object="${personForm}" 
+					  method="put" 
+					  id="edit-person-form" 
+					  name="edit-person-form" 
+					  role="form">
+					<div class="row">
+						<div class="col-sm-6 col-xs-12">
+							<div class="row">
+								<div class="col-sm-3 col-xs-12 form-group">
+									<label for="prefix">Prefix</label>
+									<input type="text" 
+										   id="prefix" 
+										   class="form-control" 
+										   th:maxlength="10"
+										   th:field="*{prefix}" />
+								</div>
+								<div class="col-sm-9 col-xs-12 form-group">
+									<label for="first-name">First Name</label>
+									<input type="text"
+										   id="first-name" 
+										   class="form-control" 
+										   th:maxlength="20"
+										   th:field="*{firstName}" />
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<label for="middle-name">Middle Name</label>
+								<input type="text"
+									   id="middle-name" 
+									   th:maxlength="20"
+									   class="form-control" 
+									   th:field="*{middleName}" />
+							</div>
+							
+							<div class="row">
+								<div class="col-sm-9 col-xs-12 form-group required">
+									<label for="last-name">Last Name</label>
+									<input type="text"
+										   id="last-name" 
+										   class="form-control" 
+										   required="required"
+										   th:maxlength="30"
+										   th:field="*{lastName}" 
+										   aria-required="true"
+										   aria-described-by="lastNameError" />
+									<div th:if="${#fields.hasErrors('lastName')}" 
+										 id="lastNameError"
+										 class="lax-error" 
+										 th:errors="*{lastName}">Invalid last name</div>
+								</div>
+								<div class="col-sm-3 col-xs-12 form-group">
+									<label for="suffix">Suffix</label> 
+									<input type="text" 
+										   id="suffix"
+										   class="form-control" 
+										   th:maxlength="10"
+										   th:field="*{suffix}" />
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<label for="nickname">Nickname</label>
+								<input type="text"
+									   id="nickname" 
+									   class="form-control" 
+									   th:field="*{nickname}" />
+							</div>
+	
+							<button type="submit" class="btn btn-default">Update</button>
+						</div>
+						
+						<div class="col-sm-6 col-xs-12">
+							<div class="row">
+								<div class="col-sm-6 col-xs-12 form-group">
+									<label for="gender">Gender</label>
+									<select id="gender"
+											class="form-control" 
+											th:field="*{gender}">
+										<option value="">Select...</option>
+										<option th:each="opt : *{genders}" 
+												th:value="${opt}"
+												th:text="${opt.getLabel()}">Gender</option>
+									</select>
+								</div>
+								<div class="col-sm-6 col-xs-12 form-group">
+									<label for="dominant-hand">Dominant Hand</label>
+									<select id="dominant-hand" 
+											class="form-control"
+											th:field="*{dominantHand}">
+										<option value="">Select...</option>
+										<option th:each="opt : *{dominantHands}" 
+												th:value="${opt}"
+												th:text="${opt.getLabel()}">Gender</option>
+									</select>
+								</div>
+							</div>
+							
+							<div class="row">
+								<div class="col-sm-6 col-xs-12 form-group">
+									<label for="birthdate">Birth Date</label>
+									<input type="date"
+										   id="birthdate" 
+										   class="form-control" 
+										   th:field="*{birthdate}" />
+								</div>
+								<div class="col-sm-6 col-xs-12 form-group checkbox">
+									<label for="released">
+										<input type="checkbox"
+											   id="released"
+											   th:field="*{released}" />
+										<strong>Parent Released?</strong>
+									</label>
+								</div>
+							</div>
+	
+							<div class="row">
+								<div class="col-sm-6 col-xs-12 form-group">
+									<label for="release-sent">Release Sent</label> <input type="date"
+										id="release-sent" class="form-control"
+										th:field="*{parentReleaseSentOn}" />
+								</div>
+								<div class="col-sm-6 col-xs-12 form-group">
+									<label for="release-received">Release Received</label> <input
+										type="date" id="release-received" class="form-control"
+										th:field="*{parentReleaseReceivedOn}" />
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<label for="college">College</label>
+								<input type="text" 
+									   id="college" 
+									   class="form-control" 
+									   th:field="*{college}" />
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

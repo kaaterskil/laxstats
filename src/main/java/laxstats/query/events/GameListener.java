@@ -18,11 +18,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class EventListener {
-	private EventQueryRepository repository;
+public class GameListener {
+	private GameQueryRepository repository;
 
 	@Autowired
-	public void setRepository(EventQueryRepository repository) {
+	public void setRepository(GameQueryRepository repository) {
 		this.repository = repository;
 	}
 
@@ -31,7 +31,7 @@ public class EventListener {
 		final EventId eventId = event.getEventId();
 		final EventDTO dto = event.getEventDTO();
 
-		final EventEntry entity = new EventEntry();
+		final GameEntry entity = new GameEntry();
 		entity.setId(eventId.toString());
 		entity.setSite(dto.getSite());
 		entity.setAlignment(dto.getAlignment());
@@ -73,7 +73,7 @@ public class EventListener {
 		final EventId eventId = event.getEventId();
 		final EventDTO dto = event.getEventDTO();
 
-		final EventEntry entity = repository.findOne(eventId.toString());
+		final GameEntry entity = repository.findOne(eventId.toString());
 		entity.setSite(dto.getSite());
 		entity.setAlignment(dto.getAlignment());
 		entity.setStartsAt(dto.getStartsAt());
@@ -121,7 +121,7 @@ public class EventListener {
 	@EventHandler
 	protected void handle(EventDeletedEvent event) {
 		final EventId eventId = event.getEventId();
-		final EventEntry entity = repository.findOne(eventId.toString());
+		final GameEntry entity = repository.findOne(eventId.toString());
 		repository.delete(entity);
 	}
 
@@ -130,7 +130,7 @@ public class EventListener {
 	@EventHandler
 	protected void handle(AttendeeRegisteredEvent event) {
 		final EventId identifier = event.getEventId();
-		final EventEntry aggregate = repository.findOne(identifier.toString());
+		final GameEntry aggregate = repository.findOne(identifier.toString());
 
 		final AttendeeDTO dto = event.getAttendeeDTO();
 		final String attendeeId = dto.getId();
@@ -153,7 +153,7 @@ public class EventListener {
 	@EventHandler
 	protected void handle(AttendeeUpdatedEvent event) {
 		final EventId identifier = event.getEventId();
-		final EventEntry aggregate = repository.findOne(identifier.toString());
+		final GameEntry aggregate = repository.findOne(identifier.toString());
 
 		final AttendeeDTO dto = event.getAttendeeDTO();
 		final AttendeeEntry entity = aggregate.getEventAttendees().get(
@@ -170,7 +170,7 @@ public class EventListener {
 	@EventHandler
 	protected void handle(AttendeeDeletedEvent event) {
 		final EventId identifier = event.getEventId();
-		final EventEntry aggregate = repository.findOne(identifier.toString());
+		final GameEntry aggregate = repository.findOne(identifier.toString());
 		aggregate.getEventAttendees().remove(event.getAttendeeId());
 		repository.save(aggregate);
 	}

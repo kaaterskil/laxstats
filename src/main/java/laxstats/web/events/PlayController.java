@@ -39,8 +39,8 @@ import laxstats.api.events.UpdateShotCommand;
 import laxstats.api.violations.PenaltyCategory;
 import laxstats.query.events.AttendeeEntry;
 import laxstats.query.events.ClearEntry;
-import laxstats.query.events.EventEntry;
-import laxstats.query.events.EventQueryRepository;
+import laxstats.query.events.GameEntry;
+import laxstats.query.events.GameQueryRepository;
 import laxstats.query.events.FaceOffEntry;
 import laxstats.query.events.GoalEntry;
 import laxstats.query.events.GroundBallEntry;
@@ -75,14 +75,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
 public class PlayController extends ApplicationController {
-	private final EventQueryRepository eventRepository;
+	private final GameQueryRepository eventRepository;
 	private final TeamSeasonQueryRepository teamRepository;
 	private final ViolationQueryRepository violationRepository;
 	private Map<String, String> violations;
 
 	@Autowired
 	public PlayController(UserQueryRepository userRepository,
-			CommandBus commandBus, EventQueryRepository eventRepository,
+			CommandBus commandBus, GameQueryRepository eventRepository,
 			TeamSeasonQueryRepository teamRepository,
 			ViolationQueryRepository violationRepository) {
 		super(userRepository, commandBus);
@@ -105,7 +105,7 @@ public class PlayController extends ApplicationController {
 
 	@RequestMapping(value = "/events/{eventId}/clears", method = RequestMethod.GET)
 	public String clearIndex(@PathVariable String eventId, Model model) {
-		final EventEntry aggregate = eventRepository.findOne(eventId);
+		final GameEntry aggregate = eventRepository.findOne(eventId);
 		final List<PlayEntry> teamOnePlays = getPlays(PlayType.CLEAR,
 				aggregate, aggregate.getTeams().get(0).getId());
 		final List<PlayEntry> teamTwoPlays = getPlays(PlayType.CLEAR,
@@ -118,7 +118,7 @@ public class PlayController extends ApplicationController {
 
 	@RequestMapping(value = "/events/{eventId}/clears/new", method = RequestMethod.GET)
 	public String newClear(@PathVariable String eventId, Model model) {
-		final EventEntry aggregate = eventRepository.findOne(eventId);
+		final GameEntry aggregate = eventRepository.findOne(eventId);
 
 		final ClearForm form = new ClearForm();
 		form.setTeams(getTeams(aggregate));
@@ -141,7 +141,7 @@ public class PlayController extends ApplicationController {
 		final String playId = IdentifierFactory.getInstance()
 				.generateIdentifier();
 
-		final EventEntry event = eventRepository.findOne(eventId);
+		final GameEntry event = eventRepository.findOne(eventId);
 		final TeamSeasonEntry teamSeason = teamRepository.findOne(form
 				.getTeamSeasonId());
 		final List<PlayParticipantDTO> participants = new ArrayList<>();
@@ -178,7 +178,7 @@ public class PlayController extends ApplicationController {
 		}
 		final LocalDateTime now = LocalDateTime.now();
 		final UserEntry user = getCurrentUser();
-		final EventEntry event = eventRepository.findOne(eventId);
+		final GameEntry event = eventRepository.findOne(eventId);
 		final TeamSeasonEntry teamSeason = teamRepository.findOne(form
 				.getTeamSeasonId());
 		final List<PlayParticipantDTO> participants = new ArrayList<>();
@@ -200,7 +200,7 @@ public class PlayController extends ApplicationController {
 			@PathVariable String playId, Model model) {
 		final Map<String, Object> attributes = new HashMap<>();
 
-		final EventEntry aggregate = eventRepository.findOne(eventId);
+		final GameEntry aggregate = eventRepository.findOne(eventId);
 		attributes.put("event", aggregate);
 
 		final PlayEntry play = aggregate.getPlays().get(playId);
@@ -222,7 +222,7 @@ public class PlayController extends ApplicationController {
 
 	@RequestMapping(value = "/events/{eventId}/faceOffs", method = RequestMethod.GET)
 	public String faceOffIndex(@PathVariable String eventId, Model model) {
-		final EventEntry aggregate = eventRepository.findOne(eventId);
+		final GameEntry aggregate = eventRepository.findOne(eventId);
 		final List<FaceOffEntry> faceOffs = getFaceoffs(aggregate);
 		model.addAttribute("event", aggregate);
 		model.addAttribute("faceOffs", faceOffs);
@@ -231,7 +231,7 @@ public class PlayController extends ApplicationController {
 
 	@RequestMapping(value = "/events/{eventId}/faceOffs/new", method = RequestMethod.GET)
 	public String newFaceOff(@PathVariable String eventId, Model model) {
-		final EventEntry aggregate = eventRepository.findOne(eventId);
+		final GameEntry aggregate = eventRepository.findOne(eventId);
 
 		final FaceOffForm form = new FaceOffForm();
 		form.setAttendees(aggregate.getAttendees());
@@ -253,7 +253,7 @@ public class PlayController extends ApplicationController {
 		final String playId = IdentifierFactory.getInstance()
 				.generateIdentifier();
 
-		final EventEntry event = eventRepository.findOne(eventId);
+		final GameEntry event = eventRepository.findOne(eventId);
 		final TeamSeasonEntry teamSeason = teamRepository.findOne(form
 				.getTeamSeasonId());
 		final List<PlayParticipantDTO> participants = new ArrayList<>();
@@ -308,7 +308,7 @@ public class PlayController extends ApplicationController {
 		final LocalDateTime now = LocalDateTime.now();
 		final UserEntry user = getCurrentUser();
 
-		final EventEntry event = eventRepository.findOne(eventId);
+		final GameEntry event = eventRepository.findOne(eventId);
 		final PlayEntry play = event.getPlays().get(playId);
 		final TeamSeasonEntry teamSeason = teamRepository.findOne(form
 				.getTeamSeasonId());
@@ -351,7 +351,7 @@ public class PlayController extends ApplicationController {
 			@PathVariable String playId, Model model) {
 		final Map<String, Object> attributes = new HashMap<>();
 
-		final EventEntry aggregate = eventRepository.findOne(eventId);
+		final GameEntry aggregate = eventRepository.findOne(eventId);
 		attributes.put("event", aggregate);
 
 		final FaceOffEntry play = (FaceOffEntry) aggregate.getPlays().get(
@@ -381,7 +381,7 @@ public class PlayController extends ApplicationController {
 
 	@RequestMapping(value = "/events/{eventId}/goals", method = RequestMethod.GET)
 	public String goalIndex(@PathVariable String eventId, Model model) {
-		final EventEntry aggregate = eventRepository.findOne(eventId);
+		final GameEntry aggregate = eventRepository.findOne(eventId);
 		final List<PlayEntry> teamOnePlays = getPlays(PlayType.GOAL, aggregate,
 				aggregate.getTeams().get(0).getId());
 		final List<PlayEntry> teamTwoPlays = getPlays(PlayType.GOAL, aggregate,
@@ -394,7 +394,7 @@ public class PlayController extends ApplicationController {
 
 	@RequestMapping(value = "/events/{eventId}/goals/new", method = RequestMethod.GET)
 	public String newGoal(@PathVariable String eventId, Model model) {
-		final EventEntry aggregate = eventRepository.findOne(eventId);
+		final GameEntry aggregate = eventRepository.findOne(eventId);
 
 		final GoalForm form = new GoalForm();
 		form.setAttemptType(ScoreAttemptType.REGULAR);
@@ -417,7 +417,7 @@ public class PlayController extends ApplicationController {
 		final String playId = IdentifierFactory.getInstance()
 				.generateIdentifier();
 
-		final EventEntry event = eventRepository.findOne(eventId);
+		final GameEntry event = eventRepository.findOne(eventId);
 		final TeamSeasonEntry teamSeason = teamRepository.findOne(form
 				.getTeamSeasonId());
 		final List<PlayParticipantDTO> participants = new ArrayList<>();
@@ -474,7 +474,7 @@ public class PlayController extends ApplicationController {
 		final LocalDateTime now = LocalDateTime.now();
 		final UserEntry user = getCurrentUser();
 
-		final EventEntry event = eventRepository.findOne(eventId);
+		final GameEntry event = eventRepository.findOne(eventId);
 		final PlayEntry play = event.getPlays().get(playId);
 		final TeamSeasonEntry teamSeason = teamRepository.findOne(form
 				.getTeamSeasonId());
@@ -544,7 +544,7 @@ public class PlayController extends ApplicationController {
 			@PathVariable String playId, Model model) {
 		final Map<String, Object> attributes = new HashMap<>();
 
-		final EventEntry aggregate = eventRepository.findOne(eventId);
+		final GameEntry aggregate = eventRepository.findOne(eventId);
 		attributes.put("event", aggregate);
 
 		final GoalEntry play = (GoalEntry) aggregate.getPlays().get(playId);
@@ -574,7 +574,7 @@ public class PlayController extends ApplicationController {
 
 	@RequestMapping(value = "/events/{eventId}/groundBalls", method = RequestMethod.GET)
 	public String groundBallIndex(@PathVariable String eventId, Model model) {
-		final EventEntry aggregate = eventRepository.findOne(eventId);
+		final GameEntry aggregate = eventRepository.findOne(eventId);
 		final List<PlayEntry> teamOnePlays = getPlays(PlayType.GROUND_BALL,
 				aggregate, aggregate.getTeams().get(0).getId());
 		final List<PlayEntry> teamTwoPlays = getPlays(PlayType.GROUND_BALL,
@@ -587,7 +587,7 @@ public class PlayController extends ApplicationController {
 
 	@RequestMapping(value = "/events/{eventId}/groundBalls/new", method = RequestMethod.GET)
 	public String newGroundBall(@PathVariable String eventId, Model model) {
-		final EventEntry aggregate = eventRepository.findOne(eventId);
+		final GameEntry aggregate = eventRepository.findOne(eventId);
 
 		final GroundBallForm form = new GroundBallForm();
 		form.setAttendees(aggregate.getAttendees());
@@ -609,7 +609,7 @@ public class PlayController extends ApplicationController {
 		final String playId = IdentifierFactory.getInstance()
 				.generateIdentifier();
 
-		final EventEntry event = eventRepository.findOne(eventId);
+		final GameEntry event = eventRepository.findOne(eventId);
 		final TeamSeasonEntry teamSeason = teamRepository.findOne(form
 				.getTeamSeasonId());
 		final List<PlayParticipantDTO> participants = new ArrayList<>();
@@ -656,7 +656,7 @@ public class PlayController extends ApplicationController {
 		final LocalDateTime now = LocalDateTime.now();
 		final UserEntry user = getCurrentUser();
 
-		final EventEntry event = eventRepository.findOne(eventId);
+		final GameEntry event = eventRepository.findOne(eventId);
 		final PlayEntry play = event.getPlays().get(playId);
 		final TeamSeasonEntry teamSeason = teamRepository.findOne(form
 				.getTeamSeasonId());
@@ -689,7 +689,7 @@ public class PlayController extends ApplicationController {
 			@PathVariable String playId, Model model) {
 		final Map<String, Object> attributes = new HashMap<>();
 
-		final EventEntry aggregate = eventRepository.findOne(eventId);
+		final GameEntry aggregate = eventRepository.findOne(eventId);
 		attributes.put("event", aggregate);
 
 		final GroundBallEntry play = (GroundBallEntry) aggregate.getPlays()
@@ -714,7 +714,7 @@ public class PlayController extends ApplicationController {
 
 	@RequestMapping(value = "/events/{eventId}/penalties", method = RequestMethod.GET)
 	public String penaltyIndex(@PathVariable String eventId, Model model) {
-		final EventEntry aggregate = eventRepository.findOne(eventId);
+		final GameEntry aggregate = eventRepository.findOne(eventId);
 		final List<PlayEntry> teamOnePlays = getPlays(PlayType.PENALTY,
 				aggregate, aggregate.getTeams().get(0).getId());
 		final List<PlayEntry> teamTwoPlays = getPlays(PlayType.PENALTY,
@@ -727,7 +727,7 @@ public class PlayController extends ApplicationController {
 
 	@RequestMapping(value = "/events/{eventId}/penalties/new", method = RequestMethod.GET)
 	public String newPenalty(@PathVariable String eventId, Model model) {
-		final EventEntry aggregate = eventRepository.findOne(eventId);
+		final GameEntry aggregate = eventRepository.findOne(eventId);
 
 		final PenaltyForm form = new PenaltyForm();
 		form.setTeams(getTeams(aggregate));
@@ -751,7 +751,7 @@ public class PlayController extends ApplicationController {
 		final String playId = IdentifierFactory.getInstance()
 				.generateIdentifier();
 
-		final EventEntry event = eventRepository.findOne(eventId);
+		final GameEntry event = eventRepository.findOne(eventId);
 		final TeamSeasonEntry teamSeason = teamRepository.findOne(form
 				.getTeamSeasonId());
 		final List<PlayParticipantDTO> participants = new ArrayList<>();
@@ -804,7 +804,7 @@ public class PlayController extends ApplicationController {
 		final LocalDateTime now = LocalDateTime.now();
 		final UserEntry user = getCurrentUser();
 
-		final EventEntry event = eventRepository.findOne(eventId);
+		final GameEntry event = eventRepository.findOne(eventId);
 		final PenaltyEntry play = (PenaltyEntry) event.getPlays().get(playId);
 		final TeamSeasonEntry teamSeason = teamRepository.findOne(form
 				.getTeamSeasonId());
@@ -884,7 +884,7 @@ public class PlayController extends ApplicationController {
 			@PathVariable String playId, Model model) {
 		final Map<String, Object> attributes = new HashMap<>();
 
-		final EventEntry aggregate = eventRepository.findOne(eventId);
+		final GameEntry aggregate = eventRepository.findOne(eventId);
 		attributes.put("event", aggregate);
 
 		final PenaltyEntry play = (PenaltyEntry) aggregate.getPlays().get(
@@ -917,7 +917,7 @@ public class PlayController extends ApplicationController {
 
 	@RequestMapping(value = "/events/{eventId}/shots", method = RequestMethod.GET)
 	public String shotIndex(@PathVariable String eventId, Model model) {
-		final EventEntry aggregate = eventRepository.findOne(eventId);
+		final GameEntry aggregate = eventRepository.findOne(eventId);
 		final List<PlayEntry> teamOnePlays = getPlays(PlayType.SHOT, aggregate,
 				aggregate.getTeams().get(0).getId());
 		final List<PlayEntry> teamTwoPlays = getPlays(PlayType.SHOT, aggregate,
@@ -930,7 +930,7 @@ public class PlayController extends ApplicationController {
 
 	@RequestMapping(value = "/events/{eventId}/shots/new", method = RequestMethod.GET)
 	public String newShot(@PathVariable String eventId, Model model) {
-		final EventEntry aggregate = eventRepository.findOne(eventId);
+		final GameEntry aggregate = eventRepository.findOne(eventId);
 
 		final ShotForm form = new ShotForm();
 		form.setAttendees(aggregate.getAttendees());
@@ -952,7 +952,7 @@ public class PlayController extends ApplicationController {
 		final String playId = IdentifierFactory.getInstance()
 				.generateIdentifier();
 
-		final EventEntry event = eventRepository.findOne(eventId);
+		final GameEntry event = eventRepository.findOne(eventId);
 		final TeamSeasonEntry teamSeason = teamRepository.findOne(form
 				.getTeamSeasonId());
 		final List<PlayParticipantDTO> participants = new ArrayList<>();
@@ -988,7 +988,7 @@ public class PlayController extends ApplicationController {
 		final LocalDateTime now = LocalDateTime.now();
 		final UserEntry user = getCurrentUser();
 
-		final EventEntry event = eventRepository.findOne(eventId);
+		final GameEntry event = eventRepository.findOne(eventId);
 		final PlayEntry play = event.getPlays().get(playId);
 		final TeamSeasonEntry teamSeason = teamRepository.findOne(form
 				.getTeamSeasonId());
@@ -1032,7 +1032,7 @@ public class PlayController extends ApplicationController {
 			@PathVariable String playId, Model model) {
 		final Map<String, Object> attributes = new HashMap<>();
 
-		final EventEntry aggregate = eventRepository.findOne(eventId);
+		final GameEntry aggregate = eventRepository.findOne(eventId);
 		attributes.put("event", aggregate);
 
 		final ShotEntry play = (ShotEntry) aggregate.getPlays().get(playId);
@@ -1056,7 +1056,7 @@ public class PlayController extends ApplicationController {
 
 	/*---------- Methods ----------*/
 
-	private Map<String, String> getTeams(EventEntry event) {
+	private Map<String, String> getTeams(GameEntry event) {
 		final Map<String, String> result = new HashMap<>();
 		for (final TeamEvent each : event.getTeams()) {
 			result.put(each.getTeamSeason().getId(), each.getTeamSeason()
@@ -1065,7 +1065,7 @@ public class PlayController extends ApplicationController {
 		return result;
 	}
 
-	private List<FaceOffEntry> getFaceoffs(EventEntry event) {
+	private List<FaceOffEntry> getFaceoffs(GameEntry event) {
 		final List<FaceOffEntry> list = new ArrayList<>();
 		for (final PlayEntry each : event.getPlays().values()) {
 			if (each instanceof FaceOffEntry) {
@@ -1116,7 +1116,7 @@ public class PlayController extends ApplicationController {
 		return list;
 	}
 
-	private List<PlayEntry> getPlays(String type, EventEntry event,
+	private List<PlayEntry> getPlays(String type, GameEntry event,
 			String teamSeasonId) {
 		final List<PlayEntry> list = new ArrayList<>();
 		for (final PlayEntry each : event.getPlays().values()) {

@@ -13,6 +13,7 @@ import org.joda.time.Interval;
 @Entity
 @DiscriminatorValue(PlayType.PENALTY)
 public class PenaltyEntry extends PlayEntry {
+	private static final long serialVersionUID = -8712295107965966601L;
 
 	public PenaltyEntry() {
 		playKey = PlayKey.PLAY;

@@ -29,10 +29,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class PlayListener {
-	private EventQueryRepository repository;
+	private GameQueryRepository repository;
 
 	@Autowired
-	public void setPlayRepository(EventQueryRepository repository) {
+	public void setPlayRepository(GameQueryRepository repository) {
 		this.repository = repository;
 	}
 
@@ -44,7 +44,7 @@ public class PlayListener {
 		setPropertyValues(clear, event.getPlayDTO());
 
 		final String eventId = event.getEventId().toString();
-		final EventEntry aggregate = repository.findOne(eventId);
+		final GameEntry aggregate = repository.findOne(eventId);
 		aggregate.addPlay(clear);
 		repository.save(aggregate);
 	}
@@ -52,7 +52,7 @@ public class PlayListener {
 	@EventHandler
 	protected void handle(ClearUpdatedEvent event) {
 		final String eventId = event.getEventId().toString();
-		final EventEntry aggregate = repository.findOne(eventId);
+		final GameEntry aggregate = repository.findOne(eventId);
 		final PlayEntry play = aggregate.getPlays().get(event.getPlayId());
 		updatePropertyValues(play, event.getPlayDTO());
 		repository.save(aggregate);
@@ -61,7 +61,7 @@ public class PlayListener {
 	@EventHandler
 	protected void handle(ClearDeletedEvent event) {
 		final String eventId = event.getEventId().toString();
-		final EventEntry aggregate = repository.findOne(eventId);
+		final GameEntry aggregate = repository.findOne(eventId);
 		final PlayEntry play = aggregate.getPlays().get(event.getPlayId());
 		aggregate.deletePlay(play);
 		repository.save(aggregate);
@@ -75,7 +75,7 @@ public class PlayListener {
 		setPropertyValues(faceoff, event.getPlayDTO());
 
 		final String eventId = event.getEventId().toString();
-		final EventEntry aggregate = repository.findOne(eventId);
+		final GameEntry aggregate = repository.findOne(eventId);
 		aggregate.addPlay(faceoff);
 		repository.save(aggregate);
 	}
@@ -83,7 +83,7 @@ public class PlayListener {
 	@EventHandler
 	protected void handle(FaceOffUpdatedEvent event) {
 		final String eventId = event.getEventId().toString();
-		final EventEntry aggregate = repository.findOne(eventId);
+		final GameEntry aggregate = repository.findOne(eventId);
 		final PlayEntry play = aggregate.getPlays().get(event.getPlayId());
 		updatePropertyValues(play, event.getPlayDTO());
 		repository.save(aggregate);
@@ -92,7 +92,7 @@ public class PlayListener {
 	@EventHandler
 	protected void handle(FaceOffDeletedEvent event) {
 		final String eventId = event.getEventId().toString();
-		final EventEntry aggregate = repository.findOne(eventId);
+		final GameEntry aggregate = repository.findOne(eventId);
 		final PlayEntry play = aggregate.getPlays().get(event.getPlayId());
 		aggregate.deletePlay(play);
 		repository.save(aggregate);
@@ -106,7 +106,7 @@ public class PlayListener {
 		setPropertyValues(goal, event.getPlayDTO());
 
 		final String eventId = event.getEventId().toString();
-		final EventEntry aggregate = repository.findOne(eventId);
+		final GameEntry aggregate = repository.findOne(eventId);
 		aggregate.addPlay(goal);
 		repository.save(aggregate);
 	}
@@ -114,7 +114,7 @@ public class PlayListener {
 	@EventHandler
 	protected void handle(GoalUpdatedEvent event) {
 		final String eventId = event.getEventId().toString();
-		final EventEntry aggregate = repository.findOne(eventId);
+		final GameEntry aggregate = repository.findOne(eventId);
 		final PlayEntry play = aggregate.getPlays().get(event.getPlayId());
 		updatePropertyValues(play, event.getPlayDTO());
 		repository.save(aggregate);
@@ -123,7 +123,7 @@ public class PlayListener {
 	@EventHandler
 	protected void handle(GoalDeletedEvent event) {
 		final String eventId = event.getEventId().toString();
-		final EventEntry aggregate = repository.findOne(eventId);
+		final GameEntry aggregate = repository.findOne(eventId);
 		final PlayEntry play = aggregate.getPlays().get(event.getPlayId());
 		aggregate.deletePlay(play);
 		repository.save(aggregate);
@@ -137,7 +137,7 @@ public class PlayListener {
 		setPropertyValues(groundBall, event.getPlayDTO());
 
 		final String eventId = event.getEventId().toString();
-		final EventEntry aggregate = repository.findOne(eventId);
+		final GameEntry aggregate = repository.findOne(eventId);
 		aggregate.addPlay(groundBall);
 		repository.save(aggregate);
 	}
@@ -145,7 +145,7 @@ public class PlayListener {
 	@EventHandler
 	protected void handle(GroundBallUpdatedEvent event) {
 		final String eventId = event.getEventId().toString();
-		final EventEntry aggregate = repository.findOne(eventId);
+		final GameEntry aggregate = repository.findOne(eventId);
 		final PlayEntry play = aggregate.getPlays().get(event.getPlayId());
 		updatePropertyValues(play, event.getPlayDTO());
 		repository.save(aggregate);
@@ -154,7 +154,7 @@ public class PlayListener {
 	@EventHandler
 	protected void handle(GroundBallDeletedEvent event) {
 		final String eventId = event.getEventId().toString();
-		final EventEntry aggregate = repository.findOne(eventId);
+		final GameEntry aggregate = repository.findOne(eventId);
 		final PlayEntry play = aggregate.getPlays().get(event.getPlayId());
 		aggregate.deletePlay(play);
 		repository.save(aggregate);
@@ -168,7 +168,7 @@ public class PlayListener {
 		setPropertyValues(penalty, event.getPlayDTO());
 
 		final String eventId = event.getEventId().toString();
-		final EventEntry aggregate = repository.findOne(eventId);
+		final GameEntry aggregate = repository.findOne(eventId);
 		aggregate.addPlay(penalty);
 		repository.save(aggregate);
 	}
@@ -176,7 +176,7 @@ public class PlayListener {
 	@EventHandler
 	protected void handle(PenaltyUpdatedEvent event) {
 		final String eventId = event.getEventId().toString();
-		final EventEntry aggregate = repository.findOne(eventId);
+		final GameEntry aggregate = repository.findOne(eventId);
 		final PlayEntry play = aggregate.getPlays().get(event.getPlayId());
 		updatePropertyValues(play, event.getPlayDTO());
 		repository.save(aggregate);
@@ -185,7 +185,7 @@ public class PlayListener {
 	@EventHandler
 	protected void handle(PenaltyDeletedEvent event) {
 		final String eventId = event.getEventId().toString();
-		final EventEntry aggregate = repository.findOne(eventId);
+		final GameEntry aggregate = repository.findOne(eventId);
 		final PlayEntry play = aggregate.getPlays().get(event.getPlayId());
 		aggregate.deletePlay(play);
 		repository.save(aggregate);
@@ -199,7 +199,7 @@ public class PlayListener {
 		setPropertyValues(shot, event.getPlayDTO());
 
 		final String eventId = event.getEventId().toString();
-		final EventEntry aggregate = repository.findOne(eventId);
+		final GameEntry aggregate = repository.findOne(eventId);
 		aggregate.addPlay(shot);
 		repository.save(aggregate);
 	}
@@ -207,7 +207,7 @@ public class PlayListener {
 	@EventHandler
 	protected void handle(ShotUpdatedEvent event) {
 		final String eventId = event.getEventId().toString();
-		final EventEntry aggregate = repository.findOne(eventId);
+		final GameEntry aggregate = repository.findOne(eventId);
 		final PlayEntry play = aggregate.getPlays().get(event.getPlayId());
 		updatePropertyValues(play, event.getPlayDTO());
 		repository.save(aggregate);
@@ -216,7 +216,7 @@ public class PlayListener {
 	@EventHandler
 	protected void handle(ShotDeletedEvent event) {
 		final String eventId = event.getEventId().toString();
-		final EventEntry aggregate = repository.findOne(eventId);
+		final GameEntry aggregate = repository.findOne(eventId);
 		final PlayEntry play = aggregate.getPlays().get(event.getPlayId());
 		aggregate.deletePlay(play);
 		repository.save(aggregate);

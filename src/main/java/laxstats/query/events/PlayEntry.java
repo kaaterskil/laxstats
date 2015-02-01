@@ -1,5 +1,6 @@
 package laxstats.query.events;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,14 +45,15 @@ import org.joda.time.LocalTime;
 		@Index(name = "play_idx7", columnList = "playKey, result"),
 		@Index(name = "play_idx8", columnList = "period, elapsedTime") }, uniqueConstraints = { @UniqueConstraint(name = "play_uk1", columnNames = {
 		"event", "sequenceNumber" }) })
-abstract public class PlayEntry {
+abstract public class PlayEntry implements Serializable {
+	private static final long serialVersionUID = -9074132185978497348L;
 
 	@Id
 	@Column(length = 36)
 	protected String id;
 
 	@ManyToOne
-	protected EventEntry event;
+	protected GameEntry event;
 
 	protected int sequenceNumber;
 
@@ -152,11 +154,11 @@ abstract public class PlayEntry {
 		this.id = id;
 	}
 
-	public EventEntry getEvent() {
+	public GameEntry getEvent() {
 		return event;
 	}
 
-	public void setEvent(EventEntry event) {
+	public void setEvent(GameEntry event) {
 		this.event = event;
 	}
 

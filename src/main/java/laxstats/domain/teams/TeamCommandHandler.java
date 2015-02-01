@@ -68,17 +68,17 @@ public class TeamCommandHandler {
 		final Team aggregate = repository.load(identifier);
 
 		final TeamSeasonDTO dto = command.getTeamSeasonDTO();
-		final TeamSeasonId seasonId = dto.getTeamSeasonId();
+		final TeamSeasonId teamSeasonId = dto.getTeamSeasonId();
+		final String seasonId = dto.getSeason().getId();
 
-		final boolean canRegister = aggregate.canRegisterSeason(seasonId
-				.toString());
+		final boolean canRegister = aggregate.canRegisterSeason(seasonId);
 		if (!canRegister) {
 			throw new IllegalArgumentException("teamSeason.isRegistered");
 		}
 
-		final TeamSeason entity = new TeamSeason(seasonId, dto);
+		final TeamSeason entity = new TeamSeason(teamSeasonId, dto);
 		teamSeasonRepository.add(entity);
-		return seasonId;
+		return teamSeasonId;
 	}
 
 	@CommandHandler

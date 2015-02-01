@@ -108,13 +108,13 @@ public class HttpHeadFilter implements Filter {
 			contentLength += len;
 		}
 
-		@Override
+		@SuppressWarnings("unused")
 		public boolean isReady() {
 			// TODO Auto-generated method stub
 			return false;
 		}
 
-		@Override
+		@SuppressWarnings("unused")
 		public void setWriteListener(WriteListener arg0) {
 			// TODO Auto-generated method stub
 

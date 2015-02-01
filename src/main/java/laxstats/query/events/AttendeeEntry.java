@@ -1,5 +1,7 @@
 package laxstats.query.events;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -30,14 +32,16 @@ import org.joda.time.LocalDateTime;
 		@Index(name = "event_attendees_idx6", columnList = "role"),
 		@Index(name = "event_attendees_idx7", columnList = "status") }, uniqueConstraints = { @UniqueConstraint(name = "event_attendees_uk1", columnNames = {
 		"player", "event", "team_season" }) })
-public class AttendeeEntry {
+public class AttendeeEntry implements Serializable {
+	private static final long serialVersionUID = -1637974392983471162L;
+
 	@Id
 	@Column(length = 36)
 	private String id;
 
 	@ManyToOne
 	@JoinColumn(nullable = false)
-	private EventEntry event;
+	private GameEntry event;
 
 	@ManyToOne
 	private PlayerEntry player;
@@ -73,7 +77,7 @@ public class AttendeeEntry {
 
 	// ---------- Constructors ----------//
 
-	public AttendeeEntry(EventEntry event, PlayerEntry player,
+	public AttendeeEntry(GameEntry event, PlayerEntry player,
 			TeamSeasonEntry teamSeason) {
 		this.event = event;
 		this.player = player;
@@ -110,11 +114,11 @@ public class AttendeeEntry {
 		this.id = id;
 	}
 
-	public EventEntry getEvent() {
+	public GameEntry getEvent() {
 		return event;
 	}
 
-	public void setEvent(EventEntry event) {
+	public void setEvent(GameEntry event) {
 		this.event = event;
 	}
 

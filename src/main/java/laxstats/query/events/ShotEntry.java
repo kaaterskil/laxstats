@@ -9,6 +9,7 @@ import laxstats.api.events.PlayType;
 @Entity
 @DiscriminatorValue(PlayType.SHOT)
 public class ShotEntry extends PlayEntry {
+	private static final long serialVersionUID = -6788526267404351022L;
 
 	public ShotEntry() {
 		playKey = PlayKey.PLAY;

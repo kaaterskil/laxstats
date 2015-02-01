@@ -21,8 +21,8 @@ import laxstats.api.players.Role;
 import laxstats.api.sites.SiteAlignment;
 import laxstats.query.events.AttendeeEntry;
 import laxstats.query.events.AttendeeQueryRepository;
-import laxstats.query.events.EventEntry;
-import laxstats.query.events.EventQueryRepository;
+import laxstats.query.events.GameEntry;
+import laxstats.query.events.GameQueryRepository;
 import laxstats.query.events.TeamEvent;
 import laxstats.query.players.PlayerEntry;
 import laxstats.query.seasons.SeasonEntry;
@@ -55,14 +55,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class EventController extends ApplicationController {
-	private final EventQueryRepository eventRepository;
+	private final GameQueryRepository eventRepository;
 	private final SeasonQueryRepository seasonRepository;
 	private final SiteQueryRepository siteRepository;
 	private final TeamSeasonQueryRepository teamRepository;
 	private final AttendeeQueryRepository attendeeRepository;
 
 	@Autowired
-	protected EventController(EventQueryRepository eventRepository,
+	protected EventController(GameQueryRepository eventRepository,
 			SeasonQueryRepository seasonRepository,
 			SiteQueryRepository siteRepository,
 			TeamSeasonQueryRepository teamRepository,
@@ -86,7 +86,7 @@ public class EventController extends ApplicationController {
 
 	@RequestMapping(value = "/events", method = RequestMethod.GET)
 	public String eventIndex(Model model) {
-		final Iterable<EventEntry> list = eventRepository.findAll();
+		final Iterable<GameEntry> list = eventRepository.findAll();
 		model.addAttribute("events", list);
 		return "events/index";
 	}
@@ -133,7 +133,7 @@ public class EventController extends ApplicationController {
 
 	@RequestMapping(value = "/events/{eventId}", method = RequestMethod.GET)
 	public String showEvent(@PathVariable String eventId, Model model) {
-		final EventEntry aggregate = eventRepository.findOne(eventId);
+		final GameEntry aggregate = eventRepository.findOne(eventId);
 		model.addAttribute("item", aggregate);
 		return "events/showEvent";
 	}
@@ -199,7 +199,7 @@ public class EventController extends ApplicationController {
 
 	@RequestMapping(value = "/events/{eventId}/edit", method = RequestMethod.GET)
 	public String editEvent(@PathVariable String eventId, Model model) {
-		final EventEntry aggregate = eventRepository.findOne(eventId);
+		final GameEntry aggregate = eventRepository.findOne(eventId);
 		final TeamEvent teamOne = aggregate.getTeams().get(0);
 		final TeamEvent teamTwo = aggregate.getTeams().get(1);
 		final SeasonEntry season = teamOne.getTeamSeason().getSeason();
@@ -230,7 +230,7 @@ public class EventController extends ApplicationController {
 	@RequestMapping(value = "/events{eventId}/teamSeasons/{teamSeasonId}", method = RequestMethod.GET)
 	public String attendeeIndex(@PathVariable String eventId,
 			@PathVariable String teamSeasonId, Model model) {
-		final EventEntry aggregate = eventRepository.findOne(eventId);
+		final GameEntry aggregate = eventRepository.findOne(eventId);
 		final TeamSeasonEntry teamSeason = teamRepository.findOne(teamSeasonId);
 		final List<AttendeeEntry> roster = aggregate.getAttendees().get(
 				teamSeason.getName());
@@ -253,7 +253,7 @@ public class EventController extends ApplicationController {
 		final UserEntry user = getCurrentUser();
 		final String attendeeId = IdentifierFactory.getInstance()
 				.generateIdentifier();
-		final EventEntry aggregate = eventRepository.findOne(eventId);
+		final GameEntry aggregate = eventRepository.findOne(eventId);
 		final TeamSeasonEntry teamSeason = teamRepository.findOne(teamSeasonId);
 		final PlayerEntry player = teamSeason.getPlayer(form.getPlayerId());
 
@@ -278,7 +278,7 @@ public class EventController extends ApplicationController {
 		}
 		final LocalDateTime now = LocalDateTime.now();
 		final UserEntry user = getCurrentUser();
-		final EventEntry event = eventRepository.findOne(eventId);
+		final GameEntry event = eventRepository.findOne(eventId);
 		final TeamSeasonEntry teamSeason = teamRepository.findOne(teamSeasonId);
 		final PlayerEntry player = teamSeason.getPlayer(form.getPlayerId());
 

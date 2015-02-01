@@ -19,7 +19,9 @@ import laxstats.api.people.Gender;
 import laxstats.api.people.HasPrimaryContactException;
 import laxstats.api.people.PersonCreatedEvent;
 import laxstats.api.people.PersonDTO;
+import laxstats.api.people.PersonDeletedEvent;
 import laxstats.api.people.PersonId;
+import laxstats.api.people.PersonUpdatedEvent;
 
 import org.axonframework.eventsourcing.annotation.AbstractAnnotatedAggregateRoot;
 import org.axonframework.eventsourcing.annotation.AggregateIdentifier;
@@ -41,13 +43,11 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
 	private String fullName;
 	private Gender gender;
 	private DominantHand dominantHand;
-	private final boolean isParentReleased = false;
+	private boolean released = false;
 	private LocalDate parentReleaseSentOn;
 	private LocalDate parentReleaseReceivedOn;
 	private LocalDate birthdate;
-	private String photo;
 	private String college;
-	private String collegeUrl;
 	private final Set<RelationshipInfo> childRelationships = new HashSet<>();
 	private final Set<RelationshipInfo> parentRelationships = new HashSet<>();
 
@@ -67,6 +67,14 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
 	}
 
 	/* ---------- Methods ---------- */
+
+	public void update(PersonId personId, PersonDTO personDTO) {
+		apply(new PersonUpdatedEvent(personId, personDTO));
+	}
+
+	public void delete(PersonId personId) {
+		apply(new PersonDeletedEvent(personId));
+	}
 
 	public void registerAddress(AddressDTO dto, boolean overridePrimary) {
 		if (dto.isPrimary() && hasPrimaryAddress() && !overridePrimary) {
@@ -146,11 +154,37 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
 		middleName = dto.getMiddleName();
 		lastName = dto.getLastName();
 		suffix = dto.getSuffix();
-		nickname = dto.getNickname();
 		fullName = dto.fullName();
+		nickname = dto.getNickname();
 		gender = dto.getGender();
 		dominantHand = dto.getDominantHand();
 		birthdate = dto.getBirthdate();
+		released = dto.isParentReleased();
+		parentReleaseSentOn = dto.getParentReleaseSentOn();
+		parentReleaseReceivedOn = dto.getParentReleaseReceivedOn();
+	}
+
+	@EventSourcingHandler
+	protected void handle(PersonUpdatedEvent event) {
+		final PersonDTO dto = event.getPersonDTO();
+		prefix = dto.getPrefix();
+		firstName = dto.getFirstName();
+		middleName = dto.getMiddleName();
+		lastName = dto.getLastName();
+		suffix = dto.getSuffix();
+		fullName = dto.getFullName();
+		nickname = dto.getNickname();
+		gender = dto.getGender();
+		dominantHand = dto.getDominantHand();
+		birthdate = dto.getBirthdate();
+		released = dto.isParentReleased();
+		parentReleaseSentOn = dto.getParentReleaseSentOn();
+		parentReleaseReceivedOn = dto.getParentReleaseReceivedOn();
+	}
+
+	@EventSourcingHandler
+	protected void handle(PersonDeletedEvent event) {
+		markDeleted();
 	}
 
 	@EventSourcingHandler
@@ -229,8 +263,8 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
 		return dominantHand;
 	}
 
-	public boolean isParentReleased() {
-		return isParentReleased;
+	public boolean isReleased() {
+		return released;
 	}
 
 	public LocalDate getParentReleaseSentOn() {
@@ -245,16 +279,8 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
 		return birthdate;
 	}
 
-	public String getPhoto() {
-		return photo;
-	}
-
 	public String getCollege() {
 		return college;
-	}
-
-	public String getCollegeUrl() {
-		return collegeUrl;
 	}
 
 	public Map<String, Address> getAddresses() {

@@ -1,7 +1,7 @@
 package laxstats.api.events;
 
 import laxstats.api.players.Role;
-import laxstats.query.events.EventEntry;
+import laxstats.query.events.GameEntry;
 import laxstats.query.players.PlayerEntry;
 import laxstats.query.teamSeasons.TeamSeasonEntry;
 import laxstats.query.users.UserEntry;
@@ -10,7 +10,7 @@ import org.joda.time.LocalDateTime;
 
 public class AttendeeDTO {
 	private final String id;
-	private final EventEntry event;
+	private final GameEntry event;
 	private final PlayerEntry player;
 	private final TeamSeasonEntry teamSeason;
 	private final Role role;
@@ -22,7 +22,7 @@ public class AttendeeDTO {
 	private final LocalDateTime modifiedAt;
 	private final UserEntry modifiedBy;
 
-	public AttendeeDTO(String id, EventEntry event, PlayerEntry player,
+	public AttendeeDTO(String id, GameEntry event, PlayerEntry player,
 			TeamSeasonEntry teamSeason, Role role, AthleteStatus status,
 			String name, String jerseyNumber, LocalDateTime createdAt,
 			UserEntry createdBy, LocalDateTime modifiedAt, UserEntry modifiedBy) {
@@ -40,7 +40,7 @@ public class AttendeeDTO {
 		this.modifiedBy = modifiedBy;
 	}
 
-	public AttendeeDTO(String id, EventEntry event, PlayerEntry player,
+	public AttendeeDTO(String id, GameEntry event, PlayerEntry player,
 			TeamSeasonEntry teamSeason, Role role, AthleteStatus status,
 			String name, String jerseyNumber, LocalDateTime modifiedAt,
 			UserEntry modifiedBy) {
@@ -52,7 +52,7 @@ public class AttendeeDTO {
 		return id;
 	}
 
-	public EventEntry getEvent() {
+	public GameEntry getEvent() {
 		return event;
 	}
 

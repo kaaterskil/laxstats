@@ -1,6 +1,16 @@
 package laxstats.query.people;
 
-import laxstats.api.people.*;
+import laxstats.api.people.AddressAddedEvent;
+import laxstats.api.people.AddressChangedEvent;
+import laxstats.api.people.AddressDTO;
+import laxstats.api.people.ContactAddedEvent;
+import laxstats.api.people.ContactChangedEvent;
+import laxstats.api.people.ContactDTO;
+import laxstats.api.people.PersonCreatedEvent;
+import laxstats.api.people.PersonDTO;
+import laxstats.api.people.PersonDeletedEvent;
+import laxstats.api.people.PersonId;
+import laxstats.api.people.PersonUpdatedEvent;
 
 import org.axonframework.eventhandling.annotation.EventHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,38 +27,71 @@ public class PersonListener {
 
 	@EventHandler
 	protected void handle(PersonCreatedEvent event) {
-		PersonDTO dto = event.getPersonDTO();
+		final PersonDTO dto = event.getPersonDTO();
 
-		PersonEntry person = new PersonEntry();
-		person.setId(event.getPersonId().toString());
+		final PersonEntry aggregate = new PersonEntry();
+		aggregate.setId(event.getPersonId().toString());
+		aggregate.setPrefix(dto.getPrefix());
+		aggregate.setFirstName(dto.getFirstName());
+		aggregate.setMiddleName(dto.getMiddleName());
+		aggregate.setLastName(dto.getLastName());
+		aggregate.setSuffix(dto.getSuffix());
+		aggregate.setFullName(dto.fullName());
+		aggregate.setNickname(dto.getNickname());
+		aggregate.setGender(dto.getGender());
+		aggregate.setDominantHand(dto.getDominantHand());
+		aggregate.setBirthdate(dto.getBirthdate());
+		aggregate.setParentReleased(dto.isParentReleased());
+		aggregate.setParentReleaseSentOn(dto.getParentReleaseSentOn());
+		aggregate.setParentReleaseReceivedOn(dto.getParentReleaseReceivedOn());
+		aggregate.setCollege(dto.getCollege());
+		aggregate.setCreatedAt(dto.getCreatedAt());
+		aggregate.setCreatedBy(dto.getCreatedBy());
+		aggregate.setModifiedAt(dto.getModifiedAt());
+		aggregate.setModifiedBy(dto.getModifiedBy());
 
-		person.setBirthdate(dto.getBirthdate());
-		person.setCreatedAt(dto.getCreatedAt());
-		person.setCreatedBy(dto.getCreatedBy());
-		person.setDominantHand(dto.getDominantHand());
-		person.setFirstName(dto.getFirstName());
-		person.setFullName(dto.fullName());
-		person.setGender(dto.getGender());
-		person.setLastName(dto.getLastName());
-		person.setMiddleName(dto.getMiddleName());
-		person.setModifiedAt(dto.getModifiedAt());
-		person.setModifiedBy(dto.getModifiedBy());
-		person.setNickname(dto.getNickname());
-		person.setPrefix(dto.getPrefix());
-		person.setSuffix(dto.getSuffix());
-
-		personRepository.save(person);
+		personRepository.save(aggregate);
 	}
 
-	//---------- Addresses ----------//
+	@EventHandler
+	protected void handle(PersonUpdatedEvent event) {
+		final String id = event.getPersonId().toString();
+		final PersonDTO dto = event.getPersonDTO();
+
+		final PersonEntry aggregate = personRepository.findOne(id);
+		aggregate.setPrefix(dto.getPrefix());
+		aggregate.setFirstName(dto.getFirstName());
+		aggregate.setMiddleName(dto.getMiddleName());
+		aggregate.setLastName(dto.getLastName());
+		aggregate.setSuffix(dto.getSuffix());
+		aggregate.setFullName(dto.fullName());
+		aggregate.setNickname(dto.getNickname());
+		aggregate.setGender(dto.getGender());
+		aggregate.setDominantHand(dto.getDominantHand());
+		aggregate.setBirthdate(dto.getBirthdate());
+		aggregate.setParentReleased(dto.isParentReleased());
+		aggregate.setParentReleaseSentOn(dto.getParentReleaseSentOn());
+		aggregate.setParentReleaseReceivedOn(dto.getParentReleaseReceivedOn());
+		aggregate.setCollege(dto.getCollege());
+		aggregate.setModifiedAt(dto.getModifiedAt());
+		aggregate.setModifiedBy(dto.getModifiedBy());
+	}
+
+	@EventHandler
+	protected void handle(PersonDeletedEvent event) {
+		final String id = event.getPersonId().toString();
+		personRepository.delete(id);
+	}
+
+	// ---------- Addresses ----------//
 
 	@EventHandler
 	protected void handle(AddressAddedEvent event) {
-		AddressDTO dto = event.getAddress();
-		PersonEntry person = personRepository.findOne(event.getPersonId()
-				.toString());
+		final AddressDTO dto = event.getAddress();
+		final PersonEntry aggregate = personRepository.findOne(event
+				.getPersonId().toString());
 
-		AddressEntry address = new AddressEntry();
+		final AddressEntry address = new AddressEntry();
 		address.setAddressType(dto.getAddressType());
 		address.setAddress1(dto.getAddress1());
 		address.setAddress2(dto.getAddress2());
@@ -62,17 +105,18 @@ public class PersonListener {
 		address.setModifiedAt(dto.getModifiedAt());
 		address.setModifiedBy(dto.getModifiedBy());
 
-		person.addAddress(address);
-		personRepository.save(person);
+		aggregate.addAddress(address);
+		personRepository.save(aggregate);
 	}
 
 	@EventHandler
 	protected void handle(AddressChangedEvent event) {
-		PersonId identifier = event.getPersonId();
-		AddressDTO dto = event.getAddressDTO();
-		PersonEntry person = personRepository.findOne(identifier.toString());
+		final PersonId identifier = event.getPersonId();
+		final AddressDTO dto = event.getAddressDTO();
+		final PersonEntry aggregate = personRepository.findOne(identifier
+				.toString());
 
-		AddressEntry address = person.getAddresses().get(dto.getId());
+		final AddressEntry address = aggregate.getAddresses().get(dto.getId());
 		address.setAddressType(dto.getAddressType());
 		address.setAddress1(dto.getAddress1());
 		address.setAddress2(dto.getAddress2());
@@ -84,18 +128,19 @@ public class PersonListener {
 		address.setModifiedAt(dto.getModifiedAt());
 		address.setModifiedBy(dto.getModifiedBy());
 
-		personRepository.save(person);
+		personRepository.save(aggregate);
 	}
 
-	//---------- Contacts ----------//
+	// ---------- Contacts ----------//
 
 	@EventHandler
 	protected void handle(ContactAddedEvent event) {
-		PersonId identifier = event.getPersonId();
-		ContactDTO dto = event.getContact();
-		PersonEntry person = personRepository.findOne(identifier.toString());
+		final PersonId identifier = event.getPersonId();
+		final ContactDTO dto = event.getContact();
+		final PersonEntry aggregate = personRepository.findOne(identifier
+				.toString());
 
-		ContactEntry contact = new ContactEntry();
+		final ContactEntry contact = new ContactEntry();
 		contact.setMethod(dto.getMethod());
 		contact.setValue(dto.getValue());
 		contact.setPrimary(dto.isPrimary());
@@ -105,17 +150,18 @@ public class PersonListener {
 		contact.setModifiedAt(dto.getModifiedAt());
 		contact.setModifiedBy(dto.getModifiedBy());
 
-		person.addContact(contact);
-		personRepository.save(person);
+		aggregate.addContact(contact);
+		personRepository.save(aggregate);
 	}
 
 	@EventHandler
 	protected void handle(ContactChangedEvent event) {
-		PersonId identifier = event.getPersonId();
-		ContactDTO dto = event.getContact();
-		PersonEntry person = personRepository.findOne(identifier.toString());
+		final PersonId identifier = event.getPersonId();
+		final ContactDTO dto = event.getContact();
+		final PersonEntry aggregate = personRepository.findOne(identifier
+				.toString());
 
-		ContactEntry contact = person.getContacts().get(dto.getId());
+		final ContactEntry contact = aggregate.getContacts().get(dto.getId());
 		contact.setMethod(dto.getMethod());
 		contact.setValue(dto.getValue());
 		contact.setPrimary(dto.isPrimary());
@@ -123,6 +169,6 @@ public class PersonListener {
 		contact.setModifiedAt(dto.getModifiedAt());
 		contact.setModifiedBy(dto.getModifiedBy());
 
-		personRepository.save(person);
+		personRepository.save(aggregate);
 	}
 }
