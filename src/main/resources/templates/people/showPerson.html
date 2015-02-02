@@ -1,65 +1,84 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-	  xmlns:th="http://www.thymeleaf.org"
-	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorator="layout.html">
-<head></head>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<head>
+</head>
 <body>
 	<div layout:fragment="content">
 		<div class="row">
-			<h1>
-				<span th:text="${}">Name</span><br>
-				<span>Team</span>
-			</h1>
-		</div>
-		<div class="row" th:object="${}">
-			<div class="col-sm-3 col-xs-12">
-				<div>
-					<strong>Name:</strong> <span th:field="*{fullName}">Full
-						Name</span>
+			<div class="col-sm-4 col-sm-offset-3 col-xs-12">
+				<h1 th:text="${person.getFullName()}"></h1>
+				<div class="row">
+					<div class="col-xs-4">Name:</div>
+					<div class="col-xs-8" th:text="${person.getFullName()}">Full Name</div>
 				</div>
-				<div>
-					<strong>Birth date:</strong> <span th:text="*{birthdate}">Birth date</span>
+				<div class="row">
+					<div class="col-xs-4">Nickname:</div>
+					<div class="col-xs-8" th:text="${person.nickname}">Nick Name</div>
 				</div>
-				<div>
-					<strong>Height:</strong> <span>Height</span>
+				<div class="row">
+					<div class="col-xs-4">Gender:</div>
+					<div class="col-xs-8" th:text="${person.gender.getLabel()}">Gender</div>
 				</div>
-				<div>
-					<strong>Weight:</strong> <span>Weight</span>
+				<div class="row">
+					<div class="col-xs-4">Dominant Hand:</div>
+					<div class="col-xs-8" th:text="${person.dominantHand.getLabel()}">Dominant Hand</div>
 				</div>
-			</div>
-			<div class="col-sm-3 col-xs-12">
-				<div>
-					<strong>Age (as of today):</strong> <span>Age</span>
+				<div class="row">
+					<div class="col-xs-4">Birth Date:</div>
+					<div class="col-xs-8" th:text="${{person.birthdate}}">Birth Date</div>
 				</div>
-				<div>
-					<strong>Class:</strong> <span>Class</span>
-				</div>
-				<div>
-					<strong>Position:</strong> <span>Position</span>
-				</div>
-				<div>
-					<strong>Hand:</strong> <span th:text="*{dominantHand.toLowerCase}">Hand</span>
-				</div>
-				<div>
-					<strong>School:</strong> <span>School</span>
-				</div>
-				<div>
-					<strong>Counselor:</strong> <span>Counselor</span>
+				<div class="row">
+					<div class="col-xs-4">College:</div>
+					<div class="col-xs-8" th:text="${person.college}">College</div>
 				</div>
 			</div>
-			<div class="col-sm-6 col-xs-12">
-				<div>
-					<strong>Address:</strong> <span th:text="*{primaryAddress} ? *{primaryAddress.toHTML : 'n/a'}">Address</span>
-				</div>
-				<div>
-					<strong>Contact:</strong> <span th:text="*{primaryContact} ? *{primaryContact.value} : 'n/a'">Contact</span>
-				</div>
-				<div>
-					<strong>Parent:</strong> <span>Parent</span>
-				</div>
-				<div>
-					<strong>Parent Contact:</strong> <span>Parent Contact</span>
+			
+			<div class="row">
+				<div class="col-sm-6 col-sm-offset-3 col-xs-12">
+					<a href="#" 
+					   th:href="@{'/people/' + ${person.id} + '/addresses/new'}"
+					   class="btn btn-default btn-sm lax-btn-new pull-right">New Address</a>
+					<h4>Addresses</h4>
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<td></td>
+								<td>Address</td>
+								<td></td>
+								<td>City</td>
+								<td>Region</td>
+								<td>ZIP Code</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="item : ${person.addresses}">
+								<td>
+									<form th:action="@{'/people'/ + ${person.id} + '/addresses/' + ${item.id}}" 
+										  th:method="delete" 
+										  class="lax-icon" 
+										  title="Delete" 
+										  role="form">
+										<button type="submit" 
+												class="btn btn-link lax-btn-delete">
+											<span class="glyphicon glyphicon-remove red"></span>
+										</button>
+									</form>
+									<a class="lax-icon" 
+									   title="Edit" 
+									   th:href="@{'/people/' + ${person.id} + '/addresses/' + ${item.id} + '/edit'}">
+										<span class="glyphicon glyphicon-pencil green"></span>
+									</a>
+								</td>
+								<td th:text="${item.address1}">Address</td>
+								<td th:text="${item.address2}"></td>
+								<td th:text="${item.city}">City</td>
+								<td th:text="${item.region.getLabel()}">Region</td>
+								<td th:text="${item.postalCode}">ZIP Code</td>
+							</tr>
+						</tbody>
+					</table>
 				</div>
 			</div>
 		</div>

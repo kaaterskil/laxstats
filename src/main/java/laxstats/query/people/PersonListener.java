@@ -92,6 +92,7 @@ public class PersonListener {
 				.getPersonId().toString());
 
 		final AddressEntry address = new AddressEntry();
+		address.setId(dto.getId());
 		address.setAddressType(dto.getAddressType());
 		address.setAddress1(dto.getAddress1());
 		address.setAddress2(dto.getAddress2());
@@ -116,7 +117,7 @@ public class PersonListener {
 		final PersonEntry aggregate = personRepository.findOne(identifier
 				.toString());
 
-		final AddressEntry address = aggregate.getAddresses().get(dto.getId());
+		final AddressEntry address = aggregate.getAddress(dto.getId());
 		address.setAddressType(dto.getAddressType());
 		address.setAddress1(dto.getAddress1());
 		address.setAddress2(dto.getAddress2());

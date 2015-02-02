@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import laxstats.api.people.ContactMethod;
 import laxstats.api.people.Contactable;
@@ -18,9 +19,10 @@ import org.joda.time.LocalDateTime;
 
 @Entity
 @Table(name = "contacts", indexes = {
-		@Index(name = "contact_idx1", columnList = "method"),
-		@Index(name = "contact_idx2", columnList = "isPrimary"),
-		@Index(name = "contact_idx3", columnList = "doNotUse") })
+		@Index(name = "contacts_idx1", columnList = "method"),
+		@Index(name = "contacts_idx2", columnList = "isPrimary"),
+		@Index(name = "contacts_idx3", columnList = "doNotUse") }, uniqueConstraints = { @UniqueConstraint(name = "contacts_uk1", columnNames = {
+		"person", "isPrimary" }) })
 public class ContactEntry implements Contactable {
 
 	@Id

@@ -106,14 +106,28 @@
 				
 				function getTableRow(elem) {
 					var html = '<tr>' + 
-							'<td>' +
-									'<form action="/people/' + elem.id + '" method="delete">' + 
+								'<td>' +
+									'<form action="/people/' + elem.id + 
+											'" method="delete" class="lax-icon" title="Delete" role="form">' + 
 									 	'<button type="submit" class="btn btn-link lax-btn-delete">' + 
 									 		'<span class="glyphicon glyphicon-remove red"></span>' + 
 									 	'</button>' + 
 								 	'</form>' + 
+								 	'<a href="/people/' + elem.id + '/edit" class="lax-icon" title="Edit">' + 
+								 		'<span class="glyphicon glyphicon-pencil green"></span>' + 
+								 	'</a>' +
+								 	'<a href="/people/' + elem.id + 
+								 			'/addresses" class="lax-icon" title="Addresses">' + 
+								 		'<span class="glyphicon glyphicon-home green"></span>' + 
+								 	'</a>' +
+								 	'<a href="/people/' + elem.id + 
+								 			'/contacts" class="lax-icon" title="Contacts">' + 
+							 			'<span class="glyphicon glyphicon-bullhorn green"></span>' + 
+							 		'</a>' +
 							 	'</td>' + 
-							 	'<td><a href="/people/' + elem.id + '/edit">' + elem.fullName + '</a></td>' + 
+							 	'<td>' + 
+							 		'<a href="/people/' + elem.id + '">' + elem.fullName + '</a>' + 
+							 	'</td>' + 
 							 	'<td>' + stripNull(elem.city) + '</td>' + 
 							 	'<td>' + stripNull(elem.region) + '</td>' + 
 							 	'<td>' + stripNull(elem.postalCode) + '</td>' + 
@@ -137,7 +151,7 @@
 					event.preventDefault();
 					$.ajax({
 						type: 'POST',
-						url: '/people/ajax/search',
+						url: '/api/people/search',
 						data: JSON.stringify(data),
 						dataType: 'json',
 						contentType: 'application/json',

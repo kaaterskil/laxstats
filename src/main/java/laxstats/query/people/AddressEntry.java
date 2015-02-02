@@ -9,6 +9,7 @@ import javax.persistence.Index;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import laxstats.api.Region;
 import laxstats.api.people.AddressType;
@@ -24,7 +25,8 @@ import org.joda.time.LocalDateTime;
 		@Index(name = "address_idx1", columnList = "city"),
 		@Index(name = "address_idx2", columnList = "isPrimary"),
 		@Index(name = "address_idx3", columnList = "doNotUse"),
-		@Index(name = "address_idx4", columnList = "addressType") })
+		@Index(name = "address_idx4", columnList = "addressType") }, uniqueConstraints = { @UniqueConstraint(name = "address_uk1", columnNames = {
+		"person", "isPrimary" }) })
 public class AddressEntry implements Contactable {
 
 	@Id

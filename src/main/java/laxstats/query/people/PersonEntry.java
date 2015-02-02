@@ -15,10 +15,10 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Index;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
 import laxstats.api.people.Contactable;
 import laxstats.api.people.DominantHand;
@@ -40,8 +40,6 @@ import org.joda.time.LocalDateTime;
 		@Index(name = "people_idx4", columnList = "parentReleaseReceivedOn") })
 public class PersonEntry {
 
-	/*---------- Properties ----------*/
-
 	@Id
 	@Column(length = 36)
 	private String id;
@@ -55,7 +53,6 @@ public class PersonEntry {
 	@Column(length = 20)
 	private String middleName;
 
-	@NotNull
 	@Column(length = 30, nullable = false)
 	private String lastName;
 
@@ -87,12 +84,8 @@ public class PersonEntry {
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
 	private LocalDate birthdate;
 
-	private String photo;
-
 	@Column(length = 100)
 	private String college;
-
-	private String collegeUrl;
 
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime createdAt;
@@ -106,10 +99,12 @@ public class PersonEntry {
 	@ManyToOne
 	private UserEntry modifiedBy;
 
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "person")
-	private final Map<String, AddressEntry> addresses = new HashMap<>();
+	@OneToMany(cascade = { CascadeType.ALL })
+	@JoinColumn(name = "person")
+	private final List<AddressEntry> addresses = new ArrayList<>();
 
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "person")
+	@OneToMany(cascade = { CascadeType.ALL })
+	@JoinColumn(name = "person")
 	private final Map<String, ContactEntry> contacts = new HashMap<>();
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "parent")
@@ -118,7 +113,8 @@ public class PersonEntry {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "child")
 	private final Set<RelationshipEntry> parentRelationships = new HashSet<>();
 
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "person")
+	@OneToMany(cascade = { CascadeType.ALL })
+	@JoinColumn(name = "person")
 	private final Set<PlayerEntry> playedSeasons = new HashSet<>();
 
 	/*---------- Methods ----------*/
@@ -167,6 +163,15 @@ public class PersonEntry {
 		parentRelationships.add(relationship);
 	}
 
+	public AddressEntry getAddress(String id) {
+		for (final AddressEntry each : addresses) {
+			if (each.getId().equals(id)) {
+				return each;
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * Returns the person's primary address. If there is no primary address, the
 	 * method returns the first address in the collection or <code>null</code>
@@ -175,7 +180,7 @@ public class PersonEntry {
 	 * @return The person's primary address.
 	 */
 	public AddressEntry primaryAddress() {
-		final List<Contactable> list = new ArrayList<>(addresses.values());
+		final List<Contactable> list = new ArrayList<>(addresses);
 		return (AddressEntry) getPrimaryContactOrAddress(list);
 	}
 
@@ -211,7 +216,7 @@ public class PersonEntry {
 
 	public void addAddress(AddressEntry address) {
 		address.setPerson(this);
-		addresses.put(address.getId(), address);
+		addresses.add(address);
 	}
 
 	public void addContact(ContactEntry contact) {
@@ -331,28 +336,12 @@ public class PersonEntry {
 		this.birthdate = birthdate;
 	}
 
-	public String getPhoto() {
-		return photo;
-	}
-
-	public void setPhoto(String photo) {
-		this.photo = photo;
-	}
-
 	public String getCollege() {
 		return college;
 	}
 
 	public void setCollege(String college) {
 		this.college = college;
-	}
-
-	public String getCollegeUrl() {
-		return collegeUrl;
-	}
-
-	public void setCollegeUrl(String collegeUrl) {
-		this.collegeUrl = collegeUrl;
 	}
 
 	public LocalDateTime getCreatedAt() {
@@ -387,7 +376,7 @@ public class PersonEntry {
 		this.modifiedBy = modifiedBy;
 	}
 
-	public Map<String, AddressEntry> getAddresses() {
+	public List<AddressEntry> getAddresses() {
 		return addresses;
 	}
 

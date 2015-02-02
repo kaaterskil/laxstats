@@ -12,7 +12,7 @@
 				<form action="#" 
 					  th:action="@{'/people/' + ${personId}}" 
 					  th:object="${personForm}" 
-					  method="put" 
+					  th:method="put" 
 					  id="edit-person-form" 
 					  name="edit-person-form" 
 					  role="form">

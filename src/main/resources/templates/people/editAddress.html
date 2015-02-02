@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<head>
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-sm-4 col-sm-offset-4 col-xs-12">
+				<h1>Edit Address</h1>
+				<h4 th:text="${person.getFullName()}"></h4>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-sm-4 col-sm-offset-4 col-xs-12">
+				<form action="#" 
+					  th:method="put" 
+					  id="edit-address-form"
+					  name="edit-address-form"
+					  th:action="@{'/people/' + ${person.getId().toString()} + '/addresses/' + ${addressId}}" 
+					  th:object="${addressForm}"
+					  role="form">
+					<div class="row">
+						<div class="col-sm-6 col-xs-12 form-group required">
+							<label for="address-type">Address Type</label>
+							<select id="address-type"
+									class="form-control" 
+									th:field="*{type}">
+								<option value="">Select...</option>
+								<option th:each="opt : *{addressTypes}"
+										th:value="${opt}"
+										th:text="${opt.getLabel()}">Address Type</option>
+							</select>
+						</div>
+						<div class="col-sm-6 col-xs-12 form-group checkbox">
+							<label for="primary">
+								<input type="checkbox"
+									   id="primary"
+									   th:field="*{primary}" />
+								<strong>Primary Address?</strong>
+							</label>
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label for="address-1">Address 1</label>
+						<input type="text"
+							   id="address-1"
+							   class="form-control"
+							   th:maxlength="34"
+							   th:field="*{address1}" />
+					</div>
+					<div class="form-group">
+						<label for="address-2">Address 2</label>
+						<input type="text"
+							   id="address-2"
+							   class="form-control"
+							   th:maxlength="34"
+							   th:field="*{address2}" />
+					</div>
+					<div class="form-group required">
+						<label for="city">City</label>
+						<input type="text"
+							   id="city"
+							   class="form-control"
+							   th:required="required"
+							   th:maxlength="30"
+							   th:field="*{city}"
+							   aria-required="true" />
+					</div>
+					
+					<div class="row">
+						<div class="col-sm-4 col-xs-12 form-group required">
+							<label for="region">Region</label>
+							<select id="region"
+									class="form-control" 
+									th:field="*{region}">
+								<option value="">Select...</option>
+								<option th:each="opt : *{regions}"
+										th:value="${opt}"
+										th:text="${opt.getAbbreviation()}">Region</option>
+							</select>
+						</div>
+						<div class="col-sm-8 col-xs-12 form-group">
+							<label for="postal-code">ZIP Code</label>
+							<input type="text"
+								   id="podtal-code"
+								   class="form-control"
+								   th:maxlength="10"
+								   th:field="*{postalCode}" />
+						</div>
+					</div>
+					<button th:type="submit" 
+							class="btn btn-default">Update</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

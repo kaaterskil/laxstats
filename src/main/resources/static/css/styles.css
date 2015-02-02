@@ -53,6 +53,10 @@ h2 {
 	color: rgb(255, 0 , 0);
 }
 
+.green {
+	color: rgb(34, 139, 34);
+}
+
 .required label:after {
 	content: "*";
 	color: rgb(255, 0, 0);
@@ -75,6 +79,11 @@ h2 {
 
 .checkbox {
 	margin-top: 27px;
+}
+
+.lax-icon {
+	display: inline;
+	margin: 0 3px;
 }
 
 .main-content {

@@ -159,19 +159,13 @@ public class PersonController extends ApplicationController {
 
 	/*---------- Address actions ----------*/
 
-	@RequestMapping(value = "/people/{personId}/addresses", method = RequestMethod.GET)
-	public String addressIndex(@PathVariable("personId") PersonEntry person,
-			Model model) {
-		model.addAttribute("person", person);
-		return "people/addressIndex";
-	}
-
 	@RequestMapping(value = "/people/{personId}/addresses", method = RequestMethod.POST)
 	public String createAddress(@PathVariable String personId,
-			@Valid AddressForm form, BindingResult bindingResult) {
-		if (bindingResult.hasErrors()) {
+			@Valid AddressForm form, BindingResult result) {
+		if (result.hasErrors()) {
 			return "people/newAddress";
 		}
+
 		final LocalDateTime now = LocalDateTime.now();
 		final UserEntry user = getCurrentUser();
 		final PersonEntry person = personRepository.findOne(personId);
@@ -187,14 +181,14 @@ public class PersonController extends ApplicationController {
 		final RegisterAddressCommand payload = new RegisterAddressCommand(
 				identifier, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/" + personId + "/addresses";
+		return "redirect:/people/" + personId;
 	}
 
 	@RequestMapping(value = "/people/{personId}/addresses/{addressId}", method = RequestMethod.GET)
 	public String showAddress(@PathVariable String personId,
 			@PathVariable String addressId, Model model) {
 		final PersonEntry person = personRepository.findOne(personId);
-		final AddressEntry address = person.getAddresses().get(addressId);
+		final AddressEntry address = person.getAddress(addressId);
 		model.addAttribute("personId", personId);
 		model.addAttribute("address", address);
 		return "people/showAddress";
@@ -220,22 +214,22 @@ public class PersonController extends ApplicationController {
 		final UpdateAddressCommand payload = new UpdateAddressCommand(
 				identifier, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/" + personId + "/addresses";
+		return "redirect:/" + personId;
 	}
 
 	@RequestMapping(value = "/people/{personId}/addresses/new", method = RequestMethod.GET)
-	public String newAddress(@PathVariable String personId, Model model) {
+	public String newAddress(@PathVariable("personId") PersonEntry person,
+			Model model) {
 		final AddressForm form = new AddressForm();
-		model.addAttribute("personId", personId);
+		model.addAttribute("person", person);
 		model.addAttribute("addressForm", form);
 		return "people/newAddress";
 	}
 
 	@RequestMapping(value = "/people/{personId}/addresses/{addressId}/edit", method = RequestMethod.GET)
-	public String editAddress(@PathVariable String personId,
+	public String editAddress(@PathVariable("personId") PersonEntry person,
 			@PathVariable String addressId, Model model) {
-		final PersonEntry person = personRepository.findOne(personId);
-		final AddressEntry address = person.getAddresses().get(addressId);
+		final AddressEntry address = person.getAddress(addressId);
 
 		final AddressForm form = new AddressForm();
 		form.setAddress1(address.getAddress1());
@@ -247,7 +241,7 @@ public class PersonController extends ApplicationController {
 		form.setPrimary(address.isPrimary());
 		form.setRegion(address.getRegion());
 
-		model.addAttribute("personId", personId);
+		model.addAttribute("person", person);
 		model.addAttribute("addressId", addressId);
 		model.addAttribute("addressForm", form);
 		return "people/editAddress";

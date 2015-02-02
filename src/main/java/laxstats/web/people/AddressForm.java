@@ -1,23 +1,48 @@
 package laxstats.web.people;
 
-import javax.validation.constraints.NotNull;
+import java.util.Arrays;
+import java.util.List;
 
-import laxstats.api.people.AddressType;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 import laxstats.api.Region;
+import laxstats.api.people.AddressType;
 
 public class AddressForm {
 
 	@NotNull
 	private AddressType type;
+
+	@Size(max = 34)
 	private String address1;
+
+	@Size(max = 34)
 	private String address2;
 
 	@NotNull
+	@Size(min = 3, max = 30)
 	private String city;
+
 	private Region region;
+
+	@Size(max = 10)
 	private String postalCode;
-	private boolean isPrimary;
+
+	private boolean primary;
 	private boolean doNotUse;
+	private List<AddressType> addressTypes;
+	private List<Region> regions;
+
+	/*---------- Getter/Setters ----------*/
+
+	public AddressType getType() {
+		return type;
+	}
+
+	public void setType(AddressType type) {
+		this.type = type;
+	}
 
 	public String getAddress1() {
 		return address1;
@@ -43,14 +68,6 @@ public class AddressForm {
 		this.city = city;
 	}
 
-	public String getPostalCode() {
-		return postalCode;
-	}
-
-	public void setPostalCode(String postalCode) {
-		this.postalCode = postalCode;
-	}
-
 	public Region getRegion() {
 		return region;
 	}
@@ -59,12 +76,20 @@ public class AddressForm {
 		this.region = region;
 	}
 
-	public AddressType getType() {
-		return type;
+	public String getPostalCode() {
+		return postalCode;
 	}
 
-	public void setType(AddressType type) {
-		this.type = type;
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
+
+	public boolean isPrimary() {
+		return primary;
+	}
+
+	public void setPrimary(boolean primary) {
+		this.primary = primary;
 	}
 
 	public boolean isDoNotUse() {
@@ -75,12 +100,18 @@ public class AddressForm {
 		this.doNotUse = doNotUse;
 	}
 
-	public boolean isPrimary() {
-		return isPrimary;
+	public List<AddressType> getAddressTypes() {
+		if (addressTypes == null) {
+			addressTypes = Arrays.asList(AddressType.values());
+		}
+		return addressTypes;
 	}
 
-	public void setPrimary(boolean isPrimary) {
-		this.isPrimary = isPrimary;
+	public List<Region> getRegions() {
+		if (regions == null) {
+			regions = Arrays.asList(Region.values());
+		}
+		return regions;
 	}
 
 }
