@@ -83,7 +83,7 @@ public class PersonListener {
 		personRepository.delete(id);
 	}
 
-	// ---------- Addresses ----------//
+	/*---------- Addresses ----------*/
 
 	@EventHandler
 	protected void handle(AddressAddedEvent event) {
@@ -132,7 +132,7 @@ public class PersonListener {
 		personRepository.save(aggregate);
 	}
 
-	// ---------- Contacts ----------//
+	/*---------- Contacts ----------*/
 
 	@EventHandler
 	protected void handle(ContactAddedEvent event) {
@@ -142,6 +142,7 @@ public class PersonListener {
 				.toString());
 
 		final ContactEntry contact = new ContactEntry();
+		contact.setId(dto.getId());
 		contact.setMethod(dto.getMethod());
 		contact.setValue(dto.getValue());
 		contact.setPrimary(dto.isPrimary());
@@ -162,7 +163,7 @@ public class PersonListener {
 		final PersonEntry aggregate = personRepository.findOne(identifier
 				.toString());
 
-		final ContactEntry contact = aggregate.getContacts().get(dto.getId());
+		final ContactEntry contact = aggregate.getContact(dto.getId());
 		contact.setMethod(dto.getMethod());
 		contact.setValue(dto.getValue());
 		contact.setPrimary(dto.isPrimary());

@@ -34,52 +34,93 @@
 					<div class="col-xs-8" th:text="${person.college}">College</div>
 				</div>
 			</div>
-			
-			<div class="row">
-				<div class="col-sm-6 col-sm-offset-3 col-xs-12">
-					<a href="#" 
-					   th:href="@{'/people/' + ${person.id} + '/addresses/new'}"
-					   class="btn btn-default btn-sm lax-btn-new pull-right">New Address</a>
-					<h4>Addresses</h4>
-					<table class="table table-striped">
-						<thead>
-							<tr>
-								<td></td>
-								<td>Address</td>
-								<td></td>
-								<td>City</td>
-								<td>Region</td>
-								<td>ZIP Code</td>
-							</tr>
-						</thead>
-						<tbody>
-							<tr th:each="item : ${person.addresses}">
-								<td>
-									<form th:action="@{'/people'/ + ${person.id} + '/addresses/' + ${item.id}}" 
-										  th:method="delete" 
-										  class="lax-icon" 
-										  title="Delete" 
-										  role="form">
-										<button type="submit" 
-												class="btn btn-link lax-btn-delete">
-											<span class="glyphicon glyphicon-remove red"></span>
-										</button>
-									</form>
-									<a class="lax-icon" 
-									   title="Edit" 
-									   th:href="@{'/people/' + ${person.id} + '/addresses/' + ${item.id} + '/edit'}">
-										<span class="glyphicon glyphicon-pencil green"></span>
-									</a>
-								</td>
-								<td th:text="${item.address1}">Address</td>
-								<td th:text="${item.address2}"></td>
-								<td th:text="${item.city}">City</td>
-								<td th:text="${item.region.getLabel()}">Region</td>
-								<td th:text="${item.postalCode}">ZIP Code</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-sm-4 col-sm-offset-x col-xs-12">
+				<a href="#" 
+				   th:href="@{'/people/' + ${person.id} + '/contacts/new'}"
+				   class="btn btn-default btn-sm lax-btn-new pull-right">New Address</a>
+				<h4>Contacts</h4>
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<td></td>
+							<td>Method</td>
+							<td>Value</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="contect : ${person.contacts}">
+							<td>
+								<form th:action="@{'/people'/ + ${person.id} + '/contactss/' + ${contact.id}}" 
+									  th:method="delete" 
+									  class="lax-icon" 
+									  title="Delete" 
+									  role="form">
+									<button type="submit" 
+											class="btn btn-link lax-btn-delete">
+										<span class="glyphicon glyphicon-remove red"></span>
+									</button>
+								</form>
+								<a class="lax-icon" 
+								   title="Edit" 
+								   th:href="@{'/people/' + ${person.id} + '/contacts/' + ${contact.id} + '/edit'}">
+									<span class="glyphicon glyphicon-pencil green"></span>
+								</a>
+							</td>
+							<td th:text="${contact.method.getLabel()}">Type</td>
+							<td th:text="${contact.getHtml()}">Value</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-sm-6 col-sm-offset-3 col-xs-12">
+				<a href="#" 
+				   th:href="@{'/people/' + ${person.id} + '/addresses/new'}"
+				   class="btn btn-default btn-sm lax-btn-new pull-right">New Address</a>
+				<h4>Addresses</h4>
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<td></td>
+							<td>Address</td>
+							<td></td>
+							<td>City</td>
+							<td>Region</td>
+							<td>ZIP Code</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="item : ${person.addresses}">
+							<td>
+								<form th:action="@{'/people'/ + ${person.id} + '/addresses/' + ${item.id}}" 
+									  th:method="delete" 
+									  class="lax-icon" 
+									  title="Delete" 
+									  role="form">
+									<button type="submit" 
+											class="btn btn-link lax-btn-delete">
+										<span class="glyphicon glyphicon-remove red"></span>
+									</button>
+								</form>
+								<a class="lax-icon" 
+								   title="Edit" 
+								   th:href="@{'/people/' + ${person.id} + '/addresses/' + ${item.id} + '/edit'}">
+									<span class="glyphicon glyphicon-pencil green"></span>
+								</a>
+							</td>
+							<td th:text="${item.address1}">Address</td>
+							<td th:text="${item.address2}"></td>
+							<td th:text="${item.city}">City</td>
+							<td th:text="${item.region.getLabel()}">Region</td>
+							<td th:text="${item.postalCode}">ZIP Code</td>
+						</tr>
+					</tbody>
+				</table>
 			</div>
 		</div>
 	</div>

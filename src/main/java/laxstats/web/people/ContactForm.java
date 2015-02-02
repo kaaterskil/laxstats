@@ -1,5 +1,8 @@
 package laxstats.web.people;
 
+import java.util.Arrays;
+import java.util.List;
+
 import laxstats.api.people.ContactMethod;
 
 public class ContactForm {
@@ -7,6 +10,7 @@ public class ContactForm {
 	private String value;
 	private boolean isPrimary;
 	private boolean doNotUse;
+	private List<ContactMethod> contactMethods;
 
 	public boolean isDoNotUse() {
 		return doNotUse;
@@ -38,6 +42,13 @@ public class ContactForm {
 
 	public void setValue(String value) {
 		this.value = value;
+	}
+
+	public List<ContactMethod> getContactMethods() {
+		if (contactMethods == null) {
+			contactMethods = Arrays.asList(ContactMethod.values());
+		}
+		return contactMethods;
 	}
 
 }

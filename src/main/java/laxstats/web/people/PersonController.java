@@ -184,16 +184,6 @@ public class PersonController extends ApplicationController {
 		return "redirect:/people/" + personId;
 	}
 
-	@RequestMapping(value = "/people/{personId}/addresses/{addressId}", method = RequestMethod.GET)
-	public String showAddress(@PathVariable String personId,
-			@PathVariable String addressId, Model model) {
-		final PersonEntry person = personRepository.findOne(personId);
-		final AddressEntry address = person.getAddress(addressId);
-		model.addAttribute("personId", personId);
-		model.addAttribute("address", address);
-		return "people/showAddress";
-	}
-
 	@RequestMapping(value = "/{personId}/addresses/{addressId}", method = RequestMethod.PUT)
 	public String updateAddress(@PathVariable String personId,
 			@PathVariable String addressId, @Valid AddressForm form,
@@ -249,93 +239,62 @@ public class PersonController extends ApplicationController {
 
 	/*---------- Contact actions ----------*/
 
-	@RequestMapping(value = "/people/{personId}/contacts", method = RequestMethod.GET)
-	public String contactIndex(@PathVariable("personId") PersonEntry person,
-			Model model) {
-		model.addAttribute("person", person);
-		return "people/contactIndex";
-	}
-
 	@RequestMapping(value = "/people/{personId}/contacts", method = RequestMethod.POST)
-	public String createContact(@PathVariable String personId,
-			@Valid ContactForm form, BindingResult bindingResult) {
-		if (bindingResult.hasErrors()) {
+	public String createContact(@PathVariable("personId") PersonEntry person,
+			@Valid ContactForm form, BindingResult result) {
+		if (result.hasErrors()) {
 			return "people/newContact";
 		}
 		final LocalDateTime now = LocalDateTime.now();
 		final UserEntry user = getCurrentUser();
-		final PersonEntry person = personRepository.findOne(personId);
-		final PersonId identifier = new PersonId(personId);
+		final PersonId identifier = new PersonId(person.getId());
 		final String contactId = IdentifierFactory.getInstance()
 				.generateIdentifier();
 
-		final ContactDTO dto = new ContactDTO();
-		dto.setId(contactId);
-		dto.setPerson(person);
-		dto.setMethod(form.getMethod());
-		dto.setValue(form.getValue());
-		dto.setPrimary(form.isPrimary());
-		dto.setDoNotUse(false);
-		dto.setCreatedAt(now);
-		dto.setCreatedBy(user);
-		dto.setModifiedAt(now);
-		dto.setModifiedBy(user);
+		final ContactDTO dto = new ContactDTO(contactId, person,
+				form.getMethod(), form.getValue(), form.isPrimary(),
+				form.isDoNotUse(), now, user, now, user);
 
 		final RegisterContactCommand payload = new RegisterContactCommand(
 				identifier, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/" + personId + "/contacts";
-	}
-
-	@RequestMapping(value = "/people/{personId}/contacts/{contactId}", method = RequestMethod.GET)
-	public String showContact(@PathVariable String personId,
-			@PathVariable String contactId, Model model) {
-		final PersonEntry person = personRepository.findOne(personId);
-		final ContactEntry contact = person.getContacts().get(contactId);
-		model.addAttribute("personId", personId);
-		model.addAttribute("contact", contact);
-		return "people/showContact";
+		return "redirect:/" + person.getId();
 	}
 
 	@RequestMapping(value = "/people/{personId}/contacts/{contactId}", method = RequestMethod.PUT)
-	public String updateContact(@PathVariable String personId,
+	public String updateContact(@PathVariable("personId") PersonEntry person,
 			@PathVariable String contactId, @Valid ContactForm form,
-			BindingResult bindingResult) {
-		if (bindingResult.hasErrors()) {
+			BindingResult result) {
+		if (result.hasErrors()) {
 			return "/people/editContact";
 		}
 		final LocalDateTime now = LocalDateTime.now();
 		final UserEntry user = getCurrentUser();
-		final PersonId identifier = new PersonId(personId);
+		final PersonId identifier = new PersonId(person.getId());
 
-		final ContactDTO dto = new ContactDTO();
-		dto.setId(contactId);
-		dto.setMethod(form.getMethod());
-		dto.setValue(form.getValue());
-		dto.setPrimary(form.isPrimary());
-		dto.setDoNotUse(form.isDoNotUse());
-		dto.setModifiedAt(now);
-		dto.setModifiedBy(user);
+		final ContactDTO dto = new ContactDTO(contactId, person,
+				form.getMethod(), form.getValue(), form.isPrimary(),
+				form.isDoNotUse(), now, user);
 
 		final UpdateContactCommand payload = new UpdateContactCommand(
 				identifier, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/" + personId + "/contacts";
+		return "redirect:/" + person.getId();
 	}
 
 	@RequestMapping(value = "/people/{personId}/contacts/new", method = RequestMethod.GET)
-	public String newContact(@PathVariable String personId, Model model) {
+	public String newContact(@PathVariable("personId") PersonEntry person,
+			Model model) {
 		final ContactForm form = new ContactForm();
-		model.addAttribute("personId", personId);
+		model.addAttribute("person", person);
 		model.addAttribute("contactForm", form);
 		return "people/newContact";
 	}
 
 	@RequestMapping(value = "/people/{personId}/contacts/{contactId}/edit", method = RequestMethod.GET)
-	public String editContact(@PathVariable String personId,
+	public String editContact(@PathVariable("personId") PersonEntry person,
 			@PathVariable String contactId, Model model) {
-		final PersonEntry person = personRepository.findOne(personId);
-		final ContactEntry contact = person.getContacts().get(contactId);
+		final ContactEntry contact = person.getContact(contactId);
 
 		final ContactForm form = new ContactForm();
 		form.setMethod(contact.getMethod());
@@ -343,7 +302,7 @@ public class PersonController extends ApplicationController {
 		form.setDoNotUse(contact.isDoNotUse());
 		form.setPrimary(contact.isPrimary());
 
-		model.addAttribute("personId", personId);
+		model.addAttribute("person", person);
 		model.addAttribute("contactId", contactId);
 		model.addAttribute("contactForm", form);
 		return "people/editContact";

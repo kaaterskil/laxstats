@@ -1,11 +1,9 @@
 package laxstats.query.people;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -105,7 +103,7 @@ public class PersonEntry {
 
 	@OneToMany(cascade = { CascadeType.ALL })
 	@JoinColumn(name = "person")
-	private final Map<String, ContactEntry> contacts = new HashMap<>();
+	private final List<ContactEntry> contacts = new ArrayList<>();
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "parent")
 	private final Set<RelationshipEntry> childRelationships = new HashSet<>();
@@ -172,6 +170,15 @@ public class PersonEntry {
 		return null;
 	}
 
+	public ContactEntry getContact(String id) {
+		for (final ContactEntry each : contacts) {
+			if (each.getId().equals(id)) {
+				return each;
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * Returns the person's primary address. If there is no primary address, the
 	 * method returns the first address in the collection or <code>null</code>
@@ -192,7 +199,7 @@ public class PersonEntry {
 	 * @return The person's primary contact.
 	 */
 	public ContactEntry primaryContact() {
-		final List<Contactable> list = new ArrayList<>(contacts.values());
+		final List<Contactable> list = new ArrayList<>(contacts);
 		return (ContactEntry) getPrimaryContactOrAddress(list);
 	}
 
@@ -221,7 +228,7 @@ public class PersonEntry {
 
 	public void addContact(ContactEntry contact) {
 		contact.setPerson(this);
-		contacts.put(contact.getId(), contact);
+		contacts.add(contact);
 	}
 
 	public String getId() {
@@ -380,7 +387,7 @@ public class PersonEntry {
 		return addresses;
 	}
 
-	public Map<String, ContactEntry> getContacts() {
+	public List<ContactEntry> getContacts() {
 		return contacts;
 	}
 

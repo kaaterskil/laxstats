@@ -55,7 +55,21 @@ public class ContactEntry implements Contactable {
 	@ManyToOne
 	private UserEntry modifiedBy;
 
-	// ---------- Getter/Setters ----------//
+	/*---------- Methods ----------*/
+
+	public String getHtml() {
+		final StringBuilder sb = new StringBuilder();
+		if (method.equals(ContactMethod.EMAIL)) {
+			sb.append("<a href='mailto:").append(value).append("'>");
+			sb.append(value);
+			sb.append("</a>");
+		} else {
+			sb.append(value);
+		}
+		return sb.toString();
+	}
+
+	/*---------- Getter/Setters ----------*/
 
 	public String getId() {
 		return id;

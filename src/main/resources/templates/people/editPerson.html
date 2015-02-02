@@ -11,8 +11,9 @@
 				<h1>Edit Person</h1>
 				<form action="#" 
 					  th:action="@{'/people/' + ${personId}}" 
-					  th:object="${personForm}" 
-					  th:method="put" 
+					  th:object="${personForm}"
+					  method="post"
+					  th:method="put"
 					  id="edit-person-form" 
 					  name="edit-person-form" 
 					  role="form">
