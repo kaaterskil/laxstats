@@ -83,9 +83,9 @@ public class SeasonController extends ApplicationController {
 	}
 
 	@RequestMapping(value = "/seasons/{seasonId}", method = RequestMethod.GET)
-	public String showSeason(@PathVariable String seasonId, Model model) {
-		final SeasonEntry aggregate = seasonRepository.findOne(seasonId);
-		model.addAttribute("item", aggregate);
+	public String showSeason(@PathVariable("seasonId") SeasonEntry season,
+			Model model) {
+		model.addAttribute("item", season);
 		return "seasons/showSeason";
 	}
 
@@ -126,24 +126,23 @@ public class SeasonController extends ApplicationController {
 	}
 
 	@RequestMapping(value = "/seasons/{seasonId}/edit", method = RequestMethod.GET)
-	public String editSeason(@PathVariable String seasonId, Model model) {
-		final SeasonEntry aggregate = seasonRepository.findOne(seasonId);
-
+	public String editSeason(@PathVariable("seasonId") SeasonEntry season,
+			Model model) {
 		final SeasonForm form = new SeasonForm();
-		form.setDescription(aggregate.getDescription());
-		form.setStartsOn(aggregate.getStartsOn());
-		form.setEndsOn(aggregate.getEndsOn());
+		form.setDescription(season.getDescription());
+		form.setStartsOn(season.getStartsOn());
+		form.setEndsOn(season.getEndsOn());
 
 		model.addAttribute("seasonForm", form);
-		model.addAttribute("seasonId", seasonId);
+		model.addAttribute("seasonId", season.getId());
 		return "seasons/editSeason";
 	}
 
 	/*---------- Ajax methods ----------*/
 
-	@RequestMapping(value = "/ajax/seasons/{seasonId}", method = RequestMethod.GET)
-	public @ResponseBody SeasonInfo getSeason(@PathVariable String seasonId) {
-		final SeasonEntry season = seasonRepository.findOne(seasonId);
+	@RequestMapping(value = "/api/seasons/{seasonId}", method = RequestMethod.GET)
+	public @ResponseBody SeasonInfo getSeason(
+			@PathVariable("seasonId") SeasonEntry season) {
 		return new SeasonInfo(season.getId(), season.getDescription(), season
 				.getStartsOn().toString("yyyy-MM-dd"), season.getEndsOn()
 				.toString("yyyy-MM-dd"));
