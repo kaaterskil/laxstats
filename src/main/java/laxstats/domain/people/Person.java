@@ -1,18 +1,19 @@
 package laxstats.domain.people;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import laxstats.api.people.AddressAddedEvent;
 import laxstats.api.people.AddressChangedEvent;
 import laxstats.api.people.AddressDTO;
+import laxstats.api.people.AddressDeletedEvent;
 import laxstats.api.people.ContactAddedEvent;
 import laxstats.api.people.ContactChangedEvent;
 import laxstats.api.people.ContactDTO;
+import laxstats.api.people.ContactDeletedEvent;
 import laxstats.api.people.Contactable;
 import laxstats.api.people.DominantHand;
 import laxstats.api.people.Gender;
@@ -34,6 +35,7 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
 
 	@AggregateIdentifier
 	private PersonId id;
+
 	private String prefix;
 	private String firstName;
 	private String middleName;
@@ -52,10 +54,10 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
 	private final Set<RelationshipInfo> parentRelationships = new HashSet<>();
 
 	@EventSourcedMember
-	private final Map<String, Address> addresses = new HashMap<>();
+	private final List<Address> addresses = new ArrayList<>();
 
 	@EventSourcedMember
-	private final Map<String, Contact> contacts = new HashMap<>();
+	private final List<Contact> contacts = new ArrayList<>();
 
 	/*---------- Constructors ----------*/
 
@@ -81,7 +83,7 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
 			final String value = primaryAddress().getAddress();
 			throw new HasPrimaryContactException(value);
 		}
-		if (addresses.containsKey(dto.getId())) {
+		if (addressExists(dto.getId())) {
 			apply(new AddressChangedEvent(id, dto));
 		} else {
 			apply(new AddressAddedEvent(id, dto));
@@ -92,21 +94,33 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
 		apply(new AddressChangedEvent(id, dto));
 	}
 
+	public void deleteAddress(String addressId) {
+		apply(new AddressDeletedEvent(id, addressId));
+	}
+
 	private boolean hasPrimaryAddress() {
 		return primaryAddress() != null;
 	}
 
 	public Address primaryAddress() {
-		final List<Contactable> list = new ArrayList<Contactable>(
-				addresses.values());
+		final List<Contactable> list = new ArrayList<Contactable>(addresses);
 		return (Address) getPrimaryContactOrAddress(list);
+	}
+
+	private boolean addressExists(String id) {
+		for (final Address a : addresses) {
+			if (a.getId().equals(id)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void registerContact(ContactDTO dto, boolean overridePrimary) {
 		if (dto.isPrimary() && hasPrimaryContact() && !overridePrimary) {
 			throw new HasPrimaryContactException(primaryContact().getValue());
 		}
-		if (contacts.containsKey(dto.getId())) {
+		if (contactExists(dto.getId())) {
 			apply(new ContactChangedEvent(id, dto));
 		} else {
 			apply(new ContactAddedEvent(id, dto));
@@ -117,14 +131,26 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
 		apply(new ContactChangedEvent(id, dto));
 	}
 
+	public void deleteContact(String contactId) {
+		apply(new ContactDeletedEvent(id, contactId));
+	}
+
 	private boolean hasPrimaryContact() {
 		return primaryContact() != null;
 	}
 
 	public Contact primaryContact() {
-		final List<Contactable> list = new ArrayList<Contactable>(
-				contacts.values());
+		final List<Contactable> list = new ArrayList<Contactable>(contacts);
 		return (Contact) getPrimaryContactOrAddress(list);
+	}
+
+	private boolean contactExists(String id) {
+		for (final Contact c : contacts) {
+			if (c.getId().equals(id)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private Contactable getPrimaryContactOrAddress(List<Contactable> c) {
@@ -189,11 +215,10 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
 
 	@EventSourcingHandler
 	protected void handle(AddressAddedEvent event) {
-		final String addressId = event.getAddress().getId();
 		final AddressDTO dto = event.getAddress();
 
 		final Address address = new Address();
-		address.setPersonId(dto.getPerson().getId());
+		address.setPersonId(id.toString());
 		address.setAddress1(dto.getAddress1());
 		address.setAddress2(dto.getAddress2());
 		address.setCity(dto.getCity());
@@ -202,12 +227,26 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
 		address.setAddressType(dto.getAddressType());
 		address.setPrimary(dto.isPrimary());
 		address.setDoNotUse(dto.isDoNotUse());
-		addresses.put(addressId, address);
+		addresses.add(address);
+	}
+
+	@EventSourcingHandler
+	protected boolean handle(AddressDeletedEvent event) {
+		final String addressId = event.getAddressId();
+
+		final Iterator<Address> iter = addresses.iterator();
+		while (iter.hasNext()) {
+			final Address each = iter.next();
+			if (each.getId().equals(addressId)) {
+				iter.remove();
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@EventSourcingHandler
 	protected void handle(ContactAddedEvent event) {
-		final String contactId = event.getContact().getId();
 		final ContactDTO dto = event.getContact();
 
 		final Contact contact = new Contact();
@@ -217,7 +256,22 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
 		contact.setValue(dto.getValue());
 		contact.setPrimary(dto.isPrimary());
 		contact.setDoNotUse(dto.isDoNotUse());
-		contacts.put(contactId, contact);
+		contacts.add(contact);
+	}
+
+	@EventSourcingHandler
+	protected boolean handle(ContactDeletedEvent event) {
+		final String contactId = event.getContactId();
+
+		final Iterator<Contact> iter = contacts.iterator();
+		while (iter.hasNext()) {
+			final Contact each = iter.next();
+			if (each.getId().equals(contactId)) {
+				iter.remove();
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/* ---------- Getters ---------- */
@@ -283,11 +337,11 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
 		return college;
 	}
 
-	public Map<String, Address> getAddresses() {
+	public List<Address> getAddresses() {
 		return addresses;
 	}
 
-	public Map<String, Contact> getContacts() {
+	public List<Contact> getContacts() {
 		return contacts;
 	}
 

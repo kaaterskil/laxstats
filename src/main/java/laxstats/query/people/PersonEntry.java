@@ -226,9 +226,19 @@ public class PersonEntry {
 		addresses.add(address);
 	}
 
+	public void removeAddress(AddressEntry address) {
+		address.setPerson(null);
+		addresses.remove(address);
+	}
+
 	public void addContact(ContactEntry contact) {
 		contact.setPerson(this);
 		contacts.add(contact);
+	}
+
+	public void removeContact(ContactEntry contact) {
+		contact.setPerson(null);
+		contacts.remove(contact);
 	}
 
 	public String getId() {

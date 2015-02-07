@@ -14,10 +14,10 @@
 		</div>
 	
 		<div class="row">
-			<div class="col-sm-6 col-sm-offset-4 col-xs-12">
+			<div class="col-sm-3 col-sm-offset-4 col-xs-12">
 				<form action="#" 
 					  th:action="@{'/people/' + ${person.id} + '/contacts'}" 
-					  th:object="${personForm}" 
+					  th:object="${contactForm}" 
 					  method="post" 
 					  id="new-contact-form" 
 					  name="new-contact-form" 
@@ -39,7 +39,7 @@
 								<input type="checkbox"
 									   id="primary"
 									   th:field="*{primary}" />
-								<strong>Primary Contact?</strong>
+								<strong>Primary?</strong>
 							</label>
 						</div>
 					</div>

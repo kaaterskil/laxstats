@@ -1,6 +1,8 @@
 package laxstats.domain.people;
 
 import laxstats.api.people.CreatePersonCommand;
+import laxstats.api.people.DeleteAddressCommand;
+import laxstats.api.people.DeleteContactCommand;
 import laxstats.api.people.DeletePersonCommand;
 import laxstats.api.people.PersonId;
 import laxstats.api.people.RegisterAddressCommand;
@@ -47,7 +49,7 @@ public class PersonCommandHandler {
 		aggregate.delete(identifier);
 	}
 
-	// ---------- Addresses ----------//
+	/*---------- Addresses ----------*/
 
 	@CommandHandler
 	public void handle(RegisterAddressCommand command) {
@@ -61,7 +63,13 @@ public class PersonCommandHandler {
 		person.updateAddress(command.getAddressDTO());
 	}
 
-	// ---------- Contacts ----------//
+	@CommandHandler
+	public void handle(DeleteAddressCommand command) {
+		final Person person = repository.load(command.getPersonId());
+		person.deleteAddress(command.getAddressId());
+	}
+
+	/*---------- Contacts ----------*/
 
 	@CommandHandler
 	public void handle(RegisterContactCommand command) {
@@ -73,5 +81,11 @@ public class PersonCommandHandler {
 	public void handle(UpdateContactCommand command) {
 		final Person person = repository.load(command.getPersonId());
 		person.updateContact(command.getContactDTO());
+	}
+
+	@CommandHandler
+	public void handle(DeleteContactCommand command) {
+		final Person person = repository.load(command.getPersonId());
+		person.deleteContact(command.getContactId());
 	}
 }

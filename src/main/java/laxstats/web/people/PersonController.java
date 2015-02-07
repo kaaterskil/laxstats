@@ -8,6 +8,8 @@ import javax.validation.Valid;
 import laxstats.api.people.AddressDTO;
 import laxstats.api.people.ContactDTO;
 import laxstats.api.people.CreatePersonCommand;
+import laxstats.api.people.DeleteAddressCommand;
+import laxstats.api.people.DeleteContactCommand;
 import laxstats.api.people.DeletePersonCommand;
 import laxstats.api.people.PersonDTO;
 import laxstats.api.people.PersonId;
@@ -39,7 +41,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class PersonController extends ApplicationController {
@@ -204,7 +205,17 @@ public class PersonController extends ApplicationController {
 		final UpdateAddressCommand payload = new UpdateAddressCommand(
 				identifier, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/" + personId;
+		return "redirect:/people/" + personId;
+	}
+
+	@RequestMapping(value = "/people/{personId}/addresses/{addressId}", method = RequestMethod.DELETE)
+	public String deleteAddress(@PathVariable String personId,
+			@PathVariable String addressId) {
+		final PersonId identifier = new PersonId(personId);
+		final DeleteAddressCommand payload = new DeleteAddressCommand(
+				identifier, addressId);
+		commandBus.dispatch(new GenericCommandMessage<>(payload));
+		return "redirect:/people/" + personId;
 	}
 
 	@RequestMapping(value = "/people/{personId}/addresses/new", method = RequestMethod.GET)
@@ -258,7 +269,7 @@ public class PersonController extends ApplicationController {
 		final RegisterContactCommand payload = new RegisterContactCommand(
 				identifier, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/" + person.getId();
+		return "redirect:/people/" + person.getId();
 	}
 
 	@RequestMapping(value = "/people/{personId}/contacts/{contactId}", method = RequestMethod.PUT)
@@ -279,7 +290,17 @@ public class PersonController extends ApplicationController {
 		final UpdateContactCommand payload = new UpdateContactCommand(
 				identifier, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/" + person.getId();
+		return "redirect:/people/" + person.getId();
+	}
+
+	@RequestMapping(value = "/people/{personId}/contacts/{contactId}", method = RequestMethod.DELETE)
+	public String deleteContact(@PathVariable String personId,
+			@PathVariable String contactId) {
+		final PersonId identifier = new PersonId(personId);
+		final DeleteContactCommand payload = new DeleteContactCommand(
+				identifier, contactId);
+		commandBus.dispatch(new GenericCommandMessage<>(payload));
+		return "redirect:/people/" + personId;
 	}
 
 	@RequestMapping(value = "/people/{personId}/contacts/new", method = RequestMethod.GET)
@@ -311,8 +332,7 @@ public class PersonController extends ApplicationController {
 	/*---------- Ajax methods ----------*/
 
 	@RequestMapping(value = "/api/people/search", method = RequestMethod.POST)
-	@ResponseBody
-	public List<SearchResult> searchPeople(@RequestBody SearchPeopleForm form) {
+	public String searchPeople(@RequestBody SearchPeopleForm form, Model model) {
 		final List<PersonEntry> list = personRepository.findAll(
 				PersonSpecifications.search(form), searchSort());
 
@@ -333,7 +353,8 @@ public class PersonController extends ApplicationController {
 			}
 			results.add(item);
 		}
-		return results;
+		model.addAttribute("results", results);
+		return "people/searchResults :: resultList";
 	}
 
 	private Sort searchSort() {

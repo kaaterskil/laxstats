@@ -80,7 +80,8 @@
 		</div>
 		
 		<div class="row">
-			<div class="col-sm-8 col-sm-offset-2 col-xs-12 search-people-results">
+			<div id="search-results" 
+				 class="col-sm-8 col-sm-offset-2 col-xs-12 search-people-results">
 				<h4 class="">Results</h4>
 				<table class="table table-striped">
 					<thead>
@@ -93,48 +94,18 @@
 							<td>Contact</td>
 						</tr>
 					</thead>
-					<tbody id="search-results"></tbody>
+					<tbody>
+						<tr>
+							<td></td>
+							<td colspan="5">No results found.</td>
+						</tr>
+					</tbody>
 				</table>
 			</div>
 		</div>
 		
 		<script type="text/javascript">
 			(function(){
-				function stripNull(str) {
-					return str == null ? '' : str;
-				}
-				
-				function getTableRow(elem) {
-					var html = '<tr>' + 
-								'<td>' +
-									'<form action="/people/' + elem.id + 
-											'" method="delete" class="lax-icon" title="Delete" role="form">' + 
-									 	'<button type="submit" class="btn btn-link lax-btn-delete">' + 
-									 		'<span class="glyphicon glyphicon-remove red"></span>' + 
-									 	'</button>' + 
-								 	'</form>' + 
-								 	'<a href="/people/' + elem.id + '/edit" class="lax-icon" title="Edit">' + 
-								 		'<span class="glyphicon glyphicon-pencil green"></span>' + 
-								 	'</a>' +
-								 	'<a href="/people/' + elem.id + 
-								 			'/addresses" class="lax-icon" title="Addresses">' + 
-								 		'<span class="glyphicon glyphicon-home green"></span>' + 
-								 	'</a>' +
-								 	'<a href="/people/' + elem.id + 
-								 			'/contacts" class="lax-icon" title="Contacts">' + 
-							 			'<span class="glyphicon glyphicon-bullhorn green"></span>' + 
-							 		'</a>' +
-							 	'</td>' + 
-							 	'<td>' + 
-							 		'<a href="/people/' + elem.id + '">' + elem.fullName + '</a>' + 
-							 	'</td>' + 
-							 	'<td>' + stripNull(elem.city) + '</td>' + 
-							 	'<td>' + stripNull(elem.region) + '</td>' + 
-							 	'<td>' + stripNull(elem.postalCode) + '</td>' + 
-							 	'<td>' + stripNull(elem.contact) + '</td>' + 
-							 '</tr>' + "\n";
-					return html;
-				}
 				
 				$('#search-people-form').submit(function(event){
 					var $form = $(this),
@@ -146,34 +117,26 @@
 							region: $('#region').val(),
 							postalCode: $('#postal-code').val(),
 							contact: $('#contact').val()
-						};
+						}, df;
 					
 					event.preventDefault();
-					$.ajax({
+					df = $.ajax({
 						type: 'POST',
 						url: '/api/people/search',
 						data: JSON.stringify(data),
-						dataType: 'json',
+						dataType: 'text',
 						contentType: 'application/json',
 						headers: { 'X-CSRF-TOKEN': token }
-					})
-					.success(function(data){
-						var html = '';
-						data = Array.isArray(data) ? data : [data];
-						if(data.length) {
-							data.forEach(function(elem){
-								html += getTableRow(elem);
-							});
-						} else {
-							html = '<tr><td></td><td colspan="5">No records found.</td></tr>';
-						}
-						$('#search-results').html(html);
-					})
-					.fail(function(jqXHR, status, error){
-						var msg = '<tr><td></td><td colspan="5">Error Status ' 
-								+ jqXHR.status + ': ' + jqXHR.responseText 
-								+ '</td></tr>';
-						$('#search-results').html(msg);
+					});
+					
+					df.done(function(data){
+						$('#search-results').html(data);
+					});
+					
+					df.fail(function(jqXHR, status, error){
+						var msg = 'Error (' 
+								+ jqXHR.status + '): ' + jqXHR.responseText;
+						$('#search-results').text(msg);
 					});
 					return false;
 				});

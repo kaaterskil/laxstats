@@ -28,7 +28,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -90,15 +89,14 @@ public class SiteController extends ApplicationController {
 	}
 
 	@RequestMapping(value = "/sites/{siteId}", method = RequestMethod.GET)
-	public String show(@PathVariable String siteId, Model model) {
-		final SiteEntry site = siteRepository.findOne(siteId);
+	public String show(@PathVariable("siteId") SiteEntry site, Model model) {
 		model.addAttribute("site", site);
 		return "sites/show";
 	}
 
 	@RequestMapping(value = "/sites/{siteId}", method = RequestMethod.PUT)
-	public String updateSite(@ModelAttribute("siteForm") @Valid SiteForm form,
-			@PathVariable String siteId, BindingResult result) {
+	public String updateSite(@Valid SiteForm form, @PathVariable String siteId,
+			BindingResult result) {
 		if (result.hasErrors()) {
 			return "sites/editSite";
 		}
@@ -140,8 +138,7 @@ public class SiteController extends ApplicationController {
 	}
 
 	@RequestMapping(value = "/sites/{siteId}/edit", method = RequestMethod.GET)
-	public String editSite(@PathVariable String siteId, Model model) {
-		final SiteEntry site = siteRepository.findOne(siteId);
+	public String editSite(@PathVariable("siteId") SiteEntry site, Model model) {
 		final SiteForm form = new SiteForm();
 
 		form.setName(site.getName());
@@ -157,7 +154,7 @@ public class SiteController extends ApplicationController {
 		form.setPostalCode(address.getPostalCode());
 
 		model.addAttribute("siteForm", form);
-		model.addAttribute("siteId", siteId);
+		model.addAttribute("siteId", site.getId());
 		return "sites/editSite";
 	}
 }
