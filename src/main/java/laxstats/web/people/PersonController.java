@@ -53,7 +53,7 @@ public class PersonController extends ApplicationController {
 		this.personRepository = personRepository;
 	}
 
-	// ---------- Person actions ----------//
+	/*---------- Person actions ---------*/
 
 	@RequestMapping(value = "/people", method = RequestMethod.GET)
 	public String index(Model model) {
@@ -63,9 +63,8 @@ public class PersonController extends ApplicationController {
 	}
 
 	@RequestMapping(value = "/people", method = RequestMethod.POST)
-	public String createPerson(@Valid PersonForm form,
-			BindingResult bindingResult) {
-		if (bindingResult.hasErrors()) {
+	public String createPerson(@Valid PersonForm form, BindingResult result) {
+		if (result.hasErrors()) {
 			return "people/newPerson";
 		}
 
@@ -161,7 +160,7 @@ public class PersonController extends ApplicationController {
 	/*---------- Address actions ----------*/
 
 	@RequestMapping(value = "/people/{personId}/addresses", method = RequestMethod.POST)
-	public String createAddress(@PathVariable String personId,
+	public String createAddress(@PathVariable("personId") PersonEntry person,
 			@Valid AddressForm form, BindingResult result) {
 		if (result.hasErrors()) {
 			return "people/newAddress";
@@ -169,8 +168,7 @@ public class PersonController extends ApplicationController {
 
 		final LocalDateTime now = LocalDateTime.now();
 		final UserEntry user = getCurrentUser();
-		final PersonEntry person = personRepository.findOne(personId);
-		final PersonId identifier = new PersonId(personId);
+		final PersonId identifier = new PersonId(person.getId());
 		final String addressId = IdentifierFactory.getInstance()
 				.generateIdentifier();
 
@@ -182,11 +180,11 @@ public class PersonController extends ApplicationController {
 		final RegisterAddressCommand payload = new RegisterAddressCommand(
 				identifier, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/people/" + personId;
+		return "redirect:/people/" + person.getId();
 	}
 
 	@RequestMapping(value = "/{personId}/addresses/{addressId}", method = RequestMethod.PUT)
-	public String updateAddress(@PathVariable String personId,
+	public String updateAddress(@PathVariable("personId") PersonEntry person,
 			@PathVariable String addressId, @Valid AddressForm form,
 			BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
@@ -194,8 +192,7 @@ public class PersonController extends ApplicationController {
 		}
 		final LocalDateTime now = LocalDateTime.now();
 		final UserEntry user = getCurrentUser();
-		final PersonEntry person = personRepository.findOne(personId);
-		final PersonId identifier = new PersonId(personId);
+		final PersonId identifier = new PersonId(person.getId());
 
 		final AddressDTO dto = new AddressDTO(addressId, null, person,
 				form.getType(), form.getAddress1(), form.getAddress2(),
@@ -205,7 +202,7 @@ public class PersonController extends ApplicationController {
 		final UpdateAddressCommand payload = new UpdateAddressCommand(
 				identifier, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/people/" + personId;
+		return "redirect:/people/" + person.getId();
 	}
 
 	@RequestMapping(value = "/people/{personId}/addresses/{addressId}", method = RequestMethod.DELETE)
@@ -333,6 +330,20 @@ public class PersonController extends ApplicationController {
 
 	@RequestMapping(value = "/api/people/search", method = RequestMethod.POST)
 	public String searchPeople(@RequestBody SearchPeopleForm form, Model model) {
+		final List<SearchResult> results = doSearch(form);
+		model.addAttribute("results", results);
+		return "people/searchResults :: resultList";
+	}
+
+	@RequestMapping(value = "/api/people/searchData", method = RequestMethod.POST)
+	public String searchPeopleData(@RequestBody SearchPeopleForm form,
+			Model model) {
+		final List<SearchResult> results = doSearch(form);
+		model.addAttribute("results", results);
+		return "partials/searchPeopleResults :: resultList";
+	}
+
+	private List<SearchResult> doSearch(SearchPeopleForm form) {
 		final List<PersonEntry> list = personRepository.findAll(
 				PersonSpecifications.search(form), searchSort());
 
@@ -353,8 +364,7 @@ public class PersonController extends ApplicationController {
 			}
 			results.add(item);
 		}
-		model.addAttribute("results", results);
-		return "people/searchResults :: resultList";
+		return results;
 	}
 
 	private Sort searchSort() {

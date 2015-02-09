@@ -3,9 +3,11 @@ package laxstats.query.people;
 import laxstats.api.people.AddressAddedEvent;
 import laxstats.api.people.AddressChangedEvent;
 import laxstats.api.people.AddressDTO;
+import laxstats.api.people.AddressDeletedEvent;
 import laxstats.api.people.ContactAddedEvent;
 import laxstats.api.people.ContactChangedEvent;
 import laxstats.api.people.ContactDTO;
+import laxstats.api.people.ContactDeletedEvent;
 import laxstats.api.people.PersonCreatedEvent;
 import laxstats.api.people.PersonDTO;
 import laxstats.api.people.PersonDeletedEvent;
@@ -132,14 +134,23 @@ public class PersonListener {
 		personRepository.save(aggregate);
 	}
 
+	@EventHandler
+	protected void handle(AddressDeletedEvent event) {
+		final String personId = event.getPersonId().toString();
+		final PersonEntry entity = personRepository.findOne(personId);
+		final AddressEntry address = entity.getAddress(event.getAddressId());
+
+		entity.removeAddress(address);
+		personRepository.save(entity);
+	}
+
 	/*---------- Contacts ----------*/
 
 	@EventHandler
 	protected void handle(ContactAddedEvent event) {
-		final PersonId identifier = event.getPersonId();
+		final String personId = event.getPersonId().toString();
 		final ContactDTO dto = event.getContact();
-		final PersonEntry aggregate = personRepository.findOne(identifier
-				.toString());
+		final PersonEntry entity = personRepository.findOne(personId);
 
 		final ContactEntry contact = new ContactEntry();
 		contact.setId(dto.getId());
@@ -152,18 +163,17 @@ public class PersonListener {
 		contact.setModifiedAt(dto.getModifiedAt());
 		contact.setModifiedBy(dto.getModifiedBy());
 
-		aggregate.addContact(contact);
-		personRepository.save(aggregate);
+		entity.addContact(contact);
+		personRepository.save(entity);
 	}
 
 	@EventHandler
 	protected void handle(ContactChangedEvent event) {
-		final PersonId identifier = event.getPersonId();
+		final String personId = event.getPersonId().toString();
 		final ContactDTO dto = event.getContact();
-		final PersonEntry aggregate = personRepository.findOne(identifier
-				.toString());
+		final PersonEntry entity = personRepository.findOne(personId);
 
-		final ContactEntry contact = aggregate.getContact(dto.getId());
+		final ContactEntry contact = entity.getContact(dto.getId());
 		contact.setMethod(dto.getMethod());
 		contact.setValue(dto.getValue());
 		contact.setPrimary(dto.isPrimary());
@@ -171,6 +181,16 @@ public class PersonListener {
 		contact.setModifiedAt(dto.getModifiedAt());
 		contact.setModifiedBy(dto.getModifiedBy());
 
-		personRepository.save(aggregate);
+		personRepository.save(entity);
+	}
+
+	@EventHandler
+	protected void handle(ContactDeletedEvent event) {
+		final String personId = event.getPersonId().toString();
+		final PersonEntry entity = personRepository.findOne(personId);
+		final ContactEntry contact = entity.getContact(event.getContactId());
+
+		entity.removeContact(contact);
+		personRepository.save(entity);
 	}
 }

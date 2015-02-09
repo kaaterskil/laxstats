@@ -19,6 +19,7 @@ import laxstats.query.teams.TeamQueryRepository;
 import laxstats.query.users.UserEntry;
 import laxstats.query.users.UserQueryRepository;
 import laxstats.web.ApplicationController;
+import laxstats.web.people.SearchPeopleForm;
 
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.commandhandling.GenericCommandMessage;
@@ -65,21 +66,19 @@ public class TeamSeasonController extends ApplicationController {
 	/*---------- Action methods ----------*/
 
 	@RequestMapping(value = "/seasons", method = RequestMethod.GET)
-	public String index(@PathVariable String teamId, Model model) {
-		final TeamEntry team = teamRepository.findOne(teamId);
+	public String index(@PathVariable("teamId") TeamEntry team, Model model) {
 		model.addAttribute("team", team);
 		return "/teamSeasons/index";
 	}
 
 	@RequestMapping(value = "/seasons", method = RequestMethod.POST)
-	public String createTeamSeason(@PathVariable String teamId,
+	public String createTeamSeason(@PathVariable("teamId") TeamEntry team,
 			@Valid TeamSeasonForm form, BindingResult result) {
 		if (result.hasErrors()) {
 			return "teamSeasons/newTeamSeason";
 		}
 		final LocalDateTime now = LocalDateTime.now();
 		final UserEntry user = getCurrentUser();
-		final TeamEntry team = teamRepository.findOne(teamId);
 		final SeasonEntry season = seasonRepository.findOne(form.getSeason());
 		final TeamSeasonId identifier = new TeamSeasonId();
 
@@ -88,14 +87,25 @@ public class TeamSeasonController extends ApplicationController {
 				form.getStatus(), user, now, user, now);
 
 		final RegisterTeamSeasonCommand payload = new RegisterTeamSeasonCommand(
-				new TeamId(teamId), dto);
+				new TeamId(team.getId()), dto);
 		try {
 			commandBus.dispatch(new GenericCommandMessage<>(payload));
 		} catch (final Exception e) {
 			result.reject(e.getMessage());
 			return "teamSeasons/newTeamSeason";
 		}
-		return "redirect:/teams/" + teamId + "/seasons";
+		return "redirect:/teams/" + team.getId() + "/seasons";
+	}
+
+	@RequestMapping(value = "/seasons/{teamSeasonId}", method = RequestMethod.GET)
+	public String showTeamSeason(
+			@PathVariable("teamSeasonId") TeamSeasonEntry teamSeason,
+			Model model) {
+		final SearchPeopleForm searchForm = new SearchPeopleForm();
+
+		model.addAttribute("teamSeason", teamSeason);
+		model.addAttribute("searchForm", searchForm);
+		return "teamSeasons/showTeamSeason";
 	}
 
 	@RequestMapping(value = "/seasons/{teamSeasonId}", method = RequestMethod.PUT)

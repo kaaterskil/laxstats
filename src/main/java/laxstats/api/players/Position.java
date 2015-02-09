@@ -1,17 +1,18 @@
 package laxstats.api.players;
 
 public enum Position {
-	ATTACK, 
-	MIDFIELD, 
-	LONG_STICK_MIDFIELD, 
-	DEFENSE, 
-	GOALIE, 
-	REFEREE, 
-	UMPIRE, 
-	FIELD_JUDGE, 
-	SCOREKEEPER, 
-	TIMEKEEPER, 
-	COACH, 
-	ASSISTANT_COACH, 
-	MANAGER
+	ATTACK("Attack"), MIDFIELD("Midfield"), LSM("Long-Stick Midfield"), DEFENSE(
+			"Defense"), GOALIE("Goalie"), REFEREE("Referree"), UMPIRE("Umpire"), FIELD_JUDGE(
+			"Field Judge"), SCOREKEEPER("Scorekeeper"), TIMEKEEPER("Timekeeper"), COACH(
+			"Coach"), ASST_COACH("Assistant Coach"), MANAGER("Manager");
+
+	private String label;
+
+	private Position(String label) {
+		this.label = label;
+	}
+
+	public String getLabel() {
+		return label;
+	}
 }

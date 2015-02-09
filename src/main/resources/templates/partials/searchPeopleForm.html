@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
+<head></head>
+<body>
+	<div th:fragment="searchPeople">
+		<form action="#" 
+			  th:action="@{'/api/people/search'}" 
+			  th:object="${searchForm}" 
+			  method="post"
+			  name="search-people-form" 
+			  id="search-people-form"
+			  role="form">
+			<div class="row">
+				<div class="col-sm-4 col-xs-12 form-group">
+					<label for="first-name">First Name</label>
+					<input type="text"
+						   id="first-name" 
+						   class="form-control" 
+						   th:field="*{firstName}" />
+				</div>
+				<div class="col-sm-4 col-xs-12 form-group">
+					<label for="last-name">Last Name</label> 
+					<input type="text"
+						   id="last-name" 
+						   class="form-control" 
+						   th:field="*{lastName}" />
+				</div>
+				<div class="col-sm-4 col-xs-12 form-group">
+					<label for="contact">Contact</label> 
+					<input type="text"
+						   id="contact" 
+						   class="form-control" 
+						   th:field="*{contact}" />
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-sm-6 col-xs-12 form-group">
+					<label for="city">City</label> 
+					<input type="text" 
+						   id="city"
+						   class="form-control" 
+						   th:field="*{city}" />
+				</div>
+				<div class="col-sm-3 col-xs-6 form-group">
+					<label for="region">Region</label> 
+					<select id="region" 
+							class="form-control" 
+							th:field="*{region}">
+						<option value="">Select...</option>
+						<option th:each="opt : *{regions}" 
+								th:value="${opt}" 
+								th:text="${opt.getAbbreviation()}">Region</option>
+					</select>
+				</div>
+				<div class="col-sm-3 col-xs-6 form-group">
+					<label for="postal-code">ZIP Code</label> 
+					<input type="text"
+						   id="postal-code" 
+						   class="form-control" 
+						   th:field="*{postalCode}" />
+				</div>
+			</div>
+			<button type="submit" class="btn btn-default">Search</button>
+		</form>
+	</div>
+</body>
+</html>

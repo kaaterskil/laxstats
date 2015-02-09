@@ -7,14 +7,14 @@
 <body>
 	<div layout:fragment="content">
 		<div class="row">
-			<div class="col-sm-4 col-sm-offset-4 col-xs-12">
+			<div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3">
 				<h1>New Contact</h1>
 				<h4 th:text="${person.getFullName()}"></h4>
 			</div>
 		</div>
 	
 		<div class="row">
-			<div class="col-sm-3 col-sm-offset-4 col-xs-12">
+			<div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3">
 				<form action="#" 
 					  th:action="@{'/people/' + ${person.id} + '/contacts'}" 
 					  th:object="${contactForm}" 

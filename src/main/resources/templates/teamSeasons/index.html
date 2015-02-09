@@ -7,7 +7,7 @@
 <body>
 	<div layout:fragment="content">
 		<div class="row">
-			<div class="col-sm-6 col-sm-offset-3 col-xs-12">
+			<div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
 				<h1>Team Seasons</h1>
 				<table class="table table-striped">
 					<thead>
@@ -37,35 +37,50 @@
 		</div>
 		
 		<div class="row">
-			<div class="col-sm-4 col-sm-offset-4 col-xs-12">
-				<a href="#" 
-				   th:href="@{'/teams/' + ${team.getId()} + '/seasons/new'}" 
-				   class="btn btn-default btn-sm lax-btn-new pull-right">New Season</a>
-				<table class="table table-striped">
-					<thead>
-						<tr>
-							<td></td>
-							<td>Season</td>
-							<td>Name</td>
-						</tr>
-					</thead>
-					<tbody>
-						<tr th:each="item : ${team.getSeasons()}">
-							<td>
-								<form th:object="${item}" th:action="@{'/teams/' + ${team.getId()} + '/seasons/' + ${item.id}}"
-									th:method="delete">
-									<button type="submit" class="btn btn-link lax-btn-delete">
-										<span class="glyphicon glyphicon-remove red"></span>
-									</button>
-								</form>
-							</td>
-							<td><a href="#"
-								th:href="@{'/teams/' + ${team.getId()} + '/seasons/' + ${item.id} + '/edit'}"
-								th:text="${item.getSeason().getDescription()}">Season</a></td>
-							<td th:text="${item.name}">Name</td>
-						</tr>
-					</tbody>
-				</table>
+			<div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+				<div>
+					<a href="#" 
+					   th:href="@{'/teams/' + ${team.getId()} + '/seasons/new'}" 
+					   class="btn btn-default btn-sm lax-btn-new">New Season</a>
+				</div>
+				<div class="table-responsive">
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<td></td>
+								<td>Season</td>
+								<td>Name</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="item : ${team.getSeasons()}">
+								<td>
+									<form th:action="@{'/teams/' + ${team.id} + '/seasons/' + ${item.id}}" 
+										  th:method="delete"
+										  class="lax-icon"
+										  title="Delete"
+										  role="form">
+										<button type="submit" 
+												class="btn btn-link lax-btn-delete">
+											<span class="glyphicon glyphicon-remove red"></span>
+										</button>
+									</form>
+									<a class="lax-icon" 
+									   title="Edit" 
+									   th:href="@{'/teams/' + ${team.id} + '/seasons/' + ${item.id} + '/edit'}">
+										<span class="glyphicon glyphicon-pencil green"></span>
+									</a>
+								</td>
+								<td>
+									<a href="#" 
+									   th:href="@{'/teams/' + ${team.id} + '/seasons/' + ${item.id}}" 
+									   th:text="${item.getSeason().getDescription()}">Season</a>
+								</td>
+								<td th:text="${item.name}">Name</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
 			</div>
 		</div>
 	</div>

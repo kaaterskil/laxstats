@@ -31,6 +31,8 @@ public class TeamSeasonCommandHandler {
 		this.playerRepository = playerRepository;
 	}
 
+	/*---------- TeamSeason commands ----------*/
+
 	@CommandHandler
 	protected void handle(DeleteTeamSeasonCommand command) {
 		final TeamSeasonId identifier = command.getTeamSeasonId();
@@ -38,22 +40,23 @@ public class TeamSeasonCommandHandler {
 		entity.delete(command);
 	}
 
+	/*---------- Roster commands ----------*/
+
 	@CommandHandler
 	protected void handle(RegisterPlayerCommand command) {
 		final TeamSeasonId identifier = command.getTeamSeasonId();
 		final TeamSeason teamSeason = repository.load(identifier);
-		try {
-			// Test and create the team value object
-			teamSeason.registerPlayer(command.getPlayerDTO());
 
-			// Create the aggregate
-			final PlayerDTO dto = command.getPlayerDTO();
-			final Player entity = new Player(dto.getId(), dto);
-			playerRepository.add(entity);
-		} catch (final Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		final PlayerDTO dto = command.getPlayerDTO();
+		final String playerId = dto.getId().toString();
+
+		final boolean canRegister = teamSeason.canRegisterPlayer(playerId);
+		if (!canRegister) {
+			throw new IllegalArgumentException("player.isRegistered");
 		}
+
+		final Player entity = new Player(dto.getId(), dto);
+		playerRepository.add(entity);
 	}
 
 	@CommandHandler

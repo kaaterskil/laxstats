@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<head>
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+				<h1>Team Season</h1>
+				<div class="row">
+					<div class="col-xs-3">Team:</div>
+					<div class="col-xs-9" 
+						 th:text="${teamSeason.team.getTitle()}"></div>
+				</div>
+				<div class="row">
+					<div class="col-xs-3">Name:</div>
+					<div class="col-xs-9" 
+						 th:text="${teamSeason.getFullName()}"></div>
+				</div>
+				<div class="row">
+					<div class="col-xs-3">Season:</div>
+					<div class="col-xs-9" 
+						 th:text="${teamSeason.season.description}"></div>
+				</div>
+				<div class="row">
+					<div class="col-xs-3">Status:</div>
+					<div class="col-xs-9" 
+						 th:text="${teamSeason.status.getLabel()}"></div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+				<div class="row">
+					<h4 class="col-sm-8">Roster</h4>
+					<div class="col-sm-4">
+						<a href="#"
+						   th:href="@{'/teamSeasons/' + ${teamSeason.id} + '/roster/new'}"
+						   class="btn btn-default btn-sm lax-btn-new pull-right">New Member</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+				<div class="table-responsive">
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<td></td>
+								<td>Name</td>
+								<td>Position</td>
+								<td>Jersey</td>
+								<td>Status</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:unless="${teamSeason.getRosterData().size() > 0}">
+								<td></td>
+								<td colspan="4">No records found.</td>
+							</tr>
+							<tr th:each="item : ${teamSeason.getRosterData().values()}">
+								<td>
+									<form action="#"
+										  th:action="@{'/teamSeasons/' + ${teamSeason.id} + '/roster/' + ${item.id}}"
+										  th:method="delete"
+										  th:object="${item}">
+										<button type="submit"
+												class="btn btn-link lax-btn-delete">
+											<span class="glyphicon glyphicon-remove red"></span>
+										</button>
+									</form>
+								</td>
+								<td><a href="#"
+									   th:href="@{'/teamSeasons/' + ${teamSeason.id} + '/roster/' + ${item.id} + '/edit'}"
+									   th:text="${item.person.getFullName()}">Full Name</a></td>
+								<td>
+									<span th:if="${item.position != null}" 
+										  th:text="${item.position.label}">Position</span>
+								</td>
+								<td th:text="${item.jerseyNumber}">Jersey</td>
+								<td th:text="${item.status.label}">Status</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

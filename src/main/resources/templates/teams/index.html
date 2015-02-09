@@ -31,8 +31,9 @@
 					<tbody>
 						<tr th:each="item : ${items}">
 							<td>
-								<form th:object="${item}" th:action="@{'/teams/' + ${item.id}}"
-									th:method="delete">
+								<form th:object="${item}" 
+									  th:action="@{'/teams/' + ${item.id}}" 
+									  th:method="delete">
 									<button type="submit" class="btn btn-link lax-btn-delete">
 										<span class="glyphicon glyphicon-remove red"></span>
 									</button>

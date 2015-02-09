@@ -90,7 +90,19 @@ public class TeamSeasonEntry {
 	@OneToMany(mappedBy = "teamSeason")
 	private final Map<LocalDateTime, TeamEvent> events = new HashMap<>();
 
-	// ---------- Methods ---------- //
+	/*---------- Methods ----------*/
+
+	public String getFullName() {
+		if (name != null) {
+			final StringBuilder sb = new StringBuilder();
+			sb.append(team.getSponsor()).append(" ").append(name);
+			if (season.getDescription() != "") {
+				sb.append(" ").append(season.getDescription());
+			}
+			return sb.toString();
+		}
+		return team.getTitle();
+	}
 
 	public Interval getSeasonInterval() {
 		return new Interval(startsOn.toDateTimeAtStartOfDay(),
@@ -136,7 +148,7 @@ public class TeamSeasonEntry {
 
 	}
 
-	// ---------- Getter/Setters ----------//
+	/*---------- Getter/Setters ----------*/
 
 	public String getId() {
 		return id;

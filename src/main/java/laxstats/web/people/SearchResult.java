@@ -17,6 +17,19 @@ public class SearchResult implements Serializable {
 		this.fullName = fullName;
 	}
 
+	/*---------- Methods ----------*/
+
+	public String getLabel() {
+		final StringBuilder sb = new StringBuilder();
+		sb.append(getFullName());
+		if (city != null) {
+			sb.append(", ").append(city);
+		}
+		return sb.toString();
+	}
+
+	/*---------- Getter/Setters ----------*/
+
 	public String getId() {
 		return id;
 	}

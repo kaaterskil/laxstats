@@ -100,7 +100,7 @@ public class TeamEntry {
 
 	public String getTitle() {
 		final StringBuilder sb = new StringBuilder();
-		sb.append(sponsor).append(" ").append(gender.getLabel()).append(" ")
+		sb.append(sponsor).append(" ").append(gender.getLabel()).append("'s ")
 				.append(letter.getLabel());
 		return sb.toString();
 	}

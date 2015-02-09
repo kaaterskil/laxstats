@@ -27,6 +27,7 @@ public class PlayerListener {
 		entity.setId(id);
 		entity.setPerson(dto.getPerson());
 		entity.setTeamSeason(dto.getTeam());
+		entity.setFullName(dto.getPerson().getFullName());
 		entity.setRole(dto.getRole());
 		entity.setStatus(dto.getStatus());
 		entity.setJerseyNumber(dto.getJerseyNumber());
@@ -50,6 +51,7 @@ public class PlayerListener {
 		final PlayerEntry entity = repository.findOne(id);
 		entity.setPerson(dto.getPerson());
 		entity.setTeamSeason(dto.getTeam());
+		entity.setFullName(dto.getPerson().getFullName());
 		entity.setRole(dto.getRole());
 		entity.setStatus(dto.getStatus());
 		entity.setJerseyNumber(dto.getJerseyNumber());

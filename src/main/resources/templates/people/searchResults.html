@@ -7,63 +7,65 @@
 	<div th:fragment="resultList" 
 		 th:unless="${#lists.isEmpty(results)}">
 		<h4 class="">Results</h4>
-		<table class="table table-striped">
-			<thead>
-				<tr>
-					<td></td>
-					<td>Name</td>
-					<td>City</td>
-					<td>Region</td>
-					<td>ZIP Code</td>
-					<td>Contact</td>
-				</tr>
-			</thead>
-			<tbody>
-				<tr th:each="element : ${results}">
-					<td>
-						<form action="#"
-							  th:action="@{'/people/' + ${element.id}}"
-							  th:method="delete"
-							  th:object="${element}"
-							  class="lax-icon"
-							  title="Delete"
-							  role="form">
-							<button type="submit"
-									class="btn btn-link lax-btn-delete">
-								<span class="glyphicon glyphicon-remove red"></span>
-							</button>
-						</form>
-						<a href="#"
-						   th:href="@{'/people/' + ${element.id} + '/edit'}"
-						   class="lax-icon"
-						   title="Edit">
-							<span class="glyphicon glyphicon-pencil green"></span>
-						</a>
-						<a href="#"
-						   th:href="@{'/people/' + ${element.id} + '/addresses'}"
-						   class="lax-icon"
-						   title="Edit">
-							<span class="glyphicon glyphicon-home green"></span>
-						</a>
-						<a href="#"
-						   th:href="@{'/people/' + ${element.id} + '/contacts'}"
-						   class="lax-icon"
-						   title="Edit">
-							<span class="glyphicon glyphicon-bullhorn green"></span>
-						</a>
-					</td>
-					<td>
-						<a href="#"
-						   th:href="@{'/people/' + ${element.id}}"
-						   th:text="${element.fullName}">Full Name</a>
-					</td>
-					<td th:text="${element.city}">City</td>
-					<td th:text="${element.region}">Region</td>
-					<td th:text="${element.postalCode}">ZIP Code</td>
-					<td th:text="${element.contact}">Contact</td>
-				</tr>
-			</tbody>
-		</table>
+		<div class="table-responsive">
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<td></td>
+						<td>Name</td>
+						<td>City</td>
+						<td>Region</td>
+						<td>ZIP Code</td>
+						<td>Contact</td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="element : ${results}">
+						<td>
+							<form action="#"
+								  th:action="@{'/people/' + ${element.id}}"
+								  th:method="delete"
+								  th:object="${element}"
+								  class="lax-icon"
+								  title="Delete"
+								  role="form">
+								<button type="submit"
+										class="btn btn-link lax-btn-delete">
+									<span class="glyphicon glyphicon-remove red"></span>
+								</button>
+							</form>
+							<a href="#"
+							   th:href="@{'/people/' + ${element.id} + '/edit'}"
+							   class="lax-icon"
+							   title="Edit">
+								<span class="glyphicon glyphicon-pencil green"></span>
+							</a>
+							<a href="#"
+							   th:href="@{'/people/' + ${element.id}}"
+							   class="lax-icon"
+							   title="Edit">
+								<span class="glyphicon glyphicon-home green"></span>
+							</a>
+							<a href="#"
+							   th:href="@{'/people/' + ${element.id}}"
+							   class="lax-icon"
+							   title="Edit">
+								<span class="glyphicon glyphicon-bullhorn green"></span>
+							</a>
+						</td>
+						<td>
+							<a href="#"
+							   th:href="@{'/people/' + ${element.id}}"
+							   th:text="${element.fullName}">Full Name</a>
+						</td>
+						<td th:text="${element.city}">City</td>
+						<td th:text="${element.region}">Region</td>
+						<td th:text="${element.postalCode}">ZIP Code</td>
+						<td th:text="${element.contact}">Contact</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
 	</div>
 </body>
 </html>

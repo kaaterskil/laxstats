@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<head>
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+				<h1>Edit Roster</h1>
+				<h5 th:text="${teamSeason.getFullName() + ' Season'}">Team Name</h5>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+				<h4 th:text="${player.person.getFullName()}"></h4>
+				<form action="#"
+					  th:action="@{'/teamSeasons/' + ${teamSeason.id} + '/roster/' + ${player.id}}"
+					  th:method="put"
+					  name="edit-roster-form"
+					  id="edit-roster-form"
+					  th:object="${playerForm}"
+					  role="form">
+					<input type="hidden" th:field="*{personId}" />
+					<div class="row">
+						<div class="col-sm-6 col-xs-12 form-group required">
+							<label for="role">Role</label>
+							<select id="role"
+									class="form-control"
+									required="required"
+									th:field="*{role}"
+									aria-required="true">
+								<option value="">Select...</option>
+								<option th:each="opt : *{roles}"
+										th:value="${opt}"
+										th:text="${opt.label}">Role</option>
+							</select>
+						</div>
+						<div class="col-sm-6 col-xs-12 form-group required">
+							<label for="status">Status</label>
+							<select id="status"
+									class="form-control"
+									required="required"
+									th:field="*{status}"
+									aria-required="true">
+								<option value="">Select...</option>
+								<option th:each="opt : *{statuses}"
+										th:value="${opt}"
+										th:text="${opt.label}">Status</option>
+							</select>
+						</div>
+					</div>
+					
+					<div class="row">
+						<div class="col-sm-4 form-group">
+							<label for="jersey-number">Jersey Number</label>
+							<input type="text"
+								   id="jersey-number"
+								   class="form-control"
+								   th:field="*{jerseyNumber}" />
+						</div>
+						<div class="col-sm-4 form-group">
+							<label for="position">Position</label>
+							<select id="position"
+									class="form-control"
+									th:field="*{position}">
+								<option value="">Select...</option>
+								<option th:each="opt : *{positions}"
+										th:value="${opt}"
+										th:text="${opt.label}">Status</option>
+							</select>
+						</div>
+						<div class="col-sm-4 form-group">
+							<label for="depth">Depth</label>
+							<input type="number"
+									id="depth"
+									class="form-control"
+									maxlength="2"
+									th:field="*{depth}" />
+						</div>
+					</div>
+					
+					<div class="row">
+						<div class="col-sm-4 form-group">
+							<label for="height">Height (in)</label>
+							<input type="number"
+								   id="height"
+								   class="form-control"
+								   maxlength="3"
+								   th:field="*{height}" />
+						</div>
+						<div class="col-sm-4 form-group">
+							<label for="weight">Weight (lbs)</label>
+							<input type="number"
+								   id="weight"
+								   class="form-control"
+								   maxlength="3"
+								   th:field="*{weight}" />
+						</div>
+						<div class="col-sm-4 form-group checkbox">
+							<label for="captain">
+								<input type="checkbox"
+									   id="captain"
+									   th:field="*{captain}" />
+								<strong>Captain</strong>
+							</label>
+						</div>
+					</div>
+					<button th:type="submit" 
+							class="btn btn-default">Edit Member</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

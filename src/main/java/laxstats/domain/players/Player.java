@@ -18,6 +18,7 @@ public class Player extends AbstractAnnotatedAggregateRoot<PlayerId> {
 
 	@AggregateIdentifier
 	private PlayerId id;
+
 	private String personId;
 	private String teamSeasonId;
 	private Role role;
@@ -36,7 +37,7 @@ public class Player extends AbstractAnnotatedAggregateRoot<PlayerId> {
 	protected Player() {
 	}
 
-	// ---------- Methods ---------- //
+	/*---------- Methods ----------*/
 
 	public void update(PlayerDTO playerDTO) {
 		apply(new PlayerUpdatedEvent(id, playerDTO));
@@ -46,7 +47,7 @@ public class Player extends AbstractAnnotatedAggregateRoot<PlayerId> {
 		apply(new PlayerDeletedEvent(id));
 	}
 
-	// ---------- Event handlers ---------- //
+	/*---------- Event handlers ----------*/
 
 	@EventSourcingHandler
 	protected void handle(PlayerCreatedEvent event) {
@@ -87,7 +88,7 @@ public class Player extends AbstractAnnotatedAggregateRoot<PlayerId> {
 		markDeleted();
 	}
 
-	// ---------- Getters ---------- //
+	/*---------- Getters ----------*/
 
 	public PlayerId getId() {
 		return id;

@@ -49,14 +49,14 @@ public class PlayerEntry {
 	private String fullName;
 
 	@Enumerated(EnumType.STRING)
-	@Column(length = 20)
+	@Column(length = 20, nullable = false)
 	private Role role;
 
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20, nullable = false)
 	private PlayerStatus status;
 
-	@Column(length = 4, nullable = false)
+	@Column(length = 4)
 	private String jerseyNumber;
 
 	@Enumerated(EnumType.STRING)
