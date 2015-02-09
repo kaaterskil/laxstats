@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<head></head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+				<h1>New User</h1>
+				<form action="#"
+					  th:action="@{'/users/'}"
+					  method="post"
+					  id="new-user-form"
+					  name="new-user-form"
+					  th:object="${userForm}"
+					  role="form">
+					<div class="row">
+						<div class="col-sm-4 form-group required">
+							<label for="role">Role</label>
+							<select id="role"
+									class="form-control"
+									required="required"
+									aria-required="true"
+									aria-described-by="roleError"
+									th:field="*{role}">
+								<option value="">Select...</option>
+								<option th:each="opt : *{roles}"
+										th:value="${opt}"
+										th:text="${opt.label}">Roles</option>
+							</select>
+							<div th:if="${#fields.hasErrors('role')}" 
+								 id="roleError"
+								 class="lax-error" 
+								 th:errors="*{role}">Invalid role</div>
+						</div>
+						<div class="col-sm-8 form-group">
+							<label for="team">Team</label>
+							<select id="team"
+									class="form-control"
+									th:field="*{role}">
+								<option value="">Select...</option>
+								<option th:each="entry : *{teams.entrySet()}"
+										th:value="${entry.key}"
+										th:text="${entry.value}">Teams</option>
+							</select>
+						</div>
+					</div>
+					
+					
+					<div class="row">
+						<div class="col-sm-6 form-group">
+							<label for="first-name">First Name</label>
+							<input type="text"
+								   id="first-name"
+								   class="form-control"
+								   maxlength="20"
+								   aria-described-by="firstNameError"
+								   th:field="*{firstName}" />
+							<div th:if="${#fields.hasErrors('firstName')}" 
+								 id="firstNameError"
+								 class="lax-error" 
+								 th:errors="*{firstName}">Invalid first name</div>
+						</div>
+						<div class="col-sm-6 form-group required">
+							<label for="last-name">Last Name</label>
+							<input type="text"
+								   id="last-name"
+								   class="form-control"
+								   maxlength="30"
+								   required="required"
+								   aria-required="true"
+								   aria-described-by="lastNameError"
+								   th:field="*{lastName}" />
+							<div th:if="${#fields.hasErrors('lastName')}" 
+								 id="lastNameError"
+								 class="lax-error" 
+								 th:errors="*{lastName}">Invalid last name</div>
+						</div>
+					</div>
+						
+					<div class="row">
+						<div class="col-sm-6 form-group required">
+							<label for="email">Email</label>
+							<input type="email"
+								   id="email"
+								   class="form-control"
+								   aria-described-by="emailError"
+								   th:field="*{email}" />
+							<div th:if="${#fields.hasErrors('email')}" 
+								 id="emailError"
+								 class="lax-error" 
+								 th:errors="*{email}">Invalid email</div>
+						</div>
+						<div class="col-sm-6 form-group required">
+							<label for="password">Password</label>
+							<input type="password"
+								   id="password"
+								   class="form-control"
+								   required="required"
+								   aria-required="true"
+								   aria-described-by="passwordError"
+								   th:field="*{password}" />
+							<div th:if="${#fields.hasErrors('password')}" 
+								 id="passwordError"
+								 class="lax-error" 
+								 th:errors="*{password}">Invalid password</div>
+						</div>
+					</div>
+						
+					<button type="submit" class="btn btn-default">Save</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

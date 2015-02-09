@@ -1,151 +1,168 @@
 package laxstats.web.users;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
 import laxstats.api.users.CreateUserCommand;
 import laxstats.api.users.UpdateUserCommand;
 import laxstats.api.users.UserDTO;
 import laxstats.api.users.UserId;
+import laxstats.api.users.UserRole;
 import laxstats.query.teams.TeamEntry;
 import laxstats.query.teams.TeamQueryRepository;
 import laxstats.query.users.UserEntry;
 import laxstats.query.users.UserQueryRepository;
 import laxstats.web.ApplicationController;
+
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.commandhandling.GenericCommandMessage;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-
 @Controller
-@RequestMapping("/users")
 public class UserController extends ApplicationController {
-    private final TeamQueryRepository teamRepository;
+	private final TeamQueryRepository teamRepository;
 
-    @Autowired
-    public UserController(UserQueryRepository userRepository,
-                          TeamQueryRepository teamRepository,
-                          CommandBus commandBus) {
-        super(userRepository, commandBus);
-        this.teamRepository = teamRepository;
-    }
+	@Autowired
+	public UserController(UserQueryRepository userRepository,
+			TeamQueryRepository teamRepository, CommandBus commandBus) {
+		super(userRepository, commandBus);
+		this.teamRepository = teamRepository;
+	}
 
-    // ---------- Actions ----------//
+	/*---------- Actions ----------*/
 
-    @RequestMapping(method = RequestMethod.GET)
-    public String index(Model model) {
-        model.addAttribute("users", userRepository.findAll());
-        return "users/index";
-    }
+	@RequestMapping(value = "/users", method = RequestMethod.GET)
+	public String index(Model model) {
+		model.addAttribute("users", userRepository.findAll());
+		return "users/index";
+	}
 
-    @RequestMapping(value = "/{userId}", method = RequestMethod.GET)
-    public String show(@PathVariable String userId, Model model) {
-        final UserEntry user = userRepository.findOne(userId);
-        model.addAttribute("user", user);
-        return "users/show";
-    }
+	@RequestMapping(value = "/users", method = RequestMethod.POST)
+	public String createUser(@Valid UserForm form, BindingResult result,
+			HttpServletRequest request) {
+		if (result.hasErrors()) {
+			return "users/newUser";
+		}
+		final LocalDateTime now = LocalDateTime.now();
+		final UserEntry user = getCurrentUser();
+		final UserId identifier = new UserId();
 
-    @RequestMapping(value = "/new", method = RequestMethod.GET)
-    public String newUser(Model model) {
-        final UserForm form = new UserForm();
-        model.addAttribute("form", form);
-        return "users/newUser";
-    }
+		final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+		final String encodedPassword = encoder.encode(form.getPassword());
 
-    @RequestMapping(method = RequestMethod.POST)
-    public String createUser(@ModelAttribute("form") @Valid UserForm form,
-                             BindingResult bindingResult,
-                             HttpServletRequest request) {
-        if (bindingResult.hasErrors()) {
-            return "users/newUser";
-        }
-        final LocalDateTime now = LocalDateTime.now();
-        final UserEntry user = getCurrentUser();
-        final UserId identifier = new UserId();
+		TeamEntry team = null;
+		if (form.getTeamId() != null) {
+			team = teamRepository.findOne(form.getTeamId());
+		}
 
-        final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        final String encodedPassword = encoder.encode(form.getPassword());
+		final UserDTO dto = new UserDTO(identifier.toString(), form.getEmail(),
+				encodedPassword, form.getFirstName(), form.getLastName(), team,
+				request.getRemoteAddr(), true, form.getRole(), now, user, now,
+				user);
 
-        TeamEntry team = null;
-        if (form.getTeamId() != null) {
-            team = teamRepository.findOne(form.getTeamId());
-        }
+		final CreateUserCommand payload = new CreateUserCommand(identifier, dto);
+		commandBus.dispatch(new GenericCommandMessage<>(payload));
+		return "redirect:/users";
+	}
 
-        final UserDTO dto = new UserDTO();
-        dto.setCreatedAt(now);
-        dto.setCreatedBy(user);
-        dto.setEmail(form.getEmail());
-        dto.setEnabled(form.isEnabled());
-        dto.setEncodedPassword(encodedPassword);
-        dto.setFirstName(form.getFirstName());
-        dto.setIpAddress(request.getRemoteAddr());
-        dto.setLastName(form.getLastName());
-        dto.setModifiedAt(now);
-        dto.setModifiedBy(user);
-        dto.setRole(form.getRole());
-        dto.setTeam(team);
+	@RequestMapping(value = "/users/{userId}", method = RequestMethod.GET)
+	public String show(@PathVariable("userId") UserEntry user, Model model) {
+		model.addAttribute("user", user);
+		return "users/show";
+	}
 
-        final CreateUserCommand payload = new CreateUserCommand(identifier, dto);
-        commandBus.dispatch(new GenericCommandMessage<>(payload));
-        return "redirect:users";
-    }
+	@RequestMapping(value = "/users/{userId}", method = RequestMethod.PUT)
+	public String updateUser(@PathVariable("userId") UserEntry user,
+			@Valid UserForm form, BindingResult result,
+			HttpServletRequest request) {
+		if (result.hasErrors()) {
+			return "users/editUser";
+		}
+		final LocalDateTime now = LocalDateTime.now();
+		final UserEntry modifier = getCurrentUser();
+		final UserId identifier = new UserId(user.getId());
 
-    @RequestMapping(value = "/{userId}/edit", method = RequestMethod.GET)
-    public String editUser(@PathVariable String userId, Model model) {
-        final UserEntry user = userRepository.findOne(userId);
+		TeamEntry team = null;
+		if (form.getTeamId() != null) {
+			team = teamRepository.findOne(form.getTeamId());
+		}
 
-        final UserForm form = new UserForm();
-        form.setEmail(user.getEmail());
-        form.setEnabled(user.isEnabled());
-        form.setFirstName(user.getFirstName());
-        form.setLastName(user.getLastName());
-        form.setPassword(user.getEncodedPassword());
-        form.setRole(user.getRole());
-        if (user.getTeam() != null) {
-            form.setTeamId(user.getTeam().toString());
-        }
+		String encodedPassword = user.getEncodedPassword();
+		final String rawPassword = form.getPassword();
+		if (rawPassword != null) {
+			final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+			encodedPassword = encoder.encode(rawPassword);
+		}
 
-        model.addAttribute("id", user.getId());
-        model.addAttribute("form", form);
-        return "users/editUser";
-    }
+		final UserDTO dto = new UserDTO(user.getId(), form.getEmail(),
+				encodedPassword, form.getFirstName(), form.getLastName(), team,
+				request.getRemoteAddr(), form.isEnabled(), form.getRole(), now,
+				modifier);
 
-    @RequestMapping(value = "/{userId}", method = RequestMethod.PUT)
-    public String updateUser(@ModelAttribute("form") @Valid UserForm form,
-                             @PathVariable String userId,
-                             BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return "users/editUser";
-        }
-        final LocalDateTime now = LocalDateTime.now();
-        final UserEntry user = getCurrentUser();
+		final UpdateUserCommand payload = new UpdateUserCommand(identifier, dto);
+		commandBus.dispatch(new GenericCommandMessage<>(payload));
+		return "redirect:/users";
+	}
 
-        TeamEntry team = null;
-        if (form.getTeamId() != null) {
-            team = teamRepository.findOne(form.getTeamId());
-        }
+	@RequestMapping(value = "/users/new", method = RequestMethod.GET)
+	public String newUser(Model model) {
+		final UserForm form = new UserForm();
+		form.setRole(UserRole.COACH);
+		form.setTeams(getTeams());
 
-        final UserDTO dto = new UserDTO();
-        dto.setEmail(form.getEmail());
-        dto.setEnabled(form.isEnabled());
-        dto.setFirstName(form.getFirstName());
-        dto.setLastName(form.getLastName());
-        dto.setModifiedAt(now);
-        dto.setModifiedBy(user);
-        dto.setRole(form.getRole());
-        dto.setTeam(team);
+		model.addAttribute("userForm", form);
+		return "users/newUser";
+	}
 
-        final UpdateUserCommand payload = new UpdateUserCommand(new UserId(
-            userId), dto);
-        commandBus.dispatch(new GenericCommandMessage<>(payload));
-        return "redirect:";
-    }
+	@RequestMapping(value = "/users/{userId}/edit", method = RequestMethod.GET)
+	public String editUser(@PathVariable("userId") UserEntry user, Model model) {
+		final UserForm form = new UserForm();
+
+		form.setFirstName(user.getFirstName());
+		form.setLastName(user.getLastName());
+		form.setEmail(user.getEmail());
+		form.setRole(user.getRole());
+		form.setEnabled(user.isEnabled());
+		if (user.getTeam() != null) {
+			form.setTeamId(user.getTeam().getId());
+		}
+		form.setTeams(getTeams());
+
+		model.addAttribute("userId", user.getId());
+		model.addAttribute("userForm", form);
+		return "users/editUser";
+	}
+
+	/*---------- Utilities ----------*/
+
+	private Map<String, String> getTeams() {
+		final Iterable<TeamEntry> teams = teamRepository.findAll(teamSorter());
+
+		final Map<String, String> result = new HashMap<>();
+		for (final TeamEntry each : teams) {
+			result.put(each.getId(), each.getTitle());
+		}
+		return result;
+	}
+
+	private Sort teamSorter() {
+		final List<Sort.Order> sort = new ArrayList<>();
+		sort.add(new Sort.Order("affiliation.name"));
+		sort.add(new Sort.Order("name"));
+		return new Sort(sort);
+	}
 }

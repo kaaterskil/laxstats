@@ -10,6 +10,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import laxstats.api.users.UserRole;
 import laxstats.query.teams.TeamEntry;
 
 import org.hibernate.annotations.Type;
@@ -47,7 +48,7 @@ public class UserEntry {
 
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20)
-	private laxstats.api.users.Role role;
+	private UserRole role;
 
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime createdAt;
@@ -64,7 +65,25 @@ public class UserEntry {
 	protected UserEntry() {
 	}
 
-	// ---------- Getter/Setters ----------//
+	/*---------- Methods ----------*/
+
+	public String getFullName() {
+		final StringBuilder sb = new StringBuilder();
+		boolean concat = false;
+		if (firstName != null) {
+			sb.append(firstName);
+			concat = true;
+		}
+		if (lastName != null) {
+			if (concat) {
+				sb.append(" ");
+			}
+			sb.append(lastName);
+		}
+		return sb.toString();
+	}
+
+	/*---------- Getter/Setters ----------*/
 
 	public String getId() {
 		return id;
@@ -130,11 +149,11 @@ public class UserEntry {
 		this.ipAddress = ipAddress;
 	}
 
-	public laxstats.api.users.Role getRole() {
+	public UserRole getRole() {
 		return role;
 	}
 
-	public void setRole(laxstats.api.users.Role role) {
+	public void setRole(UserRole role) {
 		this.role = role;
 	}
 

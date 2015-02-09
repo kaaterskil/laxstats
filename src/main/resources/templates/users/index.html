@@ -5,7 +5,52 @@
 <head></head>
 <body>
 	<div layout:fragment="content">
-		<h1>This is the User Index page</h1>
+		<div class="row">
+			<div class="col-sm-5 col-sm-offset-2">
+				<h1>Users</h1>
+			</div>
+			<div class="col-sm-3">
+				<a href="#"
+				   th:href="@{'/users/new'}"
+				   class="btn btn-default btn-sm lax-btn-new pull-right">New User</a>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-sm-8 col-sm-offset-2">
+				<div class="table-responsive">
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<td>Name</td>
+								<td>Role</td>
+								<td>Email</td>
+								<td>Team</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:unless="${users.size() > 0}">
+								<td colspan="4">No records found.</td>
+							</tr>
+							<tr th:each="user : ${users}">
+								<td>
+									<a href="#"
+									   th:href="@{'/users/' + ${user.id} + '/edit'}"
+									   th:text="${user.getFullName()}">Name</a>
+								</td>
+								<td th:text="${user.role.label}">Role</td>
+								<td>
+									<a href="#"
+									   th:href="'mailto:' + ${user.email}"
+									   th:text="${user.email}">Email</a>
+								</td>
+								<td th:text="${user.team} != null ? ${user.team.getTitle()}">Team</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
 	</div>
 </body>
 </html>

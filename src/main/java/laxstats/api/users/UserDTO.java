@@ -6,123 +6,98 @@ import laxstats.query.users.UserEntry;
 import org.joda.time.LocalDateTime;
 
 public class UserDTO {
+	private final String userId;
+	private final String email;
+	private final String encodedPassword;
+	private final String firstName;
+	private final String lastName;
+	private final TeamEntry team;
+	private final String ipAddress;
+	private final boolean enabled;
+	private final UserRole role;
+	private final LocalDateTime createdAt;
+	private final UserEntry createdBy;
+	private final LocalDateTime modifiedAt;
+	private final UserEntry modifiedBy;
 
-	private String userId;
-	private String email;
-	private String encodedPassword;
-	private String firstName;
-	private String lastName;
-	private TeamEntry team;
-	private String ipAddress;
-	private boolean enabled;
-	private Role role;
-	private LocalDateTime createdAt;
-	private UserEntry createdBy;
-	private LocalDateTime modifiedAt;
-	private UserEntry modifiedBy;
+	public UserDTO(String userId, String email, String encodedPassword,
+			String firstName, String lastName, TeamEntry team,
+			String ipAddress, boolean enabled, UserRole role,
+			LocalDateTime createdAt, UserEntry createdBy,
+			LocalDateTime modifiedAt, UserEntry modifiedBy) {
+		this.userId = userId;
+		this.email = email;
+		this.encodedPassword = encodedPassword;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.team = team;
+		this.ipAddress = ipAddress;
+		this.enabled = enabled;
+		this.role = role;
+		this.createdAt = createdAt;
+		this.createdBy = createdBy;
+		this.modifiedAt = modifiedAt;
+		this.modifiedBy = modifiedBy;
+	}
+
+	public UserDTO(String userId, String email, String encodedPassword,
+			String firstName, String lastName, TeamEntry team,
+			String ipAddress, boolean enabled, UserRole role,
+			LocalDateTime modifiedAt, UserEntry modifiedBy) {
+		this(userId, email, encodedPassword, firstName, lastName, team,
+				ipAddress, enabled, role, null, null, modifiedAt, modifiedBy);
+	}
 
 	public String getUserId() {
 		return userId;
-	}
-
-	public void setUserId(String userId) {
-		this.userId = userId;
 	}
 
 	public String getEmail() {
 		return email;
 	}
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
 	public String getEncodedPassword() {
 		return encodedPassword;
-	}
-
-	public void setEncodedPassword(String encodedPassword) {
-		this.encodedPassword = encodedPassword;
 	}
 
 	public String getFirstName() {
 		return firstName;
 	}
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
 	public String getLastName() {
 		return lastName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
 	}
 
 	public TeamEntry getTeam() {
 		return team;
 	}
 
-	public void setTeam(TeamEntry team) {
-		this.team = team;
-	}
-
 	public String getIpAddress() {
 		return ipAddress;
-	}
-
-	public void setIpAddress(String ipAddress) {
-		this.ipAddress = ipAddress;
 	}
 
 	public boolean isEnabled() {
 		return enabled;
 	}
 
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
-
-	public Role getRole() {
+	public UserRole getRole() {
 		return role;
-	}
-
-	public void setRole(Role role) {
-		this.role = role;
 	}
 
 	public LocalDateTime getCreatedAt() {
 		return createdAt;
 	}
 
-	public void setCreatedAt(LocalDateTime createdAt) {
-		this.createdAt = createdAt;
-	}
-
 	public UserEntry getCreatedBy() {
 		return createdBy;
-	}
-
-	public void setCreatedBy(UserEntry createdBy) {
-		this.createdBy = createdBy;
 	}
 
 	public LocalDateTime getModifiedAt() {
 		return modifiedAt;
 	}
 
-	public void setModifiedAt(LocalDateTime modifiedAt) {
-		this.modifiedAt = modifiedAt;
-	}
-
 	public UserEntry getModifiedBy() {
 		return modifiedBy;
-	}
-
-	public void setModifiedBy(UserEntry modifiedBy) {
-		this.modifiedBy = modifiedBy;
 	}
 
 }

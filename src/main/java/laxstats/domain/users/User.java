@@ -1,9 +1,9 @@
 package laxstats.domain.users;
 
-import laxstats.api.users.Role;
 import laxstats.api.users.UserCreatedEvent;
 import laxstats.api.users.UserDTO;
 import laxstats.api.users.UserId;
+import laxstats.api.users.UserRole;
 import laxstats.api.users.UserUpdatedEvent;
 
 import org.axonframework.eventsourcing.annotation.AbstractAnnotatedAggregateRoot;
@@ -22,7 +22,7 @@ public class User extends AbstractAnnotatedAggregateRoot<UserId> {
 	private String firstName;
 	private String lastName;
 	private String ipAddress;
-	private Role role;
+	private UserRole role;
 
 	public User(UserId userId, UserDTO userDTO) {
 		apply(new UserCreatedEvent(userId, userDTO));
@@ -31,13 +31,13 @@ public class User extends AbstractAnnotatedAggregateRoot<UserId> {
 	protected User() {
 	}
 
-	// ---------- Methods ----------//
+	/*---------- Methods ----------*/
 
 	public void update(UserId userId, UserDTO userDTO) {
 		apply(new UserUpdatedEvent(userId, userDTO));
 	}
 
-	// ---------- Event handlers ----------//
+	/*---------- Event handlers ----------*/
 
 	@EventSourcingHandler
 	protected void handle(UserCreatedEvent event) {
@@ -45,7 +45,7 @@ public class User extends AbstractAnnotatedAggregateRoot<UserId> {
 		this.userId = event.getUserId();
 
 		if (dto.getTeam() != null) {
-			teamId = dto.getTeam().toString();
+			teamId = dto.getTeam().getId().toString();
 		}
 		email = dto.getEmail();
 		encodedPassword = dto.getEncodedPassword();
@@ -60,7 +60,7 @@ public class User extends AbstractAnnotatedAggregateRoot<UserId> {
 	protected void handle(UserUpdatedEvent event) {
 		final UserDTO dto = event.getUserDTO();
 		if (dto.getTeam() != null) {
-			teamId = dto.getTeam().toString();
+			teamId = dto.getTeam().getId().toString();
 		}
 		email = dto.getEmail();
 		encodedPassword = dto.getEncodedPassword();
@@ -71,7 +71,7 @@ public class User extends AbstractAnnotatedAggregateRoot<UserId> {
 		role = dto.getRole();
 	}
 
-	// ---------- Getters ----------//
+	/*---------- Getters ----------*/
 
 	@Override
 	public UserId getIdentifier() {
@@ -106,7 +106,7 @@ public class User extends AbstractAnnotatedAggregateRoot<UserId> {
 		return ipAddress;
 	}
 
-	public Role getRole() {
+	public UserRole getRole() {
 		return role;
 	}
 }
