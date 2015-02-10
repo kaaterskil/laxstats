@@ -9,11 +9,11 @@
 		<div class="row">
 			<div class="col-sm-6 col-xs-12"></div>
 			<div class="col-sm-6 col-xs-12">
-				<h4>New Game</h4>
+				<h4>Edit Game</h4>
 				<form action="#" 
-					  th:action="@/events" 
+					  th:action="@{'/admin/events/' + ${eventId}}" 
 					  th:object="${eventForm}" 
-					  method="post"
+					  th:method="put"
 					  id="edit-game-form" 
 					  role="form">
 					<div class="form-group">

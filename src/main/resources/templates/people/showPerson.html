@@ -11,10 +11,10 @@
 				<div class="row">
 					<h1 style="display: inline-block" th:text="${person.getFullName()}"></h1>
 					<a href="#" 
-					   th:href="@{'/people/' + ${person.id} + '/contacts/new'}"
+					   th:href="@{'/admin/people/' + ${person.id} + '/contacts/new'}"
 					   class="btn btn-default btn-sm lax-btn-new pull-right">New Contact</a>
 					<a href="#" 
-					   th:href="@{'/people/' + ${person.id} + '/addresses/new'}" 
+					   th:href="@{'/admin/people/' + ${person.id} + '/addresses/new'}" 
 					   class="btn btn-default btn-sm lax-btn-new pull-right">New Address</a>
 				</div>
 				   
@@ -61,7 +61,7 @@
 						<tbody>
 							<tr th:each="contact : ${person.contacts}">
 								<td>
-									<form th:action="@{'/people/' + ${person.id} + '/contacts/' + ${contact.id}}" 
+									<form th:action="@{'/admin/people/' + ${person.id} + '/contacts/' + ${contact.id}}" 
 										  th:method="delete" 
 										  class="lax-icon" 
 										  title="Delete" 
@@ -73,7 +73,7 @@
 									</form>
 									<a class="lax-icon" 
 									   title="Edit" 
-									   th:href="@{'/people/' + ${person.id} + '/contacts/' + ${contact.id} + '/edit'}">
+									   th:href="@{'/admin/people/' + ${person.id} + '/contacts/' + ${contact.id} + '/edit'}">
 										<span class="glyphicon glyphicon-pencil green"></span>
 									</a>
 								</td>
@@ -114,7 +114,7 @@
 						<tbody>
 							<tr th:each="item : ${person.addresses}">
 								<td>
-									<form th:action="@{'/people/' + ${person.id} + '/addresses/' + ${item.id}}" 
+									<form th:action="@{'/admin/people/' + ${person.id} + '/addresses/' + ${item.id}}" 
 										  th:method="delete" 
 										  class="lax-icon" 
 										  title="Delete" 
@@ -126,7 +126,7 @@
 									</form>
 									<a class="lax-icon" 
 									   title="Edit" 
-									   th:href="@{'/people/' + ${person.id} + '/addresses/' + ${item.id} + '/edit'}">
+									   th:href="@{'/admin/people/' + ${person.id} + '/addresses/' + ${item.id} + '/edit'}">
 										<span class="glyphicon glyphicon-pencil green"></span>
 									</a>
 								</td>

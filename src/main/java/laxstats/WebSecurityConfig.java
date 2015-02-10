@@ -25,15 +25,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				new BCryptPasswordEncoder());
 
 		// For testing
-		auth.inMemoryAuthentication().withUser("admin@example.com")
-				.password("admin").roles("ADMIN", "USER");
+		// auth.inMemoryAuthentication().withUser("admin@example.com")
+		// .password("admin").roles("ADMIN", "USER");
 	}
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests().antMatchers("/", "/**").permitAll()
-				.antMatchers("/fonts/**").permitAll().antMatchers("/admin/**")
-				.hasAnyRole("ADMIN").anyRequest().authenticated();
+		http.authorizeRequests()
+				.antMatchers("/", "/home", "/events", "/teams", "/people")
+				.permitAll().antMatchers("/fonts/**").permitAll()
+				.antMatchers("/admin/**").hasAnyRole("ADMIN").anyRequest()
+				.authenticated();
 		http.formLogin().failureUrl("/login?error")
 				.defaultSuccessUrl("/home/office").loginPage("/login")
 				.permitAll();

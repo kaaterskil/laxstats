@@ -45,13 +45,13 @@ public class UserController extends ApplicationController {
 
 	/*---------- Actions ----------*/
 
-	@RequestMapping(value = "/users", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/users", method = RequestMethod.GET)
 	public String index(Model model) {
 		model.addAttribute("users", userRepository.findAll());
 		return "users/index";
 	}
 
-	@RequestMapping(value = "/users", method = RequestMethod.POST)
+	@RequestMapping(value = "/admin/users", method = RequestMethod.POST)
 	public String createUser(@Valid UserForm form, BindingResult result,
 			HttpServletRequest request) {
 		if (result.hasErrors()) {
@@ -76,16 +76,16 @@ public class UserController extends ApplicationController {
 
 		final CreateUserCommand payload = new CreateUserCommand(identifier, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/users";
+		return "redirect:/admin/users";
 	}
 
-	@RequestMapping(value = "/users/{userId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/users/{userId}", method = RequestMethod.GET)
 	public String show(@PathVariable("userId") UserEntry user, Model model) {
 		model.addAttribute("user", user);
 		return "users/show";
 	}
 
-	@RequestMapping(value = "/users/{userId}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/admin/users/{userId}", method = RequestMethod.PUT)
 	public String updateUser(@PathVariable("userId") UserEntry user,
 			@Valid UserForm form, BindingResult result,
 			HttpServletRequest request) {
@@ -115,10 +115,10 @@ public class UserController extends ApplicationController {
 
 		final UpdateUserCommand payload = new UpdateUserCommand(identifier, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/users";
+		return "redirect:/admin/users";
 	}
 
-	@RequestMapping(value = "/users/new", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/users/new", method = RequestMethod.GET)
 	public String newUser(Model model) {
 		final UserForm form = new UserForm();
 		form.setRole(UserRole.COACH);
@@ -128,7 +128,7 @@ public class UserController extends ApplicationController {
 		return "users/newUser";
 	}
 
-	@RequestMapping(value = "/users/{userId}/edit", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/users/{userId}/edit", method = RequestMethod.GET)
 	public String editUser(@PathVariable("userId") UserEntry user, Model model) {
 		final UserForm form = new UserForm();
 

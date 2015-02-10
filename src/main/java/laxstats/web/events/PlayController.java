@@ -39,9 +39,9 @@ import laxstats.api.events.UpdateShotCommand;
 import laxstats.api.violations.PenaltyCategory;
 import laxstats.query.events.AttendeeEntry;
 import laxstats.query.events.ClearEntry;
+import laxstats.query.events.FaceOffEntry;
 import laxstats.query.events.GameEntry;
 import laxstats.query.events.GameQueryRepository;
-import laxstats.query.events.FaceOffEntry;
 import laxstats.query.events.GoalEntry;
 import laxstats.query.events.GroundBallEntry;
 import laxstats.query.events.PenaltyEntry;
@@ -103,7 +103,7 @@ public class PlayController extends ApplicationController {
 
 	/*---------- Clear actions ----------*/
 
-	@RequestMapping(value = "/events/{eventId}/clears", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/events/{eventId}/clears", method = RequestMethod.GET)
 	public String clearIndex(@PathVariable String eventId, Model model) {
 		final GameEntry aggregate = eventRepository.findOne(eventId);
 		final List<PlayEntry> teamOnePlays = getPlays(PlayType.CLEAR,
@@ -116,7 +116,7 @@ public class PlayController extends ApplicationController {
 		return "events/clears/index";
 	}
 
-	@RequestMapping(value = "/events/{eventId}/clears/new", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/events/{eventId}/clears/new", method = RequestMethod.GET)
 	public String newClear(@PathVariable String eventId, Model model) {
 		final GameEntry aggregate = eventRepository.findOne(eventId);
 
@@ -129,7 +129,7 @@ public class PlayController extends ApplicationController {
 		return "events/clears/newClear";
 	}
 
-	@RequestMapping(value = "/events/{eventId}/clears", method = RequestMethod.POST)
+	@RequestMapping(value = "/admin/events/{eventId}/clears", method = RequestMethod.POST)
 	public String createClear(@PathVariable String eventId,
 			@ModelAttribute("clearForm") @Valid ClearForm form,
 			BindingResult result) {
@@ -155,20 +155,20 @@ public class PlayController extends ApplicationController {
 		final RecordClearCommand payload = new RecordClearCommand(new EventId(
 				eventId), playId, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/events/" + eventId + "/clears";
+		return "redirect:/admin/events/" + eventId + "/clears";
 	}
 
-	@RequestMapping(value = "/events/{eventId}/clears/{playId}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/admin/events/{eventId}/clears/{playId}", method = RequestMethod.DELETE)
 	public String deleteClear(@PathVariable String eventId,
 			@PathVariable String playId) {
 		final EventId identifier = new EventId(eventId);
 		final DeleteClearCommand payload = new DeleteClearCommand(identifier,
 				playId);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/events/" + eventId + "/clears";
+		return "redirect:/admin/events/" + eventId + "/clears";
 	}
 
-	@RequestMapping(value = "/events/{eventId}/clears/{playId}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/admin/events/{eventId}/clears/{playId}", method = RequestMethod.PUT)
 	public String updateClear(@PathVariable String eventId,
 			@PathVariable String playId,
 			@ModelAttribute("clearForm") @Valid ClearForm form,
@@ -192,10 +192,10 @@ public class PlayController extends ApplicationController {
 		final UpdateClearCommand payload = new UpdateClearCommand(new EventId(
 				eventId), playId, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/events/" + eventId + "/clears";
+		return "redirect:/admin/events/" + eventId + "/clears";
 	}
 
-	@RequestMapping(value = "/events/{eventId}/clears/{playId}/edit", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/events/{eventId}/clears/{playId}/edit", method = RequestMethod.GET)
 	public String editClear(@PathVariable String eventId,
 			@PathVariable String playId, Model model) {
 		final Map<String, Object> attributes = new HashMap<>();
@@ -220,7 +220,7 @@ public class PlayController extends ApplicationController {
 
 	/*---------- Faceoff actions ----------*/
 
-	@RequestMapping(value = "/events/{eventId}/faceOffs", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/events/{eventId}/faceOffs", method = RequestMethod.GET)
 	public String faceOffIndex(@PathVariable String eventId, Model model) {
 		final GameEntry aggregate = eventRepository.findOne(eventId);
 		final List<FaceOffEntry> faceOffs = getFaceoffs(aggregate);
@@ -241,7 +241,7 @@ public class PlayController extends ApplicationController {
 		return "events/faceOffs/newFaceOff";
 	}
 
-	@RequestMapping(value = "/events/{eventId}/faceOffs", method = RequestMethod.POST)
+	@RequestMapping(value = "/admin/events/{eventId}/faceOffs", method = RequestMethod.POST)
 	public String createFaceOff(@PathVariable String eventId,
 			@ModelAttribute("faceOffForm") @Valid FaceOffForm form,
 			BindingResult result) {
@@ -284,20 +284,20 @@ public class PlayController extends ApplicationController {
 		final RecordFaceoffCommand payload = new RecordFaceoffCommand(
 				new EventId(eventId), playId, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/events/" + eventId + "/faceOffs";
+		return "redirect:/admin/events/" + eventId + "/faceOffs";
 	}
 
-	@RequestMapping(value = "/events/{eventId}/faceOffs/{playId}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/admin/events/{eventId}/faceOffs/{playId}", method = RequestMethod.DELETE)
 	public String deleteFaceOff(@PathVariable String eventId,
 			@PathVariable String playId) {
 		final EventId identifier = new EventId(eventId);
 		final DeleteFaceOffCommand payload = new DeleteFaceOffCommand(
 				identifier, playId);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/events/" + eventId + "/faceOffs";
+		return "redirect:/admin/events/" + eventId + "/faceOffs";
 	}
 
-	@RequestMapping(value = "/events/{eventId}/faceOffs/{playId}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/admin/events/{eventId}/faceOffs/{playId}", method = RequestMethod.PUT)
 	public String updateFaceOff(@PathVariable String eventId,
 			@PathVariable String playId,
 			@ModelAttribute("form") @Valid FaceOffForm form,
@@ -343,10 +343,10 @@ public class PlayController extends ApplicationController {
 		final UpdateFaceOffCommand payload = new UpdateFaceOffCommand(
 				new EventId(eventId), playId, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/events/" + eventId + "/faceOffs";
+		return "redirect:/admin/events/" + eventId + "/faceOffs";
 	}
 
-	@RequestMapping(value = "/events/{eventId}/faceOffs/{playId}/edit", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/events/{eventId}/faceOffs/{playId}/edit", method = RequestMethod.GET)
 	public String editFaceOff(@PathVariable String eventId,
 			@PathVariable String playId, Model model) {
 		final Map<String, Object> attributes = new HashMap<>();
@@ -379,7 +379,7 @@ public class PlayController extends ApplicationController {
 
 	/*---------- Goal actions ----------*/
 
-	@RequestMapping(value = "/events/{eventId}/goals", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/events/{eventId}/goals", method = RequestMethod.GET)
 	public String goalIndex(@PathVariable String eventId, Model model) {
 		final GameEntry aggregate = eventRepository.findOne(eventId);
 		final List<PlayEntry> teamOnePlays = getPlays(PlayType.GOAL, aggregate,
@@ -392,7 +392,7 @@ public class PlayController extends ApplicationController {
 		return "events/goals/index";
 	}
 
-	@RequestMapping(value = "/events/{eventId}/goals/new", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/events/{eventId}/goals/new", method = RequestMethod.GET)
 	public String newGoal(@PathVariable String eventId, Model model) {
 		final GameEntry aggregate = eventRepository.findOne(eventId);
 
@@ -405,7 +405,7 @@ public class PlayController extends ApplicationController {
 		return "events/goals/newGoal";
 	}
 
-	@RequestMapping(value = "/events/{eventId}/goals", method = RequestMethod.POST)
+	@RequestMapping(value = "/admin/events/{eventId}/goals", method = RequestMethod.POST)
 	public String createGoal(@PathVariable String eventId,
 			@ModelAttribute("goalForm") @Valid GoalForm form,
 			BindingResult result) {
@@ -451,20 +451,20 @@ public class PlayController extends ApplicationController {
 		final RecordGoalCommand payload = new RecordGoalCommand(new EventId(
 				eventId), playId, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/events/" + eventId + "/goals";
+		return "redirect:/admin/events/" + eventId + "/goals";
 	}
 
-	@RequestMapping(value = "/events/{eventId}/goals/{playId}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/admin/events/{eventId}/goals/{playId}", method = RequestMethod.DELETE)
 	public String deleteGoal(@PathVariable String eventId,
 			@PathVariable String playId) {
 		final EventId identifier = new EventId(eventId);
 		final DeleteGoalCommand payload = new DeleteGoalCommand(identifier,
 				playId);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/events/" + eventId + "/goals";
+		return "redirect:/admin/events/" + eventId + "/goals";
 	}
 
-	@RequestMapping(value = "/events/{eventId}/goals/{playId}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/admin/events/{eventId}/goals/{playId}", method = RequestMethod.PUT)
 	public String updateGoal(@PathVariable String eventId,
 			@PathVariable String playId,
 			@ModelAttribute("form") @Valid GoalForm form, BindingResult result) {
@@ -536,10 +536,10 @@ public class PlayController extends ApplicationController {
 		final UpdateGoalCommand payload = new UpdateGoalCommand(new EventId(
 				eventId), playId, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/events/" + eventId + "/goals";
+		return "redirect:/admin/events/" + eventId + "/goals";
 	}
 
-	@RequestMapping(value = "/events/{eventId}/goals/{playId}/edit", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/events/{eventId}/goals/{playId}/edit", method = RequestMethod.GET)
 	public String editGoal(@PathVariable String eventId,
 			@PathVariable String playId, Model model) {
 		final Map<String, Object> attributes = new HashMap<>();
@@ -572,7 +572,7 @@ public class PlayController extends ApplicationController {
 
 	/*---------- Ground Ball actions ----------*/
 
-	@RequestMapping(value = "/events/{eventId}/groundBalls", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/events/{eventId}/groundBalls", method = RequestMethod.GET)
 	public String groundBallIndex(@PathVariable String eventId, Model model) {
 		final GameEntry aggregate = eventRepository.findOne(eventId);
 		final List<PlayEntry> teamOnePlays = getPlays(PlayType.GROUND_BALL,
@@ -597,7 +597,7 @@ public class PlayController extends ApplicationController {
 		return "events/groundBalls/newGroundBall";
 	}
 
-	@RequestMapping(value = "/events/{eventId}/groundBalls", method = RequestMethod.POST)
+	@RequestMapping(value = "/admin/events/{eventId}/groundBalls", method = RequestMethod.POST)
 	public String createGroundBall(@PathVariable String eventId,
 			@ModelAttribute("groundBallForm") @Valid GroundBallForm form,
 			BindingResult result) {
@@ -632,20 +632,20 @@ public class PlayController extends ApplicationController {
 		final RecordGroundBallCommand payload = new RecordGroundBallCommand(
 				new EventId(eventId), playId, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/events/" + eventId + "/groundBalls";
+		return "redirect:/admin/events/" + eventId + "/groundBalls";
 	}
 
-	@RequestMapping(value = "/events/{eventId}/groundBalls/{playId}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/admin/events/{eventId}/groundBalls/{playId}", method = RequestMethod.DELETE)
 	public String deleteGroundBall(@PathVariable String eventId,
 			@PathVariable String playId) {
 		final EventId identifier = new EventId(eventId);
 		final DeleteGroundBallCommand payload = new DeleteGroundBallCommand(
 				identifier, playId);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/events/" + eventId + "/groundBalls";
+		return "redirect:/admin/events/" + eventId + "/groundBalls";
 	}
 
-	@RequestMapping(value = "/events/{eventId}/groundBalls/{playId}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/admin/events/{eventId}/groundBalls/{playId}", method = RequestMethod.PUT)
 	public String updateGroundBall(@PathVariable String eventId,
 			@PathVariable String playId,
 			@ModelAttribute("form") @Valid GroundBallForm form,
@@ -681,10 +681,10 @@ public class PlayController extends ApplicationController {
 		final UpdateGroundBallCommand payload = new UpdateGroundBallCommand(
 				new EventId(eventId), playId, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/events/" + eventId + "/groundBalls";
+		return "redirect:/admin/events/" + eventId + "/groundBalls";
 	}
 
-	@RequestMapping(value = "/events/{eventId}/groundBalls/{playId}/edit", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/events/{eventId}/groundBalls/{playId}/edit", method = RequestMethod.GET)
 	public String editGroundBall(@PathVariable String eventId,
 			@PathVariable String playId, Model model) {
 		final Map<String, Object> attributes = new HashMap<>();
@@ -712,7 +712,7 @@ public class PlayController extends ApplicationController {
 
 	/*---------- Penalty actions ----------*/
 
-	@RequestMapping(value = "/events/{eventId}/penalties", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/events/{eventId}/penalties", method = RequestMethod.GET)
 	public String penaltyIndex(@PathVariable String eventId, Model model) {
 		final GameEntry aggregate = eventRepository.findOne(eventId);
 		final List<PlayEntry> teamOnePlays = getPlays(PlayType.PENALTY,
@@ -725,7 +725,7 @@ public class PlayController extends ApplicationController {
 		return "events/penalties/index";
 	}
 
-	@RequestMapping(value = "/events/{eventId}/penalties/new", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/events/{eventId}/penalties/new", method = RequestMethod.GET)
 	public String newPenalty(@PathVariable String eventId, Model model) {
 		final GameEntry aggregate = eventRepository.findOne(eventId);
 
@@ -739,7 +739,7 @@ public class PlayController extends ApplicationController {
 		return "events/penalties/newPenalty";
 	}
 
-	@RequestMapping(value = "/events/{eventId}/penalties", method = RequestMethod.POST)
+	@RequestMapping(value = "/admin/events/{eventId}/penalties", method = RequestMethod.POST)
 	public String createPenalty(@PathVariable String eventId,
 			@ModelAttribute("penaltyForm") @Valid PenaltyForm form,
 			BindingResult result) {
@@ -790,10 +790,10 @@ public class PlayController extends ApplicationController {
 		final RecordPenaltyCommand payload = new RecordPenaltyCommand(
 				new EventId(eventId), playId, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/events/" + eventId + "/penalties";
+		return "redirect:/admin/events/" + eventId + "/penalties";
 	}
 
-	@RequestMapping(value = "/events/{eventId}/penalties/{playId}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/admin/events/{eventId}/penalties/{playId}", method = RequestMethod.PUT)
 	public String updatePenalty(@PathVariable String eventId,
 			@PathVariable String playId,
 			@ModelAttribute("penaltyForm") @Valid PenaltyForm form,
@@ -866,20 +866,20 @@ public class PlayController extends ApplicationController {
 		final UpdatePenaltyCommand payload = new UpdatePenaltyCommand(
 				new EventId(eventId), playId, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/events/" + eventId + "/penalties";
+		return "redirect:/admin/events/" + eventId + "/penalties";
 	}
 
-	@RequestMapping(value = "/events/{eventId}/penalties/{playId}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/admin/events/{eventId}/penalties/{playId}", method = RequestMethod.DELETE)
 	public String deletePenalty(@PathVariable String eventId,
 			@PathVariable String playId) {
 		final EventId identifier = new EventId(eventId);
 		final DeletePenaltyCommand payload = new DeletePenaltyCommand(
 				identifier, playId);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/events/" + eventId + "/penalties";
+		return "redirect:/admin/events/" + eventId + "/penalties";
 	}
 
-	@RequestMapping(value = "/events/{eventId}/penalties/{playId}/edit", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/events/{eventId}/penalties/{playId}/edit", method = RequestMethod.GET)
 	public String editPenalty(@PathVariable String eventId,
 			@PathVariable String playId, Model model) {
 		final Map<String, Object> attributes = new HashMap<>();
@@ -915,7 +915,7 @@ public class PlayController extends ApplicationController {
 
 	/*---------- Shot actions ----------*/
 
-	@RequestMapping(value = "/events/{eventId}/shots", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/events/{eventId}/shots", method = RequestMethod.GET)
 	public String shotIndex(@PathVariable String eventId, Model model) {
 		final GameEntry aggregate = eventRepository.findOne(eventId);
 		final List<PlayEntry> teamOnePlays = getPlays(PlayType.SHOT, aggregate,
@@ -928,7 +928,7 @@ public class PlayController extends ApplicationController {
 		return "events/shots/index";
 	}
 
-	@RequestMapping(value = "/events/{eventId}/shots/new", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/events/{eventId}/shots/new", method = RequestMethod.GET)
 	public String newShot(@PathVariable String eventId, Model model) {
 		final GameEntry aggregate = eventRepository.findOne(eventId);
 
@@ -941,7 +941,7 @@ public class PlayController extends ApplicationController {
 		return "events/shots/newShot";
 	}
 
-	@RequestMapping(value = "/events/{eventId}/shots", method = RequestMethod.POST)
+	@RequestMapping(value = "/admin/events/{eventId}/shots", method = RequestMethod.POST)
 	public String createShot(@PathVariable String eventId,
 			@ModelAttribute("form") @Valid ShotForm form, BindingResult result) {
 		if (result.hasErrors()) {
@@ -975,10 +975,10 @@ public class PlayController extends ApplicationController {
 		final RecordShotCommand payload = new RecordShotCommand(new EventId(
 				eventId), playId, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/events/" + eventId + "/shots";
+		return "redirect:/admin/events/" + eventId + "/shots";
 	}
 
-	@RequestMapping(value = "/events/{eventId}/shots/{playId}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/admin/events/{eventId}/shots/{playId}", method = RequestMethod.PUT)
 	public String updateShot(@PathVariable String eventId,
 			@PathVariable String playId,
 			@ModelAttribute("form") @Valid ShotForm form, BindingResult result) {
@@ -1014,20 +1014,20 @@ public class PlayController extends ApplicationController {
 		final UpdateShotCommand payload = new UpdateShotCommand(new EventId(
 				eventId), playId, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/events/" + eventId + "/shots";
+		return "redirect:/admin/events/" + eventId + "/shots";
 	}
 
-	@RequestMapping(value = "/events/{eventId}/shots/{playId}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/admin/events/{eventId}/shots/{playId}", method = RequestMethod.DELETE)
 	public String deleteShot(@PathVariable String eventId,
 			@PathVariable String playId) {
 		final EventId identifier = new EventId(eventId);
 		final DeleteShotCommand payload = new DeleteShotCommand(identifier,
 				playId);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/events/" + eventId + "/shots";
+		return "redirect:/admin/events/" + eventId + "/shots";
 	}
 
-	@RequestMapping(value = "/events/{eventId}/shots/{playId}/edit", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/events/{eventId}/shots/{playId}/edit", method = RequestMethod.GET)
 	public String editShot(@PathVariable String eventId,
 			@PathVariable String playId, Model model) {
 		final Map<String, Object> attributes = new HashMap<>();

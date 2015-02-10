@@ -55,14 +55,14 @@ public class PersonController extends ApplicationController {
 
 	/*---------- Person actions ---------*/
 
-	@RequestMapping(value = "/people", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/people", method = RequestMethod.GET)
 	public String index(Model model) {
 		final SearchPeopleForm form = new SearchPeopleForm();
 		model.addAttribute("searchForm", form);
 		return "people/index";
 	}
 
-	@RequestMapping(value = "/people", method = RequestMethod.POST)
+	@RequestMapping(value = "/admin/people", method = RequestMethod.POST)
 	public String createPerson(@Valid PersonForm form, BindingResult result) {
 		if (result.hasErrors()) {
 			return "people/newPerson";
@@ -83,17 +83,17 @@ public class PersonController extends ApplicationController {
 		final CreatePersonCommand command = new CreatePersonCommand(identifier,
 				dto);
 		commandBus.dispatch(new GenericCommandMessage<>(command));
-		return "redirect:/people";
+		return "redirect:/admin/people";
 	}
 
-	@RequestMapping(value = "/people/{personId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/people/{personId}", method = RequestMethod.GET)
 	public String showPerson(@PathVariable("personId") PersonEntry person,
 			Model model) {
 		model.addAttribute("person", person);
 		return "people/showPerson";
 	}
 
-	@RequestMapping(value = "/people/{personId}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/admin/people/{personId}", method = RequestMethod.PUT)
 	public String updatePerson(@PathVariable String personId,
 			@Valid PersonForm form, BindingResult result) {
 		if (result.hasErrors()) {
@@ -115,25 +115,25 @@ public class PersonController extends ApplicationController {
 		final UpdatePersonCommand payload = new UpdatePersonCommand(identifier,
 				dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/people";
+		return "redirect:/admin/people";
 	}
 
-	@RequestMapping(value = "people/{personId}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/admin/people/{personId}", method = RequestMethod.DELETE)
 	public String deletePerson(@PathVariable String personId) {
 		final PersonId identifier = new PersonId(personId);
 		final DeletePersonCommand payload = new DeletePersonCommand(identifier);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/people";
+		return "redirect:/admin/people";
 	}
 
-	@RequestMapping(value = "/people/new", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/people/new", method = RequestMethod.GET)
 	public String newPerson(Model model) {
 		final PersonForm form = new PersonForm();
 		model.addAttribute("personForm", form);
 		return "people/newPerson";
 	}
 
-	@RequestMapping(value = "/people/{personId}/edit", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/people/{personId}/edit", method = RequestMethod.GET)
 	public String editPerson(@PathVariable("personId") PersonEntry person,
 			Model model) {
 		final PersonForm form = new PersonForm();
@@ -159,7 +159,7 @@ public class PersonController extends ApplicationController {
 
 	/*---------- Address actions ----------*/
 
-	@RequestMapping(value = "/people/{personId}/addresses", method = RequestMethod.POST)
+	@RequestMapping(value = "/admin/people/{personId}/addresses", method = RequestMethod.POST)
 	public String createAddress(@PathVariable("personId") PersonEntry person,
 			@Valid AddressForm form, BindingResult result) {
 		if (result.hasErrors()) {
@@ -180,10 +180,10 @@ public class PersonController extends ApplicationController {
 		final RegisterAddressCommand payload = new RegisterAddressCommand(
 				identifier, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/people/" + person.getId();
+		return "redirect:/admin/people/" + person.getId();
 	}
 
-	@RequestMapping(value = "/{personId}/addresses/{addressId}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/admin/{personId}/addresses/{addressId}", method = RequestMethod.PUT)
 	public String updateAddress(@PathVariable("personId") PersonEntry person,
 			@PathVariable String addressId, @Valid AddressForm form,
 			BindingResult bindingResult) {
@@ -202,17 +202,17 @@ public class PersonController extends ApplicationController {
 		final UpdateAddressCommand payload = new UpdateAddressCommand(
 				identifier, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/people/" + person.getId();
+		return "redirect:/admin/people/" + person.getId();
 	}
 
-	@RequestMapping(value = "/people/{personId}/addresses/{addressId}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/admin/people/{personId}/addresses/{addressId}", method = RequestMethod.DELETE)
 	public String deleteAddress(@PathVariable String personId,
 			@PathVariable String addressId) {
 		final PersonId identifier = new PersonId(personId);
 		final DeleteAddressCommand payload = new DeleteAddressCommand(
 				identifier, addressId);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/people/" + personId;
+		return "redirect:/admin/people/" + personId;
 	}
 
 	@RequestMapping(value = "/people/{personId}/addresses/new", method = RequestMethod.GET)
@@ -224,7 +224,7 @@ public class PersonController extends ApplicationController {
 		return "people/newAddress";
 	}
 
-	@RequestMapping(value = "/people/{personId}/addresses/{addressId}/edit", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/people/{personId}/addresses/{addressId}/edit", method = RequestMethod.GET)
 	public String editAddress(@PathVariable("personId") PersonEntry person,
 			@PathVariable String addressId, Model model) {
 		final AddressEntry address = person.getAddress(addressId);
@@ -247,7 +247,7 @@ public class PersonController extends ApplicationController {
 
 	/*---------- Contact actions ----------*/
 
-	@RequestMapping(value = "/people/{personId}/contacts", method = RequestMethod.POST)
+	@RequestMapping(value = "/admin/people/{personId}/contacts", method = RequestMethod.POST)
 	public String createContact(@PathVariable("personId") PersonEntry person,
 			@Valid ContactForm form, BindingResult result) {
 		if (result.hasErrors()) {
@@ -266,10 +266,10 @@ public class PersonController extends ApplicationController {
 		final RegisterContactCommand payload = new RegisterContactCommand(
 				identifier, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/people/" + person.getId();
+		return "redirect:/admin/people/" + person.getId();
 	}
 
-	@RequestMapping(value = "/people/{personId}/contacts/{contactId}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/admin/people/{personId}/contacts/{contactId}", method = RequestMethod.PUT)
 	public String updateContact(@PathVariable("personId") PersonEntry person,
 			@PathVariable String contactId, @Valid ContactForm form,
 			BindingResult result) {
@@ -287,20 +287,20 @@ public class PersonController extends ApplicationController {
 		final UpdateContactCommand payload = new UpdateContactCommand(
 				identifier, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/people/" + person.getId();
+		return "redirect:/admin/people/" + person.getId();
 	}
 
-	@RequestMapping(value = "/people/{personId}/contacts/{contactId}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/admin/people/{personId}/contacts/{contactId}", method = RequestMethod.DELETE)
 	public String deleteContact(@PathVariable String personId,
 			@PathVariable String contactId) {
 		final PersonId identifier = new PersonId(personId);
 		final DeleteContactCommand payload = new DeleteContactCommand(
 				identifier, contactId);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/people/" + personId;
+		return "redirect:/admin/people/" + personId;
 	}
 
-	@RequestMapping(value = "/people/{personId}/contacts/new", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/people/{personId}/contacts/new", method = RequestMethod.GET)
 	public String newContact(@PathVariable("personId") PersonEntry person,
 			Model model) {
 		final ContactForm form = new ContactForm();
@@ -309,7 +309,7 @@ public class PersonController extends ApplicationController {
 		return "people/newContact";
 	}
 
-	@RequestMapping(value = "/people/{personId}/contacts/{contactId}/edit", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/people/{personId}/contacts/{contactId}/edit", method = RequestMethod.GET)
 	public String editContact(@PathVariable("personId") PersonEntry person,
 			@PathVariable String contactId, Model model) {
 		final ContactEntry contact = person.getContact(contactId);

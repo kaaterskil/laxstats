@@ -54,7 +54,7 @@ public class SeasonController extends ApplicationController {
 
 	/*---------- Action methods ----------*/
 
-	@RequestMapping(value = "/seasons", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/seasons", method = RequestMethod.GET)
 	public String index(Model model) {
 		final Iterable<SeasonEntry> list = seasonRepository.findAll(new Sort(
 				Direction.DESC, "startsOn"));
@@ -62,7 +62,7 @@ public class SeasonController extends ApplicationController {
 		return "seasons/index";
 	}
 
-	@RequestMapping(value = "/seasons", method = RequestMethod.POST)
+	@RequestMapping(value = "/admin/seasons", method = RequestMethod.POST)
 	public String createSeason(@Valid SeasonForm form, BindingResult result) {
 		if (result.hasErrors()) {
 			return "seasons/newSeason";
@@ -79,10 +79,10 @@ public class SeasonController extends ApplicationController {
 		final CreateSeasonCommand payload = new CreateSeasonCommand(identifier,
 				dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/seasons";
+		return "redirect:/admin/seasons";
 	}
 
-	@RequestMapping(value = "/seasons/{seasonId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/seasons/{seasonId}", method = RequestMethod.GET)
 	public String showSeason(@PathVariable("seasonId") SeasonEntry season,
 			Model model) {
 		model.addAttribute("item", season);
@@ -106,19 +106,19 @@ public class SeasonController extends ApplicationController {
 		final UpdateSeasonCommand payload = new UpdateSeasonCommand(identifier,
 				dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/seasons";
+		return "redirect:/admin/seasons";
 	}
 
-	@RequestMapping(value = "/seasons/{seasonId}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/admin/seasons/{seasonId}", method = RequestMethod.DELETE)
 	public String deleteSeason(@PathVariable String seasonId) {
 		final SeasonId identifier = new SeasonId(seasonId);
 
 		final DeleteSeasonCommand payload = new DeleteSeasonCommand(identifier);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/seasons";
+		return "redirect:/admin/seasons";
 	}
 
-	@RequestMapping(value = "/seasons/new", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/seasons/new", method = RequestMethod.GET)
 	public String newSeason(Model model) {
 		final SeasonForm form = new SeasonForm();
 		model.addAttribute("seasonForm", form);

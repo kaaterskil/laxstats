@@ -11,7 +11,7 @@
 			<div class="col-sm-6 col-xs-12">
 				<h4>Edit Ground Ball</h4>
 				<form action="#" 
-					  th:action="@/events/${event.id}/groundBalls/${play.id}" 
+					  th:action="@{'/admin/events/' + ${event.id} + '/groundBalls/' + ${play.id}}" 
 					  th:object="${groundBallForm}" 
 					  th:method="put" 
 					  role="form">

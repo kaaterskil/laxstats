@@ -11,7 +11,7 @@
 			<div class="col-sm-6 col-xs-12">
 				<h4>FaceOff Input</h4>
 				<form action="#" 
-					  th:action="@/events/${event.id}/faceOffs" 
+					  th:action="@{'/admin/events/' + ${event.id} + '/faceOffs'}" 
 					  th:object="${faceOffForm}" 
 					  method="post" 
 					  role="form">

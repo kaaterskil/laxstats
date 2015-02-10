@@ -20,13 +20,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
-@RequestMapping("/violations")
 public class ViolationController extends ApplicationController {
 	private final ViolationQueryRepository violationRepository;
 
@@ -37,58 +35,79 @@ public class ViolationController extends ApplicationController {
 		this.violationRepository = violationRepository;
 	}
 
-	@RequestMapping(method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/violations", method = RequestMethod.GET)
 	public String index(Model model) {
 		model.addAttribute("items", violationRepository.findAll());
 		return "violations/index";
 	}
 
-	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
-	public String show(@PathVariable String id, Model model) {
-		final ViolationEntry violation = violationRepository.findOne(id);
-		model.addAttribute("violation", violation);
-		return "violations/show";
-	}
-
-	@RequestMapping(value = "/new", method = RequestMethod.GET)
-	public String newViolation(Model model) {
-		final ViolationForm form = new ViolationForm();
-		model.addAttribute("form", form);
-		return "violations/new";
-	}
-
-	@RequestMapping(method = RequestMethod.POST)
-	public String createViolation(
-			@ModelAttribute("form") @Valid ViolationForm form,
-			BindingResult bindingResult) {
-		if (bindingResult.hasErrors()) {
-			return "violations/new";
+	@RequestMapping(value = "/admin/violations", method = RequestMethod.POST)
+	public String createViolation(@Valid ViolationForm form,
+			BindingResult result) {
+		if (result.hasErrors()) {
+			return "violations/newViolation";
 		}
 
 		final LocalDateTime now = LocalDateTime.now();
 		final UserEntry user = getCurrentUser();
 		final ViolationId identifier = new ViolationId();
 
-		final ViolationDTO dto = new ViolationDTO();
-		dto.setCategory(form.getCategory());
-		dto.setCreatedAt(now);
-		dto.setCreatedBy(user);
-		dto.setDescription(form.getDescription());
-		dto.setModifiedAt(now);
-		dto.setModifiedBy(user);
-		dto.setName(form.getName());
-		dto.setPenaltyLength(form.getPenaltyLength());
-		dto.setReleasable(form.isReleasable());
+		final ViolationDTO dto = new ViolationDTO(identifier.toString(),
+				form.getName(), form.getDescription(), form.getCategory(),
+				form.getPenaltyLength(), form.isReleasable(), now, user, now,
+				user);
 
 		final CreateViolationCommand command = new CreateViolationCommand(
 				identifier, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(command));
-		return "redirect:violations";
+		return "redirect:/admin/violations";
 	}
 
-	@RequestMapping(value = "/{id}/edit", method = RequestMethod.GET)
-	public String editViolation(@PathVariable String id, Model model) {
-		final ViolationEntry violation = violationRepository.findOne(id);
+	@RequestMapping(value = "/admin/violations/{violationId}", method = RequestMethod.GET)
+	public String show(@PathVariable("violationId") ViolationEntry violation,
+			Model model) {
+		model.addAttribute("violation", violation);
+		return "violations/show";
+	}
+
+	@RequestMapping(value = "/admin/violations/{violationId}", method = RequestMethod.PUT)
+	public String updateViolation(@PathVariable String violationId,
+			@Valid ViolationForm form, BindingResult result) {
+		if (result.hasErrors()) {
+			return "violations/editViolation";
+		}
+		final LocalDateTime now = LocalDateTime.now();
+		final UserEntry user = getCurrentUser();
+		final ViolationId identifier = new ViolationId(violationId);
+
+		final ViolationDTO dto = new ViolationDTO(violationId, form.getName(),
+				form.getDescription(), form.getCategory(),
+				form.getPenaltyLength(), form.isReleasable(), now, user);
+
+		final UpdateViolationCommand command = new UpdateViolationCommand(
+				identifier, dto);
+		commandBus.dispatch(new GenericCommandMessage<>(command));
+		return "redirect:/admin/violations";
+	}
+
+	@RequestMapping(value = "/admin/violations/{violationId}", method = RequestMethod.DELETE)
+	public String deleteViolation(@PathVariable String violationId) {
+		final DeleteViolationCommand command = new DeleteViolationCommand(
+				new ViolationId(violationId));
+		commandBus.dispatch(new GenericCommandMessage<>(command));
+		return "redirect:/admin/violations";
+	}
+
+	@RequestMapping(value = "/admin/violations/new", method = RequestMethod.GET)
+	public String newViolation(Model model) {
+		final ViolationForm form = new ViolationForm();
+		model.addAttribute("form", form);
+		return "violations/newViolation";
+	}
+
+	@RequestMapping(value = "/admin/violations/{violationId}/edit", method = RequestMethod.GET)
+	public String editViolation(
+			@PathVariable("violationId") ViolationEntry violation, Model model) {
 
 		final ViolationForm form = new ViolationForm();
 		form.setCategory(violation.getCategory());
@@ -97,42 +116,8 @@ public class ViolationController extends ApplicationController {
 		form.setPenaltyLength(violation.getPenaltyLength());
 		form.setReleasable(violation.isReleasable());
 
-		model.addAttribute("id", violation.getId());
-		model.addAttribute("form", form);
-		return "violations/edit";
-	}
-
-	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-	public String updateViolation(@PathVariable String id,
-			@ModelAttribute("form") @Valid ViolationForm form,
-			BindingResult bindingResult) {
-		if (bindingResult.hasErrors()) {
-			return "violations/edit";
-		}
-		final LocalDateTime now = LocalDateTime.now();
-		final UserEntry user = getCurrentUser();
-		final ViolationId violationId = new ViolationId(id);
-
-		final ViolationDTO dto = new ViolationDTO();
-		dto.setCategory(form.getCategory());
-		dto.setDescription(form.getDescription());
-		dto.setModifiedAt(now);
-		dto.setModifiedBy(user);
-		dto.setName(form.getName());
-		dto.setPenaltyLength(form.getPenaltyLength());
-		dto.setReleasable(form.isReleasable());
-
-		final UpdateViolationCommand command = new UpdateViolationCommand(
-				violationId, dto);
-		commandBus.dispatch(new GenericCommandMessage<>(command));
-		return "redirect:";
-	}
-
-	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-	public String deleteViolation(@PathVariable String id) {
-		final DeleteViolationCommand command = new DeleteViolationCommand(
-				new ViolationId(id));
-		commandBus.dispatch(new GenericCommandMessage<>(command));
-		return "redirect:";
+		model.addAttribute("violationId", violation.getId());
+		model.addAttribute("violationForm", form);
+		return "violations/editViolation";
 	}
 }

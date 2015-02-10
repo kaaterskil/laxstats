@@ -11,7 +11,7 @@
 				<h1>Sites</h1>
 			</div>
 			<div class="col-sm-2 col-xs-12">
-				<a href="#" th:href="@{/sites/new}"
+				<a href="#" th:href="@{'/admin/sites/new'}"
 					class="btn btn-default btn-sm lax-btn-new pull-right">New Site</a>
 			</div>
 		</div>
@@ -31,7 +31,7 @@
 					<tbody>
 						<tr th:each="item : ${items}">
 							<td>
-								<form th:object="${item}" th:action="@{'/sites/' + ${item.id}}"
+								<form th:object="${item}" th:action="@{'/admin/sites/' + ${item.id}}"
 									th:method="delete">
 									<button type="submit" class="btn btn-link lax-btn-delete">
 										<span class="glyphicon glyphicon-remove red"></span>
@@ -39,7 +39,7 @@
 								</form>
 							</td>
 							<td><a href="#"
-								th:href="@{'/sites/' + ${item.id} + '/edit'}"
+								th:href="@{'/admin/sites/' + ${item.id} + '/edit'}"
 								th:text="${item.name}">Name</a></td>
 							<td th:text="${item.address} ? ${item.address.address1}">Address</td>
 							<td th:text="${item.address} ? ${item.address.city}">City</td>

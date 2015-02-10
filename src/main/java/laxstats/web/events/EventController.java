@@ -20,7 +20,6 @@ import laxstats.api.events.UpdateEventCommand;
 import laxstats.api.players.Role;
 import laxstats.api.sites.SiteAlignment;
 import laxstats.query.events.AttendeeEntry;
-import laxstats.query.events.AttendeeQueryRepository;
 import laxstats.query.events.GameEntry;
 import laxstats.query.events.GameQueryRepository;
 import laxstats.query.events.TeamEvent;
@@ -46,7 +45,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -59,21 +57,18 @@ public class EventController extends ApplicationController {
 	private final SeasonQueryRepository seasonRepository;
 	private final SiteQueryRepository siteRepository;
 	private final TeamSeasonQueryRepository teamRepository;
-	private final AttendeeQueryRepository attendeeRepository;
 
 	@Autowired
 	protected EventController(GameQueryRepository eventRepository,
 			SeasonQueryRepository seasonRepository,
 			SiteQueryRepository siteRepository,
 			TeamSeasonQueryRepository teamRepository,
-			AttendeeQueryRepository attendeeRepository,
 			UserQueryRepository userRepository, CommandBus commandBus) {
 		super(userRepository, commandBus);
 		this.eventRepository = eventRepository;
 		this.seasonRepository = seasonRepository;
 		this.siteRepository = siteRepository;
 		this.teamRepository = teamRepository;
-		this.attendeeRepository = attendeeRepository;
 	}
 
 	@InitBinder
@@ -84,17 +79,15 @@ public class EventController extends ApplicationController {
 
 	/*---------- Event actions ----------*/
 
-	@RequestMapping(value = "/events", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/events", method = RequestMethod.GET)
 	public String eventIndex(Model model) {
 		final Iterable<GameEntry> list = eventRepository.findAll();
 		model.addAttribute("events", list);
 		return "events/index";
 	}
 
-	@RequestMapping(value = "/events", method = RequestMethod.POST)
-	public String createEvent(
-			@ModelAttribute("eventForm") @Valid EventForm form,
-			BindingResult result) {
+	@RequestMapping(value = "/admin/events", method = RequestMethod.POST)
+	public String createEvent(@Valid EventForm form, BindingResult result) {
 		if (result.hasErrors()) {
 			return "events/newEvent";
 		}
@@ -128,20 +121,19 @@ public class EventController extends ApplicationController {
 		final CreateEventCommand payload = new CreateEventCommand(identifier,
 				dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/events";
+		return "redirect:/admin/events";
 	}
 
-	@RequestMapping(value = "/events/{eventId}", method = RequestMethod.GET)
-	public String showEvent(@PathVariable String eventId, Model model) {
-		final GameEntry aggregate = eventRepository.findOne(eventId);
+	@RequestMapping(value = "/admin/events/{eventId}", method = RequestMethod.GET)
+	public String showEvent(@PathVariable("eventId") GameEntry aggregate,
+			Model model) {
 		model.addAttribute("item", aggregate);
 		return "events/showEvent";
 	}
 
-	@RequestMapping(value = "/events/{eventId}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/admin/events/{eventId}", method = RequestMethod.PUT)
 	public String updateEvent(@PathVariable String eventId,
-			@ModelAttribute("eventForm") @Valid EventForm form,
-			BindingResult result) {
+			@Valid EventForm form, BindingResult result) {
 		if (result.hasErrors()) {
 			return "events/editEvent";
 		}
@@ -174,19 +166,19 @@ public class EventController extends ApplicationController {
 		final UpdateEventCommand payload = new UpdateEventCommand(identifier,
 				dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/events";
+		return "redirect:/admin/events";
 	}
 
-	@RequestMapping(value = "/events/{eventId}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/admin/events/{eventId}", method = RequestMethod.DELETE)
 	public String deleteEvent(@PathVariable String eventId) {
 		final EventId identifier = new EventId(eventId);
 
 		final DeleteEventCommand payload = new DeleteEventCommand(identifier);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/events";
+		return "redirect:/admin/events";
 	}
 
-	@RequestMapping(value = "/events/new", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/events/new", method = RequestMethod.GET)
 	public String newEvent(Model model) {
 		final EventForm form = new EventForm();
 		form.setStatus(Status.SCHEDULED);
@@ -197,9 +189,9 @@ public class EventController extends ApplicationController {
 		return "event/newEvent";
 	}
 
-	@RequestMapping(value = "/events/{eventId}/edit", method = RequestMethod.GET)
-	public String editEvent(@PathVariable String eventId, Model model) {
-		final GameEntry aggregate = eventRepository.findOne(eventId);
+	@RequestMapping(value = "/admin/events/{eventId}/edit", method = RequestMethod.GET)
+	public String editEvent(@PathVariable("eventId") GameEntry aggregate,
+			Model model) {
 		final TeamEvent teamOne = aggregate.getTeams().get(0);
 		final TeamEvent teamTwo = aggregate.getTeams().get(1);
 		final SeasonEntry season = teamOne.getTeamSeason().getSeason();
@@ -227,11 +219,10 @@ public class EventController extends ApplicationController {
 
 	/*---------- Attendee actions ----------*/
 
-	@RequestMapping(value = "/events{eventId}/teamSeasons/{teamSeasonId}", method = RequestMethod.GET)
-	public String attendeeIndex(@PathVariable String eventId,
-			@PathVariable String teamSeasonId, Model model) {
-		final GameEntry aggregate = eventRepository.findOne(eventId);
-		final TeamSeasonEntry teamSeason = teamRepository.findOne(teamSeasonId);
+	@RequestMapping(value = "/admin/events{eventId}/teamSeasons/{teamSeasonId}", method = RequestMethod.GET)
+	public String attendeeIndex(@PathVariable("eventId") GameEntry aggregate,
+			@PathVariable("teamSeasonId") TeamSeasonEntry teamSeason,
+			Model model) {
 		final List<AttendeeEntry> roster = aggregate.getAttendees().get(
 				teamSeason.getName());
 
@@ -241,11 +232,10 @@ public class EventController extends ApplicationController {
 		return "events/attendeeIndex";
 	}
 
-	@RequestMapping(value = "/events/{eventId}/teamSeasons/{teamSeasonId}", method = RequestMethod.POST)
-	public String createAttendee(@PathVariable String eventId,
-			@PathVariable String teamSeasonId,
-			@ModelAttribute("AttendeeForm") @Valid AttendeeForm form,
-			BindingResult result) {
+	@RequestMapping(value = "/admin/events/{eventId}/teamSeasons/{teamSeasonId}", method = RequestMethod.POST)
+	public String createAttendee(@PathVariable("eventId") GameEntry aggregate,
+			@PathVariable("teamSeasonId") TeamSeasonEntry teamSeason,
+			@Valid AttendeeForm form, BindingResult result) {
 		if (result.hasErrors()) {
 			return "events/newAttendee";
 		}
@@ -253,8 +243,6 @@ public class EventController extends ApplicationController {
 		final UserEntry user = getCurrentUser();
 		final String attendeeId = IdentifierFactory.getInstance()
 				.generateIdentifier();
-		final GameEntry aggregate = eventRepository.findOne(eventId);
-		final TeamSeasonEntry teamSeason = teamRepository.findOne(teamSeasonId);
 		final PlayerEntry player = teamSeason.getPlayer(form.getPlayerId());
 
 		final AttendeeDTO dto = new AttendeeDTO(attendeeId, aggregate, player,
@@ -263,23 +251,22 @@ public class EventController extends ApplicationController {
 				user);
 
 		final RegisterAttendeeCommand payload = new RegisterAttendeeCommand(
-				new EventId(eventId), dto);
+				new EventId(aggregate.getId()), dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/events/" + eventId + "/teamSeasons/" + teamSeasonId;
+		return "redirect:/admin/events/" + aggregate.getId() + "/teamSeasons/"
+				+ teamSeason.getId();
 	}
 
-	@RequestMapping(value = "/events/{eventId}/teamSeasons/{teamSeasonId}/attendees/{attendeeId}", method = RequestMethod.PUT)
-	public String updateAttendee(@PathVariable String eventId,
-			@PathVariable String teamSeasonId, @PathVariable String attendeeId,
-			@ModelAttribute("AttendeeForm") @Valid AttendeeForm form,
+	@RequestMapping(value = "/admin/events/{eventId}/teamSeasons/{teamSeasonId}/attendees/{attendeeId}", method = RequestMethod.PUT)
+	public String updateAttendee(@PathVariable("eventId") GameEntry event,
+			@PathVariable("teamSeasonId") TeamSeasonEntry teamSeason,
+			@PathVariable String attendeeId, @Valid AttendeeForm form,
 			BindingResult result) {
 		if (result.hasErrors()) {
 			return "events/editAttendee";
 		}
 		final LocalDateTime now = LocalDateTime.now();
 		final UserEntry user = getCurrentUser();
-		final GameEntry event = eventRepository.findOne(eventId);
-		final TeamSeasonEntry teamSeason = teamRepository.findOne(teamSeasonId);
 		final PlayerEntry player = teamSeason.getPlayer(form.getPlayerId());
 
 		final AttendeeDTO dto = new AttendeeDTO(attendeeId, event, player,
@@ -287,25 +274,27 @@ public class EventController extends ApplicationController {
 				player.getFullName(), player.getJerseyNumber(), now, user);
 
 		final UpdateAttendeeCommand payload = new UpdateAttendeeCommand(
-				new EventId(eventId), dto);
+				new EventId(event.getId()), dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/events/" + eventId + "/teamSeasons/" + teamSeasonId;
+		return "redirect:/admin/events/" + event.getId() + "/teamSeasons/"
+				+ teamSeason.getId();
 	}
 
-	@RequestMapping(value = "/events/{eventId}/teamSeasons/{teamSeasonId}/attendees/{attendeeId}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/admin/events/{eventId}/teamSeasons/{teamSeasonId}/attendees/{attendeeId}", method = RequestMethod.DELETE)
 	public String deleteAttendee(@PathVariable String eventId,
 			@PathVariable String teamSeasonId, @PathVariable String attendeeId) {
 		final EventId identifier = new EventId(eventId);
 		final DeleteAttendeeCommand payload = new DeleteAttendeeCommand(
 				identifier, attendeeId);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/events/" + eventId + "/teamSeasons/" + teamSeasonId;
+		return "redirect:/admin/events/" + eventId + "/teamSeasons/"
+				+ teamSeasonId;
 	}
 
-	@RequestMapping(value = "/events{eventId}/teamSeasons/{teamSeasonId}/attendees/new", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/events{eventId}/teamSeasons/{teamSeasonId}/attendees/new", method = RequestMethod.GET)
 	public String newAttendee(@PathVariable String eventId,
-			@PathVariable String teamSeasonId, Model model) {
-		final TeamSeasonEntry teamSeason = teamRepository.findOne(teamSeasonId);
+			@PathVariable("teamSeasonId") TeamSeasonEntry teamSeason,
+			Model model) {
 
 		final AttendeeForm form = new AttendeeForm();
 		form.setRole(Role.ATHLETE);
@@ -314,16 +303,14 @@ public class EventController extends ApplicationController {
 
 		model.addAttribute("attendeeForm", form);
 		model.addAttribute("eventId", eventId);
-		model.addAttribute("teamSeasonId", teamSeasonId);
+		model.addAttribute("teamSeasonId", teamSeason.getId());
 		return "events/newAttendee";
 	}
 
-	@RequestMapping(value = "/events{eventId}/teamSeasons/{teamSeasonId}/attendees/{attendeeId}/edit", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/events{eventId}/teamSeasons/{teamSeasonId}/attendees/{attendeeId}/edit", method = RequestMethod.GET)
 	public String editAttendee(@PathVariable String eventId,
-			@PathVariable String teamSeasonId, @PathVariable String attendeeId,
-			Model model) {
-		final AttendeeEntry entity = attendeeRepository.findOne(attendeeId);
-		final TeamSeasonEntry teamSeason = teamRepository.findOne(teamSeasonId);
+			@PathVariable("teamSeasonId") TeamSeasonEntry teamSeason,
+			@PathVariable("attendeeId") AttendeeEntry entity, Model model) {
 
 		final AttendeeForm form = new AttendeeForm();
 		form.setPlayerId(entity.getPlayer().getId());
@@ -333,7 +320,7 @@ public class EventController extends ApplicationController {
 
 		model.addAttribute("attendeeForm", form);
 		model.addAttribute("eventId", eventId);
-		model.addAttribute("teamSeasonId", teamSeasonId);
+		model.addAttribute("teamSeasonId", teamSeason.getId());
 		return "events/editAttendee";
 	}
 

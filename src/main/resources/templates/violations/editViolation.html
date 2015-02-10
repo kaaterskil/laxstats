@@ -8,9 +8,9 @@
 	<div layout:fragment="content">
 		<h1>Penalty Maintenance</h1>
 		<form action="#" 
-			th:action="@{/penaltyTypes}" 
+			th:action="@{'/admin/violations'} + ${violationId}" 
 			th:object="${form}"
-			method="post" 
+			th:method="put" 
 			role="form">
 			<div class="form-group">
 				<label for="name">Name</label>

@@ -11,7 +11,7 @@
 				<h1>Teams</h1>
 			</div>
 			<div class="col-sm-2 col-xs-12">
-				<a href="#" th:href="@{/teams/new}"
+				<a href="#" th:href="@{'/admin/teams/new'}"
 					class="btn btn-default btn-sm lax-btn-new pull-right">New Team</a>
 			</div>
 		</div>
@@ -33,7 +33,7 @@
 							<tr th:each="item : ${items}">
 								<td>
 									<form th:object="${item}" 
-										  th:action="@{'/teams/' + ${item.id}}" 
+										  th:action="@{'/admin/teams/' + ${item.id}}" 
 										  th:method="delete">
 										<button type="submit" class="btn btn-link lax-btn-delete">
 											<span class="glyphicon glyphicon-remove red"></span>
@@ -42,11 +42,11 @@
 								</td>
 								<td>
 									<a href="#" 
-									   th:href="@{'/teams/' + ${item.id} + '/seasons'}">Seasons</a>
+									   th:href="@{'/admin/teams/' + ${item.id} + '/seasons'}">Seasons</a>
 								</td>
 								<td>
 									<a href="#"
-									   th:href="@{'/teams/' + ${item.id} + '/edit'}" 
+									   th:href="@{'/admin/teams/' + ${item.id} + '/edit'}" 
 									   th:text="${item.getFullName()}">Name</a>
 								</td>
 								<td th:text="${item.gender.label}">Team Type</td>

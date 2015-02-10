@@ -10,7 +10,7 @@
 			<div class="col-sm-8 col-sm-offset-2 col-xs-12">
 				<h1>Edit Person</h1>
 				<form action="#" 
-					  th:action="@{'/people/' + ${personId}}" 
+					  th:action="@{'/admin/people/' + ${personId}}" 
 					  th:object="${personForm}"
 					  method="post"
 					  th:method="put"

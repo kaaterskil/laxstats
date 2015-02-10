@@ -11,7 +11,7 @@
 			<div class="col-sm-6 col-xs-12">
 				<h4>Clear Input</h4>
 				<form action="#" 
-					  th:action="@/events/${event.id}/clears" 
+					  th:action="@{'/admin/events/' + ${event.id} + '/clears'}" 
 					  th:object="${clearForm}" 
 					  method="post" 
 					  role="form">

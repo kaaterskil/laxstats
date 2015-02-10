@@ -11,7 +11,7 @@
 			</div>
 			<div class="col-sm-3">
 				<a href="#"
-				   th:href="@{'/users/new'}"
+				   th:href="@{'/admin/users/new'}"
 				   class="btn btn-default btn-sm lax-btn-new pull-right">New User</a>
 			</div>
 		</div>
@@ -35,7 +35,7 @@
 							<tr th:each="user : ${users}">
 								<td>
 									<a href="#"
-									   th:href="@{'/users/' + ${user.id} + '/edit'}"
+									   th:href="@{'/admin/users/' + ${user.id} + '/edit'}"
 									   th:text="${user.getFullName()}">Name</a>
 								</td>
 								<td th:text="${user.role.label}">Role</td>

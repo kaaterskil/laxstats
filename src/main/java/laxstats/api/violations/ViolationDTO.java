@@ -6,94 +6,77 @@ import org.joda.time.LocalDateTime;
 
 public class ViolationDTO {
 
-	private String id;
-	private String name;
-	private String description;
-	private PenaltyCategory category;
-	private PenaltyLength penaltyLength;
-	private boolean releasable;
-	private LocalDateTime createdAt;
-	private UserEntry createdBy;
-	private LocalDateTime modifiedAt;
-	private UserEntry modifiedBy;
+	private final String id;
+	private final String name;
+	private final String description;
+	private final PenaltyCategory category;
+	private final PenaltyLength penaltyLength;
+	private final boolean releasable;
+	private final LocalDateTime createdAt;
+	private final UserEntry createdBy;
+	private final LocalDateTime modifiedAt;
+	private final UserEntry modifiedBy;
+
+	public ViolationDTO(String id, String name, String description,
+			PenaltyCategory category, PenaltyLength penaltyLength,
+			boolean releasable, LocalDateTime createdAt, UserEntry createdBy,
+			LocalDateTime modifiedAt, UserEntry modifiedBy) {
+		this.id = id;
+		this.name = name;
+		this.description = description;
+		this.category = category;
+		this.penaltyLength = penaltyLength;
+		this.releasable = releasable;
+		this.createdAt = createdAt;
+		this.createdBy = createdBy;
+		this.modifiedAt = modifiedAt;
+		this.modifiedBy = modifiedBy;
+	}
+
+	public ViolationDTO(String id, String name, String description,
+			PenaltyCategory category, PenaltyLength penaltyLength,
+			boolean releasable, LocalDateTime modifiedAt, UserEntry modifiedBy) {
+		this(id, name, description, category, penaltyLength, releasable, null,
+				null, modifiedAt, modifiedBy);
+	}
 
 	public String getId() {
 		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	public String getDescription() {
 		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
 	}
 
 	public PenaltyCategory getCategory() {
 		return category;
 	}
 
-	public void setCategory(PenaltyCategory category) {
-		this.category = category;
-	}
-
 	public PenaltyLength getPenaltyLength() {
 		return penaltyLength;
-	}
-
-	public void setPenaltyLength(PenaltyLength penaltyLength) {
-		this.penaltyLength = penaltyLength;
 	}
 
 	public boolean isReleasable() {
 		return releasable;
 	}
 
-	public void setReleasable(boolean releasable) {
-		this.releasable = releasable;
-	}
-
 	public LocalDateTime getCreatedAt() {
 		return createdAt;
-	}
-
-	public void setCreatedAt(LocalDateTime createdAt) {
-		this.createdAt = createdAt;
 	}
 
 	public UserEntry getCreatedBy() {
 		return createdBy;
 	}
 
-	public void setCreatedBy(UserEntry createdBy) {
-		this.createdBy = createdBy;
-	}
-
 	public LocalDateTime getModifiedAt() {
 		return modifiedAt;
 	}
 
-	public void setModifiedAt(LocalDateTime modifiedAt) {
-		this.modifiedAt = modifiedAt;
-	}
-
 	public UserEntry getModifiedBy() {
 		return modifiedBy;
-	}
-
-	public void setModifiedBy(UserEntry modifiedBy) {
-		this.modifiedBy = modifiedBy;
 	}
 }

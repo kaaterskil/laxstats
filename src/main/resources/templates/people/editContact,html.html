@@ -16,7 +16,7 @@
 		<div class="row">
 			<div class="col-sm-4 col-sm-offset-4 col-xs-12">
 				<form action="#" 
-					  th:action="@{'/people/' + ${person.id} + '/contacts/' + ${contactId}}" 
+					  th:action="@{'/admin/people/' + ${person.id} + '/contacts/' + ${contactId}}" 
 					  th:object="${personForm}" 
 					  th:method="put" 
 					  id="edit-contact-form" 

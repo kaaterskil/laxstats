@@ -37,7 +37,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
-@RequestMapping(value = "/teams/{teamId}")
+@RequestMapping(value = "/admin/teams/{teamId}")
 public class TeamSeasonController extends ApplicationController {
 	private final TeamQueryRepository teamRepository;
 	private final SeasonQueryRepository seasonRepository;
@@ -94,7 +94,7 @@ public class TeamSeasonController extends ApplicationController {
 			result.reject(e.getMessage());
 			return "teamSeasons/newTeamSeason";
 		}
-		return "redirect:/teams/" + team.getId() + "/seasons";
+		return "redirect:/admin/teams/" + team.getId() + "/seasons";
 	}
 
 	@RequestMapping(value = "/seasons/{teamSeasonId}", method = RequestMethod.GET)
@@ -128,7 +128,7 @@ public class TeamSeasonController extends ApplicationController {
 		final EditTeamSeasonCommand payload = new EditTeamSeasonCommand(
 				new TeamId(teamId), dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/teams/" + teamId + "/seasons";
+		return "redirect:/admin/teams/" + teamId + "/seasons";
 	}
 
 	@RequestMapping(value = "/seasons/{teamSeasonId}", method = RequestMethod.DELETE)
@@ -138,7 +138,7 @@ public class TeamSeasonController extends ApplicationController {
 		final DeleteTeamSeasonCommand payload = new DeleteTeamSeasonCommand(
 				identifier);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/teams/" + teamId + "/seasons";
+		return "redirect:/admin/teams/" + teamId + "/seasons";
 	}
 
 	@RequestMapping(value = "/seasons/new", method = RequestMethod.GET)

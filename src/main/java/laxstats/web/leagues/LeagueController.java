@@ -36,7 +36,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
-@RequestMapping("/leagues")
+@RequestMapping("/admin/leagues")
 public class LeagueController extends ApplicationController {
 	private final LeagueQueryRepository leagueRepository;
 	private final TeamQueryRepository teamRepository;
@@ -75,7 +75,7 @@ public class LeagueController extends ApplicationController {
 	public String createLeague(@ModelAttribute("form") @Valid LeagueForm form,
 			BindingResult result) {
 		if (result.hasErrors()) {
-			return "leagues/new";
+			return "leagues/newLeague";
 		}
 		final LocalDateTime now = LocalDateTime.now();
 		final UserEntry user = getCurrentUser();
@@ -90,7 +90,7 @@ public class LeagueController extends ApplicationController {
 		final CreateLeagueCommand payload = new CreateLeagueCommand(identifier,
 				dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/leagues";
+		return "redirect:/admin/leagues";
 	}
 
 	@RequestMapping(value = "/{leagueId}/edit", method = RequestMethod.GET)
@@ -114,7 +114,7 @@ public class LeagueController extends ApplicationController {
 	public String updateLeague(@ModelAttribute("form") @Valid LeagueForm form,
 			@PathVariable String leagueId, BindingResult result) {
 		if (result.hasErrors()) {
-			return "leagues/edit";
+			return "leagues/editLeague";
 		}
 		final LocalDateTime now = LocalDateTime.now();
 		final UserEntry user = getCurrentUser();
@@ -129,7 +129,7 @@ public class LeagueController extends ApplicationController {
 		final UpdateLeagueCommand payload = new UpdateLeagueCommand(identifier,
 				dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/leagues";
+		return "redirect:/admin/leagues";
 	}
 
 	@RequestMapping(value = "/{leagueId}", method = RequestMethod.DELETE)

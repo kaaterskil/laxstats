@@ -11,7 +11,7 @@
 			<div class="col-sm-6 col-xs-12">
 				<h4>Edit Penalty</h4>
 				<form action="#" 
-					  th:action="@/events/${event.id}/penalties/${play.id}" 
+					  th:action="@{'/admin/events/' + ${event.id} + '/penalties/' + ${play.id}}" 
 					  th:object="${penaltyForm}" 
 					  th:method="put" 
 					  role="form">

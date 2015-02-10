@@ -11,7 +11,7 @@
 			<div class="col-sm-6 col-xs-12">
 				<h4>Ground Ball Input</h4>
 				<form action="#" 
-					  th:action="@/events/${event.id}/groundBalls" 
+					  th:action="@{'/admin/events/' + ${event.id} + '/groundBalls'}" 
 					  th:object="${groundBallForm}" 
 					  method="post" 
 					  role="form">

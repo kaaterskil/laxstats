@@ -23,7 +23,7 @@
 					<tr th:each="element : ${results}">
 						<td>
 							<form action="#"
-								  th:action="@{'/people/' + ${element.id}}"
+								  th:action="@{'/admin/people/' + ${element.id}}"
 								  th:method="delete"
 								  th:object="${element}"
 								  class="lax-icon"
@@ -35,19 +35,19 @@
 								</button>
 							</form>
 							<a href="#"
-							   th:href="@{'/people/' + ${element.id} + '/edit'}"
+							   th:href="@{'/admin/people/' + ${element.id} + '/edit'}"
 							   class="lax-icon"
 							   title="Edit">
 								<span class="glyphicon glyphicon-pencil green"></span>
 							</a>
 							<a href="#"
-							   th:href="@{'/people/' + ${element.id}}"
+							   th:href="@{'/admin/people/' + ${element.id}}"
 							   class="lax-icon"
 							   title="Edit">
 								<span class="glyphicon glyphicon-home green"></span>
 							</a>
 							<a href="#"
-							   th:href="@{'/people/' + ${element.id}}"
+							   th:href="@{'/admin/people/' + ${element.id}}"
 							   class="lax-icon"
 							   title="Edit">
 								<span class="glyphicon glyphicon-bullhorn green"></span>
@@ -55,7 +55,7 @@
 						</td>
 						<td>
 							<a href="#"
-							   th:href="@{'/people/' + ${element.id}}"
+							   th:href="@{'/admin/people/' + ${element.id}}"
 							   th:text="${element.fullName}">Full Name</a>
 						</td>
 						<td th:text="${element.city}">City</td>

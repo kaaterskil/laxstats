@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
-@RequestMapping(value = "/people")
+@RequestMapping(value = "/admin/people")
 public class RelationshipController extends ApplicationController {
 	private final PersonQueryRepository personRepository;
 	private Map<String, String> peopleData = new HashMap<>();
@@ -71,7 +71,7 @@ public class RelationshipController extends ApplicationController {
 		final CreateRelationshipCommand payload = new CreateRelationshipCommand(
 				identifier, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/" + personId + "/relationships";
+		return "redirect:/admin/people/" + personId + "/relationships";
 	}
 
 	@RequestMapping(value = "/{personId}/relationships/{relationshipId}", method = RequestMethod.DELETE)
@@ -81,7 +81,7 @@ public class RelationshipController extends ApplicationController {
 		final DeleteRelationshipCommand payload = new DeleteRelationshipCommand(
 				identifier);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/" + personId + "/relationships";
+		return "redirect:/admin/people/" + personId + "/relationships";
 	}
 
 	@RequestMapping(value = "/{personId}/relationships/new", method = RequestMethod.GET)

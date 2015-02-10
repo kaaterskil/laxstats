@@ -11,7 +11,7 @@
 				<h1>Edit Site</h1>
 				
 				<form action="#"
-					  th:action="@{'/sites/' + ${siteId}}"
+					  th:action="@{'/admin/sites/' + ${siteId}}"
 					  th:object="${siteForm}"
 					  th:method="put"
 					  name="edit-site-form"

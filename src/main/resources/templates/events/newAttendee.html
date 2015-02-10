@@ -11,7 +11,7 @@
 			<div class="col-sm-6 col-xs-12">
 				<h4>New Attendee</h4>
 				<form action="#" 
-					  th:action="@/events/${eventId}/teamSeasons/${teamSeasonId}" 
+					  th:action="@{'/admin/events/' + ${eventId} + '/teamSeasons/' + ${teamSeasonId}}" 
 					  th:object="${attendeeForm}" 
 					  method="post"
 					  role="form">

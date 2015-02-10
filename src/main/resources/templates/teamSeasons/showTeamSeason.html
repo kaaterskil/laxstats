@@ -8,40 +8,20 @@
 	<div layout:fragment="content">
 		<div class="row">
 			<div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
-				<h1>Team Season</h1>
-				<div class="row">
-					<div class="col-xs-3">Team:</div>
-					<div class="col-xs-9" 
-						 th:text="${teamSeason.team.getTitle()}"></div>
-				</div>
-				<div class="row">
-					<div class="col-xs-3">Name:</div>
-					<div class="col-xs-9" 
-						 th:text="${teamSeason.getFullName()}"></div>
-				</div>
-				<div class="row">
-					<div class="col-xs-3">Season:</div>
-					<div class="col-xs-9" 
-						 th:text="${teamSeason.season.description}"></div>
-				</div>
-				<div class="row">
-					<div class="col-xs-3">Status:</div>
-					<div class="col-xs-9" 
-						 th:text="${teamSeason.status.getLabel()}"></div>
-				</div>
+				<h1 th:text="${teamSeason.team.getTitle()}">Team Season</h1>
+				<p th:text="${teamSeason.season.description + ' Season'}">Season</p>
+				<p th:text="${teamSeason.status.label + ' Status'}">Status</p>
 			</div>
 		</div>
 		
 		<div class="row">
-			<div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
-				<div class="row">
-					<h4 class="col-sm-8">Roster</h4>
-					<div class="col-sm-4">
-						<a href="#"
-						   th:href="@{'/teamSeasons/' + ${teamSeason.id} + '/roster/new'}"
-						   class="btn btn-default btn-sm lax-btn-new pull-right">New Member</a>
-					</div>
-				</div>
+			<div class="col-md-4 col-md-offset-3 col-sm-5 col-sm-offset-2">
+				<h2>Roster</h2>
+			</div>
+			<div class="col-md-2 col-sm-3">
+				<a href="#"
+				   th:href="@{'/admin/teamSeasons/' + ${teamSeason.id} + '/roster/new'}"
+				   class="btn btn-default btn-sm lax-btn-new pull-right">New Member</a>
 			</div>
 		</div>
 		
@@ -66,7 +46,7 @@
 							<tr th:each="item : ${teamSeason.getRosterData().values()}">
 								<td>
 									<form action="#"
-										  th:action="@{'/teamSeasons/' + ${teamSeason.id} + '/roster/' + ${item.id}}"
+										  th:action="@{'/admin/teamSeasons/' + ${teamSeason.id} + '/roster/' + ${item.id}}"
 										  th:method="delete"
 										  th:object="${item}">
 										<button type="submit"
@@ -76,7 +56,7 @@
 									</form>
 								</td>
 								<td><a href="#"
-									   th:href="@{'/teamSeasons/' + ${teamSeason.id} + '/roster/' + ${item.id} + '/edit'}"
+									   th:href="@{'/admin/teamSeasons/' + ${teamSeason.id} + '/roster/' + ${item.id} + '/edit'}"
 									   th:text="${item.person.getFullName()}">Full Name</a></td>
 								<td>
 									<span th:if="${item.position != null}" 

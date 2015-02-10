@@ -11,7 +11,7 @@
 			<div class="col-sm-6 col-xs-12">
 				<h4>Goal Input</h4>
 				<form action="#" 
-					  th:action="@/events/${event.id}/goals" 
+					  th:action="@{'/admin/events/' + ${event.id} + '/goals'}" 
 					  th:object="${goalForm}" 
 					  method="post" 
 					  role="form">

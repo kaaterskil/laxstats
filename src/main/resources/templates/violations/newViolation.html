@@ -6,11 +6,11 @@
 </head>
 <body>
 	<div layout:fragment="content">
-		<h1>Penalty Maintenance</h1>
+		<h1>Violation Maintenance</h1>
 		<form action="#" 
-			th:action="@{/penaltyTypes/} + ${id}" 
+			th:action="@{'/admin/violations'}" 
 			th:object="${form}"
-			th:method="put" 
+			method="post" 
 			role="form">
 			<div class="form-group">
 				<label for="name">Name</label>

@@ -63,7 +63,7 @@ public class AxonConfiguration {
 		return new SimpleEventBus();
 	}
 
-	// ---------- Command Handlers ----------//
+	/*---------- Command Handlers ----------*/
 
 	@Bean
 	public AnnotationCommandHandlerBeanPostProcessor annotationCommandHandlerBeanPostProcessor() {
@@ -72,7 +72,7 @@ public class AxonConfiguration {
 		return processor;
 	}
 
-	// ---------- Event Listeners ----------//
+	/*---------- Event Listeners ----------*/
 
 	@Bean
 	public AnnotationEventListenerBeanPostProcessor annotationEventListenerBeanPostProcessor() {
@@ -81,7 +81,7 @@ public class AxonConfiguration {
 		return processor;
 	}
 
-	// ---------- Repositories ----------//
+	/*---------- Repositories ----------*/
 
 	@Bean
 	public Repository<Event> eventRepository() {

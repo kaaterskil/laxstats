@@ -19,7 +19,7 @@
 					  th:method="put" 
 					  id="edit-address-form"
 					  name="edit-address-form"
-					  th:action="@{'/people/' + ${person.getId().toString()} + '/addresses/' + ${addressId}}" 
+					  th:action="@{'/admin/people/' + ${person.getId().toString()} + '/addresses/' + ${addressId}}" 
 					  th:object="${addressForm}"
 					  role="form">
 					<div class="row">

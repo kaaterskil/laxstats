@@ -56,13 +56,13 @@ public class SiteController extends ApplicationController {
 
 	/*---------- Action methods ----------*/
 
-	@RequestMapping(value = "/sites", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/sites", method = RequestMethod.GET)
 	public String index(Model model) {
 		model.addAttribute("items", siteRepository.findAll());
 		return "sites/index";
 	}
 
-	@RequestMapping(value = "/sites", method = RequestMethod.POST)
+	@RequestMapping(value = "/admin/sites", method = RequestMethod.POST)
 	public String createSite(@Valid SiteForm form, BindingResult result) {
 		if (result.hasErrors()) {
 			return "sites/newSite";
@@ -85,25 +85,24 @@ public class SiteController extends ApplicationController {
 
 		final CreateSiteCommand payload = new CreateSiteCommand(identifier, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/sites";
+		return "redirect:/admin/sites";
 	}
 
-	@RequestMapping(value = "/sites/{siteId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/sites/{siteId}", method = RequestMethod.GET)
 	public String show(@PathVariable("siteId") SiteEntry site, Model model) {
 		model.addAttribute("site", site);
 		return "sites/show";
 	}
 
-	@RequestMapping(value = "/sites/{siteId}", method = RequestMethod.PUT)
-	public String updateSite(@Valid SiteForm form, @PathVariable String siteId,
-			BindingResult result) {
+	@RequestMapping(value = "/admin/sites/{siteId}", method = RequestMethod.PUT)
+	public String updateSite(@PathVariable("siteId") SiteEntry site,
+			@Valid SiteForm form, BindingResult result) {
 		if (result.hasErrors()) {
 			return "sites/editSite";
 		}
 		final LocalDateTime now = LocalDateTime.now();
 		final UserEntry user = getCurrentUser();
-		final SiteEntry site = siteRepository.findOne(siteId);
-		final SiteId identifier = new SiteId(siteId);
+		final SiteId identifier = new SiteId(site.getId());
 
 		final AddressDTO address = new AddressDTO(site.getAddress().getId(),
 				site, null, AddressType.SITE, form.getAddress1(),
@@ -116,18 +115,18 @@ public class SiteController extends ApplicationController {
 
 		final UpdateSiteCommand payload = new UpdateSiteCommand(identifier, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/sites";
+		return "redirect:/admin/sites";
 	}
 
-	@RequestMapping(value = "/sites/{siteId}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/admin/sites/{siteId}", method = RequestMethod.DELETE)
 	public String deleteSite(@PathVariable String siteId) {
 		final SiteId identifier = new SiteId(siteId);
 		final DeleteSiteCommand payload = new DeleteSiteCommand(identifier);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/sites";
+		return "redirect:/admin/sites";
 	}
 
-	@RequestMapping(value = "/sites/new", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/sites/new", method = RequestMethod.GET)
 	public String newSite(Model model) {
 		final SiteForm form = new SiteForm();
 		form.setSurface(Surface.UNKNOWN);
@@ -137,7 +136,7 @@ public class SiteController extends ApplicationController {
 		return "sites/newSite";
 	}
 
-	@RequestMapping(value = "/sites/{siteId}/edit", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/sites/{siteId}/edit", method = RequestMethod.GET)
 	public String editSite(@PathVariable("siteId") SiteEntry site, Model model) {
 		final SiteForm form = new SiteForm();
 

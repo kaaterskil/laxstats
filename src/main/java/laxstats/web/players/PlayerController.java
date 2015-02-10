@@ -39,7 +39,7 @@ public class PlayerController extends ApplicationController {
 		this.personRepository = personRepository;
 	}
 
-	@RequestMapping(value = "/teamSeasons/{teamSeasonId}/roster", method = RequestMethod.POST)
+	@RequestMapping(value = "/admin/teamSeasons/{teamSeasonId}/roster", method = RequestMethod.POST)
 	public String createPlayer(
 			@PathVariable("teamSeasonId") TeamSeasonEntry teamSeason,
 			@Valid PlayerForm form, BindingResult result) {
@@ -66,11 +66,11 @@ public class PlayerController extends ApplicationController {
 			result.reject(e.getMessage());
 			return "players/newPlayer";
 		}
-		return "redirect:/teams/" + teamSeason.getTeam().getId() + "/seasons/"
-				+ teamSeason.getId();
+		return "redirect:/admin/teams/" + teamSeason.getTeam().getId()
+				+ "/seasons/" + teamSeason.getId();
 	}
 
-	@RequestMapping(value = "/teamSeasons/{teamSeasonId}/roster/{playerId}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/admin/teamSeasons/{teamSeasonId}/roster/{playerId}", method = RequestMethod.PUT)
 	public String updatePlayer(
 			@PathVariable("teamSeasonId") TeamSeasonEntry teamSeason,
 			@PathVariable String playerId, @Valid PlayerForm form,
@@ -97,11 +97,11 @@ public class PlayerController extends ApplicationController {
 			result.reject(e.getMessage());
 			return "players/editPlayer";
 		}
-		return "redirect:/teams/" + teamSeason.getTeam().getId() + "/seasons/"
-				+ teamSeason.getId();
+		return "redirect:/admin/teams/" + teamSeason.getTeam().getId()
+				+ "/seasons/" + teamSeason.getId();
 	}
 
-	@RequestMapping(value = "/teamSeasons/{teamSeasonId}/roster/{playerId}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/admin/teamSeasons/{teamSeasonId}/roster/{playerId}", method = RequestMethod.DELETE)
 	public String deletePlayer(
 			@PathVariable("teamSeasonId") TeamSeasonEntry teamSeason,
 			@PathVariable String playerId) {
@@ -110,11 +110,11 @@ public class PlayerController extends ApplicationController {
 		final DropPlayerCommand payload = new DropPlayerCommand(identifier,
 				playerIdentifier);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/teams/" + teamSeason.getTeam().getId() + "/seasons/"
-				+ teamSeason.getId();
+		return "redirect:/admin/teams/" + teamSeason.getTeam().getId()
+				+ "/seasons/" + teamSeason.getId();
 	}
 
-	@RequestMapping(value = "/teamSeasons/{teamSeasonId}/roster/new", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/teamSeasons/{teamSeasonId}/roster/new", method = RequestMethod.GET)
 	public String newPlayer(
 			@PathVariable("teamSeasonId") TeamSeasonEntry teamSeason,
 			Model model) {
@@ -127,7 +127,7 @@ public class PlayerController extends ApplicationController {
 		return "players/newPlayer";
 	}
 
-	@RequestMapping(value = "/teamSeasons/{teamSeasonId}/roster/{playerId}/edit", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/teamSeasons/{teamSeasonId}/roster/{playerId}/edit", method = RequestMethod.GET)
 	public String editPlayer(
 			@PathVariable("teamSeasonId") TeamSeasonEntry teamSeason,
 			@PathVariable("playerId") PlayerEntry player, Model model) {

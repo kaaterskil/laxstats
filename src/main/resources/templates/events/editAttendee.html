@@ -11,9 +11,8 @@
 			<div class="col-sm-6 col-xs-12">
 				<h4>Edit Attendee</h4>
 				<form action="#" 
-					  method="post"
 					  th:method="put"
-					  th:action="@/events/${eventId}/teamSeasons/${teamSeasonId}" 
+					  th:action="@{'/admin/events/' + ${eventId} + '/teamSeasons/' + ${teamSeasonId}}" 
 					  th:object="${attendeeForm}"
 					  role="form">
 					<div class="form-group">

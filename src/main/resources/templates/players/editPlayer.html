@@ -9,15 +9,15 @@
 		<div class="row">
 			<div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
 				<h1>Edit Roster</h1>
-				<h5 th:text="${teamSeason.getFullName() + ' Season'}">Team Name</h5>
+				<p th:text="${teamSeason.getFullName() + ' Season'}">Team Name</p>
 			</div>
 		</div>
 		
 		<div class="row">
 			<div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
-				<h4 th:text="${player.person.getFullName()}"></h4>
+				<h2 th:text="${player.person.getFullName()}"></h2>
 				<form action="#"
-					  th:action="@{'/teamSeasons/' + ${teamSeason.id} + '/roster/' + ${player.id}}"
+					  th:action="@{'/admin/teamSeasons/' + ${teamSeason.id} + '/roster/' + ${player.id}}"
 					  th:method="put"
 					  name="edit-roster-form"
 					  id="edit-roster-form"
