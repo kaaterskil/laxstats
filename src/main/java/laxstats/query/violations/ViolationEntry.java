@@ -5,8 +5,10 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import laxstats.api.violations.PenaltyCategory;
 import laxstats.api.violations.PenaltyLength;
@@ -16,7 +18,9 @@ import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 
 @Entity
-@Table(name = "penaltyTypes")
+@Table(name = "penaltyTypes", indexes = {
+		@Index(name = "violations_idx1", columnList = "name"),
+		@Index(name = "violations_idx2", columnList = "category") }, uniqueConstraints = { @UniqueConstraint(name = "violations_uk1", columnNames = { "name" }) })
 public class ViolationEntry {
 
 	@Id
@@ -42,19 +46,19 @@ public class ViolationEntry {
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime createdAt;
 
-	@ManyToOne(targetEntity = UserEntry.class)
+	@ManyToOne
 	private UserEntry createdBy;
 
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime modifiedAt;
 
-	@ManyToOne(targetEntity = UserEntry.class)
+	@ManyToOne
 	private UserEntry modifiedBy;
 
 	protected ViolationEntry() {
 	}
 
-	// ---------- Getter/Setters ----------//
+	/*---------- Getter/Setters ----------*/
 
 	public String getId() {
 		return id;

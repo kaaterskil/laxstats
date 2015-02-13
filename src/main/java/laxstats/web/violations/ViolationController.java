@@ -35,9 +35,11 @@ public class ViolationController extends ApplicationController {
 		this.violationRepository = violationRepository;
 	}
 
+	/*---------- Action methods ----------*/
+
 	@RequestMapping(value = "/admin/violations", method = RequestMethod.GET)
 	public String index(Model model) {
-		model.addAttribute("items", violationRepository.findAll());
+		model.addAttribute("violations", violationRepository.findAll());
 		return "violations/index";
 	}
 
@@ -101,7 +103,7 @@ public class ViolationController extends ApplicationController {
 	@RequestMapping(value = "/admin/violations/new", method = RequestMethod.GET)
 	public String newViolation(Model model) {
 		final ViolationForm form = new ViolationForm();
-		model.addAttribute("form", form);
+		model.addAttribute("violationForm", form);
 		return "violations/newViolation";
 	}
 

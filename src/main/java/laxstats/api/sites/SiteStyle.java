@@ -2,13 +2,13 @@ package laxstats.api.sites;
 
 public enum SiteStyle {
 	UNKNOWN("Unknown"), COMPETITION("Competition"), PRACTICE("Practice");
-	private String value;
+	private String label;
 
-	private SiteStyle(String value) {
-		this.value = value;
+	private SiteStyle(String label) {
+		this.label = label;
 	}
 
-	public String getValue() {
-		return value;
+	public String getLabel() {
+		return label;
 	}
 }

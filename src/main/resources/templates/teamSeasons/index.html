@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-	layout:decorator="layout">
+	layout:decorator="officeLayout">
 <head>
 </head>
 <body>
@@ -12,7 +12,7 @@
 			</div>
 			<div class="col-md-2 col-sm-3">
 				<a href="#" 
-				   th:href="@{'/admin/teams/' + ${team.getId()} + '/seasons/new'}" 
+				   th:href="@{'/admin/teams/' + ${team.id} + '/seasons/new'}" 
 				   class="btn btn-default btn-sm lax-btn-new pull-right">New Season</a>
 			</div>
 		</div>
@@ -30,6 +30,10 @@
 							</tr>
 						</thead>
 						<tbody>
+							<tr th:unless="${team.getSeasons().size() > 0}">
+								<td></td>
+								<td colspan="2">No records found.</td>
+							</tr>
 							<tr th:each="item : ${team.getSeasons()}">
 								<td>
 									<form th:action="@{'/admin/teams/' + ${team.id} + '/seasons/' + ${item.id}}" 
@@ -51,7 +55,7 @@
 								<td>
 									<a href="#" 
 									   th:href="@{'/admin/teams/' + ${team.id} + '/seasons/' + ${item.id}}" 
-									   th:text="${item.getSeason().getDescription()}">Season</a>
+									   th:text="${item.season.description}">Season</a>
 								</td>
 								<td th:text="${item.name}">Name</td>
 							</tr>

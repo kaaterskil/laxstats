@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-	layout:decorator="layout">
+	layout:decorator="officeLayout">
 <head>
 </head>
 <body>
 	<div layout:fragment="content">
 		<div class="row">
-			<div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3 col-xs-12">
+			<div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3">
 				<h1>Edit Season</h1>
 
 				<form action="#"
@@ -39,14 +39,14 @@
 								required="required" 
 								th:field="*{season}" 
 								aria-required="true" 
-								aria-described-by="seasonError">
+								aria-described-by="season-error">
 							<option value="">Select...</option>
 							<option th:each="opt : *{seasons}" 
-									th:value="${opt.getId()}" 
-									th:text="${opt.getDescription()}">Season</option>
+									th:value="${opt.id}" 
+									th:text="${opt.description}">Season</option>
 						</select>
 						<div th:if="${#fields.hasErrors('season')}" 
-							 id="seasonError" 
+							 id="season-error" 
 							 class="lax-error" 
 							 th:errors="*{season}">Invalid season</div>
 					</div>
@@ -75,14 +75,14 @@
 								th:field="*{status}" 
 								required="required" 
 								aria-required="true" 
-								aria-described-by="statusError">
+								aria-described-by="status-error">
 							<option value="">Select...</option>
 							<option th:each="opt : *{statuses}" 
 									th:value="${opt}"
-									th:text="${opt.getLabel()}">Status</option>
+									th:text="${opt.label}">Status</option>
 						</select>
 						<div th:if="${#fields.hasErrors('status')}" 
-							 id="statusError" 
+							 id="status-error" 
 							 class="lax-error" 
 							 th:errors="*{status}">Invalid status</div>
 					</div>

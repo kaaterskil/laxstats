@@ -58,7 +58,7 @@ public class SeasonController extends ApplicationController {
 	public String index(Model model) {
 		final Iterable<SeasonEntry> list = seasonRepository.findAll(new Sort(
 				Direction.DESC, "startsOn"));
-		model.addAttribute("items", list);
+		model.addAttribute("seasons", list);
 		return "seasons/index";
 	}
 
@@ -89,7 +89,7 @@ public class SeasonController extends ApplicationController {
 		return "seasons/showSeason";
 	}
 
-	@RequestMapping(value = "/seasons/{seasonId}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/admin/seasons/{seasonId}", method = RequestMethod.PUT)
 	public String updateSeason(@PathVariable String seasonId,
 			@Valid SeasonForm form, BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
@@ -125,7 +125,7 @@ public class SeasonController extends ApplicationController {
 		return "seasons/newSeason";
 	}
 
-	@RequestMapping(value = "/seasons/{seasonId}/edit", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/seasons/{seasonId}/edit", method = RequestMethod.GET)
 	public String editSeason(@PathVariable("seasonId") SeasonEntry season,
 			Model model) {
 		final SeasonForm form = new SeasonForm();

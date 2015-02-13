@@ -1,6 +1,10 @@
 package laxstats.web.violations;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import laxstats.api.violations.PenaltyCategory;
 import laxstats.api.violations.PenaltyLength;
@@ -8,17 +12,19 @@ import laxstats.api.violations.PenaltyLength;
 public class ViolationForm {
 
 	@NotNull
+	@Size(min = 3, max = 50)
 	private String name;
 	private String description;
 
 	@NotNull
 	private PenaltyCategory category;
 
-	@NotNull
 	private PenaltyLength penaltyLength;
 	private boolean releasable = true;
+	private List<PenaltyLength> penaltyLengths;
+	private List<PenaltyCategory> categories;
 
-	// ---------- Getter/Setters ----------//
+	/*---------- Getter/Setters ----------*/
 
 	public String getName() {
 		return name;
@@ -58,5 +64,21 @@ public class ViolationForm {
 
 	public void setReleasable(boolean releasable) {
 		this.releasable = releasable;
+	}
+
+	/*---------- Select element options ----------*/
+
+	public List<PenaltyLength> getPenaltyLengths() {
+		if (penaltyLengths == null) {
+			penaltyLengths = Arrays.asList(PenaltyLength.values());
+		}
+		return penaltyLengths;
+	}
+
+	public List<PenaltyCategory> getCategories() {
+		if (categories == null) {
+			categories = Arrays.asList(PenaltyCategory.values());
+		}
+		return categories;
 	}
 }

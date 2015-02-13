@@ -2,7 +2,7 @@
 	'use strict';
 	
 	function setTeamData(seasonId) {
-		var url = "/rest/events/teams/" + seasonId;
+		var url = "/api/events/teams/" + seasonId;
 		$.get(url, function(data){
 			var $teamOne = $('#team-one'), 
 			$teamTwo = $('#team-two');

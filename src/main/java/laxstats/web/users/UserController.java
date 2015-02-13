@@ -121,7 +121,7 @@ public class UserController extends ApplicationController {
 	@RequestMapping(value = "/admin/users/new", method = RequestMethod.GET)
 	public String newUser(Model model) {
 		final UserForm form = new UserForm();
-		form.setRole(UserRole.COACH);
+		form.setRole(UserRole.ROLE_COACH);
 		form.setTeams(getTeams());
 
 		model.addAttribute("userForm", form);

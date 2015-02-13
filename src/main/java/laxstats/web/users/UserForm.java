@@ -39,8 +39,8 @@ public class UserForm {
 
 	public List<UserRole> getUserRoles() {
 		final List<UserRole> list = new ArrayList<>();
-		list.add(UserRole.COACH);
-		list.add(UserRole.MANAGER);
+		list.add(UserRole.ROLE_COACH);
+		list.add(UserRole.ROLE_MANAGER);
 
 		return list;
 	}

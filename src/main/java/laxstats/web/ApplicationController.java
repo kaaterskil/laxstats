@@ -6,6 +6,7 @@ import laxstats.query.users.UserQueryRepository;
 import org.axonframework.commandhandling.CommandBus;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 
 abstract public class ApplicationController {
 	protected final UserQueryRepository userRepository;
@@ -19,7 +20,7 @@ abstract public class ApplicationController {
 
 	protected UserEntry getCurrentUser() {
 		final SecurityContext ctx = SecurityContextHolder.getContext();
-		final String email = (String) ctx.getAuthentication().getPrincipal();
-		return userRepository.findByEmail(email);
+		final User user = (User) ctx.getAuthentication().getPrincipal();
+		return userRepository.findByEmail(user.getUsername());
 	}
 }

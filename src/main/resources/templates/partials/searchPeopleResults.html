@@ -10,7 +10,7 @@
 			<option value="">Select...</option>
 			<option th:each="opt : ${results}" 
 					th:value="${opt.id}"
-					th:text="${opt.getLabel()}">People</option>
+					th:text="${opt.label}">People</option>
 		</select>
 	</div>
 </body>

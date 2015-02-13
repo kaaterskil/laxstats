@@ -215,7 +215,7 @@ public class PersonController extends ApplicationController {
 		return "redirect:/admin/people/" + personId;
 	}
 
-	@RequestMapping(value = "/people/{personId}/addresses/new", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/people/{personId}/addresses/new", method = RequestMethod.GET)
 	public String newAddress(@PathVariable("personId") PersonEntry person,
 			Model model) {
 		final AddressForm form = new AddressForm();

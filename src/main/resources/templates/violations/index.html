@@ -1,28 +1,66 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-	layout:decorator="layout">
+	layout:decorator="officeLayout">
 <head>
 </head>
 <body>
-<div layout:fragment="content">
-	<h1>Penalty Maintenance</h1>
-	<div class="ls-list-container">
-		<div><a th:href="@{'/admin/violations/new'}">Create New</a></div>
-		<table class="table table-striped">
-			<tr>
-				<th>Name</th>
-				<th>Category</th>
-				<th>Releasable</th>
-			</tr>
-			<tr th:each="item : ${items}">
-				<th><a th:href="@{'/admin/violations/'} + ${item.id} + @{/edit}" 
-					   th:text="${item.name}">Name</a></th>
-				<th th:text="${item.category.value}">Category</th>
-				<th th:text="${item.releasable}">Releasable</th>
-			</tr>
-		</table>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-sm-4 col-sm-offset-3">
+				<h1>Violations</h1>
+			</div>
+			<div class="col-sm-2">
+				<a href="#" 
+				   th:href="@{'/admin/violations/new'}"
+				   class="btn btn-default btn-sm lax-btn-new pull-right">New Violation</a>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-sm-6 col-sm-offset-3">
+				<div class="table-responsive">
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<td></td>
+								<td>Name</td>
+								<td>Category</td>
+								<td class="center">Releasable</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:if="${violations.size() == 0}">
+								<td></td>
+								<td colspan="3">No records found.</td>
+							</tr>
+							<tr th:each="item : ${violations}" th:if="${violations.size() > 0}">
+								<td>
+									<form action="#" 
+										  th:action="@{'/admin/violations' + ${item.id}}" 
+										  th:method="delete" 
+										  role="form">
+									<button type="submit" class="btn btn-link lax-btn-delete">
+										<span class="glyphicon glyphicon-remove red"></span>
+									</button>
+									</form>
+								</td>
+								<td>
+									<a href="#" 
+									   th:href="@{'/admin/violations' + ${item.id} + '/edit'}" 
+									   th:text="${item.name}">Name</a>
+								</td>
+								<td th:text="${item.category.label}">Category</td>
+								<td class="center">
+									<span class="glyphicon glyphicon-ok green" 
+										  th:if="${item.releasable}"></span>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
 	</div>
-</div>
 </body>
 </html>

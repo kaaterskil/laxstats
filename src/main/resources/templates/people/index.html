@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-	layout:decorator="layout">
+	layout:decorator="officeLayout">
 <head></head>
 <body>
 	<div layout:fragment="content">
@@ -11,7 +11,7 @@
 				   th:href="@{'/admin/people/new'}" 
 				   class="btn btn-default btn-sm lax-btn-new pull-right">New Person</a>
 				<h1>People</h1>
-				<h4 class="">Search</h4>
+				<h2 class="">Search</h2>
 			</div>
 			
 			<div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2 search-people-form">
@@ -22,7 +22,7 @@
 		<div class="row">
 			<div id="search-results" 
 				 class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 search-people-results">
-				<h4 class="">Results</h4>
+				<h2 class="">Results</h2>
 				<table class="table table-striped">
 					<thead>
 						<tr>

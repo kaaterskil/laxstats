@@ -23,12 +23,12 @@
 					<tr th:each="element : ${results}">
 						<td>
 							<form action="#"
-								  th:action="@{'/admin/people/' + ${element.id}}"
-								  th:method="delete"
-								  th:object="${element}"
 								  class="lax-icon"
 								  title="Delete"
-								  role="form">
+								  role="form"
+								  th:action="@{'/admin/people/' + ${element.id}}"
+								  th:method="delete"
+								  th:object="${element}">
 								<button type="submit"
 										class="btn btn-link lax-btn-delete">
 									<span class="glyphicon glyphicon-remove red"></span>

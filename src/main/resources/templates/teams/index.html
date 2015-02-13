@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-	layout:decorator="layout">
+	layout:decorator="officeLayout">
 <head>
 </head>
 <body>
 	<div layout:fragment="content">
 		<div class="row">
-			<div class="col-sm-4 col-sm-offset-3 col-xs-12">
+			<div class="col-sm-3 col-sm-offset-3">
 				<h1>Teams</h1>
 			</div>
-			<div class="col-sm-2 col-xs-12">
+			<div class="col-sm-3">
 				<a href="#" th:href="@{'/admin/teams/new'}"
 					class="btn btn-default btn-sm lax-btn-new pull-right">New Team</a>
 			</div>
 		</div>
 
 		<div class="row">
-			<div class="col-sm-6 col-sm-offset-3 col-xs-12">
+			<div class="col-sm-6 col-sm-offset-3">
 				<div class="table-responsive">
 					<table class="table table-striped">
 						<thead>
@@ -30,6 +30,10 @@
 							</tr>
 						</thead>
 						<tbody>
+							<tr th:unless="${items.size() > 0}">
+								<td></td>
+								<td colspan="4">No records found.</td>
+							</tr>
 							<tr th:each="item : ${items}">
 								<td>
 									<form th:object="${item}" 

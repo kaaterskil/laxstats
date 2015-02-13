@@ -1,53 +1,65 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-	layout:decorator="layout">
+	layout:decorator="officeLayout">
 <head>
 </head>
 <body>
 	<div layout:fragment="content">
 		<div class="row">
-			<div class="col-md-4 col-md-offset-3 col-sm-10 col-sm-offset-1">
+			<div class="col-md-6 col-md-offset-3 col-sm-10 col-sm-offset-1">
 				<div class="row">
-					<h1 style="display: inline-block" th:text="${person.getFullName()}"></h1>
-					<a href="#" 
-					   th:href="@{'/admin/people/' + ${person.id} + '/contacts/new'}"
-					   class="btn btn-default btn-sm lax-btn-new pull-right">New Contact</a>
-					<a href="#" 
-					   th:href="@{'/admin/people/' + ${person.id} + '/addresses/new'}" 
-					   class="btn btn-default btn-sm lax-btn-new pull-right">New Address</a>
+					<div class="col-sm-6">
+						<h1 th:text="${person.getFullName()}"></h1>
+					</div>
+					<div class="col-sm-6">
+						<a href="#" 
+						   th:href="@{'/admin/people/' + ${person.id} + '/contacts/new'}"
+						   class="btn btn-default btn-sm lax-btn-new pull-right">New Contact</a>
+						<a href="#" 
+						   th:href="@{'/admin/people/' + ${person.id} + '/addresses/new'}" 
+						   class="btn btn-default btn-sm lax-btn-new">New Address</a>
+					</div>
 				</div>
-				   
+				
 				<div class="row">
-					<div class="col-xs-4">Name:</div>
-					<div class="col-xs-8" th:text="${person.getFullName()}">Full Name</div>
-				</div>
-				<div class="row">
-					<div class="col-xs-4">Nickname:</div>
-					<div class="col-xs-8" th:text="${person.nickname}">Nick Name</div>
-				</div>
-				<div class="row">
-					<div class="col-xs-4">Gender:</div>
-					<div class="col-xs-8" th:text="${person.gender.getLabel()}">Gender</div>
-				</div>
-				<div class="row">
-					<div class="col-xs-4">Dominant Hand:</div>
-					<div class="col-xs-8" th:text="${person.dominantHand.getLabel()}">Dominant Hand</div>
-				</div>
-				<div class="row">
-					<div class="col-xs-4">Birth Date:</div>
-					<div class="col-xs-8" th:text="${{person.birthdate}}">Birth Date</div>
-				</div>
-				<div class="row">
-					<div class="col-xs-4">College:</div>
-					<div class="col-xs-8" th:text="${person.college}">College</div>
+					<div class="col-xs-10 col-xs-offset-1">
+						<table>
+							<tbody>
+								<tr>
+									<td>Name:</td>
+									<td th:text="${person.getFullName()}">Name</td>
+								</tr>
+								<tr>
+									<td>Nickname:</td>
+									<td th:text="${person.nickname}">Nickname</td>
+								</tr>
+								<tr>
+									<td>Gender:</td>
+									<td th:text="${person.gender.label}">Gender</td>
+								</tr>
+								<tr>
+									<td>Dominant Hand:</td>
+									<td th:text="${person.dominantHand.label}">Dominant hand</td>
+								</tr>
+								<tr>
+									<td>Birth Date:</td>
+									<td th:text="${{person.birthdate}}">Birth date</td>
+								</tr>
+								<tr>
+									<td>College:</td>
+									<td th:text="${person.college}">College</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
 				</div>
 			</div>
 		</div>
 		
 		<div class="row">
-			<div class="col-md-4 col-md-offset-3 col-sm-10 col-sm-offset-1">
-				<h4>Contacts</h4>
+			<div class="col-md-6 col-md-offset-3 col-sm-10 col-sm-offset-1">
+				<h2>Contacts</h2>
 				<div class="table-responsive">
 					<table class="table table-striped">
 						<thead>
@@ -81,10 +93,10 @@
 									<span th:if="${contact.isPrimary()}" 
 										  class="glyphicon glyphicon-ok green"></span>
 								</td>
-								<td th:text="${contact.method.getLabel()}">Type</td>
+								<td th:text="${contact.method.label}">Type</td>
 								<td th:text="${contact.value}" 
-									th:if="${contact.method.getLabel() != 'Email'}">Value</td>
-								<td th:if="${contact.method.getLabel() == 'Email'}">
+									th:if="${contact.method.label != 'Email'}">Value</td>
+								<td th:if="${contact.method.label == 'Email'}">
 									<a th:href="@{'mailto:' + ${contact.value}}" 
 									   th:text="${contact.value}">Value</a>
 								</td>
@@ -96,8 +108,8 @@
 		</div>
 		
 		<div class="row">
-			<div class="col-md-4 col-md-offset-3 col-sm-10 col-sm-offset-1">
-				<h4>Addresses</h4>
+			<div class="col-md-6 col-md-offset-3 col-sm-10 col-sm-offset-1">
+				<h2>Addresses</h2>
 				<div class="table-responsive">
 					<table class="table table-striped">
 						<thead>
@@ -137,7 +149,7 @@
 								<td th:text="${item.address1}">Address</td>
 								<td th:text="${item.address2}"></td>
 								<td th:text="${item.city}">City</td>
-								<td th:text="${item.region.getLabel()}">Region</td>
+								<td th:text="${item.region.label}">Region</td>
 								<td th:text="${item.postalCode}">ZIP Code</td>
 							</tr>
 						</tbody>

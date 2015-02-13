@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-	layout:decorator="layout">
+	layout:decorator="officeLayout">
 <head>
 </head>
 <body>
@@ -18,33 +18,45 @@
 		</div>
 		<div class="row">
 			<div class="col-sm-6 col-sm-offset-3 col-xs-12">
-				<table class="table table-striped">
-					<thead>
-						<tr>
-							<td></td>
-							<td>Description</td>
-							<td>Start</td>
-							<td>End</td>
-						</tr>
-					</thead>
-					<tbody>
-						<tr th:each="item : ${items}">
-							<td>
-								<form th:object="${item}"
-									th:action="@{'/admin/seasons/' + ${item.id}}" th:method="delete">
-									<button type="submit" class="btn btn-link lax-btn-delete">
-										<span class="glyphicon glyphicon-remove red"></span>
-									</button>
-								</form>
-							</td>
-							<td><a href="#"
-								th:href="@{'/admin/seasons/' + ${item.id} + '/edit'}"
-								th:text="${item.description}">Description</a></td>
-							<td th:text="${{item.startsOn}}">Start</td>
-							<td th:text="${{item.endsOn}}">End</td>
-						</tr>
-					</tbody>
-				</table>
+				<div class="table-responsive">
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<td></td>
+								<td>Description</td>
+								<td>Start</td>
+								<td>End</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:unless="${seasons.size() > 0}">
+								<td></td>
+								<td colspan="3">No records found.</td>
+							</tr>
+							<tr th:each="season : ${seasons}">
+								<td>
+									<form action="#" 
+										  th:action="@{'/admin/seasons/' + ${season.id}}" 
+										  th:method="delete" 
+										  th:object="${season}"
+										  role="form">
+										<button type="submit" 
+												class="btn btn-link lax-btn-delete">
+											<span class="glyphicon glyphicon-remove red"></span>
+										</button>
+									</form>
+								</td>
+								<td>
+									<a href="#"
+									   th:href="@{'/admin/seasons/' + ${season.id} + '/edit'}"
+									   th:text="${season.description}">Description</a>
+								</td>
+								<td th:text="${{season.startsOn}}">Start</td>
+								<td th:text="${{season.endsOn}}">End</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
 			</div>
 		</div>
 	</div>

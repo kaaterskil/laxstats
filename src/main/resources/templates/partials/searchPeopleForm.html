@@ -5,28 +5,28 @@
 <body>
 	<div th:fragment="searchPeople">
 		<form action="#" 
-			  th:action="@{'/api/people/search'}" 
-			  th:object="${searchForm}" 
 			  method="post"
 			  name="search-people-form" 
 			  id="search-people-form"
+			  th:action="@{'/api/people/search'}" 
+			  th:object="${searchForm}" 
 			  role="form">
 			<div class="row">
-				<div class="col-sm-4 col-xs-12 form-group">
+				<div class="col-sm-4 form-group">
 					<label for="first-name">First Name</label>
 					<input type="text"
 						   id="first-name" 
 						   class="form-control" 
 						   th:field="*{firstName}" />
 				</div>
-				<div class="col-sm-4 col-xs-12 form-group">
+				<div class="col-sm-4 form-group">
 					<label for="last-name">Last Name</label> 
 					<input type="text"
 						   id="last-name" 
 						   class="form-control" 
 						   th:field="*{lastName}" />
 				</div>
-				<div class="col-sm-4 col-xs-12 form-group">
+				<div class="col-sm-4 form-group">
 					<label for="contact">Contact</label> 
 					<input type="text"
 						   id="contact" 
@@ -36,7 +36,7 @@
 			</div>
 
 			<div class="row">
-				<div class="col-sm-6 col-xs-12 form-group">
+				<div class="col-sm-6 form-group">
 					<label for="city">City</label> 
 					<input type="text" 
 						   id="city"

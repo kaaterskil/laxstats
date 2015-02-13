@@ -1,39 +1,38 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-	layout:decorator="layout">
+	layout:decorator="officeLayout">
 <head>
 </head>
 <body>
 	<div layout:fragment="content">
 		<div class="row">
-			<div class="col-sm-8 col-sm-offset-2 col-xs-12">
+			<div class="col-sm-8 col-sm-offset-2">
 				<h1>Edit Person</h1>
 				<form action="#" 
-					  th:action="@{'/admin/people/' + ${personId}}" 
-					  th:object="${personForm}"
-					  method="post"
-					  th:method="put"
 					  id="edit-person-form" 
 					  name="edit-person-form" 
+					  th:action="@{'/admin/people/' + ${personId}}" 
+					  th:method="put"
+					  th:object="${personForm}"
 					  role="form">
 					<div class="row">
-						<div class="col-sm-6 col-xs-12">
+						<div class="col-sm-6">
 							<div class="row">
-								<div class="col-sm-3 col-xs-12 form-group">
+								<div class="col-sm-3 form-group">
 									<label for="prefix">Prefix</label>
 									<input type="text" 
 										   id="prefix" 
 										   class="form-control" 
-										   th:maxlength="10"
+										   maxlength="10"
 										   th:field="*{prefix}" />
 								</div>
-								<div class="col-sm-9 col-xs-12 form-group">
+								<div class="col-sm-9 form-group">
 									<label for="first-name">First Name</label>
 									<input type="text"
 										   id="first-name" 
 										   class="form-control" 
-										   th:maxlength="20"
+										   maxlength="20"
 										   th:field="*{firstName}" />
 								</div>
 							</div>
@@ -48,27 +47,27 @@
 							</div>
 							
 							<div class="row">
-								<div class="col-sm-9 col-xs-12 form-group required">
+								<div class="col-sm-9 form-group required">
 									<label for="last-name">Last Name</label>
 									<input type="text"
 										   id="last-name" 
 										   class="form-control" 
 										   required="required"
-										   th:maxlength="30"
+										   maxlength="30"
 										   th:field="*{lastName}" 
 										   aria-required="true"
-										   aria-described-by="lastNameError" />
+										   aria-described-by="last-name-error" />
 									<div th:if="${#fields.hasErrors('lastName')}" 
-										 id="lastNameError"
+										 id="last-name-error"
 										 class="lax-error" 
 										 th:errors="*{lastName}">Invalid last name</div>
 								</div>
-								<div class="col-sm-3 col-xs-12 form-group">
+								<div class="col-sm-3 form-group">
 									<label for="suffix">Suffix</label> 
 									<input type="text" 
 										   id="suffix"
 										   class="form-control" 
-										   th:maxlength="10"
+										   maxlength="10"
 										   th:field="*{suffix}" />
 								</div>
 							</div>
@@ -84,9 +83,9 @@
 							<button type="submit" class="btn btn-default">Update</button>
 						</div>
 						
-						<div class="col-sm-6 col-xs-12">
+						<div class="col-sm-6">
 							<div class="row">
-								<div class="col-sm-6 col-xs-12 form-group">
+								<div class="col-sm-6 form-group">
 									<label for="gender">Gender</label>
 									<select id="gender"
 											class="form-control" 
@@ -94,10 +93,10 @@
 										<option value="">Select...</option>
 										<option th:each="opt : *{genders}" 
 												th:value="${opt}"
-												th:text="${opt.getLabel()}">Gender</option>
+												th:text="${opt.label}">Gender</option>
 									</select>
 								</div>
-								<div class="col-sm-6 col-xs-12 form-group">
+								<div class="col-sm-6 form-group">
 									<label for="dominant-hand">Dominant Hand</label>
 									<select id="dominant-hand" 
 											class="form-control"
@@ -105,20 +104,20 @@
 										<option value="">Select...</option>
 										<option th:each="opt : *{dominantHands}" 
 												th:value="${opt}"
-												th:text="${opt.getLabel()}">Gender</option>
+												th:text="${opt.label}">Gender</option>
 									</select>
 								</div>
 							</div>
 							
 							<div class="row">
-								<div class="col-sm-6 col-xs-12 form-group">
+								<div class="col-sm-6 form-group">
 									<label for="birthdate">Birth Date</label>
 									<input type="date"
 										   id="birthdate" 
 										   class="form-control" 
 										   th:field="*{birthdate}" />
 								</div>
-								<div class="col-sm-6 col-xs-12 form-group checkbox">
+								<div class="col-sm-6 form-group checkbox">
 									<label for="released">
 										<input type="checkbox"
 											   id="released"
@@ -129,15 +128,19 @@
 							</div>
 	
 							<div class="row">
-								<div class="col-sm-6 col-xs-12 form-group">
-									<label for="release-sent">Release Sent</label> <input type="date"
-										id="release-sent" class="form-control"
-										th:field="*{parentReleaseSentOn}" />
+								<div class="col-sm-6 form-group">
+									<label for="release-sent">Release Sent</label> 
+									<input type="date"
+										   id="release-sent" 
+										   class="form-control"
+										   th:field="*{parentReleaseSentOn}" />
 								</div>
-								<div class="col-sm-6 col-xs-12 form-group">
-									<label for="release-received">Release Received</label> <input
-										type="date" id="release-received" class="form-control"
-										th:field="*{parentReleaseReceivedOn}" />
+								<div class="col-sm-6 form-group">
+									<label for="release-received">Release Received</label>
+									<input type="date" 
+										   id="release-received" 
+										   class="form-control"
+										   th:field="*{parentReleaseReceivedOn}" />
 								</div>
 							</div>
 							

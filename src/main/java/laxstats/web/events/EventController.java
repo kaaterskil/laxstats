@@ -326,7 +326,7 @@ public class EventController extends ApplicationController {
 
 	/*---------- Ajax methods ----------*/
 
-	@RequestMapping(value = "/rest/events/teams/{seasonId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/api/events/teams/{seasonId}", method = RequestMethod.GET)
 	public @ResponseBody List<TeamSeasonSelect> ajaxGetTeams(
 			@RequestParam(value = "seasonId", required = true) String seasonId) {
 		return getTeams(seasonId);

@@ -2,13 +2,13 @@ package laxstats.api.sites;
 
 public enum Surface {
 	UNKNOWN("Unknown"), GRASS("Grass"), TURF("Turf");
-	private String value;
+	private String label;
 
-	private Surface(String value) {
-		this.value = value;
+	private Surface(String label) {
+		this.label = label;
 	}
 
-	public String getValue() {
-		return value;
+	public String getLabel() {
+		return label;
 	}
 }

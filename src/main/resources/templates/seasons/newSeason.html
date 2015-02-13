@@ -1,67 +1,62 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-	layout:decorator="layout">
+	layout:decorator="officeLayout">
 <head>
 </head>
 <body>
 	<div layout:fragment="content">
 		<div class="row">
-			<div class="col-sm-3 col-sm-offset-3 col-xs-12">
+			<div class="col-sm-3 col-sm-offset-3">
 				<h1>New Season</h1>
-			</div>
-		</div>
-
-		<div class="row">
-			<div class="col-sm-3 col-sm-offset-3 col-xs-12">
 				<form action="#" 
+					  method="post" 
+					  name="new-season-form"
 					  th:action="@{'/admin/seasons'}" 
 					  th:object="${seasonForm}"
-					  method="post" 
 					  role="form">
 					<div class="form-group">
 						<label for="description">Description</label>
-						<input th:type="text" 
+						<input type="text" 
 							   id="description" 
 							   class="form-control" 
-							   aria-described-by="descriptionError" 
-							   th:field="*{description}"
-							   th:placeholder="Description"
+							   placeholder="Description"
 							   required="required"
-							   aria-required="true" />
+							   th:field="*{description}"
+							   aria-required="true" 
+							   aria-described-by="description-error" />
 						<div th:if="${#fields.hasErrors('description')}"
-							 id="descriptionError"
+							 id="description-error"
 							 class="lax-error"
 							 th:errors="*{description}">Incorrect description</div>
 					</div>
 					<div class="form-group">
 						<label for="starts-on">Start Date</label>
-						<input th:type="date" 
+						<input type="date" 
 							   id="starts-on" 
 							   class="form-control" 
-							   aria-described-by="startsOnError" 
-							   th:field="*{startsOn}"
 							   required="required"
-							   aria-required="true" />
+							   th:field="*{startsOn}"
+							   aria-required="true" 
+							   aria-described-by="starts-on-error" />
 						<div th:if="${#fields.hasErrors('startsOn')}"
-							 id="startsOnError"
+							 id="starts-on-error"
 							 class="lax-error"
 							 th:errors="*{startsOn}">Incorrect start date</div>
 					</div>
 					<div class="form-group">
 						<label for="ends-on">End Date</label>
-						<input th:type="date"
+						<input type="date"
 							   id="ends-on" 
-							   class="form-control"
-							   aria-described-by="endsOnError" 
-							   th:field="*{endsOn}" />
+							   class="form-control" 
+							   th:field="*{endsOn}"
+							   aria-described-by="ends-on-error" />
 						<div th:if="${#fields.hasErrors('endsOn')}"
-							 id="endsOnError"
+							 id="ends-on-error"
 							 class="lax-error"
 							 th:errors="*{endsOn}">Incorrect end date</div>
 					</div>
-					<button th:type="submit" 
-							class="btn btn-default">Save</button>
+					<button type="submit" class="btn btn-default">Save</button>
 				</form>
 			</div>
 		</div>

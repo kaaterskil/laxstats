@@ -229,7 +229,7 @@ public class PlayController extends ApplicationController {
 		return "events/faceOffs/index";
 	}
 
-	@RequestMapping(value = "/events/{eventId}/faceOffs/new", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/events/{eventId}/faceOffs/new", method = RequestMethod.GET)
 	public String newFaceOff(@PathVariable String eventId, Model model) {
 		final GameEntry aggregate = eventRepository.findOne(eventId);
 
@@ -585,7 +585,7 @@ public class PlayController extends ApplicationController {
 		return "events/groundBalls/index";
 	}
 
-	@RequestMapping(value = "/events/{eventId}/groundBalls/new", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/events/{eventId}/groundBalls/new", method = RequestMethod.GET)
 	public String newGroundBall(@PathVariable String eventId, Model model) {
 		final GameEntry aggregate = eventRepository.findOne(eventId);
 

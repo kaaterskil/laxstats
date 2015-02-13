@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-	layout:decorator="layout">
+	layout:decorator="officeLayout">
 <head></head>
 <body>
 	<div layout:fragment="content">
@@ -9,10 +9,10 @@
 			<div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
 				<h1>New User</h1>
 				<form action="#"
-					  th:action="@{'/admin/users/'}"
 					  method="post"
 					  id="new-user-form"
 					  name="new-user-form"
+					  th:action="@{'/admin/users/'}"
 					  th:object="${userForm}"
 					  role="form">
 					<div class="row">
@@ -22,7 +22,7 @@
 									class="form-control"
 									required="required"
 									aria-required="true"
-									aria-described-by="roleError"
+									aria-described-by="role-error"
 									th:field="*{role}">
 								<option value="">Select...</option>
 								<option th:each="opt : *{roles}"
@@ -30,7 +30,7 @@
 										th:text="${opt.label}">Roles</option>
 							</select>
 							<div th:if="${#fields.hasErrors('role')}" 
-								 id="roleError"
+								 id="role-error"
 								 class="lax-error" 
 								 th:errors="*{role}">Invalid role</div>
 						</div>
@@ -55,10 +55,10 @@
 								   id="first-name"
 								   class="form-control"
 								   maxlength="20"
-								   aria-described-by="firstNameError"
+								   aria-described-by="first-name-error"
 								   th:field="*{firstName}" />
 							<div th:if="${#fields.hasErrors('firstName')}" 
-								 id="firstNameError"
+								 id="first-name-error"
 								 class="lax-error" 
 								 th:errors="*{firstName}">Invalid first name</div>
 						</div>
@@ -70,10 +70,10 @@
 								   maxlength="30"
 								   required="required"
 								   aria-required="true"
-								   aria-described-by="lastNameError"
+								   aria-described-by="last-name-error"
 								   th:field="*{lastName}" />
 							<div th:if="${#fields.hasErrors('lastName')}" 
-								 id="lastNameError"
+								 id="last-name-error"
 								 class="lax-error" 
 								 th:errors="*{lastName}">Invalid last name</div>
 						</div>
@@ -85,10 +85,12 @@
 							<input type="email"
 								   id="email"
 								   class="form-control"
-								   aria-described-by="emailError"
+								   required="required"
+								   aria-required="true"
+								   aria-described-by="email-error"
 								   th:field="*{email}" />
 							<div th:if="${#fields.hasErrors('email')}" 
-								 id="emailError"
+								 id="email-error"
 								 class="lax-error" 
 								 th:errors="*{email}">Invalid email</div>
 						</div>
@@ -99,10 +101,10 @@
 								   class="form-control"
 								   required="required"
 								   aria-required="true"
-								   aria-described-by="passwordError"
+								   aria-described-by="password-error"
 								   th:field="*{password}" />
 							<div th:if="${#fields.hasErrors('password')}" 
-								 id="passwordError"
+								 id="password-error"
 								 class="lax-error" 
 								 th:errors="*{password}">Invalid password</div>
 						</div>

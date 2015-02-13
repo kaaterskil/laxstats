@@ -17,7 +17,7 @@ public class HomeController {
 		return "home/index";
 	}
 
-	@RequestMapping(value = "/office", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/office", method = RequestMethod.GET)
 	public String office() {
 		return "home/office";
 	}

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-	layout:decorator="layout">
+	layout:decorator="officeLayout">
 <head>
 </head>
 <body>
@@ -16,25 +16,32 @@
 		<div class="row">
 			<div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3">
 				<form action="#" 
-					  th:action="@{'/admin/people/' + ${person.id} + '/contacts'}" 
-					  th:object="${contactForm}" 
 					  method="post" 
 					  id="new-contact-form" 
 					  name="new-contact-form" 
+					  th:action="@{'/admin/people/' + ${person.id} + '/contacts'}" 
+					  th:object="${contactForm}" 
 					  role="form">
 					<div class="row">
-						<div class="col-sm-6 col-xs-12 form-group required">
+						<div class="col-sm-6 form-group required">
 							<label for="contact-method">Method</label>
 							<select id="contact-method"
 									class="form-control" 
-									th:field="*{method}">
+									required="required"
+									th:field="*{method}"
+									aria-required="true"
+									aria-described-by="method-error">
 								<option value="">Select...</option>
 								<option th:each="opt : *{contactMethods}"
 										th:value="${opt}"
-										th:text="${opt.getLabel()}">Address Type</option>
+										th:text="${opt.label}">Address Type</option>
 							</select>
+							<div th:if="${#fields.hasErrors('method')}" 
+								 id="method-error"
+								 class="lax-error" 
+								 th:errors="*{method}">Invalid method</div>
 						</div>
-						<div class="col-sm-6 col-xs-12 form-group checkbox">
+						<div class="col-sm-6 form-group checkbox">
 							<label for="primary">
 								<input type="checkbox"
 									   id="primary"
@@ -59,7 +66,12 @@
 							   class="form-control"
 							   required="required"
 							   th:field="*{value}"
-							   aria-required="true" />
+							   aria-required="true"
+							   aria-described-by="value-error" />
+						<div th:if="${#fields.hasErrors('value')}" 
+							 id="value-error"
+							 class="lax-error" 
+							 th:errors="*{value}">Invalid valid</div>
 					</div>
 					<button th:type="submit" 
 							class="btn btn-default">Save</button>
