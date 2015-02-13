@@ -13,7 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @Configuration
 @EnableWebMvcSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+public class HttpSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private UserDetailsService loginService;
@@ -23,22 +23,22 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			throws Exception {
 		auth.userDetailsService(loginService).passwordEncoder(
 				new BCryptPasswordEncoder());
-
-		// For testing
-		// auth.inMemoryAuthentication().withUser("admin@example.com")
-		// .password("admin").roles("ADMIN", "USER");
 	}
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
-				.antMatchers("/", "/home", "/events", "/teams", "/people")
-				.permitAll().antMatchers("/fonts/**").permitAll()
-				.antMatchers("/admin/**").hasAnyRole("ADMIN").anyRequest()
-				.authenticated();
-		http.formLogin().failureUrl("/login?error")
-				.defaultSuccessUrl("/home/office").loginPage("/login")
-				.permitAll();
+				.antMatchers("/", "/home", "/events", "/teams", "/players")
+				.permitAll()
+				.antMatchers("/resources/**", "/fonts/**", "/images/**")
+				.permitAll().antMatchers("/admin/**", "/api/**")
+				.hasAnyRole("MANAGER", "COACH", "ADMIN", "SUPERADMIN")
+				.antMatchers("/super/**").hasAnyRole("ADMIN", "SUPERADMIN")
+				.anyRequest().authenticated();
+
+		http.formLogin().defaultSuccessUrl("/admin/office")
+				.failureUrl("/login?error").loginPage("/login").permitAll();
+
 		http.logout().permitAll();
 	}
 }

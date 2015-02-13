@@ -4,7 +4,7 @@ package laxstats.api.users;
  * For authorization
  */
 public enum UserRole {
-	MANAGER("Manager"), COACH("Coach"), ADMIN("Administrator"), SUPERADMIN(
+	ROLE_MANAGER("Manager"), ROLE_COACH("Coach"), ROLE_ADMIN("Administrator"), ROLE_SUPERADMIN(
 			"Super Admin");
 	private String label;
 
