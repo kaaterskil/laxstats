@@ -49,9 +49,9 @@
 									<a href="#" th:href="@{'/admin/sites/' + ${item.id} + '/edit'}"
 									   th:text="${item.name}">Name</a>
 								</td>
-								<td th:text="${item.address} ? ${item.address.address1}">Address</td>
-								<td th:text="${item.address} ? ${item.address.city}">City</td>
-								<td th:text="${item.address} ? ${item.address.region.name()}">Region</td>
+								<td th:text="${item.address}? ${item.address.address1}">Address</td>
+								<td th:text="${item.address}? ${item.address.city}">City</td>
+								<td th:text="${item.address}? ${item.address.region.name()}">Region</td>
 							</tr>
 						</tbody>
 					</table>

@@ -39,7 +39,7 @@
 								required="required" 
 								th:field="*{season}" 
 								aria-required="true" 
-								aria-described-by="season-error">
+								aria-describedby="season-error">
 							<option value="">Select...</option>
 							<option th:each="opt : *{seasons}" 
 									th:value="${opt.id}" 
@@ -75,7 +75,7 @@
 								th:field="*{status}" 
 								required="required" 
 								aria-required="true" 
-								aria-described-by="status-error">
+								aria-describedby="status-error">
 							<option value="">Select...</option>
 							<option th:each="opt : *{statuses}" 
 									th:value="${opt}"

@@ -5,7 +5,62 @@
 <head></head>
 <body>
 	<div layout:fragment="content">
-		<h1>This is the Event Index page</h1>
+		<div class="row">
+			<div class="col-sm-5 col-sm-offset-2">
+				<h1>Events</h1>
+			</div>
+			<div class="col-sm-3">
+				<a href="#" th:href="@{'/admin/events/new'}"
+					class="btn btn-default btn-sm lax-btn-new pull-right">New Event</a>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-sm-8 col-sm-offset-2">
+				<div class="teable-responsive">
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<td></td>
+								<td>Date</td>
+								<td>Time</td>
+								<td>Home Team</td>
+								<td>Visitor</td>
+								<td>Site</td>
+								<td>Last Modified</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:unless="${events.size() > 0}">
+								<td></td>
+								<td colspan="6">No records found.</td>
+							</tr>
+							<tr th:each="item : ${events}">
+								<td>
+									<form th:action="@{'/admin/events/' + ${item.id}}"
+										  th:method="delete"
+										  th:object="${item}">
+										<button type="submit"
+												class="btn btn-link lax-btn-delete">
+											<span class="glyphicon glyphicon-remove red"></span>
+										</button>
+									</form>
+									<a href="#" th:href="@{'/admin/events/' + ${item.id} + '/edit'}">
+										<span class="glyphicon glyphicon-edit green"></span>
+									</a>
+								</td>
+								<td th:text="${#dates.format(${item.startsAt}, 'MM/dd/yyyy')}">Date</td>
+								<td th:text="${#dates.format(${item.startsAt}, 'hh:mm aa')}">Time</td>
+								<td th:text="${item.getHomeTeam()}? ${item.getHomeTeam().getShortName() : 'TBD}">Home Team</td>
+								<td th:text="${item.getVisitingTeam()}? ${item.getVisitingTeam().getShortName() : 'TBD}">Visitor</td>
+								<td th:text="${item.site} ? ${item.site.name}">Site</td>
+								<td th:text="${{item.lastModified}}">Last Modified</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
 	</div>
 </body>
 </html>

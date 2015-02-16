@@ -26,7 +26,7 @@
 										required="required"
 										th:field="*{region}"
 										aria-required="true"
-										aria-described-by="regionError">
+										aria-describedby="regionError">
 									<option value="">Select...</option>
 									<option th:each="opt : *{regions}" 
 											th:value="${opt}" 
@@ -46,7 +46,7 @@
 									   required="required" 
 									   th:field="*{sponsor}" 
 									   aria-required="true" 
-									   aria-described-by="sponsor-error" />
+									   aria-describedby="sponsor-error" />
 								<div th:if="${#fields.hasErrors('sponsor')}" 
 									 id="sponsor-error" 
 									 class="lax-error" 
@@ -61,7 +61,7 @@
 									   required="required"
 									   th:field="*{name}"
 									   aria-required="true"
-									   aria-described-by="name-error" />
+									   aria-describedby="name-error" />
 								<div th:if="${#fields.hasErrors('name')}"
 									 id="name-error"
 									 class="lax-error"
@@ -90,7 +90,7 @@
 											required="required" 
 											th:field="*{gender}"
 											aria-required="true"
-											aria-described-by="gender-error">
+											aria-describedby="gender-error">
 										<option value="">Select...</option>
 										<option th:each="opt : *{genders}" 
 												th:value="${opt}" 
@@ -104,7 +104,7 @@
 											required="required" 
 											th:field="*{letter}"
 											aria-required="true"
-											aria-described-by="letter-error">
+											aria-describedby="letter-error">
 										<option value="">Select...</option>
 										<option th:each="opt : *{letters}" 
 												th:value="${opt}" 

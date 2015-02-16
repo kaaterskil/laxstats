@@ -24,7 +24,7 @@
 							   required="required"
 							   th:field="*{description}"
 							   aria-required="true" 
-							   aria-described-by="description-error" />
+							   aria-describedby="description-error" />
 						<div th:if="${#fields.hasErrors('description')}"
 							 id="description-error"
 							 class="lax-error"
@@ -38,7 +38,7 @@
 							   required="required"
 							   th:field="*{startsOn}"
 							   aria-required="true" 
-							   aria-described-by="starts-on-error" />
+							   aria-describedby="starts-on-error" />
 						<div th:if="${#fields.hasErrors('startsOn')}"
 							 id="starts-on-error"
 							 class="lax-error"
@@ -50,7 +50,7 @@
 							   id="ends-on" 
 							   class="form-control" 
 							   th:field="*{endsOn}"
-							   aria-described-by="ends-on-error" />
+							   aria-describedby="ends-on-error" />
 						<div th:if="${#fields.hasErrors('endsOn')}"
 							 id="ends-on-error"
 							 class="lax-error"

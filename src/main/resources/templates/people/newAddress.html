@@ -30,7 +30,7 @@
 									required="required"
 									th:field="*{type}"
 									aria-required="true"
-									aria-described-by="type-error">
+									aria-describedby="type-error">
 								<option value="">Select...</option>
 								<option th:each="opt : *{addressTypes}"
 										th:value="${opt}"
@@ -76,7 +76,7 @@
 							   maxlength="30"
 							   th:field="*{city}"
 							   aria-required="true"
-							   aria-described-by="city-error" />
+							   aria-describedby="city-error" />
 						<div th:if="${#fields.hasErrors('city')}" 
 							 id="city-error"
 							 class="lax-error" 

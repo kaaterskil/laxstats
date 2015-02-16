@@ -24,7 +24,7 @@
 								<input type="text"
 									   id="name"
 									   class="form-control"
-									   aria-described-by="name-error"
+									   aria-describedby="name-error"
 									   th:field="*{name}"
 									   th:placeholder="Name"
 									   required="required"
@@ -52,7 +52,7 @@
 											class="form-control"
 											required="required"
 											aria-required="true"
-											aria-described-by="region-error">
+											aria-describedby="region-error">
 										<option value="">Select...</option>
 										<option th:each="opt : *{regions}"
 												th:value="${opt}"

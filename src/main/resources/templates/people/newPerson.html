@@ -56,7 +56,7 @@
 										   maxlength="30"
 										   th:field="*{lastName}" 
 										   aria-required="true"
-										   aria-described-by="last-name-error" />
+										   aria-describedby="last-name-error" />
 									<div th:if="${#fields.hasErrors('lastName')}" 
 										 id="last-name-error"
 										 class="lax-error" 

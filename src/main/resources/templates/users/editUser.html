@@ -9,10 +9,10 @@
 			<div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
 				<h1>Edit User</h1>
 				<form action="#"
-					  th:action="@{'/admin/users/' + ${userId}}"
-					  th:method="put"
 					  id="edit-user-form"
 					  name="edit-user-form"
+					  th:action="@{'/admin/users/' + ${userId}}"
+					  th:method="put"
 					  th:object="${userForm}"
 					  role="form">
 					  
@@ -34,7 +34,7 @@
 									class="form-control"
 									required="required"
 									aria-required="true"
-									aria-described-by="role-error"
+									aria-describedby="role-error"
 									th:field="*{role}">
 								<option value="">Select...</option>
 								<option th:each="opt : *{roles}"
@@ -50,12 +50,20 @@
 							<label for="team">Team</label>
 							<select id="team"
 									class="form-control"
-									th:field="*{role}">
+									th:field="*{teamId}"
+									aria-describedby="team-error">
 								<option value="">Select...</option>
-								<option th:each="entry : *{teams.entrySet()}"
-										th:value="${entry.key}"
-										th:text="${entry.value}">Teams</option>
+								<optgroup th:each="group : *{teams.entrySet()}" 
+										  th:label="${group.getKey().label}">
+									<option th:each="opt : ${group.getValue()}" 
+											th:value="${opt.id}" 
+											th:text="${opt.getTitle()}">Teams</option>
+								</optgroup>
 							</select>
+							<div th:if="${#fields.hasErrors('teamId')}" 
+								 id="team-error"
+								 class="lax-error" 
+								 th:errors="*{teamId}">Invalid team</div>
 						</div>
 					</div>
 					
@@ -67,7 +75,7 @@
 								   id="first-name"
 								   class="form-control"
 								   maxlength="20"
-								   aria-described-by="first-name-error"
+								   aria-describedby="first-name-error"
 								   th:field="*{firstName}" />
 							<div th:if="${#fields.hasErrors('firstName')}" 
 								 id="first-name-error"
@@ -82,7 +90,7 @@
 								   maxlength="30"
 								   required="required"
 								   aria-required="true"
-								   aria-described-by="last-name-error"
+								   aria-describedby="last-name-error"
 								   th:field="*{lastName}" />
 							<div th:if="${#fields.hasErrors('lastName')}" 
 								 id="last-name-error"
@@ -99,7 +107,7 @@
 								   class="form-control"
 								   required="required"
 								   aria-required="true"
-								   aria-described-by="email-error"
+								   aria-describedby="email-error"
 								   th:field="*{email}" />
 							<div th:if="${#fields.hasErrors('email')}" 
 								 id="email-error"
@@ -111,8 +119,7 @@
 							<input type="password"
 								   id="password"
 								   class="form-control"
-								   aria-required="true"
-								   aria-described-by="password-error"
+								   aria-describedby="password-error"
 								   th:field="*{password}" />
 							<div th:if="${#fields.hasErrors('password')}" 
 								 id="password-error"

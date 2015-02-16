@@ -37,7 +37,7 @@
 							<tr th:each="item : ${violations}" th:if="${violations.size() > 0}">
 								<td>
 									<form action="#" 
-										  th:action="@{'/admin/violations' + ${item.id}}" 
+										  th:action="@{'/admin/violations/' + ${item.id}}" 
 										  th:method="delete" 
 										  role="form">
 									<button type="submit" class="btn btn-link lax-btn-delete">
@@ -47,7 +47,7 @@
 								</td>
 								<td>
 									<a href="#" 
-									   th:href="@{'/admin/violations' + ${item.id} + '/edit'}" 
+									   th:href="@{'/admin/violations/' + ${item.id} + '/edit'}" 
 									   th:text="${item.name}">Name</a>
 								</td>
 								<td th:text="${item.category.label}">Category</td>

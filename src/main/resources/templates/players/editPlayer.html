@@ -32,7 +32,7 @@
 									required="required"
 									th:field="*{role}"
 									aria-required="true"
-									aria-described-by="role-error">
+									aria-describedby="role-error">
 								<option value="">Select...</option>
 								<option th:each="opt : *{roles}"
 										th:value="${opt}"
@@ -50,7 +50,7 @@
 									required="required"
 									th:field="*{status}"
 									aria-required="true"
-									aria-described-by="status-error">
+									aria-describedby="status-error">
 								<option value="">Select...</option>
 								<option th:each="opt : *{statuses}"
 										th:value="${opt}"

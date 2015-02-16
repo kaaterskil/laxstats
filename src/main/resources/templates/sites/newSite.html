@@ -28,7 +28,7 @@
 									   required="required"
 									   th:field="*{name}"
 									   aria-required="true"
-									   aria-described-by="name-error" />
+									   aria-describedby="name-error" />
 								<div th:if="${#fields.hasErrors('name')}"
 									 id="name-error"
 									 class="lax-error"
@@ -52,7 +52,7 @@
 											required="required"
 											th:field="*{region}"
 											aria-required="true"
-											aria-described-by="region-error">
+											aria-describedby="region-error">
 										<option value="">Select...</option>
 										<option th:each="opt : *{regions}"
 												th:value="${opt}"

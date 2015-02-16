@@ -10,9 +10,11 @@
 			<div class="col-sm-4 col-sm-offset-4">
 				<h1>Violation Maintenance</h1>
 				<form action="#" 
+					  id="new-violation-form"
+					  method="post" 
+					  name="new-violation-form"
 					  th:action="@{'/admin/violations'}" 
 					  th:object="${violationForm}" 
-					  method="post" 
 					  role="form">
 					<div class="form-group required">
 						<label for="name">Name</label>
@@ -22,7 +24,7 @@
 							   maxlength="50"
 							   placeholder="Name"
 							   required="required"
-							   aria-described-by="name-error"
+							   aria-describedby="name-error"
 							   aria-required="true" 
 							   th:field="*{name}" />
 						<div th:if="${#fields.hasErrors('name')}" 
@@ -44,9 +46,14 @@
 						<label th:for="releasable">
 							<input type="checkbox" 
 								   id="releasable" 
-								   th:field="*{releasable}" />
+								   th:field="*{releasable}"
+								   aria-describedby="releasable-error" />
 							<strong>Releasable</strong>
 						</label> 
+						<div th:if="${#fields.hasErrors('releasable')}" 
+							 id="releasable-error"
+							 class="lax-error" 
+							 th:errors="*{releasable}">Invalid Releasable</div>
 					</div>
 					
 					<div class="row">
@@ -55,24 +62,34 @@
 							<select id="category" 
 									class="form-control"
 									required="required"
+									th:field="*{category}"
 									aria-required="true" 
-									th:field="*{category}">
+									aria-describedby="category-error">
 								<option value="">Select...</option>
 								<option th:each="opt : *{categories}" 
 										th:value="${opt}" 
 										th:text="${opt.label}">Category</option>
 							</select>
+							<div th:if="${#fields.hasErrors('category')}" 
+								 id="category-error"
+								 class="lax-error" 
+								 th:errors="*{category}">Invalid category</div>
 						</div>
 						<div class="col-sm-6 form-group">
 							<label for="penalty-length">Penalty Length</label>
 							<select id="penalty-length" 
 									class="form-control" 
-									th:field="*{penaltyLength}">
+									th:field="*{penaltyLength}"
+									aria-describedby="penalty-length-error">
 								<option value="">Select...</option>
 								<option th:each="opt : *{penaltyLengths}" 
 										th:value="${opt}" 
 										th:text="${opt.label}">Penalty Length</option>
 							</select>
+							<div th:if="${#fields.hasErrors('penaltyLength')}" 
+								 id="penalty-length-error"
+								 class="lax-error" 
+								 th:errors="*{penaltyLength}">Invalid penalty length</div>
 						</div>
 					</div>
 					

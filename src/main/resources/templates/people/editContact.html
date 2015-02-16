@@ -30,7 +30,7 @@
 									required="required"
 									th:field="*{method}"
 									aria-required="true"
-									aria-described-by="method-error">
+									aria-describedby="method-error">
 								<option value="">Select...</option>
 								<option th:each="opt : *{contactMethods}"
 										th:value="${opt}"
@@ -68,7 +68,7 @@
 							   required="required"
 							   th:field="*{value}"
 							   aria-required="true"
-							   aria-described-by="value-error" />
+							   aria-describedby="value-error" />
 						<div th:if="${#fields.hasErrors('value')}" 
 							 id="value-error"
 							 class="lax-error" 
