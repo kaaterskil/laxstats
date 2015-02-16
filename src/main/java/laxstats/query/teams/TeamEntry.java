@@ -100,7 +100,7 @@ public class TeamEntry {
 
 	public String getTitle() {
 		final StringBuilder sb = new StringBuilder();
-		sb.append(sponsor).append(" ").append(gender.getLabel()).append("'s ")
+		sb.append(sponsor).append(" ").append(gender.getLabel()).append(" ")
 				.append(letter.getLabel());
 		return sb.toString();
 	}
@@ -109,6 +109,17 @@ public class TeamEntry {
 		TeamSeasonEntry result = null;
 		for (final TeamSeasonEntry each : seasons) {
 			if (each.getId().equals(id)) {
+				result = each;
+				break;
+			}
+		}
+		return result;
+	}
+
+	public TeamSeasonEntry getSeason(LocalDateTime datetime) {
+		TeamSeasonEntry result = null;
+		for (final TeamSeasonEntry each : seasons) {
+			if (each.includes(datetime)) {
 				result = each;
 				break;
 			}

@@ -29,6 +29,7 @@ import laxstats.query.teams.TeamEntry;
 import laxstats.query.users.UserEntry;
 
 import org.hibernate.annotations.Type;
+import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
@@ -104,6 +105,15 @@ public class TeamSeasonEntry {
 		return team.getTitle();
 	}
 
+	public String getShortName() {
+		if (name != null) {
+			final StringBuilder sb = new StringBuilder();
+			sb.append(team.getSponsor()).append(" ").append(name);
+			return sb.toString();
+		}
+		return team.getTitle();
+	}
+
 	public Interval getSeasonInterval() {
 		return new Interval(startsOn.toDateTimeAtStartOfDay(),
 				endsOn.toDateTimeAtStartOfDay());
@@ -133,6 +143,12 @@ public class TeamSeasonEntry {
 			}
 		}
 		return data;
+	}
+
+	public boolean includes(LocalDateTime datetime) {
+		final DateTime instant = datetime.toDateTime();
+		final Interval interval = getSeasonInterval();
+		return interval.contains(instant);
 	}
 
 	private static class PlayerComparator implements Comparator<PlayerEntry> {

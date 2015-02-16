@@ -73,8 +73,9 @@ public class TeamSeasonController extends ApplicationController {
 
 	@RequestMapping(value = "/seasons", method = RequestMethod.POST)
 	public String createTeamSeason(@PathVariable("teamId") TeamEntry team,
-			@Valid TeamSeasonForm form, BindingResult result) {
+			@Valid TeamSeasonForm form, BindingResult result, Model model) {
 		if (result.hasErrors()) {
+			form.setSeasons(getSeasons());
 			return "teamSeasons/newTeamSeason";
 		}
 		final LocalDateTime now = LocalDateTime.now();
@@ -111,8 +112,9 @@ public class TeamSeasonController extends ApplicationController {
 	@RequestMapping(value = "/seasons/{teamSeasonId}", method = RequestMethod.PUT)
 	public String updateTeamSeason(@PathVariable String teamId,
 			@PathVariable String teamSeasonId, @Valid TeamSeasonForm form,
-			BindingResult result) {
+			BindingResult result, Model model) {
 		if (result.hasErrors()) {
+			form.setSeasons(getSeasons());
 			return "teamSeasons/editTeamSeason";
 		}
 		final LocalDateTime now = LocalDateTime.now();
@@ -144,8 +146,6 @@ public class TeamSeasonController extends ApplicationController {
 	@RequestMapping(value = "/seasons/new", method = RequestMethod.GET)
 	public String newTeamSeason(@PathVariable String teamId, Model model) {
 		final TeamEntry team = teamRepository.findOne(teamId);
-		final List<SeasonEntry> seasons = (List<SeasonEntry>) seasonRepository
-				.findAll(new Sort(Direction.DESC, "startsOn"));
 
 		final TeamSeasonForm form = new TeamSeasonForm();
 		form.setTeam(team.getId());
@@ -155,7 +155,7 @@ public class TeamSeasonController extends ApplicationController {
 		if (team.getAffiliation() != null) {
 			form.setAffiliation(team.getAffiliation().getId());
 		}
-		form.setSeasons(seasons);
+		form.setSeasons(getSeasons());
 
 		model.addAttribute("teamSeasonForm", form);
 		model.addAttribute("teamId", teamId);
@@ -167,8 +167,6 @@ public class TeamSeasonController extends ApplicationController {
 			@PathVariable String teamSeasonId, Model model) {
 		final TeamEntry team = teamRepository.findOne(teamId);
 		final TeamSeasonEntry teamSeason = team.getSeason(teamSeasonId);
-		final List<SeasonEntry> seasons = (List<SeasonEntry>) seasonRepository
-				.findAll(new Sort(Direction.DESC, "startsOn"));
 
 		final TeamSeasonForm form = new TeamSeasonForm();
 		form.setTeam(teamId);
@@ -181,11 +179,18 @@ public class TeamSeasonController extends ApplicationController {
 		if (teamSeason.getAffiliation() != null) {
 			form.setAffiliation(teamSeason.getAffiliation().getId());
 		}
-		form.setSeasons(seasons);
+		form.setSeasons(getSeasons());
 
 		model.addAttribute("teamSeasonForm", form);
 		model.addAttribute("teamId", teamId);
 		model.addAttribute("teamSeasonId", teamSeasonId);
 		return "teamSeasons/editTeamSeason";
+	}
+
+	/*---------- Utilities ----------*/
+
+	private List<SeasonEntry> getSeasons() {
+		return (List<SeasonEntry>) seasonRepository.findAll(new Sort(
+				Direction.DESC, "startsOn"));
 	}
 }

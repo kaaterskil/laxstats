@@ -5,12 +5,11 @@ import java.util.Locale;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
-import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.format.Formatter;
 
 public class LocalDateTimeFormatter implements Formatter<LocalDateTime> {
-	private static String DEFAULT_DATETIME_STYLE = "MM/dd/yyyy hh:mm";
 	DateTimeFormatter formatter;
 
 	public LocalDateTimeFormatter() {
@@ -19,17 +18,17 @@ public class LocalDateTimeFormatter implements Formatter<LocalDateTime> {
 
 	public DateTimeFormatter getFormatter() {
 		if (formatter == null) {
-			formatter = DateTimeFormat.forPattern(DEFAULT_DATETIME_STYLE);
+			formatter = ISODateTimeFormat.dateTime();
 		}
 		return formatter;
 	}
 
 	@Override
-	public String print(LocalDateTime object, Locale locale) {
+	public String print(LocalDateTime localDateTime, Locale locale) {
 		String str = "";
-		if (object != null) {
-			final DateTime date = object.toDateTime();
-			str = date.toString(getFormatter());
+		if (localDateTime != null) {
+			final DateTime datetime = localDateTime.toDateTime();
+			str = datetime.toString(getFormatter());
 		}
 		return str;
 	}
@@ -37,15 +36,15 @@ public class LocalDateTimeFormatter implements Formatter<LocalDateTime> {
 	@Override
 	public LocalDateTime parse(String text, Locale locale)
 			throws ParseException {
-		LocalDateTime date = null;
+		LocalDateTime localDateTime = null;
 		if (text != null) {
 			try {
-				date = getFormatter().parseLocalDateTime(text);
+				localDateTime = getFormatter().parseLocalDateTime(text);
 			} catch (final Exception e) {
 				throw new ParseException(e.getMessage(), 0);
 			}
 		}
-		return date;
+		return localDateTime;
 	}
 
 }

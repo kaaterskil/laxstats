@@ -19,6 +19,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import laxstats.api.events.Alignment;
 import laxstats.api.events.Conditions;
 import laxstats.api.events.PlayUtils;
 import laxstats.api.events.Schedule;
@@ -134,6 +135,25 @@ public class GameEntry implements Serializable {
 			result.put(tse.getName(), list);
 		}
 		return result;
+	}
+
+	public TeamSeasonEntry getHomeTeam() {
+		if (teams.size() == 0) {
+			return null;
+		} else if (teams.size() == 2
+				&& teams.get(1).getAlignment().equals(Alignment.HOME)) {
+			return teams.get(1).getTeamSeason();
+		}
+		return teams.get(0).getTeamSeason();
+	}
+
+	public TeamSeasonEntry getVisitingTeam() {
+		if (teams.size() < 2) {
+			return null;
+		} else if (teams.get(0).getAlignment().equals(Alignment.AWAY)) {
+			return teams.get(0).getTeamSeason();
+		}
+		return teams.get(1).getTeamSeason();
 	}
 
 	/* ---------- Getter/Setters ---------- */

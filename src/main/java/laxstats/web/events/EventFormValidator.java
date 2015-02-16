@@ -26,14 +26,14 @@ public class EventFormValidator implements Validator {
 
 		if (form.getAlignment() == SiteAlignment.HOME) {
 			if (!form.isTeamOneHome() && !form.isTeamTwoHome()) {
-				errors.reject("event.homeTeamRequired");
+				errors.rejectValue("teamOneHome", "event.homeTeamRequired");
 			}
 		}
 		if (form.isTeamOneHome() && form.isTeamTwoHome()) {
-			errors.reject("event.invalidHomeTeam");
+			errors.rejectValue("teamTwoHome", "event.invalidHomeTeam");
 		}
-		if (isSameTeam(form.getTeamOneId(), form.getTeamTwoId())) {
-			errors.reject("event.sameTeam");
+		if (isSameTeam(form.getTeamOne(), form.getTeamTwo())) {
+			errors.rejectValue("teamTwo", "event.sameTeam");
 		}
 	}
 
