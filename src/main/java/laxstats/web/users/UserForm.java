@@ -8,13 +8,18 @@ import java.util.Map;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import laxstats.api.Region;
 import laxstats.api.users.UserRole;
+import laxstats.query.teams.TeamEntry;
+
+import org.hibernate.validator.constraints.Email;
 
 public class UserForm {
 
 	private String teamId;
 
 	@NotNull
+	@Email
 	private String email;
 
 	@Size(min = 6)
@@ -33,7 +38,7 @@ public class UserForm {
 	private UserRole role;
 
 	private List<UserRole> roles;
-	private Map<String, String> teams;
+	private Map<Region, List<TeamEntry>> teams;
 
 	/*---------- Methods ----------*/
 
@@ -105,18 +110,18 @@ public class UserForm {
 
 	/*---------- Select element options ----------*/
 
-	public Map<String, String> getTeams() {
-		return teams;
-	}
-
-	public void setTeams(Map<String, String> teams) {
-		this.teams = teams;
-	}
-
 	public List<UserRole> getRoles() {
 		if (roles == null) {
 			roles = Arrays.asList(UserRole.values());
 		}
 		return roles;
+	}
+
+	public Map<Region, List<TeamEntry>> getTeams() {
+		return teams;
+	}
+
+	public void setTeams(Map<Region, List<TeamEntry>> teams) {
+		this.teams = teams;
 	}
 }

@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import laxstats.api.Region;
 import laxstats.api.users.CreateUserCommand;
 import laxstats.api.users.UpdateUserCommand;
 import laxstats.api.users.UserDTO;
@@ -43,7 +44,7 @@ public class UserController extends ApplicationController {
 		this.teamRepository = teamRepository;
 	}
 
-	/*---------- Actions ----------*/
+	/*---------- Action methods ----------*/
 
 	@RequestMapping(value = "/admin/users", method = RequestMethod.GET)
 	public String index(Model model) {
@@ -53,8 +54,9 @@ public class UserController extends ApplicationController {
 
 	@RequestMapping(value = "/admin/users", method = RequestMethod.POST)
 	public String createUser(@Valid UserForm form, BindingResult result,
-			HttpServletRequest request) {
+			HttpServletRequest request, Model model) {
 		if (result.hasErrors()) {
+			form.setTeams(getTeams());
 			return "users/newUser";
 		}
 		final LocalDateTime now = LocalDateTime.now();
@@ -87,9 +89,10 @@ public class UserController extends ApplicationController {
 
 	@RequestMapping(value = "/admin/users/{userId}", method = RequestMethod.PUT)
 	public String updateUser(@PathVariable("userId") UserEntry user,
-			@Valid UserForm form, BindingResult result,
+			@Valid UserForm form, BindingResult result, Model model,
 			HttpServletRequest request) {
 		if (result.hasErrors()) {
+			form.setTeams(getTeams());
 			return "users/editUser";
 		}
 		final LocalDateTime now = LocalDateTime.now();
@@ -149,20 +152,25 @@ public class UserController extends ApplicationController {
 
 	/*---------- Utilities ----------*/
 
-	private Map<String, String> getTeams() {
-		final Iterable<TeamEntry> teams = teamRepository.findAll(teamSorter());
+	private Map<Region, List<TeamEntry>> getTeams() {
+		final Map<Region, List<TeamEntry>> result = new HashMap<>();
 
-		final Map<String, String> result = new HashMap<>();
-		for (final TeamEntry each : teams) {
-			result.put(each.getId(), each.getTitle());
+		final Iterable<TeamEntry> collection = teamRepository.findAll(new Sort(
+				new Sort.Order("region")));
+
+		Region currentRegion = null;
+		for (final TeamEntry each : collection) {
+			final Region targetRegion = each.getRegion();
+			List<TeamEntry> list = null;
+			if (currentRegion == null || !currentRegion.equals(targetRegion)) {
+				list = new ArrayList<>();
+				result.put(targetRegion, list);
+				currentRegion = targetRegion;
+			} else {
+				list = result.get(targetRegion);
+			}
+			list.add(each);
 		}
 		return result;
-	}
-
-	private Sort teamSorter() {
-		final List<Sort.Order> sort = new ArrayList<>();
-		sort.add(new Sort.Order("affiliation.name"));
-		sort.add(new Sort.Order("name"));
-		return new Sort(sort);
 	}
 }
