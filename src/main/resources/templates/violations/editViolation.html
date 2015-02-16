@@ -17,6 +17,10 @@
 					  th:object="${violationForm}" 
 					  role="form">
 					<div class="form-group required">
+						<input type="hidden"
+							   th:field="*{id}"
+							   aria-hidden="true" />
+					
 						<label for="name">Name</label>
 						<input type="text" 
 							   id="name" 

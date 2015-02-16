@@ -29,6 +29,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -38,10 +40,18 @@ public class UserController extends ApplicationController {
 	private final TeamQueryRepository teamRepository;
 
 	@Autowired
+	private UserFormValidator userValidator;
+
+	@Autowired
 	public UserController(UserQueryRepository userRepository,
 			TeamQueryRepository teamRepository, CommandBus commandBus) {
 		super(userRepository, commandBus);
 		this.teamRepository = teamRepository;
+	}
+
+	@InitBinder
+	protected void initBinder(WebDataBinder binder) {
+		binder.setValidator(userValidator);
 	}
 
 	/*---------- Action methods ----------*/
@@ -135,6 +145,7 @@ public class UserController extends ApplicationController {
 	public String editUser(@PathVariable("userId") UserEntry user, Model model) {
 		final UserForm form = new UserForm();
 
+		form.setId(user.getId());
 		form.setFirstName(user.getFirstName());
 		form.setLastName(user.getLastName());
 		form.setEmail(user.getEmail());

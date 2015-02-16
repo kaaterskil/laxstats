@@ -3,12 +3,12 @@ package laxstats.web.violations;
 import laxstats.query.violations.ViolationQueryRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
-@Component
+@Service
 public class ViolationFormValidator implements Validator {
 
 	@Autowired
@@ -27,9 +27,10 @@ public class ViolationFormValidator implements Validator {
 				"violation.category.required");
 
 		final ViolationForm form = (ViolationForm) target;
+		final String id = form.getId() == null ? "" : form.getId();
 
 		// Test for uniqueness
-		final int found = violationRepository.checkName(form.getName());
+		final int found = violationRepository.checkName(form.getName(), id);
 		if (found > 0) {
 			errors.rejectValue("name", "violation.name.duplicate");
 		}

@@ -10,6 +10,6 @@ public interface ViolationQueryRepository extends
 
 	Iterable<ViolationEntry> findAllByOrderByNameAsc();
 
-	@Query("select count(*) from ViolationEntry v where v.name = ?1")
-	int checkName(String name);
+	@Query("select count(*) from ViolationEntry v where v.name = ?1 and v.id != ?2")
+	int checkName(String name, String id);
 }

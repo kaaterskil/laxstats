@@ -11,6 +11,8 @@ import laxstats.api.violations.PenaltyLength;
 
 public class ViolationForm {
 
+	private String id;
+
 	@NotNull
 	@Size(min = 3, max = 50)
 	private String name;
@@ -25,6 +27,14 @@ public class ViolationForm {
 	private List<PenaltyCategory> categories;
 
 	/*---------- Getter/Setters ----------*/
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 
 	public String getName() {
 		return name;
