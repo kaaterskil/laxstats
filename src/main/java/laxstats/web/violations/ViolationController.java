@@ -20,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -29,17 +31,26 @@ public class ViolationController extends ApplicationController {
 	private final ViolationQueryRepository violationRepository;
 
 	@Autowired
+	private ViolationFormValidator violationValidator;
+
+	@Autowired
 	public ViolationController(ViolationQueryRepository violationRepository,
 			UserQueryRepository userRepository, CommandBus commandBus) {
 		super(userRepository, commandBus);
 		this.violationRepository = violationRepository;
 	}
 
+	@InitBinder
+	protected void initBinder(WebDataBinder binder) {
+		binder.setValidator(violationValidator);
+	}
+
 	/*---------- Action methods ----------*/
 
 	@RequestMapping(value = "/admin/violations", method = RequestMethod.GET)
 	public String index(Model model) {
-		model.addAttribute("violations", violationRepository.findAll());
+		model.addAttribute("violations",
+				violationRepository.findAllByOrderByNameAsc());
 		return "violations/index";
 	}
 

@@ -117,12 +117,17 @@ h4 {
 }
 
 .lax-btn-new {
-	margin: 3px 0;
+	margin-top: 7px;
 }
 
 .lax-btn-delete {
 	border: none !important;
 	padding: 0 !important;
+}
+
+.lax-btn-cancel {
+	border: 1px solid rgb(173, 124, 89) !important;
+	margin-left: 10px;
 }
 
 .checkbox {
