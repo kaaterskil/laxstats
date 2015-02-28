@@ -8,6 +8,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import laxstats.api.Common;
 import laxstats.query.users.UserEntry;
 
 import org.hibernate.annotations.Type;
@@ -49,7 +50,7 @@ public class SeasonEntry {
 	@ManyToOne
 	private UserEntry modifiedBy;
 
-	// ---------- Methods ----------//
+	/*---------- Methods ----------*/
 
 	public Interval getInterval() {
 		final DateTime start = getStartsOn().toDateTimeAtStartOfDay();
@@ -85,18 +86,14 @@ public class SeasonEntry {
 
 	public boolean overlaps(LocalDate otherStart, LocalDate otherEnd) {
 		final LocalDate thisStart = getStartsOn();
-		final LocalDate thisEnd = getEndsOn();
-		if (otherEnd == null) {
-			otherEnd = new LocalDate(Long.MAX_VALUE);
-		}
+		final LocalDate thisEnd = Common.nvl(endsOn, Common.EOT.toLocalDate());
+		otherEnd = Common.nvl(otherEnd, Common.EOT.toLocalDate());
 
-		if (otherStart != null) {
-			return thisStart.isBefore(otherEnd) && otherStart.isBefore(thisEnd);
-		}
-		return false;
+		return (thisStart.isEqual(otherEnd) || thisStart.isBefore(otherEnd))
+				&& (otherStart.isEqual(thisEnd) || otherStart.isBefore(thisEnd));
 	}
 
-	// ---------- Getter/Setters ----------//
+	/*---------- Getter/Setters ----------*/
 
 	public String getId() {
 		return id;

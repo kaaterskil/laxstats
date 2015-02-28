@@ -8,6 +8,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 public class SeasonForm {
 
+	private String id;
+
 	@NotNull
 	@Size(min = 3)
 	private String description;
@@ -18,6 +20,16 @@ public class SeasonForm {
 
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDate endsOn;
+
+	/*---------- Getter/Setters ----------*/
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 
 	public String getDescription() {
 		return description;

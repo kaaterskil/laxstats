@@ -11,10 +11,14 @@
 				<h1>Edit Season</h1>
 				<form action="#"
 					  name="edit-season-form" 
-					  th:action="@{'/admin/seasons/' + ${seasonId}}" 
+					  th:action="@{'/admin/seasons/' + ${seasonForm.id}}" 
 					  th:object="${seasonForm}"
 					  th:method="put" 
 					  role="form">
+					<input type="hidden" 
+						   id="id" 
+						   th:field="*{id}" 
+						   aria-hidden="true" />
 					<div class="form-group">
 						<label for="description">Description</label> 
 						<input type="text"
