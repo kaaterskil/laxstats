@@ -22,7 +22,36 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
+		
+		<!-- tag::logging[] -->
+	   <dependency>
+	      <groupId>org.slf4j</groupId>
+	      <artifactId>jcl-over-slf4j</artifactId>
+	      <scope>runtime</scope>
+	   </dependency>
+	   <dependency>
+	      <groupId>org.slf4j</groupId>
+	      <artifactId>slf4j-api</artifactId>
+	      <scope>runtime</scope>
+	   </dependency>
+	   <dependency>
+	      <groupId>org.slf4j</groupId>
+	      <artifactId>slf4j-log4j12</artifactId>
+	      <scope>runtime</scope>
+	   </dependency>
+	   <dependency>
+	      <groupId>log4j</groupId>
+	      <artifactId>log4j</artifactId>
+	      <scope>runtime</scope>
+   		</dependency>
+		<!-- end::logging[] -->
 
 		<!-- tag::axon[] -->
 		<dependency>
