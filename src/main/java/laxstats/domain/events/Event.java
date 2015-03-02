@@ -9,7 +9,6 @@ import java.util.Map;
 
 import laxstats.api.events.AttendeeDTO;
 import laxstats.api.events.AttendeeDeletedEvent;
-import laxstats.api.events.AttendeeNotRegisteredException;
 import laxstats.api.events.AttendeeRegisteredEvent;
 import laxstats.api.events.AttendeeUpdatedEvent;
 import laxstats.api.events.ClearDeletedEvent;
@@ -72,7 +71,7 @@ public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 	private List<TeamSeasonInfo> teams = new ArrayList<>();
 
 	@EventSourcedMember
-	private final Map<String, Attendee> attendees = new HashMap<>();
+	Map<String, Attendee> attendees = new HashMap<>();
 
 	@EventSourcedMember
 	private final Map<String, Play> plays = new HashMap<>();
@@ -137,31 +136,33 @@ public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 	/* ---------- Attendee methods ---------- */
 
 	public void registerAttendee(AttendeeDTO dto) {
-		final AttendeeValidator validator = new AttendeeValidator(this);
-		if (!validator.canRegisterAttendee(dto)) {
-			throw new IllegalArgumentException("invalid attendee");
-		}
 		apply(new AttendeeRegisteredEvent(id, dto));
 	}
 
-	public void updateAttendee(AttendeeDTO dto)
-			throws AttendeeNotRegisteredException {
-		final AttendeeValidator validator = new AttendeeValidator(this);
-		if (!validator.isAttendeeRegistered(dto.getId())) {
-			final String msg = dto.getName()
-					+ " is not registered for this event";
-			throw new AttendeeNotRegisteredException(msg);
-		}
+	public void updateAttendee(AttendeeDTO dto) {
 		apply(new AttendeeUpdatedEvent(id, dto));
 	}
 
-	public void deleteAttendee(String attendeeId)
-			throws AttendeeNotRegisteredException {
-		final AttendeeValidator validator = new AttendeeValidator(this);
-		if (!validator.isAttendeeRegistered(attendeeId)) {
-			throw new AttendeeNotRegisteredException();
-		}
+	public void deleteAttendee(String attendeeId) {
 		apply(new AttendeeDeletedEvent(id, attendeeId));
+	}
+
+	public boolean canRegisterAttendee(String playerId) {
+		for (final Attendee each : attendees.values()) {
+			if (each.getPlayerId().equals(playerId)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public boolean isRegisteredAttendee(String playerId) {
+		for (final Attendee each : attendees.values()) {
+			if (each.getPlayerId().equals(playerId)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/*---------- Clear methods ----------*/

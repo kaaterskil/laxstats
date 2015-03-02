@@ -119,8 +119,8 @@ public class SeasonFormValidator implements Validator {
 	}
 
 	/**
-	 * Validates that <code>endsOn</code>, when set, is less than or equal to
-	 * the value for <code>startsOn</code> on the same Season record.
+	 * Validates that <code>endsOn</code>, when set, is not less than or equal
+	 * to the value for <code>startsOn</code> on the same Season record.
 	 *
 	 * @param form
 	 * @param errors
@@ -209,8 +209,8 @@ public class SeasonFormValidator implements Validator {
 	 *
 	 * @param seasonId
 	 * @return boolean
-	 * @throws IllegalArgumentException if no record exists for the given
-	 *             primary key
+	 * @throws IllegalStateException if no record exists for the given primary
+	 *             key
 	 */
 	private boolean apiUpdating(String seasonId) {
 		boolean result = false;
@@ -221,7 +221,7 @@ public class SeasonFormValidator implements Validator {
 			final boolean found = seasonRepository.exists(seasonId);
 			if (!found) {
 				// The primary key is invalid
-				throw new IllegalArgumentException("Invalid primary key");
+				throw new IllegalStateException("Invalid primary key");
 			}
 			result = true;
 		}

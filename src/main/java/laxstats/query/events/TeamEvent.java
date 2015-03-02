@@ -66,10 +66,7 @@ public class TeamEvent {
 	@ManyToOne
 	private UserEntry modifiedBy;
 
-	// ----------Constructor ----------//
-
-	public TeamEvent() {
-	}
+	/*---------- Constructor ----------*/
 
 	public TeamEvent(String id, TeamSeasonEntry teamSeason, GameEntry event,
 			int eventIndex) {
@@ -78,10 +75,13 @@ public class TeamEvent {
 		this.event = event;
 
 		teamSeason.getEvents().put(event.getStartsAt(), this);
-		event.getTeams().set(eventIndex, this);
+		event.getTeams().add(eventIndex, this);
 	}
 
-	// ---------- Getter/Setters ----------//
+	protected TeamEvent() {
+	}
+
+	/*---------- Getter/Setters ----------*/
 
 	public String getId() {
 		return id;

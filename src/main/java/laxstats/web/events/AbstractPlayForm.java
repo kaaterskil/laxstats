@@ -7,12 +7,32 @@ import java.util.Map;
 import laxstats.query.events.AttendeeEntry;
 
 public abstract class AbstractPlayForm {
+	private String playId;
+	private String gameId;
 	private String teamSeasonId;
 	private int period;
 	private String comment;
 	private Map<String, String> teams = new HashMap<String, String>();
 	private Map<String, String> participants = new HashMap<String, String>();
 	private Map<String, List<AttendeeEntry>> attendees = new HashMap<>();
+
+	/*---------- Getter/Setters ----------*/
+
+	public String getPlayId() {
+		return playId;
+	}
+
+	public void setPlayId(String playId) {
+		this.playId = playId;
+	}
+
+	public String getGameId() {
+		return gameId;
+	}
+
+	public void setGameId(String gameId) {
+		this.gameId = gameId;
+	}
 
 	public String getTeamSeasonId() {
 		return teamSeasonId;
@@ -37,6 +57,8 @@ public abstract class AbstractPlayForm {
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
+
+	/*---------- Drop-down menu options ----------*/
 
 	public Map<String, String> getTeams() {
 		return teams;

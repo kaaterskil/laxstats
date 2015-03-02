@@ -12,6 +12,12 @@ public interface UserQueryRepository extends
 
 	UserEntry findById(String id);
 
-	@Query("select count(*) from UserEntry u where u.email = ?1 and u.id != ?2")
-	int checkEmail(String email, String id);
+	@Query("select count (*) from UserEntry ue "
+			+ "where upper(ue.email) = upper(?1)")
+	int uniqueEmail(String email);
+
+	@Query("select count(*) from UserEntry ue "
+			+ "where ?1 is not null and upper(ue.email) = upper(?1) "
+			+ "and ue.id <> ?2")
+	int updateEmail(String email, String id);
 }

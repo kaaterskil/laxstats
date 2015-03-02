@@ -9,207 +9,246 @@
 		<div class="row">
 			<div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-1">
 				<h1>New Event</h1>
-			
-				<form action="#"
-					  method="post"
-					  id="new-event-form"
-					  name="new-event-form"
-					  th:action="@{'/admin/events'}"
-					  th:object="${eventForm}"
-					  role="form">
+
+				<form action="#" method="post" id="new-event-form"
+					name="new-event-form" th:action="@{'/admin/events'}"
+					th:object="${eventForm}" role="form">
 					<div class="row">
 						<div class="col-sm-6 form-group required">
 							<label for="starts-at">Date and Time</label>
-							<input type="datetime-local"
-								   id="starts-at"
+							<input type="datetime-local" 
+								   id="starts-at" 
 								   class="form-control"
-								   required="required"
-								   th:field="*{startsAt}"
+								   required="required" 
+								   th:field="*{startsAt}" 
 								   aria-required="true"
 								   aria-describedby="starts-at-error" />
 							<div th:if="${#fields.hasErrors('startsAt')}"
-								 id="starts-at-error"
-								 class="lax-error"
+								 id="starts-at-error" 
+								 class="lax-error" 
 								 th:errors="*{startsAt}">Invalid start date</div>
 						</div>
 						<div class="col-sm-6 form-group required">
 							<label for="status">Status</label>
 							<select id="status"
-									class="form-control"
-									required="required"
+									class="form-control" 
+									required="required" 
 									th:field="*{status}"
-									aria-required="true"
+									aria-required="true" 
 									aria-describedby="status-error">
 								<option value="">Select...</option>
-								<option th:each="opt : *{statuses}"
+								<option th:each="opt : *{statuses}" 
 										th:value="${opt}"
 										th:text="${opt.label}">Statuses</option>
 							</select>
-							<div th:if="${#fields.hasErrors('status')}"
+							<div th:if="${#fields.hasErrors('status')}" 
 								 id="status-error"
-								 class="lax-error"
+								 class="lax-error" 
 								 th:errors="*{status}">Invalid status</div>
 						</div>
 					</div>
-					
+
 					<div class="row">
 						<div class="col-sm-6 form-group required">
 							<label for="site">Site</label>
 							<select id="site"
-									class="form-control"
-									required="required"
+									class="form-control" 
+									required="required" 
 									th:field="*{site}"
-									aria-required="true"
+									aria-required="true" 
 									aria-describedby="site-error">
 								<optgroup th:each="group : *{sites.entrySet()}"
 										  th:label="${group.getKey().label}">
 									<option th:each="opt : ${group.getValue()}"
-											th:value="${opt.id}"
+											th:value="${opt.id}" 
 											th:text="${opt.name}">Sites</option>
 								</optgroup>
 							</select>
-							<div th:if="${#fields.hasErrors('site')}"
-								 id="site-error"
-								 class="lax-error"
+							<div th:if="${#fields.hasErrors('site')}" id="site-error"
+								 class="lax-error" 
 								 th:errors="*{site}">Invalid site</div>
 						</div>
 						<div class="col-sm-6 form-group">
-							<label for="alignment">Site Alignment</label>
-							<select id="alignment"
-									class="form-control"
+							<label for="alignment">Site Alignment</label> 
+							<select id="alignment" 
+									class="form-control" 
 									th:field="*{alignment}"
 									aria-describedby="alignment-error">
 								<option value="">Select...</option>
-								<option th:each="opt : *{siteAlignments}"
+								<option th:each="opt : *{siteAlignments}" 
 										th:value="${opt}"
 										th:text="${opt.label}">Alignments</option>
 							</select>
 							<div th:if="${#fields.hasErrors('alignment')}"
-								 id="alignment-error"
-								 class="lax-error"
-								 th:errors="*{alignment}">Invalid alignment</div>
+								 id="alignment-error" 
+								 class="lax-error" 
+								 th:errors="*{alignment}">Invalid
+								alignment</div>
 						</div>
 					</div>
-					
+
 					<div class="row">
 						<div class="col-sm-6 form-group">
-							<label for="team-one">Team One</label>
+							<label for="team-one">Team One</label> 
 							<select id="team-one"
-									class="form-control"
-									required="required"
+									class="form-control" 
+									required="required" 
 									th:field="*{teamOne}"
-									aria-required="true"
+									aria-required="true" 
 									aria-describedby="team-one-error">
 								<optgroup th:each="group : *{teams.entrySet()}"
 										  th:label="${group.getKey().label}">
 									<option th:each="opt : ${group.getValue()}"
-											th:value="${opt.id}"
+											th:value="${opt.id}" 
 											th:text="${opt.getTitle()}">Teams</option>
 								</optgroup>
 							</select>
-							<div th:if="${#fields.hasErrors('teamOne')}"
+							<div th:if="${#fields.hasErrors('teamOne')}" 
 								 id="team-one-error"
-								 class="lax-error"
+								 class="lax-error" 
 								 th:errors="*{teamOne}">Invalid team</div>
 						</div>
 						<div class="col-sm-6 form-group checkbox">
-							<label for="team-one-home">
-								<input type="checkbox"
-									   id="team-one-form"
-									   th:field="*{teamOneHome}"
-									   aria-describedby="team-one-home-error"/>
-								<span>Home team?</span>	  
+							<label for="team-one-home"> 
+							<input type="checkbox"
+								   id="team-one-form" 
+								   th:field="*{teamOneHome}"
+								   aria-describedby="team-one-home-error" />
+								<span>Home team?</span>
 							</label>
 							<div th:if="${#fields.hasErrors('teamOneHome')}"
-								 id="team-one-home-error"
+								 id="team-one-home-error" 
 								 class="lax-error"
 								 th:errors="*{teamOneHome}">Invalid team</div>
 						</div>
-					</div> 
-					
+					</div>
+
 					<div class="row">
 						<div class="col-sm-6 form-group">
-							<label for="team-two">Team Two</label>
+							<label for="team-two">Team Two</label> 
 							<select id="team-two"
-									class="form-control"
-									required="required"
+									class="form-control" 
+									required="required" 
 									th:field="*{teamTwo}"
-									aria-required="true"
+									aria-required="true" 
 									aria-describedby="team-two-error">
 								<optgroup th:each="group : *{teams.entrySet()}"
 										  th:label="${group.getKey().label}">
 									<option th:each="opt : ${group.getValue()}"
-											th:value="${opt.id}"
+											th:value="${opt.id}" 
 											th:text="${opt.getTitle()}">Teams</option>
 								</optgroup>
 							</select>
-							<div th:if="${#fields.hasErrors('teamTwo')}"
+							<div th:if="${#fields.hasErrors('teamTwo')}" 
 								 id="team-two-error"
-								 class="lax-error"
+								 class="lax-error" 
 								 th:errors="*{teamTwo}">Invalid team</div>
 						</div>
 						<div class="col-sm-6 form-group checkbox">
-							<label for="team-two-home">
-								<input type="checkbox"
-									   id="team-ontwo-form"
-									   th:field="*{teamTwoHome}"
-									   aria-describedby="team-two-home-error"/>
-								<span>Home team?</span>	  
+							<label for="team-two-home"> 
+							<input type="checkbox"
+								   id="team-ontwo-form" 
+								   th:field="*{teamTwoHome}"
+								   aria-describedby="team-two-home-error" /> 
+								<span>Home team?</span>
 							</label>
 							<div th:if="${#fields.hasErrors('teamTwoHome')}"
-								 id="team-two-home-error"
+								 id="team-two-home-error" 
 								 class="lax-error"
 								 th:errors="*{teamTwoHome}">Invalid team</div>
 						</div>
 					</div>
-					
+
 					<div class="row">
 						<div class="col-sm-6 form-group required">
-							<label for="schedule">Schedule</label>
+							<label for="schedule">Schedule</label> 
 							<select id="schedule"
-									class="form-control"
-									required="required"
+									class="form-control" 
+									required="required" 
 									th:field="*{schedule}"
-									aria-required="true"
+									aria-required="true" 
 									aria-describedby="schedule-error">
 								<option value="">Select...</option>
-								<option th:each="opt : *{schedules}"
+								<option th:each="opt : *{schedules}" 
 										th:value="${opt}"
 										th:text="${opt.label}">Schedules</option>
 							</select>
-							<div th:if="${#fields.hasErrors('schedule')}"
+							<div th:if="${#fields.hasErrors('schedule')}" 
 								 id="schedule-error"
-								 class="lax-error"
+								 class="lax-error" 
 								 th:errors="*{schedule}">Invalid schedule</div>
 						</div>
 						<div class="col-sm-6 form-group">
-							<label for="weather">Weather</label>
+							<label for="weather">Weather</label> 
 							<select id="weather"
-									class="form-control"
+									class="form-control" 
 									th:field="*{weather}"
 									aria-describedby="weather-error">
 								<option value="">Select...</option>
-								<option th:each="opt : *{conditions}"
+								<option th:each="opt : *{conditions}" 
 										th:value="${opt}"
 										th:text="${opt.label}">Conditions</option>
 							</select>
-							<div th:if="${#fields.hasErrors('weather')}"
+							<div th:if="${#fields.hasErrors('weather')}" 
 								 id="weather-error"
-								 class="lax-error"
+								 class="lax-error" 
 								 th:errors="*{weather}">Invalid conditions</div>
 						</div>
-					</div> 
-					
+					</div>
+
 					<div class="form-group">
 						<label for="description">Comments</label>
 						<textarea type="text" 
 								  id="description" 
-								  class="form-control" 
+								  class="form-control"
 								  rows="3" 
 								  th:field="*{description}"></textarea>
 					</div>
-					<button th:type="submit" class="btn btn-default">Save</button>
+					<button th:type="submit" class="btn btn-default btn-sm">Save</button>
 				</form>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-1">
+				<h2>Questions?</h2>
+				<p>
+					<strong>Q: What if I don't see the playing field on the
+						list?</strong>
+				</p>
+				<p>
+					A: You can add a new one <a href="#"
+						th:href="@{'/admin/sites/new'}">here</a>.
+				</p>
+
+				<p>
+					<strong>Q: What if I don't see either me or my opponen'ts
+						team in the drop down list?</strong>
+				</p>
+				<p>
+					A: If you or your opponent aren't listed in the drop down lists, or
+					an error message says there is no current roster, it means you
+					gotta create them first. Click <a href="#"
+						th:href="@{'/admin/teams'}">here</a> to create a team or build a
+					roster, then come back to this page to continue.
+				</p>
+
+				<p>
+					<strong>Q: What if I'm setting up a future game and the
+						date or playing time change?</strong>
+				</p>
+				<p>A: No problem. Even though you need to specify a date and
+					time in order to create an event, you can change this information
+					at any time.</p>
+
+				<p>
+					<strong>Q: Wow, this form looks scary. Do I need to track
+						all this information?</strong>
+				</p>
+				<p>
+					A: No! Different teams track different statistics. THe minimum
+					required information is shown with a <span class="red">red</span>
+					asterisk. Everything else is optional.
+				</p>
 			</div>
 		</div>
 	</div>

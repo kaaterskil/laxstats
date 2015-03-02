@@ -6,7 +6,7 @@
 <body>
 	<div layout:fragment="content">
 		<div class="row">
-			<div class="col-sm-5 col-sm-offset-2">
+			<div class="col-sm-7 col-sm-offset-1">
 				<h1>Events</h1>
 			</div>
 			<div class="col-sm-3">
@@ -16,7 +16,7 @@
 		</div>
 		
 		<div class="row">
-			<div class="col-sm-8 col-sm-offset-2">
+			<div class="col-sm-10 col-sm-offset-1">
 				<div class="teable-responsive">
 					<table class="table table-striped">
 						<thead>
@@ -39,22 +39,28 @@
 								<td>
 									<form th:action="@{'/admin/events/' + ${item.id}}"
 										  th:method="delete"
-										  th:object="${item}">
+										  th:object="${item}"
+										  class="lax-icon"
+										  title="Delete"
+										  role="form">
 										<button type="submit"
 												class="btn btn-link lax-btn-delete">
 											<span class="glyphicon glyphicon-remove red"></span>
 										</button>
 									</form>
-									<a href="#" th:href="@{'/admin/events/' + ${item.id} + '/edit'}">
-										<span class="glyphicon glyphicon-edit green"></span>
+									<a class="lax-icon" 
+									   title="Edit" 
+									   href="#" 
+									   th:href="@{'/admin/events/' + ${item.id} + '/edit'}">
+										<span class="glyphicon glyphicon-pencil green"></span>
 									</a>
 								</td>
-								<td th:text="${#dates.format(${item.startsAt}, 'MM/dd/yyyy')}">Date</td>
-								<td th:text="${#dates.format(${item.startsAt}, 'hh:mm aa')}">Time</td>
-								<td th:text="${item.getHomeTeam()}? ${item.getHomeTeam().getShortName() : 'TBD}">Home Team</td>
-								<td th:text="${item.getVisitingTeam()}? ${item.getVisitingTeam().getShortName() : 'TBD}">Visitor</td>
+								<td th:text="${{item.startsAt.toLocalDate()}}">Date</td>
+								<td th:text="${{item.startsAt.toLocalTime()}}">Time</td>
+								<td th:text="${item.getHomeTeam()}? ${item.getHomeTeam().getShortName()}">Home Team</td>
+								<td th:text="${item.getVisitingTeam()}? ${item.getVisitingTeam().getShortName()}">Visitor</td>
 								<td th:text="${item.site} ? ${item.site.name}">Site</td>
-								<td th:text="${{item.lastModified}}">Last Modified</td>
+								<td th:text="${{item.modifiedAt}}">Last Modified</td>
 							</tr>
 						</tbody>
 					</table>

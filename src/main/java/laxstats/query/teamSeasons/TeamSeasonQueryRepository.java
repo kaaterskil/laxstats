@@ -15,6 +15,11 @@ public interface TeamSeasonQueryRepository extends
 
 	List<TeamSeasonEntry> findBySeasonId(String seasonId, Sort sort);
 
-	@Query(value = "select count(*) from team_seasons ts where (ts.team_id = ?1 and ts.season_id = ?2 and ts.id != ?3)", nativeQuery = true)
-	int checkDuplicate(String teamId, String seasonId, String teamSeasonId);
+	@Query("select count(*) from TeamSeasonEntry tse "
+			+ "where tse.team.id = ?1 and tse.season.id = ?2")
+	int uniqueTeamSeason(String teamId, String seasonId);
+
+	@Query("select count(*) from TeamSeasonEntry tse "
+			+ "where tse.team.id = ?1 and tse.season.id = ?2 and tse.id <> ?3")
+	int updateSeason(String teamId, String seasonId, String teamSeasonId);
 }

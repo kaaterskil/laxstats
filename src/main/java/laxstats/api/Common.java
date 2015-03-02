@@ -14,6 +14,20 @@ public class Common {
 		return targetDate;
 	}
 
+	public static final String nvl(String target, String defaultValue) {
+		if (target == null) {
+			return defaultValue;
+		}
+		return target;
+	}
+
+	public static final Enum<?> nvl(Enum<?> target, Enum<?> defaultValue) {
+		if (target == null) {
+			return defaultValue;
+		}
+		return target;
+	}
+
 	private Common() {
 	}
 }

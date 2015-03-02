@@ -304,6 +304,8 @@ public class PersonController extends ApplicationController {
 	public String newContact(@PathVariable("personId") PersonEntry person,
 			Model model) {
 		final ContactForm form = new ContactForm();
+		form.setPersonId(person.getId());
+
 		model.addAttribute("person", person);
 		model.addAttribute("contactForm", form);
 		return "people/newContact";
@@ -315,6 +317,8 @@ public class PersonController extends ApplicationController {
 		final ContactEntry contact = person.getContact(contactId);
 
 		final ContactForm form = new ContactForm();
+		form.setId(contactId);
+		form.setPersonId(person.getId());
 		form.setMethod(contact.getMethod());
 		form.setValue(contact.getValue());
 		form.setDoNotUse(contact.isDoNotUse());

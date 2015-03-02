@@ -16,6 +16,9 @@
 					  th:method="put"
 					  th:object="${personForm}"
 					  role="form">
+					<input type="hidden" 
+						   id="id" 
+						   th:field="*{id}" />
 					<div class="row">
 						<div class="col-sm-6">
 							<div class="row">

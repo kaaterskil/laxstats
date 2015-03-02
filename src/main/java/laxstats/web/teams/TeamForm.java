@@ -13,10 +13,14 @@ import laxstats.query.leagues.LeagueEntry;
 import laxstats.query.sites.SiteEntry;
 
 public class TeamForm {
+
+	String id;
+
 	@NotNull
 	@Size(min = 5, max = 100)
 	private String sponsor;
 
+	@NotNull
 	@Size(min = 3, max = 100)
 	private String name;
 
@@ -40,6 +44,16 @@ public class TeamForm {
 	private List<SiteEntry> sites;
 	private List<Region> regions;
 	private List<LeagueEntry> affiliations;
+
+	/*---------- Getter/Setters ----------*/
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 
 	public String getSponsor() {
 		return sponsor;

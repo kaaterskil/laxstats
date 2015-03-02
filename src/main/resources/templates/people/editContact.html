@@ -22,6 +22,12 @@
 					  th:object="${contactForm}" 
 					  th:method="put" 
 					  role="form">
+					<input type="hidden" 
+						   id="id" 
+						   th:field="*{id}" />
+					<input type="hidden" 
+						   id="personId" 
+						   th:field="*{personId}" />
 					<div class="row">
 						<div class="col-sm-6 form-group required">
 							<label for="contact-method">Method</label>

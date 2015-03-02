@@ -9,7 +9,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 public interface SeasonQueryRepository extends
 		PagingAndSortingRepository<SeasonEntry, String> {
 
-	@Query("select count(*) from SeasonEntry se " + "where ?1 is not null "
+	@Query("select count(*) from SeasonEntry se where ?1 is not null "
 			+ "and upper(se.description) = upper(?1)")
 	int uniqueDescription(String description);
 

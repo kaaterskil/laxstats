@@ -1,5 +1,7 @@
 package laxstats.domain.events;
 
+import laxstats.api.events.AttendeeDTO;
+import laxstats.api.events.AttendeeNotRegisteredException;
 import laxstats.api.events.CreateEventCommand;
 import laxstats.api.events.DeleteAttendeeCommand;
 import laxstats.api.events.DeleteClearCommand;
@@ -18,6 +20,7 @@ import laxstats.api.events.RecordGroundBallCommand;
 import laxstats.api.events.RecordPenaltyCommand;
 import laxstats.api.events.RecordShotCommand;
 import laxstats.api.events.RegisterAttendeeCommand;
+import laxstats.api.events.UnavailablePlayerException;
 import laxstats.api.events.UpdateAttendeeCommand;
 import laxstats.api.events.UpdateClearCommand;
 import laxstats.api.events.UpdateEventCommand;
@@ -26,6 +29,8 @@ import laxstats.api.events.UpdateGoalCommand;
 import laxstats.api.events.UpdateGroundBallCommand;
 import laxstats.api.events.UpdatePenaltyCommand;
 import laxstats.api.events.UpdateShotCommand;
+import laxstats.api.players.PlayerStatus;
+import laxstats.api.players.Role;
 import laxstats.api.teamSeasons.TeamSeasonId;
 import laxstats.domain.teamSeasons.TeamSeason;
 
@@ -44,6 +49,13 @@ public class EventCommandHandler {
 	@Qualifier("eventRepository")
 	public void setRepository(Repository<Event> repository) {
 		this.repository = repository;
+	}
+
+	@Autowired
+	@Qualifier("teamSeasonRepository")
+	public void setTeamSeasonRepository(
+			Repository<TeamSeason> teamSeasonRepository) {
+		this.teamSeasonRepository = teamSeasonRepository;
 	}
 
 	@CommandHandler
@@ -118,22 +130,69 @@ public class EventCommandHandler {
 	@CommandHandler
 	public void handle(RegisterAttendeeCommand command) {
 		final EventId identifier = command.getEventId();
-		final Event event = repository.load(identifier);
-		event.registerAttendee(command.getAttendeeDTO());
+		final Event aggregate = repository.load(identifier);
+		final AttendeeDTO dto = command.getAttendeeDTO();
+
+		// Test if attendee is a player and if player is not inactive or
+		// injured.
+		if (dto.getPlayer() != null && dto.getRole().equals(Role.ATHLETE)) {
+			final PlayerStatus status = dto.getPlayer().getStatus();
+			if (!status.equals(PlayerStatus.ACTIVE)
+					&& !status.equals(PlayerStatus.TRYOUT)) {
+				throw new UnavailablePlayerException();
+			}
+		}
+
+		// Test if attendee is already registered
+		final String playerId = dto.getPlayer().getId();
+		final boolean isRegistered = aggregate.isRegisteredAttendee(playerId);
+		if (isRegistered) {
+			throw new IllegalArgumentException("attendee.isRegistered");
+		}
+
+		aggregate.registerAttendee(dto);
 	}
 
 	@CommandHandler
 	public void handle(UpdateAttendeeCommand command) {
 		final EventId identifier = command.getEventId();
-		final Event event = repository.load(identifier);
-		event.updateAttendee(command.getAttendeeDTO());
+		final Event aggregate = repository.load(identifier);
+		final AttendeeDTO dto = command.getAttendeeDTO();
+
+		// Test if attendee is registered
+		final String playerId = dto.getPlayer().getId();
+		final boolean isRegistered = aggregate.isRegisteredAttendee(playerId);
+		if (!isRegistered) {
+			final String msg = dto.getName()
+					+ " is not registered for this event";
+			throw new AttendeeNotRegisteredException(msg);
+		}
+
+		aggregate.updateAttendee(command.getAttendeeDTO());
 	}
 
 	@CommandHandler
 	public void handle(DeleteAttendeeCommand command) {
 		final EventId identifier = command.getEventId();
-		final Event event = repository.load(identifier);
-		event.deleteAttendee(command.getAttendeeId());
+		final Event aggregate = repository.load(identifier);
+		final String attendeeId = command.getAttendeeId();
+
+		boolean registered = false;
+		String attendeeName = null;
+		for (final Attendee each : aggregate.getAttendees().values()) {
+			if (each.getId().equals(attendeeId)) {
+				registered = true;
+				attendeeName = each.getName();
+				break;
+			}
+		}
+		if (!registered) {
+			final String msg = attendeeName
+					+ " is not registered for this event";
+			throw new AttendeeNotRegisteredException(msg);
+		}
+
+		aggregate.deleteAttendee(command.getAttendeeId());
 	}
 
 	/* --------- Clear commands ---------- */

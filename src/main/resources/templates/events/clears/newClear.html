@@ -14,7 +14,10 @@
 					  th:action="@{'/admin/events/' + ${event.id} + '/clears'}" 
 					  th:object="${clearForm}" 
 					  method="post" 
-					  role="form">
+					  role="form" >
+					<input type="hidden" 
+						   id="game-id" 
+						   th:field="*{gameId}" />
 					<div class="form-group">
 						<label for="period">Period</label>
 						<input th:type="text"

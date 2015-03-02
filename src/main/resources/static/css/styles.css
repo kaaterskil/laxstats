@@ -95,7 +95,7 @@ h4 {
 	display: inline;
 }
 
-.lax-error, ls-logout {
+.lax-error, .ls-logout, .lax-flash-message {
 	color: rgb(255, 51, 0);
 	padding: 5px 0;
 }

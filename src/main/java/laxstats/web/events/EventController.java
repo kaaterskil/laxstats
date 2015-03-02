@@ -58,6 +58,12 @@ public class EventController extends ApplicationController {
 	private final TeamQueryRepository teamRepository;
 
 	@Autowired
+	private EventFormValidator eventFormValidator;
+
+	@Autowired
+	private AttendeeFormValidator attendeeFormValidator;
+
+	@Autowired
 	protected EventController(GameQueryRepository eventRepository,
 			SiteQueryRepository siteRepository,
 			TeamQueryRepository teamRepository,
@@ -68,10 +74,14 @@ public class EventController extends ApplicationController {
 		this.teamRepository = teamRepository;
 	}
 
-	@InitBinder
-	protected void initBinder(WebDataBinder binder) {
-		binder.setValidator(new EventFormValidator());
-		// binder.setValidator(new AttendeeFormValidator());
+	@InitBinder(value = "eventForm")
+	protected void initGameBinder(WebDataBinder binder) {
+		binder.setValidator(eventFormValidator);
+	}
+
+	@InitBinder(value = "attendeeForm")
+	protected void initAttendeeBinder(WebDataBinder binder) {
+		binder.setValidator(attendeeFormValidator);
 	}
 
 	/*---------- Action methods ----------*/

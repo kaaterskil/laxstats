@@ -54,6 +54,8 @@ public class PersonForm {
 
 	/*---------- Properties ----------*/
 
+	private String id;
+
 	@Size(max = 10)
 	private String prefix;
 
@@ -94,6 +96,14 @@ public class PersonForm {
 	List<DominantHand> dominantHands;
 
 	/*---------- Getter/Setters ----------*/
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 
 	public String getPrefix() {
 		return prefix;

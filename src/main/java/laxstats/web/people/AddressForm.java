@@ -4,12 +4,16 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import laxstats.api.Region;
 import laxstats.api.people.AddressType;
 
 public class AddressForm {
+
+	private String id;
+	private String personId;
 
 	@NotNull
 	private AddressType type;
@@ -27,6 +31,7 @@ public class AddressForm {
 	private Region region;
 
 	@Size(max = 10)
+	@Pattern(regexp = "^[0-9]{5}([\\s\\-][0-9]{4})?$")
 	private String postalCode;
 
 	private boolean primary;
@@ -35,6 +40,22 @@ public class AddressForm {
 	private List<Region> regions;
 
 	/*---------- Getter/Setters ----------*/
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getPersonId() {
+		return personId;
+	}
+
+	public void setPersonId(String personId) {
+		this.personId = personId;
+	}
 
 	public AddressType getType() {
 		return type;

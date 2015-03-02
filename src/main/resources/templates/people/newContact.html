@@ -22,6 +22,9 @@
 					  th:action="@{'/admin/people/' + ${person.id} + '/contacts'}" 
 					  th:object="${contactForm}" 
 					  role="form">
+					<input type="hidden" 
+						   id="personId" 
+						   th:field="*{personId}" />
 					<div class="row">
 						<div class="col-sm-6 form-group required">
 							<label for="contact-method">Method</label>

@@ -12,9 +12,12 @@ import laxstats.api.sites.Surface;
 
 public class SiteForm {
 
+	private String id;
+
 	@NotNull
 	@Size(min = 5, max = 100)
 	private String name;
+
 	private SiteStyle style;
 	private Surface surface;
 	private String directions;
@@ -57,6 +60,14 @@ public class SiteForm {
 	}
 
 	/*---------- Getter/Setters ----------*/
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 
 	public String getName() {
 		return name;
