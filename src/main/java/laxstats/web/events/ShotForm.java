@@ -3,7 +3,9 @@ package laxstats.web.events;
 import java.util.ArrayList;
 import java.util.List;
 
+import laxstats.api.events.PlayKey;
 import laxstats.api.events.PlayResult;
+import laxstats.api.events.PlayType;
 import laxstats.api.events.ScoreAttemptType;
 
 public class ShotForm extends AbstractPlayForm {
@@ -11,6 +13,12 @@ public class ShotForm extends AbstractPlayForm {
 	private ScoreAttemptType attemptType;
 	private PlayResult result;
 	private List<PlayResult> results = new ArrayList<>();
+
+	public ShotForm() {
+		super(PlayType.SHOT, PlayKey.PLAY);
+	}
+
+	/*---------- Getter/Setters ----------*/
 
 	public String getPlayerId() {
 		return playerId;

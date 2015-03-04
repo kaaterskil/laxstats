@@ -11,12 +11,12 @@ import laxstats.api.events.ScoreAttemptType;
 import laxstats.api.events.ShotUpdatedEvent;
 
 import org.axonframework.eventhandling.annotation.EventHandler;
-import org.joda.time.LocalTime;
+import org.joda.time.Period;
 
 public class Shot extends Play {
 
 	public Shot(String id, String eventId, String teamId, int period,
-			LocalTime elapsedTime, ScoreAttemptType scoreAttemptType,
+			Period elapsedTime, ScoreAttemptType scoreAttemptType,
 			PlayResult result, String comment,
 			List<PlayParticipantDTO> participants) {
 		super(id, PlayType.SHOT, PlayKey.PLAY, eventId, teamId, period,

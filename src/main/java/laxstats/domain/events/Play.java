@@ -11,7 +11,7 @@ import laxstats.api.events.ScoreAttemptType;
 
 import org.axonframework.eventsourcing.annotation.AbstractAnnotatedEntity;
 import org.axonframework.eventsourcing.annotation.EventSourcedMember;
-import org.joda.time.LocalTime;
+import org.joda.time.Period;
 
 public abstract class Play extends AbstractAnnotatedEntity {
 	protected String id;
@@ -20,7 +20,7 @@ public abstract class Play extends AbstractAnnotatedEntity {
 	protected String eventId;
 	protected String teamId;
 	protected int period;
-	protected LocalTime elapsedTime;
+	protected Period elapsedTime;
 	protected ScoreAttemptType scoreAttemptType;
 	protected PlayResult result;
 	protected String comment;
@@ -29,7 +29,7 @@ public abstract class Play extends AbstractAnnotatedEntity {
 	protected final List<PlayParticipant> participants = new ArrayList<>();
 
 	protected Play(String id, String discriminator, PlayKey playKey,
-			String eventId, String teamId, int period, LocalTime elapsedTime,
+			String eventId, String teamId, int period, Period elapsedTime,
 			ScoreAttemptType scoreAttemptType, PlayResult result,
 			String comment, List<PlayParticipantDTO> participants) {
 		this.id = id;
@@ -60,7 +60,7 @@ public abstract class Play extends AbstractAnnotatedEntity {
 
 	/*---------- Methods ----------*/
 
-	public LocalTime getTotalElapsedTime() {
+	public Period getTotalElapsedTime() {
 		return PlayUtils.getTotalElapsedTime(period, elapsedTime);
 	}
 
@@ -99,7 +99,7 @@ public abstract class Play extends AbstractAnnotatedEntity {
 		return period;
 	}
 
-	public LocalTime getElapsedTime() {
+	public Period getElapsedTime() {
 		return elapsedTime;
 	}
 

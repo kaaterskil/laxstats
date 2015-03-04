@@ -10,7 +10,7 @@ import laxstats.query.violations.ViolationEntry;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
-import org.joda.time.LocalTime;
+import org.joda.time.Period;
 
 public class PlayDTO {
 	private final String identifier;
@@ -19,11 +19,11 @@ public class PlayDTO {
 	private final GameEntry event;
 	private final TeamSeasonEntry team;
 	private final int period;
-	private final LocalTime elapsedTime;
+	private final Period elapsedTime;
 	private final ScoreAttemptType attemptType;
 	private final PlayResult result;
 	private final ViolationEntry violation;
-	private final int penaltyDuration;
+	private final Period penaltyDuration;
 	private final String comment;
 	private final LocalDateTime createdAt;
 	private final UserEntry createdBy;
@@ -41,8 +41,8 @@ public class PlayDTO {
 
 	public PlayDTO(String identifier, String discriminator, PlayKey playKey,
 			GameEntry event, TeamSeasonEntry team, int period,
-			LocalTime elapsedTime, ScoreAttemptType attemptType,
-			PlayResult result, ViolationEntry violation, int duration,
+			Period elapsedTime, ScoreAttemptType attemptType,
+			PlayResult result, ViolationEntry violation, Period duration,
 			String comment, LocalDateTime createdAt, UserEntry createdBy,
 			LocalDateTime modifiedAt, UserEntry modifiedBy,
 			List<PlayParticipantDTO> participants) {
@@ -67,8 +67,8 @@ public class PlayDTO {
 
 	public PlayDTO(String identifier, String discriminator, PlayKey playKey,
 			GameEntry event, TeamSeasonEntry team, int period,
-			LocalTime elapsedTime, ScoreAttemptType attemptType,
-			PlayResult result, ViolationEntry violation, int duration,
+			Period elapsedTime, ScoreAttemptType attemptType,
+			PlayResult result, ViolationEntry violation, Period duration,
 			String comment, LocalDateTime modifiedAt, UserEntry modifiedBy,
 			List<PlayParticipantDTO> participants) {
 		this(identifier, discriminator, playKey, event, team, period,
@@ -78,7 +78,7 @@ public class PlayDTO {
 
 	/*---------- Methods ----------*/
 
-	public LocalTime getTotalElapsedTime() {
+	public Period getTotalElapsedTime() {
 		return PlayUtils.getTotalElapsedTime(period, elapsedTime);
 	}
 
@@ -112,7 +112,7 @@ public class PlayDTO {
 		return period;
 	}
 
-	public LocalTime getElapsedTime() {
+	public Period getElapsedTime() {
 		return elapsedTime;
 	}
 
@@ -128,7 +128,7 @@ public class PlayDTO {
 		return violation;
 	}
 
-	public int getPenaltyDuration() {
+	public Period getPenaltyDuration() {
 		return penaltyDuration;
 	}
 

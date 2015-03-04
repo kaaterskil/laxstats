@@ -2,6 +2,7 @@ package laxstats.api;
 
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
+import org.joda.time.Period;
 
 public class Common {
 	public static final LocalDateTime EOT = new LocalDateTime(Long.MAX_VALUE);
@@ -22,6 +23,13 @@ public class Common {
 	}
 
 	public static final Enum<?> nvl(Enum<?> target, Enum<?> defaultValue) {
+		if (target == null) {
+			return defaultValue;
+		}
+		return target;
+	}
+
+	public static final Period nvl(Period target, Period defaultValue) {
 		if (target == null) {
 			return defaultValue;
 		}

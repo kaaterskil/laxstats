@@ -4,10 +4,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import laxstats.api.events.PlayKey;
 import laxstats.query.events.AttendeeEntry;
 
 public abstract class AbstractPlayForm {
 	private String playId;
+	private final String playType;
+	private final PlayKey playKey;
 	private String gameId;
 	private String teamSeasonId;
 	private int period;
@@ -15,6 +18,11 @@ public abstract class AbstractPlayForm {
 	private Map<String, String> teams = new HashMap<String, String>();
 	private Map<String, String> participants = new HashMap<String, String>();
 	private Map<String, List<AttendeeEntry>> attendees = new HashMap<>();
+
+	protected AbstractPlayForm(String playType, PlayKey playKey) {
+		this.playType = playType;
+		this.playKey = playKey;
+	}
 
 	/*---------- Getter/Setters ----------*/
 
@@ -24,6 +32,14 @@ public abstract class AbstractPlayForm {
 
 	public void setPlayId(String playId) {
 		this.playId = playId;
+	}
+
+	public String getPlayType() {
+		return playType;
+	}
+
+	public PlayKey getPlayKey() {
+		return playKey;
 	}
 
 	public String getGameId() {

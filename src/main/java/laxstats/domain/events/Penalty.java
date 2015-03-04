@@ -14,16 +14,16 @@ import laxstats.api.events.PlayUtils;
 import org.axonframework.eventhandling.annotation.EventHandler;
 import org.joda.time.Interval;
 import org.joda.time.LocalDateTime;
-import org.joda.time.LocalTime;
+import org.joda.time.Period;
 
 public class Penalty extends Play {
 	private LocalDateTime eventStart;
 	private String violationId;
-	private int duration;
+	private Period duration;
 
 	public Penalty(String id, String eventId, String teamId,
-			LocalDateTime eventStart, int period, LocalTime elapsedTime,
-			String violationId, int duration, String comment,
+			LocalDateTime eventStart, int period, Period elapsedTime,
+			String violationId, Period duration, String comment,
 			List<PlayParticipantDTO> participants) {
 		super(id, PlayType.PENALTY, PlayKey.PLAY, eventId, teamId, period,
 				elapsedTime, null, null, comment, participants);
@@ -118,7 +118,7 @@ public class Penalty extends Play {
 		return violationId;
 	}
 
-	public int getDuration() {
+	public Period getDuration() {
 		return duration;
 	}
 

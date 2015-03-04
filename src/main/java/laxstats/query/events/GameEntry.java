@@ -31,7 +31,7 @@ import laxstats.query.users.UserEntry;
 
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
-import org.joda.time.LocalTime;
+import org.joda.time.Seconds;
 
 @Entity
 @Table(name = "games", indexes = {
@@ -279,11 +279,13 @@ public class GameEntry implements Serializable {
 	private static class PenaltyComparator implements Comparator<PenaltyEntry> {
 		@Override
 		public int compare(PenaltyEntry o1, PenaltyEntry o2) {
-			final LocalTime t1 = PlayUtils.getTotalElapsedTime(o1.getPeriod(),
-					o1.getElapsedTime());
-			final LocalTime t2 = PlayUtils.getTotalElapsedTime(o2.getPeriod(),
-					o2.getElapsedTime());
-			return t1.compareTo(t2);
+			final Seconds t1 = PlayUtils.getTotalElapsedTime(o1.getPeriod(),
+					o1.getElapsedTime()).toStandardSeconds();
+			final Seconds t2 = PlayUtils.getTotalElapsedTime(o2.getPeriod(),
+					o2.getElapsedTime()).toStandardSeconds();
+			final int s1 = t1.getSeconds();
+			final int s2 = t2.getSeconds();
+			return s1 > s2 ? 1 : s1 < s2 ? -1 : 0;
 		}
 	}
 }

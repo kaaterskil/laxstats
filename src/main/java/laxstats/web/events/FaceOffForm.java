@@ -1,17 +1,26 @@
 package laxstats.web.events;
 
-import org.joda.time.LocalTime;
+import laxstats.api.events.PlayKey;
+import laxstats.api.events.PlayType;
+
+import org.joda.time.Period;
 
 public class FaceOffForm extends AbstractPlayForm {
-	private LocalTime elapsedTime;
+	private Period elapsedTime;
 	private String winnerId;
 	private String loserId;
 
-	public LocalTime getElapsedTime() {
+	public FaceOffForm() {
+		super(PlayType.FACEOFF, PlayKey.PLAY);
+	}
+
+	/*---------- Getter/Setters ----------*/
+
+	public Period getElapsedTime() {
 		return elapsedTime;
 	}
 
-	public void setElapsedTime(LocalTime elapsedTime) {
+	public void setElapsedTime(Period elapsedTime) {
 		this.elapsedTime = elapsedTime;
 	}
 

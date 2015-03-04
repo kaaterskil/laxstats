@@ -3,47 +3,41 @@ package laxstats.api.events;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.joda.time.LocalDateTime;
-import org.joda.time.LocalTime;
+import org.joda.time.Minutes;
+import org.joda.time.Period;
 
 public class PlayUtils {
-	private static int REGULAR_PERIOD_MINUTES = 12;
-	private static int OVERTIME_PERIOD_MIUTES = 5;
+	public static final Minutes REGULAR_PERIOD_MINUTES = Minutes.minutes(12);
+	public static final Minutes OVERTIME_PERIOD_MINUTES = Minutes.minutes(5);
 
-	/* Prevent instantiation */
 	protected PlayUtils() {
 	}
 
-	public static LocalTime getTotalElapsedTime(int period,
-			LocalTime elapsedTime) {
-		int priorMillis = 0;
+	public static Period getTotalElapsedTime(int period, Period elapsedTime) {
+		Minutes priorMinutes = Minutes.ZERO;
 		if (period <= 4) {
-			priorMillis = (period - 1) * REGULAR_PERIOD_MINUTES * 1000;
+			priorMinutes = REGULAR_PERIOD_MINUTES.multipliedBy(period - 1);
 		} else {
-			priorMillis = ((4 * REGULAR_PERIOD_MINUTES) + ((period - 5) * OVERTIME_PERIOD_MIUTES)) * 1000;
+			priorMinutes = REGULAR_PERIOD_MINUTES.multipliedBy(4).plus(
+					OVERTIME_PERIOD_MINUTES.multipliedBy(period - 5));
 		}
-		return elapsedTime.plusMillis(priorMillis);
+		return elapsedTime.plus(priorMinutes);
 	}
 
 	public static DateTime getInstant(LocalDateTime startsAt, int period,
-			LocalTime elapsedTime) {
-		final LocalTime totalElapsedTime = PlayUtils.getTotalElapsedTime(
-				period, elapsedTime);
-		final int mins = totalElapsedTime.getMinuteOfHour();
-		final int secs = totalElapsedTime.getSecondOfMinute();
-		final int millis = ((mins * 60) + secs) * 1000;
-		return startsAt.plusMillis(millis).toDateTime();
+			Period elapsedTime) {
+		final Period totalElapsedTime = PlayUtils.getTotalElapsedTime(period,
+				elapsedTime);
+		return startsAt.toDateTime().plus(totalElapsedTime);
 	}
 
 	public static Interval getPenaltyInterval(LocalDateTime startsAt,
-			int period, LocalTime elapsedTime, int duration) {
-		final LocalTime totalElapsedTime = PlayUtils.getTotalElapsedTime(
-				period, elapsedTime);
-		final int mins = totalElapsedTime.getMinuteOfHour();
-		final int secs = totalElapsedTime.getSecondOfMinute();
-		final int millis = ((mins * 60) + secs) * 1000;
+			int period, Period elapsedTime, Period duration) {
+		final Period totalElapsedTime = PlayUtils.getTotalElapsedTime(period,
+				elapsedTime);
 
-		final DateTime start = startsAt.plusMillis(millis).toDateTime();
-		final DateTime end = start.plusMillis(duration * 1000).toDateTime();
+		final DateTime start = startsAt.toDateTime().plus(totalElapsedTime);
+		final DateTime end = start.plus(duration);
 		return new Interval(start, end);
 	}
 }

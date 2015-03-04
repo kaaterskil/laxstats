@@ -30,7 +30,7 @@ import laxstats.query.violations.ViolationEntry;
 
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
-import org.joda.time.LocalTime;
+import org.joda.time.Period;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -55,15 +55,18 @@ abstract public class PlayEntry implements Serializable {
 	@ManyToOne
 	protected GameEntry event;
 
+	@Column(name = "playType", insertable = false, updatable = false)
+	protected String playType;
+
 	protected int sequenceNumber;
 
-	@ManyToOne(optional = false)
+	@ManyToOne
 	protected TeamSeasonEntry team;
 
 	protected int period;
 
-	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalTime")
-	protected LocalTime elapsedTime;
+	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentPeriodAsString")
+	protected Period elapsedTime;
 
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20, nullable = false)
@@ -95,12 +98,13 @@ abstract public class PlayEntry implements Serializable {
 	@ManyToOne
 	protected TeamSeasonEntry manUpTeam;
 
-	/*----- Peanlty properties -----*/
+	/*----- Penalty properties -----*/
 
 	@ManyToOne
 	protected ViolationEntry violation;
 
-	protected int duration;
+	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentPeriodAsString")
+	protected Period duration;
 
 	/*----- Audit properties -----*/
 
@@ -154,6 +158,10 @@ abstract public class PlayEntry implements Serializable {
 		this.id = id;
 	}
 
+	public String getPlayType() {
+		return playType;
+	}
+
 	public GameEntry getEvent() {
 		return event;
 	}
@@ -186,11 +194,11 @@ abstract public class PlayEntry implements Serializable {
 		this.period = period;
 	}
 
-	public LocalTime getElapsedTime() {
+	public Period getElapsedTime() {
 		return elapsedTime;
 	}
 
-	public void setElapsedTime(LocalTime elapsedTime) {
+	public void setElapsedTime(Period elapsedTime) {
 		this.elapsedTime = elapsedTime;
 	}
 
@@ -266,11 +274,11 @@ abstract public class PlayEntry implements Serializable {
 		this.violation = violation;
 	}
 
-	public int getDuration() {
+	public Period getDuration() {
 		return duration;
 	}
 
-	public void setDuration(int duration) {
+	public void setDuration(Period duration) {
 		this.duration = duration;
 	}
 

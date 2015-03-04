@@ -16,7 +16,7 @@ import laxstats.api.events.ScoreAttemptType;
 import laxstats.api.events.Strength;
 
 import org.axonframework.eventhandling.annotation.EventHandler;
-import org.joda.time.LocalTime;
+import org.joda.time.Period;
 
 public class Goal extends Play {
 	private int sequenceNumber;
@@ -27,7 +27,7 @@ public class Goal extends Play {
 	private String manUpTeamId;
 
 	public Goal(String id, String eventId, String teamId, int period,
-			LocalTime elapsedTime, ScoreAttemptType scoreAttemptType,
+			Period elapsedTime, ScoreAttemptType scoreAttemptType,
 			String comment, int sequenceNumber, int teamScore,
 			int opponentScore, Strength strength, int manUpAdvantage,
 			String manUpTeamId, List<PlayParticipantDTO> participants) {

@@ -3,21 +3,30 @@ package laxstats.web.events;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.joda.time.LocalTime;
+import laxstats.api.events.PlayKey;
+import laxstats.api.events.PlayType;
+
+import org.joda.time.Period;
 
 public class PenaltyForm extends AbstractPlayForm {
-	private LocalTime elapsedTime;
+	private Period elapsedTime;
 	private String committedById;
 	private String committedAgainstId;
 	private String violationId;
-	private int duration;
+	private Period duration;
 	private Map<String, String> violationData = new HashMap<>();
 
-	public LocalTime getElapsedTime() {
+	public PenaltyForm() {
+		super(PlayType.PENALTY, PlayKey.PLAY);
+	}
+
+	/*---------- Getter/Setters ----------*/
+
+	public Period getElapsedTime() {
 		return elapsedTime;
 	}
 
-	public void setElapsedTime(LocalTime elapsedTime) {
+	public void setElapsedTime(Period elapsedTime) {
 		this.elapsedTime = elapsedTime;
 	}
 
@@ -45,11 +54,11 @@ public class PenaltyForm extends AbstractPlayForm {
 		this.violationId = violationId;
 	}
 
-	public int getDuration() {
+	public Period getDuration() {
 		return duration;
 	}
 
-	public void setDuration(int duration) {
+	public void setDuration(Period duration) {
 		this.duration = duration;
 	}
 

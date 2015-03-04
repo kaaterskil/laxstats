@@ -54,7 +54,7 @@ import org.axonframework.eventsourcing.annotation.EventSourcedMember;
 import org.axonframework.eventsourcing.annotation.EventSourcingHandler;
 import org.joda.time.Interval;
 import org.joda.time.LocalDateTime;
-import org.joda.time.LocalTime;
+import org.joda.time.Seconds;
 
 public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 	private static final long serialVersionUID = 2833813418469491250L;
@@ -533,9 +533,10 @@ public class Event extends AbstractAnnotatedAggregateRoot<EventId> {
 	private static class PenaltyComparator implements Comparator<Penalty> {
 		@Override
 		public int compare(Penalty o1, Penalty o2) {
-			final LocalTime t1 = o1.getTotalElapsedTime();
-			final LocalTime t2 = o2.getTotalElapsedTime();
-			return t1.compareTo(t2);
+			final Seconds t1 = o1.getTotalElapsedTime().toStandardSeconds();
+			final Seconds t2 = o2.getTotalElapsedTime().toStandardSeconds();
+			return t1.getSeconds() < t2.getSeconds() ? -1
+					: (t1.getSeconds() > t2.getSeconds() ? 1 : 0);
 		}
 
 	}

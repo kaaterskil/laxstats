@@ -14,7 +14,7 @@ import laxstats.query.events.PlayParticipantEntry;
 
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
-import org.joda.time.LocalTime;
+import org.joda.time.Seconds;
 
 public class PlayServiceImpl implements PlayService {
 	private final Event event;
@@ -125,9 +125,10 @@ public class PlayServiceImpl implements PlayService {
 	private static class ElapsedTimeComparator implements Comparator<Play> {
 		@Override
 		public int compare(Play o1, Play o2) {
-			final LocalTime t1 = o1.getTotalElapsedTime();
-			final LocalTime t2 = o2.getTotalElapsedTime();
-			return t1.isBefore(t2) ? -1 : (t1.isAfter(t2) ? 1 : 0);
+			final Seconds t1 = o1.getTotalElapsedTime().toStandardSeconds();
+			final Seconds t2 = o2.getTotalElapsedTime().toStandardSeconds();
+			return t1.getSeconds() < t2.getSeconds() ? -1
+					: (t1.getSeconds() > t2.getSeconds() ? 1 : 0);
 		}
 	}
 

@@ -5,7 +5,7 @@ import java.util.List;
 import laxstats.api.events.PlayDTO;
 import laxstats.api.events.PlayType;
 
-import org.joda.time.LocalTime;
+import org.joda.time.Period;
 
 public class GoalService extends PlayServiceImpl {
 
@@ -34,7 +34,7 @@ public class GoalService extends PlayServiceImpl {
 	@Override
 	public void setInvariants(PlayDTO dto) {
 		final List<Play> goals = getPlays(PlayType.GOAL);
-		final LocalTime elapsedTime = dto.getTotalElapsedTime();
+		final Period elapsedTime = dto.getTotalElapsedTime();
 		final String teamId = dto.getTeam().getId();
 		boolean prepended = false;
 		boolean sequenceSet = false;
@@ -54,7 +54,8 @@ public class GoalService extends PlayServiceImpl {
 			}
 
 			// For goals inserted into an existing sequence
-			if (goal.getTotalElapsedTime().isAfter(elapsedTime)) {
+			if (goal.getTotalElapsedTime().toStandardSeconds().getSeconds() > elapsedTime
+					.toStandardSeconds().getSeconds()) {
 				prepended = true;
 
 				// Set sequence number
