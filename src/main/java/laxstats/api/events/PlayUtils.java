@@ -19,7 +19,7 @@ public class PlayUtils {
 			priorMinutes = REGULAR_PERIOD_MINUTES.multipliedBy(period - 1);
 		} else {
 			priorMinutes = REGULAR_PERIOD_MINUTES.multipliedBy(4).plus(
-					OVERTIME_PERIOD_MINUTES.multipliedBy(period - 5));
+					OVERTIME_PERIOD_MINUTES.multipliedBy(period - 4));
 		}
 		return elapsedTime.plus(priorMinutes);
 	}

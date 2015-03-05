@@ -91,47 +91,8 @@ public class FaceOffFormValidator extends AbstractPlayValidator implements
 		logger.debug(proc + "40");
 
 		ValidationUtils.rejectIfEmpty(errors, "elapsedTime",
-				"goal.elapsedTime.required");
+				"play.elapsedTime.required");
 		logger.debug("Leaving: " + proc + "50");
-	}
-
-	/**
-	 * Validates that the period is valid. If the period is an integer >0 then
-	 * processing continues.
-	 *
-	 * @param form
-	 * @param errors
-	 */
-	private void checkPeriod(FaceOffForm form, Errors errors) {
-		final String proc = PACKAGE_NAME + ".checkPeriod.";
-		final String playId = form.getPlayId();
-		final int period = form.getPeriod();
-
-		logger.debug("Entering: " + proc + "10");
-
-		// Proceed with validation only if the record is new or the period has
-		// changed.
-
-		final boolean isUpdating = apiUpdating(playId);
-		logger.debug(proc + "20");
-
-		if (isUpdating) {
-			logger.debug(proc + "30");
-			final FaceOffEntry play = (FaceOffEntry) getPlayRepository()
-					.findOne(playId);
-			if (play.getPeriod() != period) {
-				logger.debug(proc + "40");
-				if (period < 0) {
-					errors.rejectValue("period", "play.period.invalid");
-				}
-			}
-		} else {
-			logger.debug(proc + "50");
-			if (period < 0) {
-				errors.rejectValue("period", "play.period.invalid");
-			}
-		}
-		logger.debug("Leaving: " + proc + "60");
 	}
 
 	/**

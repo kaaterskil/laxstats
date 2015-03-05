@@ -103,7 +103,7 @@ public class PenaltyFormValidator extends AbstractPlayValidator implements
 		logger.debug(proc + "30");
 
 		ValidationUtils.rejectIfEmpty(errors, "elapsedTime",
-				"penalty.elapsedTime.required");
+				"play.elapsedTime.required");
 		logger.debug(proc + "40");
 
 		ValidationUtils.rejectIfEmpty(errors, "violationId",
@@ -112,45 +112,6 @@ public class PenaltyFormValidator extends AbstractPlayValidator implements
 
 		ValidationUtils.rejectIfEmpty(errors, "duration",
 				"penalty.duration.required");
-		logger.debug("Leaving: " + proc + "60");
-	}
-
-	/**
-	 * Validates that the period is valid. If the period is an integer >0 then
-	 * processing continues.
-	 *
-	 * @param form
-	 * @param errors
-	 */
-	private void checkPeriod(PenaltyForm form, Errors errors) {
-		final String proc = PACKAGE_NAME + ".checkPeriod.";
-		final String playId = form.getPlayId();
-		final int period = form.getPeriod();
-
-		logger.debug("Entering: " + proc + "10");
-
-		// Proceed with validation only if the record is new or the period has
-		// changed.
-
-		final boolean isUpdating = apiUpdating(playId);
-		logger.debug(proc + "20");
-
-		if (isUpdating) {
-			logger.debug(proc + "30");
-			final PenaltyEntry play = (PenaltyEntry) getPlayRepository()
-					.findOne(playId);
-			if (play.getPeriod() != period) {
-				logger.debug(proc + "40");
-				if (period < 0) {
-					errors.rejectValue("period", "play.period.invalid");
-				}
-			}
-		} else {
-			logger.debug(proc + "50");
-			if (period < 0) {
-				errors.rejectValue("period", "play.period.invalid");
-			}
-		}
 		logger.debug("Leaving: " + proc + "60");
 	}
 
@@ -215,50 +176,6 @@ public class PenaltyFormValidator extends AbstractPlayValidator implements
 
 		}
 		logger.debug("Leaving: " + proc + "100");
-	}
-
-	/**
-	 * Validates that the team is a valid team. If the given team is
-	 * participating in the event, then processing continues.
-	 *
-	 * @param form
-	 * @param errors
-	 */
-	private void checkTeam(PenaltyForm form, Errors errors) {
-		final String proc = PACKAGE_NAME + ".checkTeam.";
-		final String playId = form.getPlayId();
-		final String teamSeasonId = form.getTeamSeasonId();
-		final String gameId = form.getGameId();
-		boolean exists = false;
-
-		logger.debug("Entering: " + proc + "10");
-
-		// Proceed with validation only if the record is new or the team has
-		// changed.
-
-		final boolean isUpdating = apiUpdating(playId);
-		logger.debug(proc + "20");
-
-		if (isUpdating) {
-			logger.debug(proc + "30");
-			final PenaltyEntry play = (PenaltyEntry) getPlayRepository()
-					.findOne(playId);
-			if (!play.getTeam().getId().equals(teamSeasonId)) {
-				logger.debug(proc + "40");
-				exists = getPlayRepository().teamSeasonExists(gameId,
-						teamSeasonId);
-				if (!exists) {
-					throw new IllegalStateException("Invalid team season");
-				}
-			}
-		} else {
-			logger.debug(proc + "50");
-			exists = getPlayRepository().teamSeasonExists(gameId, teamSeasonId);
-			if (!exists) {
-				throw new IllegalStateException("Invalid team season");
-			}
-		}
-		logger.debug("Leaving: " + proc + "60");
 	}
 
 	/**
@@ -474,7 +391,7 @@ public class PenaltyFormValidator extends AbstractPlayValidator implements
 	/**
 	 * Validates that the penalty duration is valid. If the duration in seconds
 	 * is a positive integer, then processing continues.
-	 * 
+	 *
 	 * @param form
 	 * @param errors
 	 */

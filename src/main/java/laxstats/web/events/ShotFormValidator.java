@@ -98,89 +98,6 @@ public class ShotFormValidator extends AbstractPlayValidator implements
 	}
 
 	/**
-	 * Validates that the period is valid. If the period is an integer >0 then
-	 * processing continues.
-	 *
-	 * @param form
-	 * @param errors
-	 */
-	private void checkPeriod(ShotForm form, Errors errors) {
-		final String proc = PACKAGE_NAME + ".checkPeriod.";
-		final String playId = form.getPlayId();
-		final int period = form.getPeriod();
-
-		logger.debug("Entering: " + proc + "10");
-
-		// Proceed with validation only if the record is new or the period has
-		// changed.
-
-		final boolean isUpdating = apiUpdating(playId);
-		logger.debug(proc + "20");
-
-		if (isUpdating) {
-			logger.debug(proc + "30");
-			final ShotEntry play = (ShotEntry) getPlayRepository().findOne(
-					playId);
-			if (play.getPeriod() != period) {
-				logger.debug(proc + "40");
-				if (period < 0) {
-					errors.rejectValue("period", "play.period.invalid");
-				}
-			}
-		} else {
-			logger.debug(proc + "50");
-			if (period < 0) {
-				errors.rejectValue("period", "play.period.invalid");
-			}
-		}
-		logger.debug("Leaving: " + proc + "60");
-	}
-
-	/**
-	 * Validates that the team is a valid team. If the given team is
-	 * participating in the event, then processing continues.
-	 *
-	 * @param form
-	 * @param errors
-	 */
-	private void checkTeam(ShotForm form, Errors errors) {
-		final String proc = PACKAGE_NAME + ".checkTeam.";
-		final String playId = form.getPlayId();
-		final String teamSeasonId = form.getTeamSeasonId();
-		final String gameId = form.getGameId();
-		boolean exists = false;
-
-		logger.debug("Entering: " + proc + "10");
-
-		// Proceed with validation only if the record is new or the team has
-		// changed.
-
-		final boolean isUpdating = apiUpdating(playId);
-		logger.debug(proc + "20");
-
-		if (isUpdating) {
-			logger.debug(proc + "30");
-			final ShotEntry play = (ShotEntry) getPlayRepository().findOne(
-					playId);
-			if (!play.getTeam().getId().equals(teamSeasonId)) {
-				logger.debug(proc + "40");
-				exists = getPlayRepository().teamSeasonExists(gameId,
-						teamSeasonId);
-				if (!exists) {
-					throw new IllegalStateException("Invalid team season");
-				}
-			}
-		} else {
-			logger.debug(proc + "50");
-			exists = getPlayRepository().teamSeasonExists(gameId, teamSeasonId);
-			if (!exists) {
-				throw new IllegalStateException("Invalid team season");
-			}
-		}
-		logger.debug("Leaving: " + proc + "60");
-	}
-
-	/**
 	 * Validates that the faceoff winner is a valid player. If the player is
 	 * registered as a game attendee and is an athlete who is not inactive or
 	 * injured, then processing continues.
@@ -292,7 +209,7 @@ public class ShotFormValidator extends AbstractPlayValidator implements
 							&& !type.equals(ScoreAttemptType.OWN_GOAL)
 							&& !type.equals(ScoreAttemptType.PENALTY_SHOT) && !type
 								.equals(ScoreAttemptType.REGULAR))) {
-				errors.rejectValue("attemptType", "goal.attemptType.invalid");
+				errors.rejectValue("attemptType", "shot.attemptType.invalid");
 			}
 		}
 		logger.debug("Leaving: " + proc + "60");
@@ -307,7 +224,7 @@ public class ShotFormValidator extends AbstractPlayValidator implements
 	 * @param errors
 	 */
 	private void checkResult(ShotForm form, Errors errors) {
-		final String proc = PACKAGE_NAME + ".checkMandatoryargs.";
+		final String proc = PACKAGE_NAME + ".checkResult.";
 		final String playId = form.getPlayId();
 		final PlayResult result = form.getResult();
 		boolean doValidation = false;

@@ -101,45 +101,6 @@ public class GoalFormValidator extends AbstractPlayValidator implements
 	}
 
 	/**
-	 * Validates that the period is valid. If the period is an integer >0 then
-	 * processing continues.
-	 *
-	 * @param form
-	 * @param errors
-	 */
-	private void checkPeriod(GoalForm form, Errors errors) {
-		final String proc = PACKAGE_NAME + ".checkPeriod.";
-		final String playId = form.getPlayId();
-		final int period = form.getPeriod();
-
-		logger.debug("Entering: " + proc + "10");
-
-		// Proceed with validation only if the record is new or the period has
-		// changed.
-
-		final boolean isUpdating = apiUpdating(playId);
-		logger.debug(proc + "20");
-
-		if (isUpdating) {
-			logger.debug(proc + "30");
-			final GoalEntry play = (GoalEntry) getPlayRepository().findOne(
-					playId);
-			if (play.getPeriod() != period) {
-				logger.debug(proc + "40");
-				if (period < 0) {
-					errors.rejectValue("period", "play.period.invalid");
-				}
-			}
-		} else {
-			logger.debug(proc + "50");
-			if (period < 0) {
-				errors.rejectValue("period", "play.period.invalid");
-			}
-		}
-		logger.debug("Leaving: " + proc + "60");
-	}
-
-	/**
 	 * Validates that the elapsed time is a valid time. If the elapsed time is a
 	 * positive value and <= the duration of the given period, then processing
 	 * continues.
@@ -338,19 +299,19 @@ public class GoalFormValidator extends AbstractPlayValidator implements
 				logger.debug(proc + "80");
 
 				if (!attendee.getPlayer().getRole().equals(Role.ATHLETE)) {
-					errors.rejectValue("scorerId", "goal.scorer.invalidPlayer");
+					errors.rejectValue("scorerId", "goal.assist.invalidPlayer");
 				}
 				logger.debug(proc + "90");
 
 				if (attendee.getPlayer().getStatus()
 						.equals(PlayerStatus.INACTIVE)) {
-					errors.rejectValue("scorerId", "goal.scorer.inactivePlayer");
+					errors.rejectValue("scorerId", "goal.assist.inactivePlayer");
 				}
 				logger.debug(proc + "100");
 
 				if (attendee.getPlayer().getStatus()
 						.equals(PlayerStatus.INJURED)) {
-					errors.rejectValue("scorerId", "goal.scorer.injuredPlayer");
+					errors.rejectValue("scorerId", "goal.assist.injuredPlayer");
 				}
 			}
 		}
