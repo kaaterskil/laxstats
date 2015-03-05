@@ -15,6 +15,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Index;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -48,6 +49,7 @@ public class GameEntry implements Serializable {
 	private String id;
 
 	@ManyToOne
+	@JoinColumn(name = "site_id")
 	private SiteEntry site;
 
 	@Enumerated(EnumType.STRING)

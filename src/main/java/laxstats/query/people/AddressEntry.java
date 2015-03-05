@@ -6,6 +6,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Index;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -26,7 +27,7 @@ import org.joda.time.LocalDateTime;
 		@Index(name = "address_idx2", columnList = "isPrimary"),
 		@Index(name = "address_idx3", columnList = "doNotUse"),
 		@Index(name = "address_idx4", columnList = "addressType") }, uniqueConstraints = { @UniqueConstraint(name = "address_uk1", columnNames = {
-		"person", "isPrimary" }) })
+		"person_id", "isPrimary" }) })
 public class AddressEntry implements Contactable {
 
 	@Id
@@ -34,9 +35,11 @@ public class AddressEntry implements Contactable {
 	private String id;
 
 	@ManyToOne
+	@JoinColumn(name = "person_id")
 	private PersonEntry person;
 
 	@OneToOne
+	@JoinColumn(name = "site_id")
 	private SiteEntry site;
 
 	@Enumerated(EnumType.STRING)

@@ -23,7 +23,7 @@ import org.joda.time.LocalDateTime;
 @Table(name = "team_events", indexes = {
 		@Index(name = "team_events_idx1", columnList = "outcome"),
 		@Index(name = "team_events_idx2", columnList = "alignment") }, uniqueConstraints = { @UniqueConstraint(name = "team_events_uk1", columnNames = {
-		"team_season", "event" }) })
+		"team_season_id", "game_id" }) })
 public class TeamEvent {
 
 	@Id
@@ -31,11 +31,11 @@ public class TeamEvent {
 	private String id;
 
 	@ManyToOne
-	@JoinColumn(nullable = false)
+	@JoinColumn(name = "team_season_id", nullable = false)
 	private TeamSeasonEntry teamSeason;
 
 	@ManyToOne
-	@JoinColumn(nullable = false)
+	@JoinColumn(name = "game_id", nullable = false)
 	private GameEntry event;
 
 	@Enumerated(EnumType.STRING)

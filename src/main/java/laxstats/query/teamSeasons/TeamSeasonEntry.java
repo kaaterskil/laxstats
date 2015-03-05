@@ -36,9 +36,9 @@ import org.joda.time.LocalDateTime;
 
 @Entity
 @Table(name = "team_seasons", indexes = {
-		@Index(name = "team_season_idx1", columnList = "id, team, season"),
-		@Index(name = "team_season_idx2", columnList = "affiliation") }, uniqueConstraints = { @UniqueConstraint(name = "team_season_uk1", columnNames = {
-		"team", "season" }) })
+		@Index(name = "team_season_idx1", columnList = "id, team_id, season_id"),
+		@Index(name = "team_season_idx2", columnList = "affiliation_id") }, uniqueConstraints = { @UniqueConstraint(name = "team_season_uk1", columnNames = {
+		"team_id", "season_id" }) })
 public class TeamSeasonEntry {
 
 	@Id
@@ -46,14 +46,15 @@ public class TeamSeasonEntry {
 	private String id;
 
 	@ManyToOne
-	@JoinColumn(nullable = false)
+	@JoinColumn(name = "team_id", nullable = false)
 	private TeamEntry team;
 
 	@ManyToOne
-	@JoinColumn(nullable = false)
+	@JoinColumn(name = "season_id", nullable = false)
 	private SeasonEntry season;
 
 	@ManyToOne
+	@JoinColumn(name = "affiliation_id")
 	private LeagueEntry affiliation;
 
 	@Column(nullable = false)

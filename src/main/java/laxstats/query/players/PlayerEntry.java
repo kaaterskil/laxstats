@@ -23,14 +23,14 @@ import org.joda.time.LocalDateTime;
 
 @Entity
 @Table(name = "players", indexes = {
-		@Index(name = "player_idx1", columnList = "id, team_season, person"),
-		@Index(name = "player_idx2", columnList = "team_season"),
-		@Index(name = "player_idx3", columnList = "person"),
+		@Index(name = "player_idx1", columnList = "id, team_season_id, person_id"),
+		@Index(name = "player_idx2", columnList = "team_season_id"),
+		@Index(name = "player_idx3", columnList = "person_id"),
 		@Index(name = "player_idx4", columnList = "role"),
 		@Index(name = "player_idx5", columnList = "status"),
 		@Index(name = "player_idx6", columnList = "isCaptain"),
 		@Index(name = "player_idx7", columnList = "depth") }, uniqueConstraints = { @UniqueConstraint(name = "player_uk1", columnNames = {
-		"id", "team_season", "person" }) })
+		"id", "team_season_id", "person_id" }) })
 public class PlayerEntry {
 
 	@Id
@@ -38,11 +38,11 @@ public class PlayerEntry {
 	private String id;
 
 	@ManyToOne
-	@JoinColumn(nullable = false)
+	@JoinColumn(name = "person_id", nullable = false)
 	private PersonEntry person;
 
 	@ManyToOne
-	@JoinColumn(nullable = false)
+	@JoinColumn(name = "team_season_id", nullable = false)
 	private TeamSeasonEntry teamSeason;
 
 	@Column(length = 100)
@@ -80,7 +80,7 @@ public class PlayerEntry {
 	@ManyToOne
 	private UserEntry modifiedBy;
 
-	// ---------- Getter/Setters ----------//
+	/*---------- Getter/Setters ----------*/
 
 	public String getId() {
 		return id;

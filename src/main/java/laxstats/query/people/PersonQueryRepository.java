@@ -61,10 +61,10 @@ public interface PersonQueryRepository extends
 	int updateContact(ContactMethod method, String value, String personId,
 			String contactId);
 
-	@Query("select distinct te.gender from PersonEntry pe "
-			+ "left join PlayerEntry ple on ple.person.id = pe.id "
-			+ "left join TeamSeasonEntry tse on tse.id = ple.teamSeason.id "
-			+ "left join TeamEntry te on te.id = tse.team.id "
-			+ "where ?1 is not null and pe.id = ?1 and ple.role = ?2")
+	@Query(value = "select t.gender from people p "
+			+ "left join players pl on pl.person _id = p.id "
+			+ "left join team_seasons ts on ts.id = pl.team_season_id "
+			+ "left join teams t on t.id = ts.team "
+			+ "where ?1 is not null and p.id = ?1 and pl.role = ?2", nativeQuery = true)
 	TeamGender getTeamGender(String personId, Role role);
 }

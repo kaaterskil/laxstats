@@ -24,14 +24,14 @@ import org.joda.time.LocalDateTime;
 
 @Entity
 @Table(name = "event_attendees", indexes = {
-		@Index(name = "event_attendees_idx1", columnList = "event, player, team_season"),
-		@Index(name = "event_attendees_idx2", columnList = "team_season, event"),
-		@Index(name = "event_attendees_idx3", columnList = "player, event"),
-		@Index(name = "event_attendees_idx4", columnList = "event, player"),
-		@Index(name = "event_attendees_idx5", columnList = "event, team_season"),
+		@Index(name = "event_attendees_idx1", columnList = "game_id, player_id, team_season_id"),
+		@Index(name = "event_attendees_idx2", columnList = "team_season_id, game_id"),
+		@Index(name = "event_attendees_idx3", columnList = "player_id, game_id"),
+		@Index(name = "event_attendees_idx4", columnList = "game_id, player_id"),
+		@Index(name = "event_attendees_idx5", columnList = "game_id, team_season_id"),
 		@Index(name = "event_attendees_idx6", columnList = "role"),
 		@Index(name = "event_attendees_idx7", columnList = "status") }, uniqueConstraints = { @UniqueConstraint(name = "event_attendees_uk1", columnNames = {
-		"player", "event", "team_season" }) })
+		"player_id", "game_id", "team_season_id" }) })
 public class AttendeeEntry implements Serializable {
 	private static final long serialVersionUID = -1637974392983471162L;
 
@@ -40,13 +40,15 @@ public class AttendeeEntry implements Serializable {
 	private String id;
 
 	@ManyToOne
-	@JoinColumn(nullable = false)
+	@JoinColumn(name = "game_id", nullable = false)
 	private GameEntry event;
 
 	@ManyToOne
+	@JoinColumn(name = "player_id")
 	private PlayerEntry player;
 
 	@ManyToOne
+	@JoinColumn(name = "team_season_id")
 	private TeamSeasonEntry teamSeason;
 
 	@Enumerated(EnumType.STRING)

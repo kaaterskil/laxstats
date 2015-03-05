@@ -15,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -34,17 +35,17 @@ import org.joda.time.Period;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "playType", length = 20, discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorColumn(name = "play_type", length = 20, discriminatorType = DiscriminatorType.STRING)
 @Table(name = "plays", indexes = {
-		@Index(name = "play_idx1", columnList = "playType"),
-		@Index(name = "play_idx2", columnList = "event, playType"),
+		@Index(name = "play_idx1", columnList = "play_type"),
+		@Index(name = "play_idx2", columnList = "game_id, play_type"),
 		@Index(name = "play_idx3", columnList = "period"),
 		@Index(name = "play_idx4", columnList = "strength"),
 		@Index(name = "play_idx5", columnList = "playKey"),
 		@Index(name = "play_idx6", columnList = "result"),
 		@Index(name = "play_idx7", columnList = "playKey, result"),
 		@Index(name = "play_idx8", columnList = "period, elapsedTime") }, uniqueConstraints = { @UniqueConstraint(name = "play_uk1", columnNames = {
-		"event", "sequenceNumber" }) })
+		"game_id", "sequenceNumber" }) })
 abstract public class PlayEntry implements Serializable {
 	private static final long serialVersionUID = -9074132185978497348L;
 
@@ -53,14 +54,16 @@ abstract public class PlayEntry implements Serializable {
 	protected String id;
 
 	@ManyToOne
+	@JoinColumn(name = "game_id")
 	protected GameEntry event;
 
-	@Column(name = "playType", insertable = false, updatable = false)
+	@Column(name = "play_type", insertable = false, updatable = false)
 	protected String playType;
 
 	protected int sequenceNumber;
 
 	@ManyToOne
+	@JoinColumn(name = "team_season_id")
 	protected TeamSeasonEntry team;
 
 	protected int period;
@@ -96,11 +99,13 @@ abstract public class PlayEntry implements Serializable {
 	protected int manUpAdvantage;
 
 	@ManyToOne
+	@JoinColumn(name = "man_up_team_id")
 	protected TeamSeasonEntry manUpTeam;
 
 	/*----- Penalty properties -----*/
 
 	@ManyToOne
+	@JoinColumn(name = "violation_id")
 	protected ViolationEntry violation;
 
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentPeriodAsString")

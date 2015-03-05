@@ -1,5 +1,7 @@
 package laxstats.query.events;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -22,23 +24,25 @@ import org.joda.time.LocalDateTime;
 @Table(name = "play_participants", indexes = {
 		@Index(name = "play_participants_idx1", columnList = "role"),
 		@Index(name = "play_participants_idx2", columnList = "pointCredit"),
-		@Index(name = "play_participants_idx3", columnList = "team_season") }, uniqueConstraints = { @UniqueConstraint(name = "play_participants_uk1", columnNames = {
-		"id", "play", "attendee" }) })
-public class PlayParticipantEntry {
+		@Index(name = "play_participants_idx3", columnList = "team_season_id") }, uniqueConstraints = { @UniqueConstraint(name = "play_participants_uk1", columnNames = {
+		"id", "play_id", "attendee_id" }) })
+public class PlayParticipantEntry implements Serializable {
+	private static final long serialVersionUID = -6213837582683090644L;
 
 	@Id
 	@Column(length = 36)
 	private String id;
 
 	@ManyToOne
-	@JoinColumn(nullable = false)
+	@JoinColumn(name = "play_id", nullable = false)
 	private PlayEntry play;
 
 	@ManyToOne
-	@JoinColumn(nullable = false)
+	@JoinColumn(name = "attendee_id", nullable = false)
 	private AttendeeEntry attendee;
 
 	@ManyToOne
+	@JoinColumn(name = "team_season_id")
 	private TeamSeasonEntry teamSeason;
 
 	@Enumerated(EnumType.STRING)
