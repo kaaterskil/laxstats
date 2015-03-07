@@ -5,26 +5,33 @@
 </head>
 <body>
 	<div th:fragment="footer">
-		<footer>
-			<nav class="navbar navbar-default"
-				role="navigation">
-				<div class="container">
-					<div class="lax-footer-title">laxstats:</div>
-					<div class="collapse navbar-collapse">
-						<ul class="nav navbar-nav">
-							<li><a href="#" th:href="@{'/contact'}">Contact Us</a></li>
-							<li><a href="#" th:href="@{'/sitemap'}">Site Map</a></li>
-							<li><a href="#" th:href="@{'/terms'}">Terms of Use</a></li>
-							<li><a href="#" th:href="@{'/privacy}">Privacy Policy</a></li>
-							<li><a href="#" th:href="@{'/subscription-info'}">Subscription Information</a></li>
-						</ul>
+		<footer class="lax-footer">
+			<div class="lax-footer-top">
+				<nav class="navbar navbar-default" role="navigation">
+					<div class="container">
+						<div class="lax-footer-title">laxstats:</div>
+						<div class="collapse navbar-collapse">
+							<ul class="nav navbar-nav">
+								<li><a href="#" th:href="@{/contact}">Contact Us</a></li>
+								<li><a href="#" th:href="@{/sitemap}">Site Map</a></li>
+								<li><a href="#" th:href="@{/terms}">Terms of Use</a></li>
+								<li><a href="#" th:href="@{/privacy}">Privacy Policy</a></li>
+								<li><a href="#" th:href="@{/subscription-info}">Subscribe</a></li>
+							</ul>
+						</div>
 					</div>
+				</nav>
+			</div>
+
+			<div class="lax-footer-bottom">
+				<div class="container">
 					<div class="lax-footer-copyright">
-						Copyright &copy;
-						<span th:text="'2004-' + ${#dates.format(#dates.createNow(), 'YYYY')} ">Year</span> 
-						Kaaterskil Management, LLC. All rights reserved.</div>
+						Copyright &copy; <span
+							th:text="'2004-' + ${#dates.format(#dates.createNow(), 'YYYY')} ">Year</span>
+						Kaaterskil Management, LLC. All rights reserved.
+					</div>
 				</div>
-			</nav>
+			</div>
 		</footer>
 	</div>
 </body>

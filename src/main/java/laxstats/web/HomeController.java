@@ -21,4 +21,24 @@ public class HomeController {
 	public String office() {
 		return "home/office";
 	}
+
+	@RequestMapping(value = "/sitemap", method = RequestMethod.GET)
+	public String siteMap() {
+		return "home/siteMap";
+	}
+
+	@RequestMapping(value = "/terms", method = RequestMethod.GET)
+	public String termsOfUse() {
+		return "home/termsOfUse";
+	}
+
+	@RequestMapping(value = "/privacy", method = RequestMethod.GET)
+	public String privacyPolicy() {
+		return "home/privacyPolicy";
+	}
+
+	@RequestMapping(value = "/subscribe", method = RequestMethod.GET)
+	public String subscribe() {
+		return "home/subscribe";
+	}
 }
