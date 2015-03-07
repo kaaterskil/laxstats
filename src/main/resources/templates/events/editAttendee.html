@@ -15,6 +15,9 @@
 					  th:action="@{'/admin/events/' + ${eventId} + '/teamSeasons/' + ${teamSeasonId}}" 
 					  th:object="${attendeeForm}"
 					  role="form">
+					<input type="hidden" 
+						   id="id" 
+						   th:field="*{id}" />
 					<div class="form-group">
 						<label for="player">Roster</label> 
 						<select id="player"

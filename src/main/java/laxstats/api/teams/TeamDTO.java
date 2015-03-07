@@ -15,7 +15,7 @@ public class TeamDTO {
 	private final TeamGender gender;
 	private final Letter letter;
 	private final Region region;
-	private final LeagueEntry affiliation;
+	private final LeagueEntry league;
 	private final SiteEntry homeSite;
 	private final String encodedPassword;
 	private final LocalDateTime createdAt;
@@ -25,20 +25,20 @@ public class TeamDTO {
 
 	public TeamDTO(TeamId teamId, String sponsor, String name,
 			String abbreviation, TeamGender gender, Letter letter,
-			Region region, LeagueEntry affiliation, SiteEntry homeSite,
+			Region region, LeagueEntry league, SiteEntry homeSite,
 			LocalDateTime createdAt, UserEntry createdBy,
 			LocalDateTime modifiedAt, UserEntry modifiedBy) {
 		this(teamId, sponsor, name, abbreviation, gender, letter, region,
-				affiliation, homeSite, null, createdAt, createdBy, modifiedAt,
+				league, homeSite, null, createdAt, createdBy, modifiedAt,
 				modifiedBy);
 	}
 
 	public TeamDTO(TeamId teamId, String sponsor, String name,
 			String abbreviation, TeamGender gender, Letter letter,
-			Region region, LeagueEntry affiliation, SiteEntry homeSite,
+			Region region, LeagueEntry league, SiteEntry homeSite,
 			LocalDateTime modifiedAt, UserEntry modifiedBy) {
 		this(teamId, sponsor, name, abbreviation, gender, letter, region,
-				affiliation, homeSite, null, null, null, modifiedAt, modifiedBy);
+				league, homeSite, null, null, null, modifiedAt, modifiedBy);
 	}
 
 	public TeamDTO(TeamId teamId, String encodedPassword,
@@ -49,7 +49,7 @@ public class TeamDTO {
 
 	protected TeamDTO(TeamId teamId, String sponsor, String name,
 			String abbreviation, TeamGender gender, Letter letter,
-			Region region, LeagueEntry affiliation, SiteEntry homeSite,
+			Region region, LeagueEntry league, SiteEntry homeSite,
 			String encodedPassword, LocalDateTime createdAt,
 			UserEntry createdBy, LocalDateTime modifiedAt, UserEntry modifiedBy) {
 		this.teamId = teamId;
@@ -59,7 +59,7 @@ public class TeamDTO {
 		this.gender = gender;
 		this.letter = letter;
 		this.region = region;
-		this.affiliation = affiliation;
+		this.league = league;
 		this.homeSite = homeSite;
 		this.encodedPassword = encodedPassword;
 		this.createdAt = createdAt;
@@ -96,8 +96,8 @@ public class TeamDTO {
 		return region;
 	}
 
-	public LeagueEntry getAffiliation() {
-		return affiliation;
+	public LeagueEntry getLeague() {
+		return league;
 	}
 
 	public SiteEntry getHomeSite() {

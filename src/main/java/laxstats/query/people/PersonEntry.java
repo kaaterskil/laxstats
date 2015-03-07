@@ -1,5 +1,6 @@
 package laxstats.query.people;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -35,8 +36,10 @@ import org.joda.time.LocalDateTime;
 		@Index(name = "people_idx1", columnList = "lastName"),
 		@Index(name = "people_idx2", columnList = "isParentReleased"),
 		@Index(name = "people_idx3", columnList = "parentReleaseSentOn"),
-		@Index(name = "people_idx4", columnList = "parentReleaseReceivedOn") })
-public class PersonEntry {
+		@Index(name = "people_idx4", columnList = "parentReleaseReceivedOn"),
+		@Index(name = "people_idx5", columnList = "lastName, firstName") })
+public class PersonEntry implements Serializable {
+	private static final long serialVersionUID = 7491763841222491421L;
 
 	@Id
 	@Column(length = 36)

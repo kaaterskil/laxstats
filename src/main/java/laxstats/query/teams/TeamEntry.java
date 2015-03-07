@@ -10,6 +10,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Index;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -63,9 +64,11 @@ public class TeamEntry {
 	private Region region;
 
 	@ManyToOne
-	private LeagueEntry affiliation;
+	@JoinColumn(name = "league_id")
+	private LeagueEntry league;
 
 	@ManyToOne
+	@JoinColumn(name = "home_site_id")
 	private SiteEntry homeSite;
 
 	@Column(length = 50)
@@ -185,12 +188,12 @@ public class TeamEntry {
 		this.region = region;
 	}
 
-	public LeagueEntry getAffiliation() {
-		return affiliation;
+	public LeagueEntry getLeague() {
+		return league;
 	}
 
-	public void setAffiliation(LeagueEntry affiliation) {
-		this.affiliation = affiliation;
+	public void setLeague(LeagueEntry league) {
+		this.league = league;
 	}
 
 	public SiteEntry getHomeSite() {

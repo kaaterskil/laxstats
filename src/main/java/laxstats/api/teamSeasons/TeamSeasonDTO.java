@@ -12,7 +12,7 @@ public class TeamSeasonDTO {
 	private final TeamSeasonId teamSeasonId;
 	private final TeamEntry team;
 	private final SeasonEntry season;
-	private final LeagueEntry affiliation;
+	private final LeagueEntry league;
 	private final LocalDate startsOn;
 	private final LocalDate endsOn;
 	private final String name;
@@ -23,14 +23,14 @@ public class TeamSeasonDTO {
 	private final LocalDateTime modifiedAt;
 
 	public TeamSeasonDTO(TeamSeasonId teamSeasonId, TeamEntry team,
-			SeasonEntry season, LeagueEntry affiliation, LocalDate startsOn,
+			SeasonEntry season, LeagueEntry league, LocalDate startsOn,
 			LocalDate endsOn, String name, TeamStatus status,
 			UserEntry createdBy, LocalDateTime createdAt, UserEntry modifiedBy,
 			LocalDateTime modifiedAt) {
 		this.teamSeasonId = teamSeasonId;
 		this.team = team;
 		this.season = season;
-		this.affiliation = affiliation;
+		this.league = league;
 		this.startsOn = startsOn;
 		this.endsOn = endsOn;
 		this.name = name;
@@ -42,10 +42,10 @@ public class TeamSeasonDTO {
 	}
 
 	public TeamSeasonDTO(TeamSeasonId teamSeasonId, TeamEntry team,
-			SeasonEntry season, LeagueEntry affiliation, LocalDate startsOn,
+			SeasonEntry season, LeagueEntry league, LocalDate startsOn,
 			LocalDate endsOn, String name, TeamStatus status,
 			UserEntry modifiedBy, LocalDateTime modifiedAt) {
-		this(teamSeasonId, team, season, affiliation, startsOn, endsOn, name,
+		this(teamSeasonId, team, season, league, startsOn, endsOn, name,
 				status, null, null, modifiedBy, modifiedAt);
 	}
 
@@ -61,8 +61,8 @@ public class TeamSeasonDTO {
 		return season;
 	}
 
-	public LeagueEntry getAffiliation() {
-		return affiliation;
+	public LeagueEntry getLeague() {
+		return league;
 	}
 
 	public LocalDate getStartsOn() {

@@ -88,7 +88,7 @@ public class TeamController extends ApplicationController {
 		final SiteEntry homeSite = siteId == null ? null : siteRepository
 				.findOne(siteId);
 
-		final String leagueId = form.getAffiliation();
+		final String leagueId = form.getLeague();
 		final LeagueEntry league = leagueId == null ? null : leagueRepository
 				.findOne(leagueId);
 
@@ -123,7 +123,7 @@ public class TeamController extends ApplicationController {
 		final SiteEntry homeSite = siteId == null ? null : siteRepository
 				.findOne(siteId);
 
-		final String leagueId = form.getAffiliation();
+		final String leagueId = form.getLeague();
 		final LeagueEntry league = leagueId == null ? null : leagueRepository
 				.findOne(leagueId);
 
@@ -164,8 +164,8 @@ public class TeamController extends ApplicationController {
 		form.setGender(team.getGender());
 		form.setLetter(team.getLetter());
 		form.setRegion(team.getRegion());
-		if (team.getAffiliation() != null) {
-			form.setAffiliation(team.getAffiliation().getId());
+		if (team.getLeague() != null) {
+			form.setLeague(team.getLeague().getId());
 		}
 		if (team.getHomeSite() != null) {
 			form.setHomeSite(team.getHomeSite().getId());

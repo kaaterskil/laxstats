@@ -1,5 +1,7 @@
 package laxstats.query.violations;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -18,10 +20,11 @@ import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 
 @Entity
-@Table(name = "penaltyTypes", indexes = {
+@Table(name = "violations", indexes = {
 		@Index(name = "violations_idx1", columnList = "name"),
 		@Index(name = "violations_idx2", columnList = "category") }, uniqueConstraints = { @UniqueConstraint(name = "violations_uk1", columnNames = { "name" }) })
-public class ViolationEntry {
+public class ViolationEntry implements Serializable {
+	private static final long serialVersionUID = 3389030857212618605L;
 
 	@Id
 	@Column(length = 36)

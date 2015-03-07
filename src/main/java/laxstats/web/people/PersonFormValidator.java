@@ -39,7 +39,7 @@ public class PersonFormValidator implements Validator {
 		logger.debug("Entering: " + proc + "10");
 
 		// Validate mandatory args
-		checkMandatoryArge(form, errors);
+		checkMandatoryArg(form, errors);
 		logger.debug(proc + "20");
 
 		// Validate birth date
@@ -65,7 +65,7 @@ public class PersonFormValidator implements Validator {
 	 * @param form
 	 * @param errors
 	 */
-	private void checkMandatoryArge(PersonForm form, Errors errors) {
+	private void checkMandatoryArg(PersonForm form, Errors errors) {
 		final String proc = PACKAGE_NAME + ".validate.";
 
 		logger.debug("Entering: " + proc + "10");

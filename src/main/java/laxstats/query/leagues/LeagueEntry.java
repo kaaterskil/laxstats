@@ -1,5 +1,6 @@
 package laxstats.query.leagues;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -9,10 +10,13 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Index;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
+import laxstats.api.Region;
 import laxstats.api.leagues.Level;
 import laxstats.query.users.UserEntry;
 
@@ -20,8 +24,15 @@ import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 
 @Entity
-@Table(name = "leagues", indexes = { @Index(name = "affiliation_idx1", columnList = "level") })
-public class LeagueEntry {
+@Table(name = "leagues", indexes = {
+		@Index(name = "league_idx1", columnList = "name, region, level"),
+		@Index(name = "league_idx2", columnList = "name"),
+		@Index(name = "league_idx3", columnList = "region"),
+		@Index(name = "league_idx4", columnList = "region, level"),
+		@Index(name = "league_idx5", columnList = "level") }, uniqueConstraints = { @UniqueConstraint(name = "league_uk1", columnNames = {
+		"name", "region", "level" }) })
+public class LeagueEntry implements Serializable {
+	private static final long serialVersionUID = -5663763326055057539L;
 
 	@Id
 	@Column(length = 36)
@@ -32,13 +43,18 @@ public class LeagueEntry {
 
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20, nullable = false)
+	private Region region;
+
+	@Enumerated(EnumType.STRING)
+	@Column(length = 20, nullable = false)
 	private Level level;
+
+	@ManyToOne
+	@JoinColumn(name = "parent_id")
+	private LeagueEntry parent;
 
 	@Column(columnDefinition = "text")
 	private String description;
-
-	@ManyToOne
-	private LeagueEntry parent;
 
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime createdAt;
@@ -55,7 +71,7 @@ public class LeagueEntry {
 	@OneToMany(mappedBy = "parent")
 	private Set<LeagueEntry> children = new HashSet<>();
 
-	@OneToMany(mappedBy = "affiliation")
+	@OneToMany(mappedBy = "league")
 	private final Set<TeamAffiliation> affiliatedTeams = new HashSet<>();
 
 	/*----------- Methods ----------*/
@@ -96,6 +112,14 @@ public class LeagueEntry {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public Region getRegion() {
+		return region;
+	}
+
+	public void setRegion(Region region) {
+		this.region = region;
 	}
 
 	public Level getLevel() {

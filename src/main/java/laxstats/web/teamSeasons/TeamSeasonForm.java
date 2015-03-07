@@ -63,11 +63,11 @@ public class TeamSeasonForm {
 		this.season = season;
 	}
 
-	public String getAffiliation() {
+	public String getLeague() {
 		return affiliation;
 	}
 
-	public void setAffiliation(String affiliation) {
+	public void setLeague(String affiliation) {
 		this.affiliation = affiliation;
 	}
 

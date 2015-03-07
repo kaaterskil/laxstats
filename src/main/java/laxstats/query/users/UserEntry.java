@@ -17,7 +17,10 @@ import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 
 @Entity
-@Table(name = "users", indexes = { @Index(name = "users_idx1", columnList = "lastName") }, uniqueConstraints = { @UniqueConstraint(name = "users_uk1", columnNames = { "email" }) })
+@Table(name = "users", indexes = {
+		@Index(name = "users_idx1", columnList = "lastName"),
+		@Index(name = "users_idx1", columnList = "email"),
+		@Index(name = "users_idx3", columnList = "role") }, uniqueConstraints = { @UniqueConstraint(name = "users_uk1", columnNames = { "email" }) })
 public class UserEntry {
 
 	@Id

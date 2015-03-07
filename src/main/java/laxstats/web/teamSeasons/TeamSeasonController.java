@@ -152,8 +152,8 @@ public class TeamSeasonController extends ApplicationController {
 		form.setTeamTitle(team.getTitle());
 		form.setName(team.getName());
 		form.setStatus(TeamStatus.ACTIVE);
-		if (team.getAffiliation() != null) {
-			form.setAffiliation(team.getAffiliation().getId());
+		if (team.getLeague() != null) {
+			form.setLeague(team.getLeague().getId());
 		}
 		form.setSeasons(getSeasons());
 
@@ -176,8 +176,8 @@ public class TeamSeasonController extends ApplicationController {
 		form.setStartsOn(teamSeason.getStartsOn());
 		form.setEndsOn(teamSeason.getEndsOn());
 		form.setStatus(teamSeason.getStatus());
-		if (teamSeason.getAffiliation() != null) {
-			form.setAffiliation(teamSeason.getAffiliation().getId());
+		if (teamSeason.getLeague() != null) {
+			form.setLeague(teamSeason.getLeague().getId());
 		}
 		form.setSeasons(getSeasons());
 

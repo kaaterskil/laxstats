@@ -77,7 +77,7 @@ public class AttendeeEntry implements Serializable {
 	@ManyToOne
 	private UserEntry modifiedBy;
 
-	// ---------- Constructors ----------//
+	/*---------- Constructors ----------*/
 
 	public AttendeeEntry(GameEntry event, PlayerEntry player,
 			TeamSeasonEntry teamSeason) {
@@ -88,6 +88,8 @@ public class AttendeeEntry implements Serializable {
 
 	protected AttendeeEntry() {
 	}
+
+	/*---------- Methods ----------*/
 
 	public String label() {
 		final StringBuilder sb = new StringBuilder();
@@ -106,7 +108,7 @@ public class AttendeeEntry implements Serializable {
 		return result.length() > 0 ? result : "Unknown player";
 	}
 
-	/* ---------- Getter/Setters ---------- */
+	/*---------- Getter/Setters ----------*/
 
 	public String getId() {
 		return id;

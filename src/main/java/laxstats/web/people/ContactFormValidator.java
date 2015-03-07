@@ -43,9 +43,13 @@ public class ContactFormValidator implements Validator {
 		checkDuplicate(form, errors);
 		logger.debug(proc + "30");
 
+		// Validate primary designation
+		checkPrimary(form, errors);
+		logger.debug(proc + "40");
+
 		// Validate value
 		checkValue(form, errors);
-		logger.debug("Leaving: " + proc + "40");
+		logger.debug("Leaving: " + proc + "50");
 	}
 
 	/**
@@ -115,6 +119,55 @@ public class ContactFormValidator implements Validator {
 		}
 		logger.debug("Leaving: " + proc + "60");
 
+	}
+
+	/**
+	 * Validates that the primary designation is valid. If the address is given
+	 * as a primary address and the given person has no other primary address,
+	 * then processing continues.
+	 *
+	 * @param form
+	 * @param errors
+	 */
+	private void checkPrimary(ContactForm form, Errors errors) {
+		final String proc = PACKAGE_NAME + ".checkDuplicate.";
+		final String addressId = form.getId();
+		final String personId = form.getPersonId();
+		final boolean isPrimary = form.isPrimary();
+
+		logger.debug("Entering: " + proc + "10");
+
+		if (isPrimary) {
+			final PersonEntry person = personRepository.findOne(personId);
+			logger.debug(proc + "20");
+
+			final ContactEntry oldPrimaryContact = person.primaryContact();
+			logger.debug(proc + "30");
+
+			if (oldPrimaryContact != null) {
+				final boolean isUpdating = apiUpdating(addressId);
+				logger.debug(proc + "40");
+
+				// Only proceed with validation if the record is new or if the
+				// primary designation has changed
+
+				if (isUpdating) {
+					logger.debug(proc + "50");
+					if (oldPrimaryContact.isPrimary()
+							&& !oldPrimaryContact.getId().equals(addressId)) {
+						errors.rejectValue("isPrimary",
+								"contact.isPrimary.multiplePrimary");
+					}
+				} else {
+					logger.debug(proc + "60");
+					if (oldPrimaryContact.isPrimary()) {
+						errors.rejectValue("isPrimary",
+								"contact.isPrimary.multiplePrimary");
+					}
+				}
+			}
+		}
+		logger.debug("Leaving: " + proc + "70");
 	}
 
 	/**

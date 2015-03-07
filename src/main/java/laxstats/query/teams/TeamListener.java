@@ -32,7 +32,7 @@ public class TeamListener {
 		team.setGender(dto.getGender());
 		team.setLetter(dto.getLetter());
 		team.setRegion(dto.getRegion());
-		team.setAffiliation(dto.getAffiliation());
+		team.setLeague(dto.getLeague());
 		team.setHomeSite(dto.getHomeSite());
 		team.setCreatedAt(dto.getCreatedAt());
 		team.setCreatedBy(dto.getCreatedBy());
@@ -54,7 +54,7 @@ public class TeamListener {
 		team.setGender(dto.getGender());
 		team.setLetter(dto.getLetter());
 		team.setRegion(dto.getRegion());
-		team.setAffiliation(dto.getAffiliation());
+		team.setLeague(dto.getLeague());
 		team.setHomeSite(dto.getHomeSite());
 		team.setModifiedAt(dto.getModifiedAt());
 		team.setModifiedBy(dto.getModifiedBy());

@@ -1,5 +1,7 @@
 package laxstats.query.people;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -28,7 +30,8 @@ import org.joda.time.LocalDateTime;
 		@Index(name = "address_idx3", columnList = "doNotUse"),
 		@Index(name = "address_idx4", columnList = "addressType") }, uniqueConstraints = { @UniqueConstraint(name = "address_uk1", columnNames = {
 		"person_id", "isPrimary" }) })
-public class AddressEntry implements Contactable {
+public class AddressEntry implements Contactable, Serializable {
+	private static final long serialVersionUID = 2873674846553569444L;
 
 	@Id
 	@Column(length = 36)

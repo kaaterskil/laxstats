@@ -3,13 +3,13 @@ package laxstats.query.leagues;
 import java.io.Serializable;
 
 import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import laxstats.query.teams.TeamEntry;
 import laxstats.query.users.UserEntry;
@@ -19,54 +19,25 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
 @Entity
-@Table(name = "team_affiliations", indexes = { @Index(name = "team_affiliation_idx1", columnList = "startingOn") })
-public class TeamAffiliation {
+@Table(name = "team_affiliations", indexes = {
+		@Index(name = "team_affiliation_idx1", columnList = "id, team_id, league_id"),
+		@Index(name = "team_affiliation_idx2", columnList = "league_id"),
+		@Index(name = "team_affiliation_idx3", columnList = "startingOn") }, uniqueConstraints = { @UniqueConstraint(name = "team_affiliation_uk1", columnNames = {
+		"team_id", "league_id" }) })
+public class TeamAffiliation implements Serializable {
+	private static final long serialVersionUID = 4210935570475222296L;
 
-	@Embeddable
-	public static class Id implements Serializable {
-		private static final long serialVersionUID = 5408146241619855006L;
-
-		@Column(length = 36)
-		private String teamId;
-
-		@Column(length = 36)
-		private String affiliationId;
-
-		public Id() {
-		}
-
-		public Id(String teamId, String affiliationId) {
-			this.teamId = teamId;
-			this.affiliationId = affiliationId;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (o != null && o instanceof TeamAffiliation.Id) {
-				final Id that = (Id) o;
-				return this.teamId.equals(that.teamId)
-						&& this.affiliationId.equals(that.affiliationId);
-			}
-			return false;
-		}
-
-		@Override
-		public int hashCode() {
-			return teamId.hashCode() + affiliationId.hashCode();
-		}
-	}
-
-	@javax.persistence.Id
-	@Embedded
-	private final TeamAffiliation.Id id = new Id();
+	@Id
+	@Column(length = 36)
+	private String id;
 
 	@ManyToOne
-	@JoinColumn(name = "teamId", insertable = false, updatable = false)
+	@JoinColumn(name = "team_id")
 	private TeamEntry team;
 
 	@ManyToOne
-	@JoinColumn(name = "affiliationId", insertable = false, updatable = false)
-	private LeagueEntry affiliation;
+	@JoinColumn(name = "league_id")
+	private LeagueEntry league;
 
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
 	private LocalDate startingOn;
@@ -86,22 +57,41 @@ public class TeamAffiliation {
 	@ManyToOne
 	private UserEntry modifiedBy;
 
-	// ---------- Constructors ----------//
+	/*---------- Constructors ----------*/
 
-	public TeamAffiliation() {
-	}
-
-	public TeamAffiliation(TeamEntry team, LeagueEntry affiliation) {
+	public TeamAffiliation(TeamEntry team, LeagueEntry league) {
 		this.team = team;
-		this.affiliation = affiliation;
-
-		this.id.teamId = team.getId();
-		this.id.affiliationId = affiliation.getId();
-
-		affiliation.getAffiliatedTeams().add(this);
+		this.league = league;
 	}
 
-	// ---------- Getter/Setters ----------//
+	protected TeamAffiliation() {
+	}
+
+	/*---------- Getter/Setters ----------*/
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public TeamEntry getTeam() {
+		return team;
+	}
+
+	public void setTeam(TeamEntry team) {
+		this.team = team;
+	}
+
+	public LeagueEntry getLeague() {
+		return league;
+	}
+
+	public void setLeague(LeagueEntry league) {
+		this.league = league;
+	}
 
 	public LocalDate getStartingOn() {
 		return startingOn;
@@ -149,17 +139,5 @@ public class TeamAffiliation {
 
 	public void setModifiedBy(UserEntry modifiedBy) {
 		this.modifiedBy = modifiedBy;
-	}
-
-	public TeamAffiliation.Id getId() {
-		return id;
-	}
-
-	public TeamEntry getTeam() {
-		return team;
-	}
-
-	public LeagueEntry getAffiliation() {
-		return affiliation;
 	}
 }

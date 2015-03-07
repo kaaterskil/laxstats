@@ -28,7 +28,7 @@ public class TeamSeasonListener {
 		entity.setId(identifier.toString());
 		entity.setTeam(dto.getTeam());
 		entity.setSeason(dto.getSeason());
-		entity.setAffiliation(dto.getAffiliation());
+		entity.setLeague(dto.getLeague());
 		entity.setStartsOn(dto.getStartsOn());
 		entity.setEndsOn(dto.getEndsOn());
 		entity.setName(dto.getTeam().getName());
@@ -50,7 +50,7 @@ public class TeamSeasonListener {
 				.findOne(identifier.toString());
 
 		entity.setSeason(dto.getSeason());
-		entity.setAffiliation(dto.getAffiliation());
+		entity.setLeague(dto.getLeague());
 		entity.setStartsOn(dto.getStartsOn());
 		entity.setEndsOn(dto.getEndsOn());
 		entity.setName(dto.getTeam().getName());

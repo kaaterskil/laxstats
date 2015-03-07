@@ -1,5 +1,7 @@
 package laxstats.query.players;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -31,7 +33,8 @@ import org.joda.time.LocalDateTime;
 		@Index(name = "player_idx6", columnList = "isCaptain"),
 		@Index(name = "player_idx7", columnList = "depth") }, uniqueConstraints = { @UniqueConstraint(name = "player_uk1", columnNames = {
 		"id", "team_season_id", "person_id" }) })
-public class PlayerEntry {
+public class PlayerEntry implements Serializable {
+	private static final long serialVersionUID = -297221422212373720L;
 
 	@Id
 	@Column(length = 36)

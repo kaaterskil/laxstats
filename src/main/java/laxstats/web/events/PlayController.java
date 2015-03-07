@@ -81,6 +81,19 @@ public class PlayController extends ApplicationController {
 	private Map<String, String> violations;
 
 	@Autowired
+	private ClearFormValidator clearValidator;
+	@Autowired
+	private FaceOffFormValidator faceOffValidator;
+	@Autowired
+	private GoalFormValidator goalValidator;
+	@Autowired
+	private GroundBallFormValidator groundBallValidator;
+	@Autowired
+	private PenaltyFormValidator penaltyValidator;
+	@Autowired
+	private ShotFormValidator shotValidator;
+
+	@Autowired
 	public PlayController(UserQueryRepository userRepository,
 			CommandBus commandBus, GameQueryRepository eventRepository,
 			TeamSeasonQueryRepository teamRepository,
@@ -91,14 +104,34 @@ public class PlayController extends ApplicationController {
 		this.violationRepository = violationRepository;
 	}
 
-	@InitBinder
-	protected void initBinder(WebDataBinder binder) {
-		binder.setValidator(new ClearFormValidator());
-		binder.setValidator(new FaceOffFormValidator());
-		binder.setValidator(new GoalFormValidator());
-		binder.setValidator(new GroundBallFormValidator());
-		binder.setValidator(new PenaltyFormValidator());
-		binder.setValidator(new ShotFormValidator());
+	@InitBinder("clearForm")
+	protected void initClearBinder(WebDataBinder binder) {
+		binder.setValidator(clearValidator);
+	}
+
+	@InitBinder("faceOffForm")
+	protected void initFaceOffBinder(WebDataBinder binder) {
+		binder.setValidator(faceOffValidator);
+	}
+
+	@InitBinder("goalForm")
+	protected void initGoalBinder(WebDataBinder binder) {
+		binder.setValidator(goalValidator);
+	}
+
+	@InitBinder("groundBallForm")
+	protected void initGroundBallBinder(WebDataBinder binder) {
+		binder.setValidator(groundBallValidator);
+	}
+
+	@InitBinder("penaltyForm")
+	protected void initPenaltyBinder(WebDataBinder binder) {
+		binder.setValidator(penaltyValidator);
+	}
+
+	@InitBinder("shotForm")
+	protected void initShotBinder(WebDataBinder binder) {
+		binder.setValidator(shotValidator);
 	}
 
 	/*---------- Clear actions ----------*/

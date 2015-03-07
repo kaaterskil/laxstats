@@ -17,10 +17,12 @@ import org.joda.time.Seconds;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
+@Service
 public class PenaltyFormValidator extends AbstractPlayValidator implements
 		Validator {
 	private static final Logger logger = LoggerFactory
@@ -29,10 +31,10 @@ public class PenaltyFormValidator extends AbstractPlayValidator implements
 			.getPackage().getName();
 
 	@Autowired
-	GameQueryRepository gameRepository;
+	private GameQueryRepository gameRepository;
 
 	@Autowired
-	ViolationQueryRepository violationRepository;
+	private ViolationQueryRepository violationRepository;
 
 	@Override
 	public boolean supports(Class<?> clazz) {

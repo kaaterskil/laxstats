@@ -41,9 +41,19 @@ public class AddressFormValidator implements Validator {
 
 		// Validate type/street/city/region combination
 		checkDuplicate(form, errors);
-		logger.debug("Leaving: " + proc + "30");
+		logger.debug(proc + "30");
+
+		// Validate primary designation
+		checkPrimary(form, errors);
+		logger.debug("Leaving: " + proc + "40");
 	}
 
+	/**
+	 * Validates that mandatory arguments have been set.
+	 * 
+	 * @param form
+	 * @param errors
+	 */
 	private void checkMandatoryArgs(AddressForm form, Errors errors) {
 		final String proc = PACKAGE_NAME + ".checkMandatoryArgs.";
 
@@ -57,6 +67,14 @@ public class AddressFormValidator implements Validator {
 		logger.debug("Leaving: " + proc + "40");
 	}
 
+	/**
+	 * Validates that the address is unique for the given person. If the address
+	 * type, street, city and region combination are unique, then processing
+	 * continues.
+	 * 
+	 * @param form
+	 * @param errors
+	 */
 	private void checkDuplicate(AddressForm form, Errors errors) {
 		final String proc = PACKAGE_NAME + ".checkDuplicate.";
 		final String addressId = form.getId();
@@ -96,7 +114,6 @@ public class AddressFormValidator implements Validator {
 			}
 		} else {
 			logger.debug(proc + "50");
-
 			found = personRepository.uniqueAddress(type, address1, city,
 					region, personId);
 			if (found > 0) {
@@ -104,6 +121,55 @@ public class AddressFormValidator implements Validator {
 			}
 		}
 		logger.debug("Leaving: " + proc + "60");
+	}
+
+	/**
+	 * Validates that the primary designation is valid. If the address is given
+	 * as a primary address and the given person has no other primary address,
+	 * then processing continues.
+	 *
+	 * @param form
+	 * @param errors
+	 */
+	private void checkPrimary(AddressForm form, Errors errors) {
+		final String proc = PACKAGE_NAME + ".checkDuplicate.";
+		final String addressId = form.getId();
+		final String personId = form.getPersonId();
+		final boolean isPrimary = form.isPrimary();
+
+		logger.debug("Entering: " + proc + "10");
+
+		if (isPrimary) {
+			final PersonEntry person = personRepository.findOne(personId);
+			logger.debug(proc + "20");
+
+			final AddressEntry oldPrimaryAddress = person.primaryAddress();
+			logger.debug(proc + "30");
+
+			if (oldPrimaryAddress != null) {
+				final boolean isUpdating = apiUpdating(addressId);
+				logger.debug(proc + "40");
+
+				// Only proceed with validation if the record is new or if the
+				// primary designation has changed
+
+				if (isUpdating) {
+					logger.debug(proc + "50");
+					if (oldPrimaryAddress.isPrimary()
+							&& !oldPrimaryAddress.getId().equals(addressId)) {
+						errors.rejectValue("isPrimary",
+								"address.isPrimary.multiplePrimary");
+					}
+				} else {
+					logger.debug(proc + "60");
+					if (oldPrimaryAddress.isPrimary()) {
+						errors.rejectValue("isPrimary",
+								"address.isPrimary.multiplePrimary");
+					}
+				}
+			}
+		}
+		logger.debug("Leaving: " + proc + "70");
 	}
 
 	/**

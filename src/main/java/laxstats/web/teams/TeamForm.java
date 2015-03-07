@@ -37,7 +37,7 @@ public class TeamForm {
 	private Region region;
 
 	private String homeSite;
-	private String affiliation;
+	private String league;
 
 	private List<TeamGender> genders;
 	private List<Letter> letters;
@@ -111,12 +111,12 @@ public class TeamForm {
 		this.homeSite = homeSite;
 	}
 
-	public String getAffiliation() {
-		return affiliation;
+	public String getLeague() {
+		return league;
 	}
 
-	public void setAffiliation(String affiliation) {
-		this.affiliation = affiliation;
+	public void setLeague(String league) {
+		this.league = league;
 	}
 
 	/*---------- Drop down lists ----------*/

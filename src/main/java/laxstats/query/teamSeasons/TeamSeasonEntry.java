@@ -37,7 +37,9 @@ import org.joda.time.LocalDateTime;
 @Entity
 @Table(name = "team_seasons", indexes = {
 		@Index(name = "team_season_idx1", columnList = "id, team_id, season_id"),
-		@Index(name = "team_season_idx2", columnList = "affiliation_id") }, uniqueConstraints = { @UniqueConstraint(name = "team_season_uk1", columnNames = {
+		@Index(name = "team_season_idx2", columnList = "league_id"),
+		@Index(name = "team_season_idx3", columnList = "startsOn"),
+		@Index(name = "team_season_idx4", columnList = "startsOn, endsOn") }, uniqueConstraints = { @UniqueConstraint(name = "team_season_uk1", columnNames = {
 		"team_id", "season_id" }) })
 public class TeamSeasonEntry {
 
@@ -54,8 +56,8 @@ public class TeamSeasonEntry {
 	private SeasonEntry season;
 
 	@ManyToOne
-	@JoinColumn(name = "affiliation_id")
-	private LeagueEntry affiliation;
+	@JoinColumn(name = "league_id")
+	private LeagueEntry league;
 
 	@Column(nullable = false)
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
@@ -188,12 +190,12 @@ public class TeamSeasonEntry {
 		this.season = season;
 	}
 
-	public LeagueEntry getAffiliation() {
-		return affiliation;
+	public LeagueEntry getLeague() {
+		return league;
 	}
 
-	public void setAffiliation(LeagueEntry affiliation) {
-		this.affiliation = affiliation;
+	public void setLeague(LeagueEntry league) {
+		this.league = league;
 	}
 
 	public String getName() {
