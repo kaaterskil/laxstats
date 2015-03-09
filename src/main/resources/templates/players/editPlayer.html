@@ -8,14 +8,14 @@
 	<div layout:fragment="content">
 		<div class="row">
 			<div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
-				<h1>Edit Roster</h1>
+				<h1 class="lax-form-title">Edit Roster</h1>
 				<p th:text="${teamSeason.getFullName() + ' Season'}">Team Name</p>
 			</div>
 		</div>
 		
 		<div class="row">
 			<div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
-				<h2 th:text="${player.person.getFullName()}"></h2>
+				<h2 class="lax-form-subtitle" th:text="${player.person.getFullName()}"></h2>
 				<form action="#"
 					  name="edit-roster-form"
 					  id="edit-roster-form"
@@ -93,7 +93,7 @@
 					</div>
 					
 					<div class="row">
-						<div class="col-sm-4 form-group">
+						<div class="col-sm-4 col-xs-6 form-group">
 							<label for="height">Height (in)</label>
 							<input type="number"
 								   id="height"
@@ -101,7 +101,7 @@
 								   maxlength="3"
 								   th:field="*{height}" />
 						</div>
-						<div class="col-sm-4 form-group">
+						<div class="col-sm-4 col-xs-6 form-group">
 							<label for="weight">Weight (lbs)</label>
 							<input type="number"
 								   id="weight"
@@ -114,14 +114,32 @@
 								<input type="checkbox"
 									   id="captain"
 									   th:field="*{captain}" />
-								<strong>Captain</strong>
+								<span><strong>Captain</strong></span>
 							</label>
 						</div>
 					</div>
-					<button th:type="submit" class="btn btn-default">Edit Member</button>
+					<button th:type="submit" class="btn btn-default btn-sm">Edit Member</button>
+					<a class="btn lax-btn-cancel btn-sm" 
+					   href="#" 
+					   th:href="@{'/admin/teamSeasons/' + ${teamSeason.id} + '/roster'}">Cancel</a>
 				</form>
 			</div>
 		</div>
+		<script type="text/javascript">
+			(function(){
+				function toggleFormElementsByRole() {
+					var role = $(this).val();
+					if(role == 'ATHLETE') {
+						$('.athlete').css('display', 'inline');
+					} else {
+						$('.athlete').css('display', 'none');
+					}
+				}
+
+				$("#role").change(toggleFormElementsByRole);
+				
+			})();
+		</script>
 	</div>
 </body>
 </html>

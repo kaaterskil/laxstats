@@ -23,7 +23,7 @@
 	font-style: normal;
 }
 
-/*---------- General styles ----------*/
+/*---------- GENERAL STYLES ----------*/
 html, body {
 	background-color: rgb(233, 233, 233);
 	margin: 0;
@@ -96,12 +96,27 @@ label {
 	}
 }
 
-/*---------- Custom general ----------*/
+/*---------- BOOTSTRAP OVERRIDES ----------*/
+.form-group {
+	margin-bottom: 10px;
+}
+
 .form-control {
-	-moz-box-shadow: none;
-	-o-box-shadow: none;
+	border: 2px solid rgb(204, 204, 204);
+	border-radius: 0;
 	-webkit-box-shadow: none;
 	box-shadow: none;
+	border-radius: 0;
+}
+
+.form-control:focus {
+	-webkit-box-shadow: none;
+	box-shadow: none;
+}
+
+.btn {
+	font: 500 18px "freight-sans-pro", Helvetica, Arial, sans-serif;
+	margin-top: 10px;
 }
 
 table .btn {
@@ -109,76 +124,54 @@ table .btn {
 	line-height: 1;
 }
 
-.center {
-	text-align: center;
-}
-
-.red {
-	color: rgb(255, 0, 0);
-}
-
-.green {
-	color: rgb(34, 139, 34);
-}
-
-.required label:after {
-	content: "*";
-	color: rgb(255, 0, 0);
-	display: inline;
-}
-
-.lax-error, .ls-logout, .lax-flash-message {
-	color: rgb(255, 51, 0);
-	font: bold 12px Arial;
-	padding: 5px 0;
-}
-
-.btn {
-	font: 700 18px "freight-sans-pro", Helvetica, Arial, sans-serif;
-}
-
 .btn-sm {
-	border-radius: 5px !important;
-	font-size: 16px !important;
-	padding: 3px 10px !important;
+	border-radius: 0;
+	font-size: 16px;
+	padding: 3px 15px;
 }
 
 .btn-default {
-	background-color: rgb(220, 191, 166) !important;
-	border: 1px solid rgb(173, 124, 89) !important;
-	color: rgb(255, 255, 255) !important;
-}
-
-.lax-btn-new {
-	margin-top: 7px;
-}
-
-.lax-btn-delete {
-	border: none !important;
-	padding: 0 !important;
-}
-
-.lax-btn-cancel {
-	border: 1px solid rgb(173, 124, 89) !important;
-	margin-left: 10px;
-}
-
-.checkbox {
-	margin-top: 27px;
-}
-
-.lax-icon {
-	display: inline;
-	margin: 0 3px;
-}
-
-.main-content {
 	background-color: rgb(255, 255, 255);
-	min-height: 450px;
-	padding: 20px 0;
+	border: 2px solid rgb(238, 162, 54);
+	color: rgb(238, 162, 54);
+	transition: all 0.2s ease;
 }
 
-/*---------- Navigation styles ----------*/
+.btn-default:hover {
+	background-color: rgb(240, 173, 78);
+	border-color: rgb(238, 162, 54);
+	color: rgb(255, 255, 255);
+}
+
+.btn-default:active {
+	background-color: rgb(254, 208, 134);
+	border-color: rgb(249, 191, 0);
+	-moz-box-shadow: none;
+	-o-box-shadow: none;
+	box-shadow: none;
+}
+
+.btn-info {
+	background-color: rgb(255, 255, 255);
+	border: 2px solid rgb(70, 184, 218);
+	color: rgb(70, 184, 218);
+	transition: all 0.2s ease;
+}
+
+.btn-info:hover {
+	background-color: rgb(91, 192, 222);
+	border-color: rgb(70, 184, 218);
+	color: rgb(255, 255, 255);
+}
+
+.btn-info:active {
+	background-color: rgb(136, 210, 231);
+	-moz-box-shadow: none;
+	-o-box-shadow: none;
+	box-shadow: none;
+	border-color: rgb(70, 184, 218);
+}
+
 .navbar {
 	border-radius: 0;
 	margin-bottom: 0;
@@ -203,11 +196,6 @@ nav .navbar-nav>li>a:hover {
 	color: rgb(251, 225, 34) !important;
 }
 
-.logout-btn {
-	background-color: rgb(255, 255, 255);
-	border: none;
-}
-
 @media ( max-width : 738px) {
 	nav .navbar-nav>li {
 		text-align: center;
@@ -218,7 +206,12 @@ nav .navbar-nav>li>a:hover {
 	}
 }
 
-/*---------- Navigation toggle button ----------*/
+/*---------- NAVIGATION ----------*/
+.logout-btn {
+	background-color: rgb(255, 255, 255);
+	border: none;
+}
+
 .navbar-toggle {
 	border: none;
 	float: none;
@@ -307,7 +300,25 @@ nav .navbar-nav>li>a:hover {
 	transform: rotate(-45deg);
 }
 
-/*---------- Content ----------*/
+/*---------- GENERAL CONTENT PAGES ----------*/
+.center {
+	text-align: center;
+}
+
+.red {
+	color: rgb(255, 0, 0);
+}
+
+.green {
+	color: rgb(34, 139, 34);
+}
+
+.main-content {
+	background-color: rgb(255, 255, 255);
+	min-height: 550px;
+	padding: 20px 0;
+}
+
 .lax-page-title-container {
 	border-bottom: 1px solid rgb(229, 229, 229);
 	margin-bottom: 30px;
@@ -336,10 +347,133 @@ nav .navbar-nav>li>a:hover {
 	}
 }
 
-/*---------- Admin ----------*/
+/*---------- ADMIN PAGES ----------*/
+.required label:after {
+	content: "\0020\002a";
+	color: rgb(255, 0, 0);
+	display: inline;
+}
+
+.checkbox {
+	margin-top: 27px;
+}
+
+.checkbox label span {
+	display: inline-block;
+	margin-top: 3px;
+}
+
+.lax-error, .ls-logout, .lax-flash-message {
+	color: rgb(255, 51, 0);
+	font: bold 12px Arial;
+	padding: 5px 0;
+}
+
+.lax-btn-new {
+	margin: 4px 0;
+}
+
+.lax-btn-new-person {
+	float: right;
+}
+
+.lax-btn-delete {
+	border: none !important;
+	margin: 0;
+	padding: 0 !important;
+}
+
+.lax-btn-cancel {
+	background-color: rgb(255, 255, 255);
+	border: 2px solid rgb(238, 162, 54);
+	color: rgb(238, 162, 54);
+	margin-left: 10px;
+	margin-top: 10px;
+	transition: all 0.2s ease;
+}
+
+.lax-btn-cancel:hover {
+	background-color: rgb(240, 173, 78);
+	border-color: rgb(238, 162, 54);
+	color: rgb(255, 255, 255);
+}
+
+.lax-btn-cancel:active {
+	background-color: rgb(254, 208, 134);
+	-moz-box-shadow: none;
+	-o-box-shadow: none;
+	box-shadow: none;
+	border-color: rgb(249, 191, 0);
+}
+
+.lax-icon {
+	display: inline;
+	margin: 0 3px;
+}
+
+.lax-icon-drop-down:after {
+	color: rgb(0, 0, 0);
+	content: '\0020\25bc';
+	cursor: pointer;
+	display: inline-block;
+	font-size: 12px;
+	vertical-align: top;
+}
+
+.lax-form-title {
+	color: rgb(0, 0, 0);
+	font: 300 30px/1em "freight-sans-pro", Helvetica, Arial, sans-serif;
+}
+
+.lax-form-subtitle {
+	color: rgb(0, 0, 0);
+	font: 400 24px/1em "freight-sans-pro", Helvetica, Arial, sans-serif;
+}
+
+.lax-form-info-subtitle {
+	color: rgb(0, 0, 0);
+	font: 400 18px/1em "freight-sans-pro", Helvetica, Arial, sans-serif;
+	margin-bottom: 20px;
+}
 
 .lax-admin-table {
 	font: normal normal 12px Arial;
+}
+
+.lax-search-people-form {
+	margin-bottom: 30px;
+}
+
+.selected-person {
+	font: 400 12px Arial;
+	margin-top: 10px;
+}
+
+.selected-person span{
+	display: block;
+	float: left;
+	font-weight: 700;
+	padding-top: 4px;
+}
+
+#search-people {
+	margin-bottom: 12px;
+}
+
+#search-results {
+	margin-top: 8px;
+}
+
+#search-results .form-control {
+	border: 2px solid rgb(70, 184, 218);
+}
+
+#selected-person-name {
+	color: rgb(255, 0, 0);
+	float: none;
+	font: 400 18px/1em "freight-sans-pro", Helvetica, Arial, sans-serif;
+	padding-left: 45px;
+	padding-top: 0;
 }
 
 .lax-faq-bottom {
@@ -383,7 +517,17 @@ ul.lax-faq li {
 	content: "\0041\003a";
 }
 
-@media (max-width: 738px) {
+@media ( max-width : 738px) {
+	.checkbox {
+		margin-top: 0;
+	}
+	.lax-form-title {
+		font-size: 24px;
+		font-weight: 400;
+	}
+	.lax-form-subtitle {
+		font-size: 18px;
+	}
 	ul.lax-faq li {
 		padding-left: 20px;
 		text-indent: -20px;
@@ -391,9 +535,18 @@ ul.lax-faq li {
 	.lax-faq-glyph {
 		width: 20px;
 	}
+	#search-results {
+		margin-bottom: 10px;
+	}
+	.lax-btn-new-person {
+		float: none;
+	}
+	.selected-person {
+		margin-bottom: 5px;
+	}
 }
 
-/*---------- Terms and Privacy Policy ----------*/
+/*---------- STATIC PAGES ----------*/
 .lax-terms {
 	margin-top: 30px;
 }
@@ -424,7 +577,7 @@ ul.lax-faq li {
 	line-height: 1.428;
 }
 
-/*---------- Footer ----------*/
+/*---------- FOOTER ----------*/
 .lax-footer-top {
 	margin: 35px 0 40px;
 }

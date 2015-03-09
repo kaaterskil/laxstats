@@ -3,6 +3,7 @@ package laxstats.web.people;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import laxstats.api.people.AddressDTO;
@@ -44,337 +45,358 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
 public class PersonController extends ApplicationController {
-	private final PersonQueryRepository personRepository;
+   private final PersonQueryRepository personRepository;
 
-	@Autowired
-	public PersonController(PersonQueryRepository personRepository,
-			UserQueryRepository userRepository, CommandBus commandBus) {
-		super(userRepository, commandBus);
-		this.personRepository = personRepository;
-	}
+   @Autowired
+   public PersonController(PersonQueryRepository personRepository,
+      UserQueryRepository userRepository, CommandBus commandBus)
+   {
+      super(userRepository, commandBus);
+      this.personRepository = personRepository;
+   }
 
-	/*---------- Person actions ---------*/
+   /*---------- Person actions ---------*/
 
-	@RequestMapping(value = "/admin/people", method = RequestMethod.GET)
-	public String index(Model model) {
-		final SearchPeopleForm form = new SearchPeopleForm();
-		model.addAttribute("searchForm", form);
-		return "people/index";
-	}
+   @RequestMapping(value = "/admin/people", method = RequestMethod.GET)
+   public String index(Model model) {
+      final SearchPeopleForm form = new SearchPeopleForm();
+      model.addAttribute("searchForm", form);
+      return "people/index";
+   }
 
-	@RequestMapping(value = "/admin/people", method = RequestMethod.POST)
-	public String createPerson(@Valid PersonForm form, BindingResult result) {
-		if (result.hasErrors()) {
-			return "people/newPerson";
-		}
+   @RequestMapping(value = "/admin/people", method = RequestMethod.POST)
+   public String createPerson(@Valid PersonForm form, BindingResult result) {
+      if (result.hasErrors()) {
+         return "people/newPerson";
+      }
 
-		final LocalDateTime now = LocalDateTime.now();
-		final UserEntry user = getCurrentUser();
-		final PersonId identifier = new PersonId();
+      final LocalDateTime now = LocalDateTime.now();
+      final UserEntry user = getCurrentUser();
+      final PersonId identifier = new PersonId();
 
-		final PersonDTO dto = new PersonDTO(identifier, form.getPrefix(),
-				form.getFirstName(), form.getMiddleName(), form.getLastName(),
-				form.getSuffix(), form.getNickname(), form.getFullName(),
-				form.getGender(), form.getDominantHand(), form.isReleased(),
-				form.getParentReleaseSentOn(),
-				form.getParentReleaseReceivedOn(), form.getBirthdate(),
-				form.getCollege(), user, now, user, now);
+      final PersonDTO dto = new PersonDTO(identifier, form.getPrefix(),
+         form.getFirstName(), form.getMiddleName(), form.getLastName(),
+         form.getSuffix(), form.getNickname(), form.getFullName(),
+         form.getGender(), form.getDominantHand(), form.isReleased(),
+         form.getParentReleaseSentOn(),
+         form.getParentReleaseReceivedOn(), form.getBirthdate(),
+         form.getCollege(), user, now, user, now);
 
-		final CreatePersonCommand command = new CreatePersonCommand(identifier,
-				dto);
-		commandBus.dispatch(new GenericCommandMessage<>(command));
-		return "redirect:/admin/people";
-	}
+      final CreatePersonCommand command = new CreatePersonCommand(identifier,
+         dto);
+      commandBus.dispatch(new GenericCommandMessage<>(command));
+      return "redirect:/admin/people";
+   }
 
-	@RequestMapping(value = "/admin/people/{personId}", method = RequestMethod.GET)
-	public String showPerson(@PathVariable("personId") PersonEntry person,
-			Model model) {
-		model.addAttribute("person", person);
-		return "people/showPerson";
-	}
+   @RequestMapping(value = "/admin/people/{personId}", method = RequestMethod.GET)
+   public String showPerson(@PathVariable("personId") PersonEntry person,
+      Model model)
+   {
+      model.addAttribute("person", person);
+      return "people/showPerson";
+   }
 
-	@RequestMapping(value = "/admin/people/{personId}", method = RequestMethod.PUT)
-	public String updatePerson(@PathVariable String personId,
-			@Valid PersonForm form, BindingResult result) {
-		if (result.hasErrors()) {
-			return "/people/editPerson";
-		}
+   @RequestMapping(value = "/admin/people/{personId}", method = RequestMethod.PUT)
+   public String updatePerson(@PathVariable String personId,
+      @Valid PersonForm form, BindingResult result)
+   {
+      if (result.hasErrors()) {
+         return "/people/editPerson";
+      }
 
-		final LocalDateTime now = LocalDateTime.now();
-		final UserEntry user = getCurrentUser();
-		final PersonId identifier = new PersonId(personId);
+      final LocalDateTime now = LocalDateTime.now();
+      final UserEntry user = getCurrentUser();
+      final PersonId identifier = new PersonId(personId);
 
-		final PersonDTO dto = new PersonDTO(identifier, form.getPrefix(),
-				form.getFirstName(), form.getMiddleName(), form.getLastName(),
-				form.getSuffix(), form.getNickname(), form.getFullName(),
-				form.getGender(), form.getDominantHand(), form.isReleased(),
-				form.getParentReleaseSentOn(),
-				form.getParentReleaseReceivedOn(), form.getBirthdate(),
-				form.getCollege(), user, now);
+      final PersonDTO dto = new PersonDTO(identifier, form.getPrefix(),
+         form.getFirstName(), form.getMiddleName(), form.getLastName(),
+         form.getSuffix(), form.getNickname(), form.getFullName(),
+         form.getGender(), form.getDominantHand(), form.isReleased(),
+         form.getParentReleaseSentOn(),
+         form.getParentReleaseReceivedOn(), form.getBirthdate(),
+         form.getCollege(), user, now);
 
-		final UpdatePersonCommand payload = new UpdatePersonCommand(identifier,
-				dto);
-		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/admin/people";
-	}
+      final UpdatePersonCommand payload = new UpdatePersonCommand(identifier,
+         dto);
+      commandBus.dispatch(new GenericCommandMessage<>(payload));
+      return "redirect:/admin/people";
+   }
 
-	@RequestMapping(value = "/admin/people/{personId}", method = RequestMethod.DELETE)
-	public String deletePerson(@PathVariable String personId) {
-		final PersonId identifier = new PersonId(personId);
-		final DeletePersonCommand payload = new DeletePersonCommand(identifier);
-		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/admin/people";
-	}
+   @RequestMapping(value = "/admin/people/{personId}", method = RequestMethod.DELETE)
+   public String deletePerson(@PathVariable String personId) {
+      final PersonId identifier = new PersonId(personId);
+      final DeletePersonCommand payload = new DeletePersonCommand(identifier);
+      commandBus.dispatch(new GenericCommandMessage<>(payload));
+      return "redirect:/admin/people";
+   }
 
-	@RequestMapping(value = "/admin/people/new", method = RequestMethod.GET)
-	public String newPerson(Model model) {
-		final PersonForm form = new PersonForm();
-		model.addAttribute("personForm", form);
-		return "people/newPerson";
-	}
+   @RequestMapping(value = "/admin/people/new", method = RequestMethod.GET)
+   public String newPerson(Model model, HttpServletRequest request) {
+      final PersonForm form = new PersonForm();
+      model.addAttribute("personForm", form);
+      model.addAttribute("back", request.getHeader("Referer"));
+      return "people/newPerson";
+   }
 
-	@RequestMapping(value = "/admin/people/{personId}/edit", method = RequestMethod.GET)
-	public String editPerson(@PathVariable("personId") PersonEntry person,
-			Model model) {
-		final PersonForm form = new PersonForm();
+   @RequestMapping(value = "/admin/people/{personId}/edit", method = RequestMethod.GET)
+   public String editPerson(@PathVariable("personId") PersonEntry person,
+      Model model)
+   {
+      final PersonForm form = new PersonForm();
 
-		form.setPrefix(person.getPrefix());
-		form.setFirstName(person.getFirstName());
-		form.setMiddleName(person.getMiddleName());
-		form.setLastName(person.getLastName());
-		form.setSuffix(person.getSuffix());
-		form.setNickname(person.getNickname());
+      form.setPrefix(person.getPrefix());
+      form.setFirstName(person.getFirstName());
+      form.setMiddleName(person.getMiddleName());
+      form.setLastName(person.getLastName());
+      form.setSuffix(person.getSuffix());
+      form.setNickname(person.getNickname());
 
-		form.setGender(person.getGender());
-		form.setDominantHand(person.getDominantHand());
-		form.setBirthdate(person.getBirthdate());
-		form.setReleased(person.isParentReleased());
-		form.setParentReleaseSentOn(person.getParentReleaseSentOn());
-		form.setParentReleaseReceivedOn(person.getParentReleaseReceivedOn());
-		form.setCollege(person.getCollege());
+      form.setGender(person.getGender());
+      form.setDominantHand(person.getDominantHand());
+      form.setBirthdate(person.getBirthdate());
+      form.setReleased(person.isParentReleased());
+      form.setParentReleaseSentOn(person.getParentReleaseSentOn());
+      form.setParentReleaseReceivedOn(person.getParentReleaseReceivedOn());
+      form.setCollege(person.getCollege());
 
-		model.addAttribute("personForm", form);
-		return "people/editPerson";
-	}
+      model.addAttribute("personForm", form);
+      return "people/editPerson";
+   }
 
-	/*---------- Address actions ----------*/
+   /*---------- Address actions ----------*/
 
-	@RequestMapping(value = "/admin/people/{personId}/addresses", method = RequestMethod.POST)
-	public String createAddress(@PathVariable("personId") PersonEntry person,
-			@Valid AddressForm form, BindingResult result) {
-		if (result.hasErrors()) {
-			return "people/newAddress";
-		}
+   @RequestMapping(value = "/admin/people/{personId}/addresses", method = RequestMethod.POST)
+   public String createAddress(@PathVariable("personId") PersonEntry person,
+      @Valid AddressForm form, BindingResult result)
+   {
+      if (result.hasErrors()) {
+         return "people/newAddress";
+      }
 
-		final LocalDateTime now = LocalDateTime.now();
-		final UserEntry user = getCurrentUser();
-		final PersonId identifier = new PersonId(person.getId());
-		final String addressId = IdentifierFactory.getInstance()
-				.generateIdentifier();
+      final LocalDateTime now = LocalDateTime.now();
+      final UserEntry user = getCurrentUser();
+      final PersonId identifier = new PersonId(person.getId());
+      final String addressId = IdentifierFactory.getInstance()
+         .generateIdentifier();
 
-		final AddressDTO dto = new AddressDTO(addressId, null, person,
-				form.getType(), form.getAddress1(), form.getAddress2(),
-				form.getCity(), form.getRegion(), form.getPostalCode(),
-				form.isPrimary(), form.isDoNotUse(), user, now, user, now);
+      final AddressDTO dto = new AddressDTO(addressId, null, person,
+         form.getType(), form.getAddress1(), form.getAddress2(),
+         form.getCity(), form.getRegion(), form.getPostalCode(),
+         form.isPrimary(), form.isDoNotUse(), user, now, user, now);
 
-		final RegisterAddressCommand payload = new RegisterAddressCommand(
-				identifier, dto);
-		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/admin/people/" + person.getId();
-	}
+      final RegisterAddressCommand payload = new RegisterAddressCommand(
+         identifier, dto);
+      commandBus.dispatch(new GenericCommandMessage<>(payload));
+      return "redirect:/admin/people/" + person.getId();
+   }
 
-	@RequestMapping(value = "/admin/{personId}/addresses/{addressId}", method = RequestMethod.PUT)
-	public String updateAddress(@PathVariable("personId") PersonEntry person,
-			@PathVariable String addressId, @Valid AddressForm form,
-			BindingResult bindingResult) {
-		if (bindingResult.hasErrors()) {
-			return "/people/editAddress";
-		}
-		final LocalDateTime now = LocalDateTime.now();
-		final UserEntry user = getCurrentUser();
-		final PersonId identifier = new PersonId(person.getId());
+   @RequestMapping(value = "/admin/{personId}/addresses/{addressId}", method = RequestMethod.PUT)
+   public String updateAddress(@PathVariable("personId") PersonEntry person,
+      @PathVariable String addressId, @Valid AddressForm form,
+      BindingResult bindingResult)
+   {
+      if (bindingResult.hasErrors()) {
+         return "/people/editAddress";
+      }
+      final LocalDateTime now = LocalDateTime.now();
+      final UserEntry user = getCurrentUser();
+      final PersonId identifier = new PersonId(person.getId());
 
-		final AddressDTO dto = new AddressDTO(addressId, null, person,
-				form.getType(), form.getAddress1(), form.getAddress2(),
-				form.getCity(), form.getRegion(), form.getPostalCode(),
-				form.isPrimary(), form.isDoNotUse(), user, now);
+      final AddressDTO dto = new AddressDTO(addressId, null, person,
+         form.getType(), form.getAddress1(), form.getAddress2(),
+         form.getCity(), form.getRegion(), form.getPostalCode(),
+         form.isPrimary(), form.isDoNotUse(), user, now);
 
-		final UpdateAddressCommand payload = new UpdateAddressCommand(
-				identifier, dto);
-		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/admin/people/" + person.getId();
-	}
+      final UpdateAddressCommand payload = new UpdateAddressCommand(
+         identifier, dto);
+      commandBus.dispatch(new GenericCommandMessage<>(payload));
+      return "redirect:/admin/people/" + person.getId();
+   }
 
-	@RequestMapping(value = "/admin/people/{personId}/addresses/{addressId}", method = RequestMethod.DELETE)
-	public String deleteAddress(@PathVariable String personId,
-			@PathVariable String addressId) {
-		final PersonId identifier = new PersonId(personId);
-		final DeleteAddressCommand payload = new DeleteAddressCommand(
-				identifier, addressId);
-		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/admin/people/" + personId;
-	}
+   @RequestMapping(value = "/admin/people/{personId}/addresses/{addressId}",
+      method = RequestMethod.DELETE)
+   public String deleteAddress(@PathVariable String personId,
+      @PathVariable String addressId)
+   {
+      final PersonId identifier = new PersonId(personId);
+      final DeleteAddressCommand payload = new DeleteAddressCommand(
+         identifier, addressId);
+      commandBus.dispatch(new GenericCommandMessage<>(payload));
+      return "redirect:/admin/people/" + personId;
+   }
 
-	@RequestMapping(value = "/admin/people/{personId}/addresses/new", method = RequestMethod.GET)
-	public String newAddress(@PathVariable("personId") PersonEntry person,
-			Model model) {
-		final AddressForm form = new AddressForm();
-		model.addAttribute("person", person);
-		model.addAttribute("addressForm", form);
-		return "people/newAddress";
-	}
+   @RequestMapping(value = "/admin/people/{personId}/addresses/new", method = RequestMethod.GET)
+   public String newAddress(@PathVariable("personId") PersonEntry person,
+      Model model)
+   {
+      final AddressForm form = new AddressForm();
+      model.addAttribute("person", person);
+      model.addAttribute("addressForm", form);
+      return "people/newAddress";
+   }
 
-	@RequestMapping(value = "/admin/people/{personId}/addresses/{addressId}/edit", method = RequestMethod.GET)
-	public String editAddress(@PathVariable("personId") PersonEntry person,
-			@PathVariable String addressId, Model model) {
-		final AddressEntry address = person.getAddress(addressId);
+   @RequestMapping(value = "/admin/people/{personId}/addresses/{addressId}/edit",
+      method = RequestMethod.GET)
+   public String editAddress(@PathVariable("personId") PersonEntry person,
+      @PathVariable String addressId, Model model)
+   {
+      final AddressEntry address = person.getAddress(addressId);
 
-		final AddressForm form = new AddressForm();
-		form.setAddress1(address.getAddress1());
-		form.setAddress2(address.getAddress2());
-		form.setCity(address.getCity());
-		form.setDoNotUse(address.isDoNotUse());
-		form.setPostalCode(address.getPostalCode());
-		form.setType(address.getAddressType());
-		form.setPrimary(address.isPrimary());
-		form.setRegion(address.getRegion());
+      final AddressForm form = new AddressForm();
+      form.setAddress1(address.getAddress1());
+      form.setAddress2(address.getAddress2());
+      form.setCity(address.getCity());
+      form.setDoNotUse(address.isDoNotUse());
+      form.setPostalCode(address.getPostalCode());
+      form.setType(address.getAddressType());
+      form.setPrimary(address.isPrimary());
+      form.setRegion(address.getRegion());
 
-		model.addAttribute("person", person);
-		model.addAttribute("addressId", addressId);
-		model.addAttribute("addressForm", form);
-		return "people/editAddress";
-	}
+      model.addAttribute("person", person);
+      model.addAttribute("addressId", addressId);
+      model.addAttribute("addressForm", form);
+      return "people/editAddress";
+   }
 
-	/*---------- Contact actions ----------*/
+   /*---------- Contact actions ----------*/
 
-	@RequestMapping(value = "/admin/people/{personId}/contacts", method = RequestMethod.POST)
-	public String createContact(@PathVariable("personId") PersonEntry person,
-			@Valid ContactForm form, BindingResult result) {
-		if (result.hasErrors()) {
-			return "people/newContact";
-		}
-		final LocalDateTime now = LocalDateTime.now();
-		final UserEntry user = getCurrentUser();
-		final PersonId identifier = new PersonId(person.getId());
-		final String contactId = IdentifierFactory.getInstance()
-				.generateIdentifier();
+   @RequestMapping(value = "/admin/people/{personId}/contacts", method = RequestMethod.POST)
+   public String createContact(@PathVariable("personId") PersonEntry person,
+      @Valid ContactForm form, BindingResult result)
+   {
+      if (result.hasErrors()) {
+         return "people/newContact";
+      }
+      final LocalDateTime now = LocalDateTime.now();
+      final UserEntry user = getCurrentUser();
+      final PersonId identifier = new PersonId(person.getId());
+      final String contactId = IdentifierFactory.getInstance()
+         .generateIdentifier();
 
-		final ContactDTO dto = new ContactDTO(contactId, person,
-				form.getMethod(), form.getValue(), form.isPrimary(),
-				form.isDoNotUse(), now, user, now, user);
+      final ContactDTO dto = new ContactDTO(contactId, person,
+         form.getMethod(), form.getValue(), form.isPrimary(),
+         form.isDoNotUse(), now, user, now, user);
 
-		final RegisterContactCommand payload = new RegisterContactCommand(
-				identifier, dto);
-		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/admin/people/" + person.getId();
-	}
+      final RegisterContactCommand payload = new RegisterContactCommand(
+         identifier, dto);
+      commandBus.dispatch(new GenericCommandMessage<>(payload));
+      return "redirect:/admin/people/" + person.getId();
+   }
 
-	@RequestMapping(value = "/admin/people/{personId}/contacts/{contactId}", method = RequestMethod.PUT)
-	public String updateContact(@PathVariable("personId") PersonEntry person,
-			@PathVariable String contactId, @Valid ContactForm form,
-			BindingResult result) {
-		if (result.hasErrors()) {
-			return "/people/editContact";
-		}
-		final LocalDateTime now = LocalDateTime.now();
-		final UserEntry user = getCurrentUser();
-		final PersonId identifier = new PersonId(person.getId());
+   @RequestMapping(value = "/admin/people/{personId}/contacts/{contactId}",
+      method = RequestMethod.PUT)
+   public String updateContact(@PathVariable("personId") PersonEntry person,
+      @PathVariable String contactId, @Valid ContactForm form,
+      BindingResult result)
+   {
+      if (result.hasErrors()) {
+         return "/people/editContact";
+      }
+      final LocalDateTime now = LocalDateTime.now();
+      final UserEntry user = getCurrentUser();
+      final PersonId identifier = new PersonId(person.getId());
 
-		final ContactDTO dto = new ContactDTO(contactId, person,
-				form.getMethod(), form.getValue(), form.isPrimary(),
-				form.isDoNotUse(), now, user);
+      final ContactDTO dto = new ContactDTO(contactId, person,
+         form.getMethod(), form.getValue(), form.isPrimary(),
+         form.isDoNotUse(), now, user);
 
-		final UpdateContactCommand payload = new UpdateContactCommand(
-				identifier, dto);
-		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/admin/people/" + person.getId();
-	}
+      final UpdateContactCommand payload = new UpdateContactCommand(
+         identifier, dto);
+      commandBus.dispatch(new GenericCommandMessage<>(payload));
+      return "redirect:/admin/people/" + person.getId();
+   }
 
-	@RequestMapping(value = "/admin/people/{personId}/contacts/{contactId}", method = RequestMethod.DELETE)
-	public String deleteContact(@PathVariable String personId,
-			@PathVariable String contactId) {
-		final PersonId identifier = new PersonId(personId);
-		final DeleteContactCommand payload = new DeleteContactCommand(
-				identifier, contactId);
-		commandBus.dispatch(new GenericCommandMessage<>(payload));
-		return "redirect:/admin/people/" + personId;
-	}
+   @RequestMapping(value = "/admin/people/{personId}/contacts/{contactId}",
+      method = RequestMethod.DELETE)
+   public String deleteContact(@PathVariable String personId,
+      @PathVariable String contactId)
+   {
+      final PersonId identifier = new PersonId(personId);
+      final DeleteContactCommand payload = new DeleteContactCommand(
+         identifier, contactId);
+      commandBus.dispatch(new GenericCommandMessage<>(payload));
+      return "redirect:/admin/people/" + personId;
+   }
 
-	@RequestMapping(value = "/admin/people/{personId}/contacts/new", method = RequestMethod.GET)
-	public String newContact(@PathVariable("personId") PersonEntry person,
-			Model model) {
-		final ContactForm form = new ContactForm();
-		form.setPersonId(person.getId());
+   @RequestMapping(value = "/admin/people/{personId}/contacts/new", method = RequestMethod.GET)
+   public String newContact(@PathVariable("personId") PersonEntry person,
+      Model model)
+   {
+      final ContactForm form = new ContactForm();
+      form.setPersonId(person.getId());
 
-		model.addAttribute("person", person);
-		model.addAttribute("contactForm", form);
-		return "people/newContact";
-	}
+      model.addAttribute("person", person);
+      model.addAttribute("contactForm", form);
+      return "people/newContact";
+   }
 
-	@RequestMapping(value = "/admin/people/{personId}/contacts/{contactId}/edit", method = RequestMethod.GET)
-	public String editContact(@PathVariable("personId") PersonEntry person,
-			@PathVariable String contactId, Model model) {
-		final ContactEntry contact = person.getContact(contactId);
+   @RequestMapping(value = "/admin/people/{personId}/contacts/{contactId}/edit",
+      method = RequestMethod.GET)
+   public String editContact(@PathVariable("personId") PersonEntry person,
+      @PathVariable String contactId, Model model)
+   {
+      final ContactEntry contact = person.getContact(contactId);
 
-		final ContactForm form = new ContactForm();
-		form.setId(contactId);
-		form.setPersonId(person.getId());
-		form.setMethod(contact.getMethod());
-		form.setValue(contact.getValue());
-		form.setDoNotUse(contact.isDoNotUse());
-		form.setPrimary(contact.isPrimary());
+      final ContactForm form = new ContactForm();
+      form.setId(contactId);
+      form.setPersonId(person.getId());
+      form.setMethod(contact.getMethod());
+      form.setValue(contact.getValue());
+      form.setDoNotUse(contact.isDoNotUse());
+      form.setPrimary(contact.isPrimary());
 
-		model.addAttribute("person", person);
-		model.addAttribute("contactId", contactId);
-		model.addAttribute("contactForm", form);
-		return "people/editContact";
-	}
+      model.addAttribute("person", person);
+      model.addAttribute("contactId", contactId);
+      model.addAttribute("contactForm", form);
+      return "people/editContact";
+   }
 
-	/*---------- Ajax methods ----------*/
+   /*---------- Ajax methods ----------*/
 
-	@RequestMapping(value = "/api/people/search", method = RequestMethod.POST)
-	public String searchPeople(@RequestBody SearchPeopleForm form, Model model) {
-		final List<SearchResult> results = doSearch(form);
-		model.addAttribute("results", results);
-		return "people/searchResults :: resultList";
-	}
+   @RequestMapping(value = "/api/people/search", method = RequestMethod.POST)
+   public String searchPeople(@RequestBody SearchPeopleForm form, Model model) {
+      final List<SearchResult> results = doSearch(form);
+      model.addAttribute("results", results);
+      return "people/searchResults :: resultList";
+   }
 
-	@RequestMapping(value = "/api/people/searchData", method = RequestMethod.POST)
-	public String searchPeopleData(@RequestBody SearchPeopleForm form,
-			Model model) {
-		final List<SearchResult> results = doSearch(form);
-		model.addAttribute("results", results);
-		return "partials/searchPeopleResults :: resultList";
-	}
+   @RequestMapping(value = "/api/people/searchData", method = RequestMethod.POST)
+   public String searchPeopleData(@RequestBody SearchPeopleForm form,
+      Model model)
+   {
+      final List<SearchResult> results = doSearch(form);
+      model.addAttribute("results", results);
+      return "partials/searchPeopleResults :: resultList";
+   }
 
-	private List<SearchResult> doSearch(SearchPeopleForm form) {
-		final List<PersonEntry> list = personRepository.findAll(
-				PersonSpecifications.search(form), searchSort());
+   private List<SearchResult> doSearch(SearchPeopleForm form) {
+      final List<PersonEntry> list = personRepository.findAll(
+         PersonSpecifications.search(form), searchSort());
 
-		final List<SearchResult> results = new ArrayList<>();
-		for (final PersonEntry each : list) {
-			final SearchResult item = new SearchResult(each.getId(),
-					each.getFullName());
+      final List<SearchResult> results = new ArrayList<>();
+      for (final PersonEntry each : list) {
+         final SearchResult item = new SearchResult(each.getId(),
+            each.getFullName());
 
-			if (each.primaryAddress() != null) {
-				final AddressEntry address = each.primaryAddress();
-				item.setCity(address.getCity());
-				item.setRegion(address.getRegion().getAbbreviation());
-				item.setPostalCode(address.getPostalCode());
-			}
-			if (each.primaryContact() != null) {
-				final ContactEntry contact = each.primaryContact();
-				item.setContact(contact.getValue());
-			}
-			results.add(item);
-		}
-		return results;
-	}
+         if (each.primaryAddress() != null) {
+            final AddressEntry address = each.primaryAddress();
+            item.setCity(address.getCity());
+            item.setRegion(address.getRegion().getAbbreviation());
+            item.setPostalCode(address.getPostalCode());
+         }
+         if (each.primaryContact() != null) {
+            final ContactEntry contact = each.primaryContact();
+            item.setContact(contact.getValue());
+         }
+         results.add(item);
+      }
+      return results;
+   }
 
-	private Sort searchSort() {
-		final List<Order> orders = new ArrayList<>();
-		orders.add(new Order(Sort.Direction.ASC, "lastName"));
-		orders.add(new Order(Sort.Direction.ASC, "firstName"));
-		return new Sort(orders);
-	}
+   private Sort searchSort() {
+      final List<Order> orders = new ArrayList<>();
+      orders.add(new Order(Sort.Direction.ASC, "lastName"));
+      orders.add(new Order(Sort.Direction.ASC, "firstName"));
+      return new Sort(orders);
+   }
 }

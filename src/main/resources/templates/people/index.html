@@ -10,19 +10,19 @@
 				<a href="#" 
 				   th:href="@{'/admin/people/new'}" 
 				   class="btn btn-default btn-sm lax-btn-new pull-right">New Person</a>
-				<h1>People</h1>
-				<h2 class="">Search</h2>
+				<h1 class="lax-form-title">People</h1>
+				<h2 class="lax-form-subtitle">Search</h2>
 			</div>
 			
-			<div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2 search-people-form">
+			<div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2 lax-search-people-form">
 				<div th:replace="partials/searchPeopleForm :: searchPeople">Search People Form</div>
 			</div>
 		</div>
 		
 		<div class="row">
 			<div id="search-results" 
-				 class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 search-people-results">
-				<h2 class="">Results</h2>
+				 class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 lax-search-people-results">
+				<h2 class="lax-form-subtitle">Results</h2>
 				<table class="table table-striped lax-admin-table">
 					<thead>
 						<tr>
