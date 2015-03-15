@@ -1,18 +1,22 @@
 package laxstats;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import laxstats.web.seasons.SeasonFormValidator;
 import laxstats.web.site.SiteFormValidator;
 import laxstats.web.teamSeasons.TeamSeasonFormValidator;
 import laxstats.web.teams.TeamFormValidator;
+import laxstats.web.thymeleaf.LocalDateFormatter;
+import laxstats.web.thymeleaf.LocalDateTimeFormatter;
+import laxstats.web.thymeleaf.MinuteSecondFormatter;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
-import org.springframework.format.datetime.joda.DateTimeFormatterFactoryBean;
-import org.springframework.format.datetime.joda.JodaTimeFormatterRegistrar;
-import org.springframework.format.number.NumberFormatAnnotationFormatterFactory;
-import org.springframework.format.support.DefaultFormattingConversionService;
+import org.springframework.format.Formatter;
 import org.springframework.format.support.FormattingConversionService;
+import org.springframework.format.support.FormattingConversionServiceFactoryBean;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -21,56 +25,46 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @EnableSpringDataWebSupport
 public class AppConfiguration extends WebMvcConfigurerAdapter {
 
-	@Bean
-	public FormattingConversionService conversionService() {
+   @Bean
+   public FormattingConversionService conversionService() {
+      final FormattingConversionServiceFactoryBean bean =
+         new FormattingConversionServiceFactoryBean();
 
-		// Use the default formatting service but do not register defaults
-		final DefaultFormattingConversionService conversionService = new DefaultFormattingConversionService();
+      bean.setRegisterDefaultFormatters(true);
+      bean.setFormatters(getFormatters());
+      return bean.getObject();
+   }
 
-		// Register default @NumberFormat
-		conversionService
-				.addFormatterForFieldAnnotation(new NumberFormatAnnotationFormatterFactory());
+   private Set<Formatter<?>> getFormatters() {
+      final Set<Formatter<?>> converters = new HashSet<Formatter<?>>();
+      converters.add(new LocalDateTimeFormatter());
+      converters.add(new LocalDateFormatter());
+      converters.add(new MinuteSecondFormatter());
+      return converters;
+   }
 
-		final DateTimeFormatterFactoryBean factory = new DateTimeFormatterFactoryBean();
-		final JodaTimeFormatterRegistrar registrar = new JodaTimeFormatterRegistrar();
+   @Bean
+   public Validator localValidatorFactoryBean() {
+      return new LocalValidatorFactoryBean();
+   }
 
-		// Register date converters
-		factory.setPattern("MM/dd/yyyy");
-		registrar.setDateFormatter(factory.createDateTimeFormatter());
+   @Bean
+   public Validator seasonValidator() {
+      return new SeasonFormValidator();
+   }
 
-		factory.setPattern("MM/dd/yyyy hh:mm aa");
-		registrar.setDateTimeFormatter(factory.createDateTimeFormatter());
+   @Bean
+   public Validator siteValidator() {
+      return new SiteFormValidator();
+   }
 
-		factory.setPattern("mm:ss");
-		registrar.setTimeFormatter(factory.createDateTimeFormatter());
+   @Bean
+   public Validator teamValidator() {
+      return new TeamFormValidator();
+   }
 
-		registrar.registerFormatters(conversionService);
-
-		return conversionService;
-	}
-
-	@Bean
-	public Validator localValidatorFactoryBean() {
-		return new LocalValidatorFactoryBean();
-	}
-
-	@Bean
-	public Validator seasonValidator() {
-		return new SeasonFormValidator();
-	}
-
-	@Bean
-	public Validator siteValidator() {
-		return new SiteFormValidator();
-	}
-
-	@Bean
-	public Validator teamValidator() {
-		return new TeamFormValidator();
-	}
-
-	@Bean
-	public Validator teamSeasonValidator() {
-		return new TeamSeasonFormValidator();
-	}
+   @Bean
+   public Validator teamSeasonValidator() {
+      return new TeamSeasonFormValidator();
+   }
 }
