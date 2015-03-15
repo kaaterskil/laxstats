@@ -39,10 +39,12 @@
 							<div class="col-sm-7"></div>
 							<div class="col-sm-5">
 								<div class="lax-rt-text">Score</div>
-								<div class="lax-team-one-score">Score</div>
-								<button type="button" id="" class="lax-btn lax-btn-action"
-									th:attr="data-team=1">Time Out</button>
-								<div class="">Time Outs</div>
+								<div class="lax-team-one-score"
+									 th:text="${homeTeamEvent.score}">Score</div>
+								<button type="button" 
+										id="team-one-timeout" 
+										class="lax-btn lax-btn-action"
+										th:attr="data-team=1">Time Out</button>
 							</div>
 						</div>
 					</div>
@@ -64,10 +66,12 @@
 						<div class="row">
 							<div class="col-sm-5">
 								<div class="lax-rt-text">Score</div>
-								<div class="lax-team-two-score">Score</div>
-								<button type="button" id="" class="lax-btn lax-btn-action"
-									th:attr="data-team=2">Time Out</button>
-								<div class="">Time Outs</div>
+								<div class="lax-team-two-score" 
+									 th:text="${visitingTeamEvent.score}">Score</div>
+								<button type="button" 
+										id="team-teo-timeout" 
+										class="lax-btn lax-btn-action"
+										th:attr="data-team=2">Time Out</button>
 							</div>
 							<div class="col-sm-7"></div>
 						</div>

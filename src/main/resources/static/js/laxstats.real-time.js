@@ -48,6 +48,7 @@
 		function getCurrentTime() {
 			return {
 				currPeriod: currPeriod, 
+				secsElapsed: elapsed,
 				secsRemaining: remaining
 			}
 		}

@@ -8,12 +8,9 @@ import laxstats.api.events.PlayType;
 import laxstats.api.events.ScoreAttemptType;
 
 import org.joda.time.Period;
-import org.springframework.format.annotation.DateTimeFormat;
 
 public class GoalForm extends AbstractPlayForm {
-   @DateTimeFormat(pattern = "mm:ss")
    private Period elapsedTime;
-
    private String scorerId;
    private String assistId;
    private ScoreAttemptType attemptType;

@@ -41,11 +41,14 @@
 					
 					<div class="form-group required">
 						<label for="clock">Clock</label> 
-						<input th:type="time" 
+						<input th:type="text" 
 							   class="form-control" 
 							   id="clock"
-							   min="00:00"
-							   required="required"
+							   min="00:00" 
+							   pattern="\d\d:\d\d" 
+							   required="required" 
+							   step="00:01" 
+							   title="mm:ss format"
 							   th:field="*{elapsedTime}"
 							   aria-required="true"
 							   aria-describedby="clock-error" />

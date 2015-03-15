@@ -591,7 +591,7 @@ nav .navbar-nav>li>a:hover {
 	text-align: center;
 }
 
-.lax-clock, .lax-period {
+.lax-clock, .lax-period, .lax-team-one-score, .lax-team-two-score {
 	background: rgb(51, 51, 51);
 	border: 1px solid rgb(51, 51, 51);
 	border-radius: 4px;
@@ -608,6 +608,10 @@ nav .navbar-nav>li>a:hover {
 	margin: 0 auto;
 }
 
+.lax-team-one-score, .lax-team-two-score {
+	margin: 0 15px 15px 15px;
+}
+
 .lax-rt-play-filter {
 	text-align: center;
 }
@@ -619,8 +623,8 @@ nav .navbar-nav>li>a:hover {
 }
 
 .lax-btn-timer {
-	background: rgb(225, 69, 4);
-	border: 1px solid rgb(225, 69, 4);
+	background: rgb(74, 139, 44);
+	border: 1px solid rgb(74, 139, 44);
 	color: rgb(255, 255, 255);
 	margin: 4px auto;
 	min-width: 0;

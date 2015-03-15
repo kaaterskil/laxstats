@@ -183,29 +183,43 @@ public class GameEntry implements Serializable {
    public TeamSeasonEntry getHomeTeam() {
       if (teams.size() == 0) {
          return null;
-      }
-      else if (teams.size() == 2
-         && teams.get(1).getAlignment().equals(Alignment.HOME))
-      {
+      } else if (teams.size() == 2 && teams.get(1).getAlignment().equals(Alignment.HOME)) {
          return teams.get(1).getTeamSeason();
       }
       return teams.get(0).getTeamSeason();
    }
 
+   public TeamEvent getHomeTeamEvent() {
+      if (teams.size() == 0) {
+         return null;
+      } else if (teams.size() == 2 && teams.get(1).getAlignment().equals(Alignment.HOME)) {
+         return teams.get(1);
+      }
+      return teams.get(0);
+   }
+
    /**
     * Returns the event's visiting team. If the event does not have a home or visiting team
     * designation, the method will return the event's second team. If no teams have been assigned
-    * 
+    *
     * @return
     */
    public TeamSeasonEntry getVisitingTeam() {
       if (teams.size() < 2) {
          return null;
-      }
-      else if (teams.get(0).getAlignment().equals(Alignment.AWAY)) {
+      } else if (teams.get(0).getAlignment().equals(Alignment.AWAY)) {
          return teams.get(0).getTeamSeason();
       }
       return teams.get(1).getTeamSeason();
+   }
+
+   public TeamEvent getVisitingTeamEvent() {
+      if (teams.size() < 0) {
+         return null;
+      } else if (teams.get(0).getAlignment().equals(Alignment.AWAY)) {
+         return teams.get(0);
+      }
+      return teams.get(1);
    }
 
    /* ---------- Getter/Setters ---------- */

@@ -262,7 +262,9 @@ public class EventController extends ApplicationController {
    public String realTimeScoring(@PathVariable("eventId") GameEntry aggregate, Model model) {
       model.addAttribute("game", aggregate);
       model.addAttribute("homeTeam", aggregate.getHomeTeam());
+      model.addAttribute("homeTeamEvent", aggregate.getHomeTeamEvent());
       model.addAttribute("visitingTeam", aggregate.getVisitingTeam());
+      model.addAttribute("visitingTeamEvent", aggregate.getVisitingTeamEvent());
       return "events/realTimeEntry";
    }
 

@@ -99,4 +99,5 @@ public abstract class AbstractPlayForm {
    public void setAttendees(Map<String, List<AttendeeEntry>> attendees) {
       this.attendees = attendees;
    }
+
 }

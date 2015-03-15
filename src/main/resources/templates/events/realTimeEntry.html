@@ -64,6 +64,7 @@
 					$playBtn = $('.lax-btn-play');
 				
 				function cancelPlay() {
+					$header.css('display', 'block');
 					$carousel.carousel(0);
 				}
 
@@ -80,7 +81,7 @@
 					var url = '/admin/events/' + game + '/teamSeasons/'
 							+ teamSeason + '/' + playType + '/new', 
 						query = '?p=' + state.currPeriod + '&t=' 
-							+ state.secsRemaining;
+							+ state.secsElapsed;
 
 					df = $.ajax({
 						url : url + query,
