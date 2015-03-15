@@ -36,258 +36,309 @@ import org.joda.time.Seconds;
 
 @Entity
 @Table(name = "games", indexes = {
-		@Index(name = "event_idx1", columnList = "schedule"),
-		@Index(name = "event_idx2", columnList = "startsAt"),
-		@Index(name = "event_idx3", columnList = "alignment"),
-		@Index(name = "event_idx4", columnList = "status"),
-		@Index(name = "event_idx5", columnList = "conditions") })
+   @Index(name = "event_idx1", columnList = "schedule"),
+   @Index(name = "event_idx2", columnList = "startsAt"),
+   @Index(name = "event_idx3", columnList = "alignment"),
+   @Index(name = "event_idx4", columnList = "status"),
+   @Index(name = "event_idx5", columnList = "conditions") })
 public class GameEntry implements Serializable {
-	private static final long serialVersionUID = 3864013780705615870L;
+   private static final long serialVersionUID = 3864013780705615870L;
 
-	@Id
-	@Column(length = 36)
-	private String id;
+   @Id
+   @Column(length = 36)
+   private String id;
 
-	@ManyToOne
-	@JoinColumn(name = "site_id")
-	private SiteEntry site;
+   @ManyToOne
+   @JoinColumn(name = "site_id")
+   private SiteEntry site;
 
-	@Enumerated(EnumType.STRING)
-	@Column(length = 20)
-	private SiteAlignment alignment;
+   @Enumerated(EnumType.STRING)
+   @Column(length = 20)
+   private SiteAlignment alignment;
 
-	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
-	private LocalDateTime startsAt;
+   @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+   private LocalDateTime startsAt;
 
-	@Enumerated(EnumType.STRING)
-	@Column(length = 20, nullable = false)
-	private Schedule schedule;
+   @Enumerated(EnumType.STRING)
+   @Column(length = 20, nullable = false)
+   private Schedule schedule;
 
-	@Enumerated(EnumType.STRING)
-	@Column(length = 20, nullable = false)
-	private Status status;
+   @Enumerated(EnumType.STRING)
+   @Column(length = 20, nullable = false)
+   private Status status;
 
-	@Enumerated(EnumType.STRING)
-	@Column(length = 20)
-	private Conditions conditions;
+   @Enumerated(EnumType.STRING)
+   @Column(length = 20)
+   private Conditions conditions;
 
-	@Column(nullable = false)
-	private String description;
+   @Column(nullable = false)
+   private String description;
 
-	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
-	private LocalDateTime createdAt;
+   @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+   private LocalDateTime createdAt;
 
-	@ManyToOne
-	private UserEntry createdBy;
+   @ManyToOne
+   private UserEntry createdBy;
 
-	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
-	private LocalDateTime modifiedAt;
+   @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+   private LocalDateTime modifiedAt;
 
-	@ManyToOne
-	private UserEntry modifiedBy;
+   @ManyToOne
+   private UserEntry modifiedBy;
 
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
-	private final Map<String, AttendeeEntry> eventAttendees = new HashMap<>();
+   @OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
+   private final Map<String, AttendeeEntry> eventAttendees = new HashMap<>();
 
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
-	private final List<TeamEvent> teams = new ArrayList<>();
+   @OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
+   private final List<TeamEvent> teams = new ArrayList<>();
 
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
-	private final Map<String, PlayEntry> plays = new HashMap<>();
+   @OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
+   private final Map<String, PlayEntry> plays = new HashMap<>();
 
-	/*---------- Methods ----------*/
+   /*---------- Methods ----------*/
 
-	public AttendeeEntry getAttendee(String key) {
-		return eventAttendees.get(key);
-	}
+   public AttendeeEntry getAttendee(String key) {
+      return eventAttendees.get(key);
+   }
 
-	public void addPlay(PlayEntry play) {
-		play.setEvent(this);
-		plays.put(play.getId(), play);
-	}
+   public void addPlay(PlayEntry play) {
+      play.setEvent(this);
+      plays.put(play.getId(), play);
+   }
 
-	public void deletePlay(PlayEntry play) {
-		play.clear();
-		plays.remove(play.getId());
-	}
+   public void deletePlay(PlayEntry play) {
+      play.clear();
+      plays.remove(play.getId());
+   }
 
-	public List<PenaltyEntry> getPenalties() {
-		final List<PenaltyEntry> list = new ArrayList<>();
-		for (final PlayEntry play : plays.values()) {
-			if (play instanceof PenaltyEntry) {
-				list.add((PenaltyEntry) play);
-			}
-		}
-		Collections.sort(list, new PenaltyComparator());
-		return list;
-	}
+   public List<PenaltyEntry> getPenalties() {
+      final List<PenaltyEntry> list = new ArrayList<>();
+      for (final PlayEntry play : plays.values()) {
+         if (play instanceof PenaltyEntry) {
+            list.add((PenaltyEntry)play);
+         }
+      }
+      Collections.sort(list, new PenaltyComparator());
+      return list;
+   }
 
-	public Map<String, List<AttendeeEntry>> getAttendees() {
-		final Map<String, List<AttendeeEntry>> result = new HashMap<>();
-		for (final TeamEvent teamEvent : teams) {
-			final TeamSeasonEntry tse = teamEvent.getTeamSeason();
+   /**
+    * Returns a collection of game attendees. The map keys are the team names and the map values are
+    * sorted lists of attendees from each team roster.
+    *
+    * @return
+    */
+   public Map<String, List<AttendeeEntry>> getAttendees() {
+      final Map<String, List<AttendeeEntry>> result = new HashMap<>();
+      for (final TeamEvent teamEvent : teams) {
+         final TeamSeasonEntry tse = teamEvent.getTeamSeason();
 
-			final List<AttendeeEntry> list = new ArrayList<AttendeeEntry>();
-			for (final AttendeeEntry attendee : eventAttendees.values()) {
-				if (attendee.getTeamSeason().equals(tse)) {
-					list.add(attendee);
-				}
-			}
-			Collections.sort(list, new AttendeeComparator());
-			result.put(tse.getName(), list);
-		}
-		return result;
-	}
+         final List<AttendeeEntry> list = new ArrayList<AttendeeEntry>();
+         for (final AttendeeEntry attendee : eventAttendees.values()) {
+            if (attendee.getTeamSeason().equals(tse)) {
+               list.add(attendee);
+            }
+         }
+         Collections.sort(list, new AttendeeComparator());
+         result.put(tse.getName(), list);
+      }
+      return result;
+   }
 
-	public TeamSeasonEntry getHomeTeam() {
-		if (teams.size() == 0) {
-			return null;
-		} else if (teams.size() == 2
-				&& teams.get(1).getAlignment().equals(Alignment.HOME)) {
-			return teams.get(1).getTeamSeason();
-		}
-		return teams.get(0).getTeamSeason();
-	}
+   /**
+    * Returns a collection of game attendees for the given team season. The map key is the team name
+    * and the value collection is a sorted list of attendees from the team roster.
+    *
+    * @param teamSeason
+    * @return
+    */
+   public Map<String, List<AttendeeEntry>> getAttendees(TeamSeasonEntry teamSeason) {
+      final Map<String, List<AttendeeEntry>> result = new HashMap<>();
 
-	public TeamSeasonEntry getVisitingTeam() {
-		if (teams.size() < 2) {
-			return null;
-		} else if (teams.get(0).getAlignment().equals(Alignment.AWAY)) {
-			return teams.get(0).getTeamSeason();
-		}
-		return teams.get(1).getTeamSeason();
-	}
+      if (teamSeason != null) {
+         for (final TeamEvent teamEvent : teams) {
+            final TeamSeasonEntry tse = teamEvent.getTeamSeason();
 
-	/* ---------- Getter/Setters ---------- */
+            if (tse.getId().equals(teamSeason.getId())) {
+               final List<AttendeeEntry> list = new ArrayList<AttendeeEntry>();
+               for (final AttendeeEntry attendee : eventAttendees.values()) {
+                  if (attendee.getTeamSeason().equals(tse)) {
+                     list.add(attendee);
+                  }
+               }
+               Collections.sort(list, new AttendeeComparator());
+               result.put(tse.getName(), list);
+            }
+         }
+      }
+      return result;
+   }
 
-	public String getId() {
-		return id;
-	}
+   /**
+    * Returns the event's home team. If the event does not have a home or visiting team designation,
+    * the method will return the event's first team.
+    *
+    * @return
+    */
+   public TeamSeasonEntry getHomeTeam() {
+      if (teams.size() == 0) {
+         return null;
+      }
+      else if (teams.size() == 2
+         && teams.get(1).getAlignment().equals(Alignment.HOME))
+      {
+         return teams.get(1).getTeamSeason();
+      }
+      return teams.get(0).getTeamSeason();
+   }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+   /**
+    * Returns the event's visiting team. If the event does not have a home or visiting team
+    * designation, the method will return the event's second team. If no teams have been assigned
+    * 
+    * @return
+    */
+   public TeamSeasonEntry getVisitingTeam() {
+      if (teams.size() < 2) {
+         return null;
+      }
+      else if (teams.get(0).getAlignment().equals(Alignment.AWAY)) {
+         return teams.get(0).getTeamSeason();
+      }
+      return teams.get(1).getTeamSeason();
+   }
 
-	public SiteEntry getSite() {
-		return site;
-	}
+   /* ---------- Getter/Setters ---------- */
 
-	public void setSite(SiteEntry site) {
-		this.site = site;
-	}
+   public String getId() {
+      return id;
+   }
 
-	public SiteAlignment getAlignment() {
-		return alignment;
-	}
+   public void setId(String id) {
+      this.id = id;
+   }
 
-	public void setAlignment(SiteAlignment alignment) {
-		this.alignment = alignment;
-	}
+   public SiteEntry getSite() {
+      return site;
+   }
 
-	public LocalDateTime getStartsAt() {
-		return startsAt;
-	}
+   public void setSite(SiteEntry site) {
+      this.site = site;
+   }
 
-	public void setStartsAt(LocalDateTime startsAt) {
-		this.startsAt = startsAt;
-	}
+   public SiteAlignment getAlignment() {
+      return alignment;
+   }
 
-	public Schedule getSchedule() {
-		return schedule;
-	}
+   public void setAlignment(SiteAlignment alignment) {
+      this.alignment = alignment;
+   }
 
-	public void setSchedule(Schedule schedule) {
-		this.schedule = schedule;
-	}
+   public LocalDateTime getStartsAt() {
+      return startsAt;
+   }
 
-	public Status getStatus() {
-		return status;
-	}
+   public void setStartsAt(LocalDateTime startsAt) {
+      this.startsAt = startsAt;
+   }
 
-	public void setStatus(Status status) {
-		this.status = status;
-	}
+   public Schedule getSchedule() {
+      return schedule;
+   }
 
-	public Conditions getConditions() {
-		return conditions;
-	}
+   public void setSchedule(Schedule schedule) {
+      this.schedule = schedule;
+   }
 
-	public void setConditions(Conditions conditions) {
-		this.conditions = conditions;
-	}
+   public Status getStatus() {
+      return status;
+   }
 
-	public String getDescription() {
-		return description;
-	}
+   public void setStatus(Status status) {
+      this.status = status;
+   }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+   public Conditions getConditions() {
+      return conditions;
+   }
 
-	public LocalDateTime getCreatedAt() {
-		return createdAt;
-	}
+   public void setConditions(Conditions conditions) {
+      this.conditions = conditions;
+   }
 
-	public void setCreatedAt(LocalDateTime createdAt) {
-		this.createdAt = createdAt;
-	}
+   public String getDescription() {
+      return description;
+   }
 
-	public UserEntry getCreatedBy() {
-		return createdBy;
-	}
+   public void setDescription(String description) {
+      this.description = description;
+   }
 
-	public void setCreatedBy(UserEntry createdBy) {
-		this.createdBy = createdBy;
-	}
+   public LocalDateTime getCreatedAt() {
+      return createdAt;
+   }
 
-	public LocalDateTime getModifiedAt() {
-		return modifiedAt;
-	}
+   public void setCreatedAt(LocalDateTime createdAt) {
+      this.createdAt = createdAt;
+   }
 
-	public void setModifiedAt(LocalDateTime modifiedAt) {
-		this.modifiedAt = modifiedAt;
-	}
+   public UserEntry getCreatedBy() {
+      return createdBy;
+   }
 
-	public UserEntry getModifiedBy() {
-		return modifiedBy;
-	}
+   public void setCreatedBy(UserEntry createdBy) {
+      this.createdBy = createdBy;
+   }
 
-	public void setModifiedBy(UserEntry modifiedBy) {
-		this.modifiedBy = modifiedBy;
-	}
+   public LocalDateTime getModifiedAt() {
+      return modifiedAt;
+   }
 
-	public Map<String, AttendeeEntry> getEventAttendees() {
-		return eventAttendees;
-	}
+   public void setModifiedAt(LocalDateTime modifiedAt) {
+      this.modifiedAt = modifiedAt;
+   }
 
-	public List<TeamEvent> getTeams() {
-		return teams;
-	}
+   public UserEntry getModifiedBy() {
+      return modifiedBy;
+   }
 
-	public Map<String, PlayEntry> getPlays() {
-		return plays;
-	}
+   public void setModifiedBy(UserEntry modifiedBy) {
+      this.modifiedBy = modifiedBy;
+   }
 
-	private static class AttendeeComparator implements
-			Comparator<AttendeeEntry> {
-		@Override
-		public int compare(AttendeeEntry o1, AttendeeEntry o2) {
-			final String l1 = o1.label();
-			final String l2 = o2.label();
-			return l1.compareToIgnoreCase(l2);
-		}
-	}
+   public Map<String, AttendeeEntry> getEventAttendees() {
+      return eventAttendees;
+   }
 
-	private static class PenaltyComparator implements Comparator<PenaltyEntry> {
-		@Override
-		public int compare(PenaltyEntry o1, PenaltyEntry o2) {
-			final Seconds t1 = PlayUtils.getTotalElapsedTime(o1.getPeriod(),
-					o1.getElapsedTime()).toStandardSeconds();
-			final Seconds t2 = PlayUtils.getTotalElapsedTime(o2.getPeriod(),
-					o2.getElapsedTime()).toStandardSeconds();
-			final int s1 = t1.getSeconds();
-			final int s2 = t2.getSeconds();
-			return s1 > s2 ? 1 : s1 < s2 ? -1 : 0;
-		}
-	}
+   public List<TeamEvent> getTeams() {
+      return teams;
+   }
+
+   public Map<String, PlayEntry> getPlays() {
+      return plays;
+   }
+
+   private static class AttendeeComparator implements
+      Comparator<AttendeeEntry>
+   {
+      @Override
+      public int compare(AttendeeEntry o1, AttendeeEntry o2) {
+         final String l1 = o1.label();
+         final String l2 = o2.label();
+         return l1.compareToIgnoreCase(l2);
+      }
+   }
+
+   private static class PenaltyComparator implements Comparator<PenaltyEntry> {
+      @Override
+      public int compare(PenaltyEntry o1, PenaltyEntry o2) {
+         final Seconds t1 = PlayUtils.getTotalElapsedTime(o1.getPeriod(),
+            o1.getElapsedTime()).toStandardSeconds();
+         final Seconds t2 = PlayUtils.getTotalElapsedTime(o2.getPeriod(),
+            o2.getElapsedTime()).toStandardSeconds();
+         final int s1 = t1.getSeconds();
+         final int s2 = t2.getSeconds();
+         return s1 > s2 ? 1 : s1 < s2 ? -1 : 0;
+      }
+   }
 }

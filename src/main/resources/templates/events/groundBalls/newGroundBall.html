@@ -7,43 +7,72 @@
 <body>
 	<div layout:fragment="content">
 		<div class="row">
-			<div class="col-sm-6 col-xs-12"></div>
-			<div class="col-sm-6 col-xs-12">
-				<h4>Ground Ball Input</h4>
+			<div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3">
+				<h1 class="text-center">New Ground Ball</h1>
+				<h2 class="text-center" 
+					th:text="${teamSeason.getTeam().getFullName()}" 
+					th:if="${teamSeason} != null">Team Season</h2>
+					
 				<form action="#" 
 					  th:action="@{'/admin/events/' + ${event.id} + '/groundBalls'}" 
 					  th:object="${groundBallForm}" 
 					  method="post" 
 					  role="form">
+					  
+					<input type="hidden" id="team-season-id" th:field="*{teamSeasonId}" />
+					<input type="hidden" id="game-id" th:field="*{gameId}" />
+					  
 					<div class="form-group">
 						<label for="period">Period</label>
-						<input th:type="text"
-							   id="period" 
+						<input th:type="number"
+							   autofocus="autofocus"
 							   class="form-control" 
-							   th:field="*{period}" />
+							   id="period" 
+							   min="1"
+							   step="1"
+							   th:field="*{period}"
+							   aria-describedby="period-error" />
+						<div th:if="${#fields.hasErrors('period')}"
+							 id="period-error"
+							 class="lax-error"
+							 th:errors="*{period}">Invalid period</div>
 					</div>
-					<div class="form-group">
+					
+					<div class="form-group required">
 						<label for="player">Player</label> 
 						<select id="player"
 								class="form-control" 
-								th:field="*{playerId}">
+								required="required"
+								th:field="*{playerId}"
+								aria-required="true"
+								aria-describedby="player-error">
 							<option value="">Select...</option>
-							<optgroup th:each="team : *{attendees.entrySet()}" 
-									  label="${team.key}">
-								<option th:each="opt : ${team.value}"
-										th:value="${opt.getId()}"
-										th:text="${opt.label()}">Attendees</option>
+							<optgroup th:each="entry : *{attendees.entrySet()}" 
+									  label="${entry.getKey()}">
+								<option th:each="opt : ${entry.getValue()}"
+										th:value="${opt.id}"
+										th:text="${opt.label}">Attendees</option>
 							</optgroup>
 						</select>
+						<div th:if="${#fields.hasErrors('playerId')}"
+							 id="player-error"
+							 class="lax-error"
+							 th:errors="*{playerId}">Invalid player</div>
+						<div th:if="${#fields.hasErrors('teamSeasonId')}"
+							 id="team-error"
+							 class="lax-error"
+							 th:errors="*{teamSeasonId}">Invalid team</div>
 					</div>
+					
 					<div class="form-group">
-						<label for="comments">Comments</label>
-						<textarea id="comments" 
+						<label for="comment">Comments</label>
+						<textarea id="comment" 
 								  class="form-control"
 								  rows="3" 
-								  th:field="*{comments}"></textarea>
+								  th:field="*{comment}"></textarea>
 					</div>
-					<button th:type="submit" class="btn btn-default">Submit</button>
+					
+					<button th:type="submit" class="btn btn-default btn-sm">Create</button>
 				</form>
 			</div>
 		</div>

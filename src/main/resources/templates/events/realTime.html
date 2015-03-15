@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
+<body>
+	<div th:fragment="realTime">
+		<div class="row">
+			<div class="col-sm-2 col-xs-6 lax-rt-play-container">
+				<button type="button" class="lax-btn lax-btn-play"
+					th:attr="data-play=goals,data-team=1,data-panel=1">Goal</button>
+				<button type="button" class="lax-btn lax-btn-play"
+					th:attr="data-play=shots,data-team=1,data-panel=2">Shot</button>
+				<button type="button" class="lax-btn lax-btn-play"
+					th:attr="data-play=groundBalls,data-team=1,data-panel=3">Ground Ball</button>
+				<button type="button" class="lax-btn lax-btn-play"
+					th:attr="data-play=penalties,data-team=1,data-panel=4">Penalty</button>
+				<button type="button" class="lax-btn lax-btn-play"
+					th:attr="data-play=clears,data-team=1,data-panel=5">Clear</button>
+				<button type="button" class="lax-btn lax-btn-play"
+					th:attr="data-play=faceOffs,data-team=1,data-panel=6">Face Off</button>
+			</div>
+			<div class="col-sm-2 col-xs-6 pull-right lax-rt-play-container">
+				<button type="button" class="lax-btn lax-btn-play"
+					th:attr="data-play=goals,data-team=2,data-panel=1">Goal</button>
+				<button type="button" class="lax-btn lax-btn-play"
+					th:attr="data-play=shots,data-team=2,data-panel=2">Shot</button>
+				<button type="button" class="lax-btn lax-btn-play"
+					th:attr="data-play=groundBalls,data-team=2,data-panel=3">Ground Ball</button>
+				<button type="button" class="lax-btn lax-btn-play"
+					th:attr="data-play=penalties,data-team=2,data-panel=4">Penalty</button>
+				<button type="button" class="lax-btn lax-btn-play"
+					th:attr="data-play=clears,data-team=2,data-panel=5">Clear</button>
+				<button type="button" class="lax-btn lax-btn-play"
+					th:attr="data-play=faceOffs,data-team=2,data-panel=6">Face Off</button>
+			</div>
+			<div class="col-sm-8 col-xs-12">
+				<div class="row">
+					<div class=" col-sm-5 col-xs-4">
+						<div class="row">
+							<div class="col-sm-7"></div>
+							<div class="col-sm-5">
+								<div class="lax-rt-text">Score</div>
+								<div class="lax-team-one-score">Score</div>
+								<button type="button" id="" class="lax-btn lax-btn-action"
+									th:attr="data-team=1">Time Out</button>
+								<div class="">Time Outs</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-2 col-xs-4">
+						<div class="center">
+							<div class="lax-rt-text">Clock</div>
+							<div class="lax-clock">Clock</div>
+						</div>
+						<div class="center">
+							<div class="lax-rt-text">Period</div>
+							<span class="lax-period">Period</span>
+						</div>
+						<div class="center">
+							<button type="button" id="play-timer"
+								class="lax-btn lax-btn-timer">Start</button>
+						</div>
+					</div>
+					<div class="col-sm-5 col-xs-4">
+						<div class="row">
+							<div class="col-sm-5">
+								<div class="lax-rt-text">Score</div>
+								<div class="lax-team-two-score">Score</div>
+								<button type="button" id="" class="lax-btn lax-btn-action"
+									th:attr="data-team=2">Time Out</button>
+								<div class="">Time Outs</div>
+							</div>
+							<div class="col-sm-7"></div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-sm-4 col-xs-6">
+						<div class="">Goalie</div>
+						<div class="">Goalie Name</div>
+						<button type="button" id="" class="lax-btn lax-btn-action"
+							th:attr="data-team=1">Change Goalie</button>
+					</div>
+					<div class="col-sm-4 col-sm-offset-4 col-xs-6">
+						<div class="">Goalie</div>
+						<div class="">Goalie Name</div>
+						<button type="button" id="" class="lax-btn lax-btn-action"
+							th:attr="data-team=2">Change Goalie</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="lax-rt-play-filter">
+			<button type="button" id="" class="lax-btn lax-btn-filter">All</button>
+			<button type="button" id="" class="lax-btn lax-btn-filter">Penalties</button>
+			<button type="button" id="" class="lax-btn lax-btn-filter">Goals</button>
+			<button type="button" id="" class="lax-btn lax-btn-filter">Saves</button>
+			<button type="button" id="" class="lax-btn lax-btn-filter">Goalie
+				Changes</button>
+		</div>
+
+		<div class="row">
+			<div class="col-xs-6">
+				<table class="">
+					<thead>
+						<tr>
+							<td>Per</td>
+							<td>Time</td>
+							<td>Play</td>
+							<td>Player</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>Per</td>
+							<td>Time</td>
+							<td>Play</td>
+							<td>Player</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<div class="col-xs-6">
+				<table class="">
+					<thead>
+						<tr>
+							<td>Per</td>
+							<td>Time</td>
+							<td>Play</td>
+							<td>Player</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>Per</td>
+							<td>Time</td>
+							<td>Play</td>
+							<td>Player</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

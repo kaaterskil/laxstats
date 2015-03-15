@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="officeLayout">
+<head>
+</head>
+<body>
+	<div layout:fragment="content">
+		<div id="real-time-header" class="row">
+			<div class="col-sm-5 col-xs-6">
+				<h2 class="lax-rt-team-name" id="team-1"
+					th:text="${homeTeam}? ${homeTeam.name}"
+					th:attr="data-team=${homeTeam}? ${homeTeam.id}">Team One</h2>
+			</div>
+			<div class="col-sm-2 xs-hidden" id="game"
+				th:attr="data-game=${game.id}"></div>
+			<div class="col-sm-5 col-xs-6">
+				<h2 class="lax-rt-team-name" id="team-2"
+					th:text="${visitingTeam}? ${visitingTeam.name}"
+					th:attr="data-team=${visitingTeam}? ${visitingTeam.id}">Team
+					Two</h2>
+			</div>
+		</div>
+
+		<div id="real-time-entry" class="carousel slide">
+			<div class="carousel-inner" role="">
+				<div class="item active">
+					<div th:replace="events/realTime :: realTime"></div>
+				</div>
+
+				<div class="item">
+					<div id="goal"></div>
+				</div>
+
+				<div class="item">
+					<div id="shot"></div>
+				</div>
+
+				<div class="item">
+					<div id="groundBall"></div>
+				</div>
+
+				<div class="item">
+					<div id="penalty"></div>
+				</div>
+
+				<div class="item">
+					<div id="clear"></div>
+				</div>
+
+				<div class="item">
+					<div id="faceOff"></div>
+				</div>
+			</div>
+		</div>
+
+		<script type="text/javascript" src="/js/laxstats.real-time.js"
+			th:src="@{/js/laxstats.real-time.js}"></script>
+		<script type="text/javascript">
+			// <![CDATA[
+			(function laxRealTimeEntry() {
+				var $header = $('#real-time-header'), 
+					$carousel = $('#real-time-entry'), 
+					$playBtn = $('.lax-btn-play');
+				
+				function cancelPlay() {
+					$carousel.carousel(0);
+				}
+
+				function newPlay() {
+					var game = $('#game').data('game'), 
+						playType = $(this).data('play'), 
+						team = $(this).data('team'), 
+						panel = parseInt($(this).data('panel')), 
+						teamSeason = team == 1 
+							? $('#team-1').data('team') 
+							: $('#team-2').data('team'), 
+						state = laxstats.Timer.getCurrentTime(), df;
+
+					var url = '/admin/events/' + game + '/teamSeasons/'
+							+ teamSeason + '/' + playType + '/new', 
+						query = '?p=' + state.currPeriod + '&t=' 
+							+ state.secsRemaining;
+
+					df = $.ajax({
+						url : url + query,
+						type : 'GET',
+						dataType : 'text'
+					});
+
+					df.done(function(data) {
+						var $panel = null;
+						switch (panel) {
+						case 1:
+							$panel = $('#goal');
+							break;
+						case 2:
+							$panel = $('#shot');
+							break;
+						case 3:
+							$panel = $('#groundBall');
+							break;
+						case 4:
+							$panel = $('#penalty');
+							break;
+						case 5:
+							$panel = $('#clear');
+							break;
+						case 6:
+							$panel = $('#faceOff');
+							break;
+						}
+						if ($panel) {
+							$panel.html(data);
+							$header.css('display', 'none');
+							$('.lax-btn-cancel').on('click', cancelPlay);
+							$carousel.carousel(panel);
+						}
+					});
+
+					df.fail(function(jqXHR, status, error) {
+						var msg = 'Error (' + jqXHR.status + '): '
+								+ jqXHR.responseText;
+						console.log(msg);
+					});
+				}
+
+				$(document).ready(function() {
+					$carousel.carousel({
+						interval : false,
+						wrap : false,
+						keyboard : false
+					});
+				});
+
+				$playBtn.on('click', newPlay);
+			})();
+			// ]]>
+		</script>
+	</div>
+</body>
+</html>

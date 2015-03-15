@@ -1,73 +1,98 @@
 package laxstats.web.events;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import laxstats.api.events.PlayKey;
 import laxstats.api.events.PlayType;
+import laxstats.query.events.AttendeeEntry;
 
 import org.joda.time.Period;
+import org.springframework.format.annotation.DateTimeFormat;
 
 public class PenaltyForm extends AbstractPlayForm {
-	private Period elapsedTime;
-	private String committedById;
-	private String committedAgainstId;
-	private String violationId;
-	private Period duration;
-	private Map<String, String> violationData = new HashMap<>();
+   @DateTimeFormat(pattern = "mm:ss")
+   private Period elapsedTime;
 
-	public PenaltyForm() {
-		super(PlayType.PENALTY, PlayKey.PLAY);
-	}
+   private String committedById;
+   private String committedAgainstId;
+   private String violationId;
+   private Period duration;
+   private Map<String, String> violationData = new HashMap<>();
+   private Map<String, List<AttendeeEntry>> violators;
+   private Map<String, List<AttendeeEntry>> opponents;
 
-	/*---------- Getter/Setters ----------*/
+   public PenaltyForm() {
+      super(PlayType.PENALTY, PlayKey.PLAY);
+   }
 
-	public Period getElapsedTime() {
-		return elapsedTime;
-	}
+   /*---------- Getter/Setters ----------*/
 
-	public void setElapsedTime(Period elapsedTime) {
-		this.elapsedTime = elapsedTime;
-	}
+   public Period getElapsedTime() {
+      return elapsedTime;
+   }
 
-	public String getCommittedById() {
-		return committedById;
-	}
+   public void setElapsedTime(Period elapsedTime) {
+      this.elapsedTime = elapsedTime;
+   }
 
-	public void setCommittedById(String committedById) {
-		this.committedById = committedById;
-	}
+   public String getCommittedById() {
+      return committedById;
+   }
 
-	public String getCommittedAgainstId() {
-		return committedAgainstId;
-	}
+   public void setCommittedById(String committedById) {
+      this.committedById = committedById;
+   }
 
-	public void setCommittedAgainstId(String committedAgainstId) {
-		this.committedAgainstId = committedAgainstId;
-	}
+   public String getCommittedAgainstId() {
+      return committedAgainstId;
+   }
 
-	public String getViolationId() {
-		return violationId;
-	}
+   public void setCommittedAgainstId(String committedAgainstId) {
+      this.committedAgainstId = committedAgainstId;
+   }
 
-	public void setViolationId(String violationId) {
-		this.violationId = violationId;
-	}
+   public String getViolationId() {
+      return violationId;
+   }
 
-	public Period getDuration() {
-		return duration;
-	}
+   public void setViolationId(String violationId) {
+      this.violationId = violationId;
+   }
 
-	public void setDuration(Period duration) {
-		this.duration = duration;
-	}
+   public Period getDuration() {
+      return duration;
+   }
 
-	public Map<String, String> getViolationData() {
-		return violationData;
-	}
+   public void setDuration(Period duration) {
+      this.duration = duration;
+   }
 
-	public void setViolationData(Map<String, String> violationData) {
-		this.violationData = violationData;
-	}
+   public Map<String, String> getViolationData() {
+      return violationData;
+   }
+
+   public void setViolationData(Map<String, String> violationData) {
+      this.violationData = violationData;
+   }
+
+   /*---------- Drop down menu options ----------*/
+
+   public Map<String, List<AttendeeEntry>> getViolators() {
+      return violators;
+   }
+
+   public void setViolators(Map<String, List<AttendeeEntry>> violators) {
+      this.violators = violators;
+   }
+
+   public Map<String, List<AttendeeEntry>> getOpponents() {
+      return opponents;
+   }
+
+   public void setOpponents(Map<String, List<AttendeeEntry>> opponents) {
+      this.opponents = opponents;
+   }
 
 }

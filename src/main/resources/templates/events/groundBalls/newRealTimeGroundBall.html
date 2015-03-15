@@ -1,22 +1,21 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-	layout:decorator="layout">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
 </head>
 <body>
-	<div layout:fragment="content">
+	<div th:fragment="content">
 		<div class="row">
 			<div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3">
-				<h1 class="text-center">Edit Ground Ball</h1>
+				<h1 class="text-center">New Ground Ball</h1>
 				<h2 class="text-center" 
 					th:text="${teamSeason.getTeam().getFullName()}" 
 					th:if="${teamSeason} != null">Team Season</h2>
 					
 				<form action="#" 
-					  th:action="@{'/admin/events/' + ${event.id} + '/groundBalls/' + ${play.id}}" 
+					  th:action="@{'/admin/events/' + ${event.id} + '/groundBalls'}" 
 					  th:object="${groundBallForm}" 
-					  th:method="put" 
+					  method="post" 
 					  role="form">
 					  
 					<input type="hidden" id="team-season-id" th:field="*{teamSeasonId}" />
@@ -65,14 +64,15 @@
 					</div>
 					
 					<div class="form-group">
-						<label for="comments">Comments</label>
-						<textarea id="comments" 
+						<label for="comment">Comments</label>
+						<textarea id="comment" 
 								  class="form-control"
 								  rows="3" 
 								  th:field="*{comment}"></textarea>
 					</div>
 					
-					<button th:type="submit" class="btn btn-default btn-sm">Update</button>
+					<button th:type="submit" class="lax-btn lax-btn-save">Create</button>
+					<button th:type="button" class="lax-btn lax-btn-cancel">Cancel</button>
 				</form>
 			</div>
 		</div>

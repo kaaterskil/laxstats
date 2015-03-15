@@ -1,52 +1,75 @@
 package laxstats.web.events;
 
+import java.util.Arrays;
+import java.util.List;
+
 import laxstats.api.events.PlayKey;
 import laxstats.api.events.PlayType;
 import laxstats.api.events.ScoreAttemptType;
 
 import org.joda.time.Period;
+import org.springframework.format.annotation.DateTimeFormat;
 
 public class GoalForm extends AbstractPlayForm {
-	private Period elapsedTime;
-	private String scorerId;
-	private String assistId;
-	private ScoreAttemptType attemptType;
+   @DateTimeFormat(pattern = "mm:ss")
+   private Period elapsedTime;
 
-	public GoalForm() {
-		super(PlayType.GOAL, PlayKey.GOAL);
-	}
+   private String scorerId;
+   private String assistId;
+   private ScoreAttemptType attemptType;
+   private String comments;
+   private List<ScoreAttemptType> attemptTypes;
 
-	/*---------- Getter/Setters ----------*/
+   public GoalForm() {
+      super(PlayType.GOAL, PlayKey.GOAL);
+   }
 
-	public Period getElapsedTime() {
-		return elapsedTime;
-	}
+   /*---------- Getter/Setters ----------*/
 
-	public void setElapsedTime(Period elapsedTime) {
-		this.elapsedTime = elapsedTime;
-	}
+   public Period getElapsedTime() {
+      return elapsedTime;
+   }
 
-	public String getScorerId() {
-		return scorerId;
-	}
+   public void setElapsedTime(Period elapsedTime) {
+      this.elapsedTime = elapsedTime;
+   }
 
-	public void setScorerId(String scorerId) {
-		this.scorerId = scorerId;
-	}
+   public String getScorerId() {
+      return scorerId;
+   }
 
-	public String getAssistId() {
-		return assistId;
-	}
+   public void setScorerId(String scorerId) {
+      this.scorerId = scorerId;
+   }
 
-	public void setAssistId(String assistId) {
-		this.assistId = assistId;
-	}
+   public String getAssistId() {
+      return assistId;
+   }
 
-	public ScoreAttemptType getAttemptType() {
-		return attemptType;
-	}
+   public void setAssistId(String assistId) {
+      this.assistId = assistId;
+   }
 
-	public void setAttemptType(ScoreAttemptType attemptType) {
-		this.attemptType = attemptType;
-	}
+   public ScoreAttemptType getAttemptType() {
+      return attemptType;
+   }
+
+   public void setAttemptType(ScoreAttemptType attemptType) {
+      this.attemptType = attemptType;
+   }
+
+   public String getComments() {
+      return comments;
+   }
+
+   public void setComments(String comments) {
+      this.comments = comments;
+   }
+
+   public List<ScoreAttemptType> getAttemptTypes() {
+      if (attemptTypes == null) {
+         attemptTypes = Arrays.asList(ScoreAttemptType.values());
+      }
+      return attemptTypes;
+   }
 }

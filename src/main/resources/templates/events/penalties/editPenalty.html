@@ -7,86 +7,143 @@
 <body>
 	<div layout:fragment="content">
 		<div class="row">
-			<div class="col-sm-6 col-xs-12"></div>
-			<div class="col-sm-6 col-xs-12">
-				<h4>Edit Penalty</h4>
+			<div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3">
+				<h1 class="text-center">Edit Penalty</h1>
+				<h2 class="text-center" 
+					th:text="${teamSeason.getTeam().getFullName()}" 
+					th:if="${teamSeason} != null">Team Season</h2>
+					
 				<form action="#" 
 					  th:action="@{'/admin/events/' + ${event.id} + '/penalties/' + ${play.id}}" 
 					  th:object="${penaltyForm}" 
 					  th:method="put" 
 					  role="form">
-					<div class="form-group">
+					  
+					<input type="hidden" id="team-season-id" th:field="*{teamSeasonId}" />
+					<input type="hidden" id="game-id" th:field="*{gameId}" />
+					  
+					<div class="form-group required">
 						<label for="period">Period</label>
-						<input th:type="text"
+						<input th:type="number"
+							   autofocus="autofocus"
+							   class="form-control" 
 							   id="period" 
-							   class="form-control" 
-							   th:field="*{period}" />
+							   min="1"
+							   required="required"
+							   step="1"
+							   th:field="*{period}"
+							   aria-required="true"
+							   aria-describedby="period-error" />
+						<div th:if="${#fields.hasErrors('period')}"
+							 id="period-error"
+							 class="lax-error"
+							 th:errors="*{period}">Invalid period</div>
 					</div>
-					<div class="form-group">
+					
+					<div class="form-group required">
 						<label for="clock">Clock</label> 
-						<input th:type="text" 
-							   id="clock"
+						<input th:type="time" 
 							   class="form-control" 
-							   th:field="*{elapsedTime}" />
+							   id="clock"
+							   min="00:00"
+							   required="required"
+							   step="00:01"
+							   th:field="*{elapsedTime}"
+							   aria-required="true"
+							   aria-describedby="clock-error" />
+						<div th:if="${#fields.hasErrors('elapsedTime')}"
+							 id="clock-error"
+							 class="lax-error"
+							 th:errors="*{elapsedTime}">Invalid elapsed time</div>
 					</div>
-					<div class="form-group">
+					
+					<div class="form-group required">
 						<label for="violation">Violation</label> 
 						<select id="violation"
-								class="form-control" 
-								th:field="*{violationId}">
+								class="form-control"
+								required="required" 
+								th:field="*{violationId}"
+								aria-required="true"
+								aria-describedby="violation-error">
 							<option value="">Select...</option>
 							<option th:each="entry : *{violationData.entrySet()}" 
-									th:value="${entry.key}" 
-									th:text="${entry.value}">Violations</option>
+									th:value="${entry.getKey()}" 
+									th:text="${entry.getValue()}">Violations</option>
 						</select>
+						<div th:if="${#fields.hasErrors('violationId')}"
+							 id="violation-error"
+							 class="lax-error"
+							 th:errors="*{violationId}">Invalid violation</div>
 					</div>
-					<div class="form-group">
+					
+					<div class="form-group required">
 						<label for="violator">Committed By</label> 
 						<select id="violator"
 								class="form-control" 
-								th:field="*{committedById}">
+								required="required"
+								th:field="*{committedById}"
+								aria-required="true"
+								aria-describedby="committed-by-error">
 							<option value="">Select...</option>
-							<optgroup th:each="team : *{attendees.entrySet()}" 
-									  label="${team.key}">
-								<option th:each="opt : ${team.value}"
-										th:value="${opt.getId()}"
-										th:text="${opt.label()}">Attendees</option>
+							<optgroup th:each="entry : *{attendees.entrySet()}" 
+									  label="${entry.getKey()}">
+								<option th:each="opt : ${entry.getValue()}"
+										th:value="${opt.id}"
+										th:text="${opt.label}">Attendees</option>
 							</optgroup>
 						</select>
+						<div th:if="${#fields.hasErrors('committedById')}"
+							 id="committed-by-error"
+							 class="lax-error"
+							 th:errors="*{committedById}">Invalid violator</div>
 					</div>
+					
 					<div class="form-group">
 						<label for="against">Committed Against</label>
 						<select id="against" 
 								class="form-control"
-								th:field="*{committedAgainstId}">
+								th:field="*{committedAgainstId}"
+								aria-describedby="committed-against-error">
 							<option value="">Select...</option>
-							<optgroup th:each="team : *{attendees.entrySet()}" 
-									  label="${team.key}">
-								<option th:each="opt : ${team.value}"
-										th:value="${opt.getId()}"
-										th:text="${opt.label()}">Attendees</option>
+							<optgroup th:each="entry : *{attendees.entrySet()}" 
+									  label="${entry.getKey()}">
+								<option th:each="opt : ${entry.getValue()}"
+										th:value="${opt.id}"
+										th:text="${opt.label}">Attendees</option>
 							</optgroup>
 						</select>
+						<div th:if="${#fields.hasErrors('committedById')}"
+							 id="committed-against-error"
+							 class="lax-error"
+							 th:errors="*{committedById}">Invalid player</div>
 					</div>
-					<div class="form-group">
-						<label for="duration">Duration</label> 
-						<select id="duration"
-								class="form-control" 
-								th:field="*{duration}">
-							<option value="">Select...</option>
-							<option th:each="opt : ${PenaltyLength.values}" 
-									th:value="${opt.duration}" 
-									th:text="${opt.value}">Duration</option>
-						</select>
+					
+					<div class="form-group required">
+						<label for="duration">Duration</label>
+						<input th:type="time" 
+							   class="form-control" 
+							   id="duration"
+							   min="00:00"
+							   required="required"
+							   step="00:01"
+							   th:field="*{duration}"
+							   aria-required="true"
+							   aria-describedby="duration-error" />
+						<div th:if="${#fields.hasErrors('duration')}"
+							 id="duration-error"
+							 class="lax-error"
+							 th:errors="*{duration}">Invalid duration</div>
 					</div>
+					
 					<div class="form-group">
 						<label for="comments">Comments</label>
 						<textarea id="comments" 
 								  class="form-control"
 								  rows="3" 
-								  th:field="*{comments}"></textarea>
+								  th:field="*{comment}"></textarea>
 					</div>
-					<button th:type="submit" class="btn btn-default">Update</button>
+					
+					<button th:type="submit" class="btn btn-default btn-sm">Update</button>
 				</form>
 			</div>
 		</div>

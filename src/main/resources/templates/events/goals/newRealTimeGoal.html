@@ -1,26 +1,25 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-	layout:decorator="layout">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
 </head>
 <body>
-	<div layout:fragment="content">
+	<div th:fragment="content">
 		<div class="row">
 			<div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3">
-				<h1 class="text-center">Edit Goal</h1>
+				<h1 class="text-center">New Goal</h1>
 				<h2 class="text-center" 
 					th:text="${teamSeason.getTeam().getFullName()}" 
 					th:if="${teamSeason} != null">Team Season</h2>
 				<form action="#" 
-					  th:action="@{'/admin/events/' + ${event.id} + '/goals/' + ${play.id}}" 
+					  th:action="@{'/admin/events/' + ${event.id} + '/goals'}" 
 					  th:object="${goalForm}" 
-					  th:method="put" 
+					  method="post" 
 					  role="form">
 					  
 					<input type="hidden" id="team-season-id" th:field="*{teamSeasonId}" />
 					<input type="hidden" id="game-id" th:field="*{gameId}" />
-					
+						   
 					<div class="row">
 						<div class="col-xs-6 form-group required">
 							<label for="period">Period</label>
@@ -48,9 +47,9 @@
 								   required="required"
 								   th:field="*{elapsedTime}"
 								   aria-required="true"
-								   aria-describedby="elapsed-time-error" />
+								   aria-describedby="clock-error" />
 							<div th:if="${#fields.hasErrors('elapsedTime')}"
-								 id="elapsed-time-error"
+								 id="clock-error"
 								 class="lax-error"
 								 th:errors="*{elapsedTime}">Invalid elapsed time</div>
 						</div>
@@ -127,7 +126,8 @@
 								  th:field="*{comment}"></textarea>
 					</div>
 					
-					<button th:type="submit" class="btn btn-default btn-sm">Update</button>
+					<button th:type="submit" class="lax-btn lax-btn-save">Create</button>
+					<button th:type="button" class="lax-btn lax-btn-cancel">Cancel</button>
 				</form>
 			</div>
 		</div>

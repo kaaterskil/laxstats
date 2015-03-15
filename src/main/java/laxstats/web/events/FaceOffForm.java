@@ -1,42 +1,70 @@
 package laxstats.web.events;
 
+import java.util.List;
+import java.util.Map;
+
 import laxstats.api.events.PlayKey;
 import laxstats.api.events.PlayType;
+import laxstats.query.events.AttendeeEntry;
 
 import org.joda.time.Period;
+import org.springframework.format.annotation.DateTimeFormat;
 
 public class FaceOffForm extends AbstractPlayForm {
-	private Period elapsedTime;
-	private String winnerId;
-	private String loserId;
+   @DateTimeFormat(pattern = "mm:ss")
+   private Period elapsedTime;
 
-	public FaceOffForm() {
-		super(PlayType.FACEOFF, PlayKey.PLAY);
-	}
+   private String winnerId;
+   private String loserId;
+   private Map<String, List<AttendeeEntry>> winners;
+   private Map<String, List<AttendeeEntry>> losers;
 
-	/*---------- Getter/Setters ----------*/
+   public FaceOffForm() {
+      super(PlayType.FACEOFF, PlayKey.PLAY);
+   }
 
-	public Period getElapsedTime() {
-		return elapsedTime;
-	}
+   /*---------- Getter/Setters ----------*/
 
-	public void setElapsedTime(Period elapsedTime) {
-		this.elapsedTime = elapsedTime;
-	}
+   public Period getElapsedTime() {
+      return elapsedTime;
+   }
 
-	public String getWinnerId() {
-		return winnerId;
-	}
+   public void setElapsedTime(Period elapsedTime) {
+      this.elapsedTime = elapsedTime;
+   }
 
-	public void setWinnerId(String winnerId) {
-		this.winnerId = winnerId;
-	}
+   public String getWinnerId() {
+      return winnerId;
+   }
 
-	public String getLoserId() {
-		return loserId;
-	}
+   public void setWinnerId(String winnerId) {
+      this.winnerId = winnerId;
+   }
 
-	public void setLoserId(String loserId) {
-		this.loserId = loserId;
-	}
+   public String getLoserId() {
+      return loserId;
+   }
+
+   public void setLoserId(String loserId) {
+      this.loserId = loserId;
+   }
+
+   /*---------- Drop down menu options ----------*/
+
+   public Map<String, List<AttendeeEntry>> getWinners() {
+      return winners;
+   }
+
+   public void setWinners(Map<String, List<AttendeeEntry>> winners) {
+      this.winners = winners;
+   }
+
+   public Map<String, List<AttendeeEntry>> getLosers() {
+      return losers;
+   }
+
+   public void setLosers(Map<String, List<AttendeeEntry>> losers) {
+      this.losers = losers;
+   }
+
 }

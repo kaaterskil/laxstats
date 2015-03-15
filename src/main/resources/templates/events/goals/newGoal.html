@@ -7,75 +7,127 @@
 <body>
 	<div layout:fragment="content">
 		<div class="row">
-			<div class="col-sm-6 col-xs-12"></div>
-			<div class="col-sm-6 col-xs-12">
-				<h4>Goal Input</h4>
+			<div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3">
+				<h1 class="text-center">New Goal</h1>
+				<h2 class="text-center" 
+					th:text="${teamSeason.getTeam().getFullName()}" 
+					th:if="${teamSeason} != null">Team Season</h2>
 				<form action="#" 
 					  th:action="@{'/admin/events/' + ${event.id} + '/goals'}" 
 					  th:object="${goalForm}" 
 					  method="post" 
 					  role="form">
-					<div class="form-group">
-						<label for="period">Period</label>
-						<input th:type="text"
-							   id="period" 
-							   class="form-control" 
-							   th:field="*{period}" />
+					  
+					<input type="hidden" id="team-season-id" th:field="*{teamSeasonId}" />
+					<input type="hidden" id="game-id" th:field="*{gameId}" />
+						   
+					<div class="row">
+						<div class="col-xs-6 form-group required">
+							<label for="period">Period</label>
+							<input th:type="number"
+								   autofocus="autofocus"
+								   class="form-control" 
+								   id="period" 
+								   min="1"
+								   required="required"
+								   step="1"
+								   th:field="*{period}"
+								   aria-required="true"
+								   aria-describedby="period-error" />
+							<div th:if="${#fields.hasErrors('period')}"
+								 id="period-error"
+								 class="lax-error"
+								 th:errors="*{period}">Invalid period</div>
+						</div>
+						<div class="col-xs-6 form-group required">
+							<label for="clock">Clock</label> 
+							<input th:type="time" 
+								   id="clock"
+								   min="00:00"
+								   class="form-control" 
+								   required="required"
+								   th:field="*{elapsedTime}"
+								   aria-required="true"
+								   aria-describedby="clock-error" />
+							<div th:if="${#fields.hasErrors('elapsedTime')}"
+								 id="clock-error"
+								 class="lax-error"
+								 th:errors="*{elapsedTime}">Invalid elapsed time</div>
+						</div>
 					</div>
-					<div class="form-group">
-						<label for="clock">Clock</label> 
-						<input th:type="text" 
-							   id="clock"
-							   class="form-control" 
-							   th:field="*{elapsedTime}" />
-					</div>
-					<div class="form-group">
+					
+					<div class="form-group required">
 						<label for="scorer">Scorer</label> 
 						<select id="scorer"
 								class="form-control" 
-								th:field="*{scorerId}">
+								th:field="*{scorerId}"
+								required="required"
+								aria-required="true"
+								aria-describedby="scorer-error">
 							<option value="">Select...</option>
-							<optgroup th:each="team : *{attendees.entrySet()}" 
-									  label="${team.key}">
-								<option th:each="opt : ${team.value}"
-										th:value="${opt.getId()}"
-										th:text="${opt.label()}">Attendees</option>
+							<optgroup th:each="entry : *{attendees.entrySet()}" 
+									  label="${entry.getKey()}">
+								<option th:each="opt : ${entry.getValue()}"
+										th:value="${opt.id}"
+										th:text="${opt.label}">Scorers</option>
 							</optgroup>
 						</select>
+						<div th:if="${#fields.hasErrors('scorerId')}"
+							 id="scorer-error"
+							 class="lax-error"
+							 th:errors="*{scorerId}">Invalid scorer</div>
 					</div>
+					
 					<div class="form-group">
 						<label for="attempt-type">Shot type</label> 
 						<select id="attempt-type"
 								class="form-control" 
-								th:field="*{attemptType}">
+								required="required"
+								th:field="*{attemptType}"
+								aria-required="true"
+								aria-describedby="attempt-type-error">
 							<option value="">Select...</option>
-							<option th:each="entry : ${ScoreAttemptType.values}" 
-									th:value="${entry.name}" 
-									th:text="${entry.label}">Shot type</option>
+							<option th:each="opt : *{attemptTypes}" 
+									th:value="${opt}" 
+									th:text="${opt.label}">Shot type</option>
 						</select>
+						<div th:if="${#fields.hasErrors('attemptType')}"
+							 id="attempt-type-error"
+							 class="lax-error"
+							 th:errors="*{attemptType}">Invalid shot type</div>
 					</div>
+					
 					<div class="form-group">
 						<label for="assist">Assist</label>
 						<select id="assist" 
 								class="form-control"
-								th:field="*{assistId}">
+								required="required"
+								th:field="*{assistId}"
+								aria-required="true"
+								aria-describedby="assist-error">
 							<option value="">Select...</option>
-							<optgroup th:each="team : *{attendees.entrySet()}" 
-									  label="${team.key}">
-								<option th:each="opt : ${team.value}"
-										th:value="${opt.getId()}"
-										th:text="${opt.label()}">Attendees</option>
+							<optgroup th:each="entry : *{attendees.entrySet()}" 
+									  label="${entry.getKey()}">
+								<option th:each="opt : ${entry.getValue()}"
+										th:value="${opt.id}"
+										th:text="${opt.label}">Assists</option>
 							</optgroup>
 						</select>
+						<div th:if="${#fields.hasErrors('assistId')}"
+							 id="assist-error"
+							 class="lax-error"
+							 th:errors="*{assistId}">Invalid assist</div>
 					</div>
+					
 					<div class="form-group">
 						<label for="comments">Comments</label>
 						<textarea id="comments" 
 								  class="form-control"
 								  rows="3" 
-								  th:field="*{comments}"></textarea>
+								  th:field="*{comment}"></textarea>
 					</div>
-					<button th:type="submit" class="btn btn-default">Submit</button>
+					
+					<button th:type="submit" class="btn btn-default btn-sm">Create</button>
 				</form>
 			</div>
 		</div>

@@ -17,7 +17,7 @@
 		
 		<div class="row">
 			<div class="col-sm-10 col-sm-offset-1">
-				<div class="teable-responsive lax-admin-table">
+				<div class="table-responsive lax-admin-table">
 					<table class="table table-striped">
 						<thead>
 							<tr>
@@ -53,6 +53,12 @@
 									   href="#" 
 									   th:href="@{'/admin/events/' + ${item.id} + '/edit'}">
 										<span class="glyphicon glyphicon-pencil green"></span>
+									</a>
+									<a class="lax-icon" 
+									   title="Scoring" 
+									   href="#" 
+									   th:href="@{'/admin/events/' + ${item.id} + '/scoring'}">
+										<span class="glyphicon glyphicon-play green"></span>
 									</a>
 								</td>
 								<td th:text="${{item.startsAt.toLocalDate()}}">Date</td>

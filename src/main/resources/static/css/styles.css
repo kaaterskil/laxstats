@@ -115,7 +115,6 @@ label {
 }
 
 .btn {
-	font: 500 18px "freight-sans-pro", Helvetica, Arial, sans-serif;
 	margin-top: 10px;
 }
 
@@ -125,9 +124,9 @@ table .btn {
 }
 
 .btn-sm {
-	border-radius: 0;
-	font-size: 16px;
-	padding: 3px 15px;
+	/* 	font-size: 16px; */
+	/* 	padding: 3px 15px; */
+	
 }
 
 .btn-default {
@@ -369,6 +368,28 @@ nav .navbar-nav>li>a:hover {
 	padding: 5px 0;
 }
 
+.lax-btn {
+	background: rgb(255, 255, 255);
+	border-radius: 4px;
+	cursor: pointer;
+	display: block;
+	font: normal normal 12px Arial;
+	padding: 8px 12px;
+	text-align: center;
+	text-transform: uppercase;
+	touch-action: auto;
+	transition: all 0.2s ease;
+	vertical-align: middle;
+	white-space: nowrap;
+	min-width: 120px;
+}
+
+.lax-btn:hover, .lax-btn:active {
+	-moz-box-shadow: none;
+	-o-box-shadow: none;
+	box-shadow: none;
+}
+
 .lax-btn-new {
 	margin: 4px 0;
 }
@@ -384,26 +405,78 @@ nav .navbar-nav>li>a:hover {
 }
 
 .lax-btn-cancel {
-	background-color: rgb(255, 255, 255);
-	border: 2px solid rgb(238, 162, 54);
-	color: rgb(238, 162, 54);
-	margin-left: 10px;
-	margin-top: 10px;
-	transition: all 0.2s ease;
+	border: 1px solid rgb(204, 204, 204);
+	color: rgb(204, 204, 204);
+	display: inline;
+	margin: 10px 5px;
+	min-width: 0;
 }
 
-.lax-btn-cancel:hover {
-	background-color: rgb(240, 173, 78);
-	border-color: rgb(238, 162, 54);
+.lax-btn-cancel:hover, .lax-btn-cancel:active {
+	background: rgb(204, 204, 204);
 	color: rgb(255, 255, 255);
 }
 
-.lax-btn-cancel:active {
-	background-color: rgb(254, 208, 134);
-	-moz-box-shadow: none;
-	-o-box-shadow: none;
-	box-shadow: none;
-	border-color: rgb(249, 191, 0);
+.lax-btn-play, .lax-btn-save {
+	border: 1px solid rgb(59, 142, 222);
+	color: rgb(59, 142, 222);
+	margin: 10px auto 0 auto;
+}
+
+.lax-btn-save {
+	display: inline;
+	margin: 10px 5px;
+	min-width: 0;
+}
+
+.lax-btn-play:hover, .lax-btn-play:active, .lax-btn-save:hover,
+	.lax-btn-save:active {
+	background: rgb(59, 142, 222);
+	border-color: rgb(59, 142, 222);
+	color: rgb(255, 255, 255);
+}
+
+.lax-btn-action {
+	border: 1px solid rgb(225, 69, 4);
+	color: rgb(225, 69, 4);
+	margin: 0 auto;
+	padding: 8px;
+	min-width: 0;
+}
+
+.lax-btn-action:hover, .lax-btn-action:action {
+	background: rgb(225, 69, 4);
+	border: 1px solid rgb(225, 69, 4);
+	color: rgb(255, 255, 255);
+}
+
+.lax-btn-filter {
+	border: 1px solid rgb(74, 139, 44);
+	border-radius: 3px;
+	display: inline-block;
+	color: rgb(74, 139, 44);
+	font-size: 10px;
+	margin: 10px 2px;;
+	padding: 5px 6px;
+	min-width: 0;
+}
+
+.lax-btn-filter:hover, .lax-btn-filter:action {
+	background: rgb(74, 139, 44);
+	border: 1px solid rgb(74, 139, 44);
+	color: rgb(255, 255, 255);
+}
+
+.lax-btn-new-play a {
+	display: block;
+	color: rgb(59, 142, 222);
+	text-align: center;
+	transition: all 0.2s ease;
+}
+
+.lax-btn-new-play a:hover {
+	color: rgb(255, 255, 255);
+	text-decoration: none;
 }
 
 .lax-icon {
@@ -440,6 +513,7 @@ nav .navbar-nav>li>a:hover {
 	font: normal normal 12px Arial;
 }
 
+/*---------- People Search ----------*/
 .lax-search-people-form {
 	margin-bottom: 30px;
 }
@@ -449,7 +523,7 @@ nav .navbar-nav>li>a:hover {
 	margin-top: 10px;
 }
 
-.selected-person span{
+.selected-person span {
 	display: block;
 	float: left;
 	font-weight: 700;
@@ -476,12 +550,96 @@ nav .navbar-nav>li>a:hover {
 	padding-top: 0;
 }
 
-.lax-faq-bottom {
-	margin-top: 30px;
+/*---------- Real Time Scoring ----------*/
+.lax-rt-text {
+	font: 300 10px Arial;
+	margin: 3px auto;
+	text-align: center;
+}
+.lax-rt-play-container {
+	margin-bottom: 5px;
 }
 
+/* Fade transition for carousel items */
+.carousel .item {
+	left: 0 !important;
+	-webkit-transition: opacity .5s;
+	-moz-transition: opacity .5s;
+	-o-transition: opacity .5s;
+	transition: opacity .5s;
+}
+
+.carousel-control {
+	background-image: none !important;
+	/* remove background gradients on controls */
+}
+/* Fade controls with items */
+.next.left, .prev.right {
+	opacity: 1;
+	z-index: 1;
+}
+
+.active.left, .active.right {
+	opacity: 0;
+	z-index: 2;
+}
+
+.lax-rt-team-name {
+	font: 500 20px "freight-sans-pro", Helvetica, Arial, sans-serif;
+	margin: 0;
+	padding: 0;
+	text-align: center;
+}
+
+.lax-clock, .lax-period {
+	background: rgb(51, 51, 51);
+	border: 1px solid rgb(51, 51, 51);
+	border-radius: 4px;
+	color: rgb(255, 255, 255);
+	font: 700 24px Arial;
+	padding: 6px;
+	text-align: center;
+}
+
+.lax-period {
+	display: inline-block;
+	font: 700 14px Arial;
+	padding: 5px 10px;
+	margin: 0 auto;
+}
+
+.lax-rt-play-filter {
+	text-align: center;
+}
+
+.lax-rt-btn {
+	font: normal normal 12px Arial;
+	padding: 4px 8px;
+	margin: 4px 2px;
+}
+
+.lax-btn-timer {
+	background: rgb(225, 69, 4);
+	border: 1px solid rgb(225, 69, 4);
+	color: rgb(255, 255, 255);
+	margin: 4px auto;
+	min-width: 0;
+	width: 80px;
+}
+
+.lax-btn-timer:hover, .lax-btn-timer:action {
+	background: rgb(186, 20, 26);
+	border: 1px solid rgb(186, 20, 26);
+	color: rgb(255, 255, 255);
+}
+
+/*---------- FAQ styles ----------*/
 .lax-faq-title {
 	font-weight: 400;
+}
+
+.lax-faq-bottom {
+	margin-top: 30px;
 }
 
 ul.lax-faq {
