@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
+<body>
+	<div th:fragment="content">
+		<div class="lax-rt-play-filter">
+			<button type="button" id="" class="lax-btn lax-btn-filter">All</button>
+			<button type="button" id="" class="lax-btn lax-btn-filter">Penalties</button>
+			<button type="button" id="" class="lax-btn lax-btn-filter">Goals</button>
+			<button type="button" id="" class="lax-btn lax-btn-filter">Saves</button>
+			<button type="button" id="" class="lax-btn lax-btn-filter">Goalie
+				Changes</button>
+		</div>
+
+		<div class="row">
+			<div class="col-xs-6">
+				<table class="table table-striped lax-admin-table">
+					<thead>
+						<tr>
+							<td></td>
+							<td>Per</td>
+							<td>Time</td>
+							<td>Play</td>
+							<td>Player</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:unless="${game.getHomePlays().size() > 0}">
+							<td></td>
+							<td colspan="4">No plays found.</td>
+						</tr>
+						<tr th:each="play : ${game.getHomePlays()}">
+							<td></td>
+							<td th:text="${play.period}">Per</td>
+							<td th:text="${{play.elapsedTime}}">Time</td>
+							<td th:text="${play.playType}">Play</td>
+							<td th:text="${play.getListedPlayer()}"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<div class="col-xs-6">
+				<table class="table table-striped lax-admin-table">
+					<thead>
+						<tr>
+							<td></td>
+							<td>Per</td>
+							<td>Time</td>
+							<td>Play</td>
+							<td>Player</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:unless="${game.getVisitorPlays().size() > 0}">
+							<td></td>
+							<td colspan="4">No plays found.</td>
+						</tr>
+						<tr th:each="play : ${game.getVisitorPlays()}">
+							<td></td>
+							<td th:text="${play.period}">Per</td>
+							<td th:text="${{play.elapsedTime}}">Time</td>
+							<td th:text="${play.playType}">Play</td>
+							<td th:text="${play.getListedPlayer()}"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

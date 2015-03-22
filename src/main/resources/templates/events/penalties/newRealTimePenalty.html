@@ -13,6 +13,7 @@
 					th:if="${teamSeason} != null">Team Season</h2>
 					
 				<form action="#" 
+					  id="real-time-penalty-form"
 					  th:action="@{'/admin/events/' + ${event.id} + '/penalties'}" 
 					  th:object="${penaltyForm}" 
 					  method="post" 
@@ -121,12 +122,14 @@
 					
 					<div class="form-group required">
 						<label for="duration">Duration</label>
-						<input th:type="time" 
+						<input th:type="text" 
 							   class="form-control" 
 							   id="duration"
 							   min="00:00"
+							   pattern="\d\d:\d\d"
 							   required="required"
 							   step="00:01"
+							   title="mm:ss format"
 							   th:field="*{duration}"
 							   aria-required="true"
 							   aria-describedby="duration-error" />

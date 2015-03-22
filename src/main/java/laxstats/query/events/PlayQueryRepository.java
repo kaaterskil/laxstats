@@ -6,12 +6,13 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 @RepositoryRestResource(collectionResourceRel = "plays", path = "plays")
 public interface PlayQueryRepository extends
-		PagingAndSortingRepository<PlayEntry, String> {
+   PagingAndSortingRepository<PlayEntry, String> {
 
-	@Query(value = "select exists (select te.id from plays pl "
-			+ "left join on games on pl.game_id = g.id "
-			+ "left join team_events te on te.game_id = g.id "
-			+ "where ?1 is not null and pl.game_id = ?1 "
-			+ "and ?2 is not null and te.team_season_id = ?2)", nativeQuery = true)
-	boolean teamSeasonExists(String gameId, String teamSeasonId);
+   @Query(value = "select exists (select te.id from team_events te " +
+      "left join team_seasons ts on te.team_season_id = ts.id " +
+      "left join games g on te.game_id = g.id " +
+      "where ?1 is not null and g.id = cast( ?1 as varchar ) " +
+      "and ?2 is not null and ts.id = cast( ?2 as varchar ))", nativeQuery = true)
+   boolean teamSeasonExists(String gameId, String teamSeasonId);
+
 }

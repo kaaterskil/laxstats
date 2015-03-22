@@ -94,6 +94,17 @@ public class EventController extends ApplicationController {
       return "events/index";
    }
 
+   @RequestMapping(value = "/admin/events/{eventId}/plays", method = RequestMethod.GET)
+   public String newRealTimeIndex(@PathVariable("eventId") GameEntry aggregate,
+      Model model) {
+      model.addAttribute("game", aggregate);
+      model.addAttribute("homeTeam", aggregate.getHomeTeam());
+      model.addAttribute("homeTeamEvent", aggregate.getHomeTeamEvent());
+      model.addAttribute("visitingTeam", aggregate.getVisitingTeam());
+      model.addAttribute("visitingTeamEvent", aggregate.getVisitingTeamEvent());
+      return "events/realTime :: realTime";
+   }
+
    @RequestMapping(value = "/admin/events", method = RequestMethod.POST)
    public String createEvent(@Valid EventForm form, BindingResult result,
       Model model)

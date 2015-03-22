@@ -123,6 +123,42 @@ public class GameEntry implements Serializable {
    }
 
    /**
+    * Returns a list of home team plays sorted by period/elapsed time.
+    *
+    * @return
+    */
+   public List<PlayEntry> getHomePlays() {
+      final String teamSeasonId = getHomeTeam().getId();
+
+      final List<PlayEntry> list = new ArrayList<>();
+      for (final PlayEntry each : getPlays().values()) {
+         if (each.getTeam().getId().equals(teamSeasonId)) {
+            list.add(each);
+         }
+      }
+      Collections.sort(list, new PlayComparator());
+      return list;
+   }
+
+   /**
+    * Returns a list of visiting team plays sorted by period/elapsed time.
+    *
+    * @return
+    */
+   public List<PlayEntry> getVisitorPlays() {
+      final String teamSeasonId = getVisitingTeam().getId();
+
+      final List<PlayEntry> list = new ArrayList<>();
+      for (final PlayEntry each : getPlays().values()) {
+         if (each.getTeam().getId().equals(teamSeasonId)) {
+            list.add(each);
+         }
+      }
+      Collections.sort(list, new PlayComparator());
+      return list;
+   }
+
+   /**
     * Returns a collection of game attendees. The map keys are the team names and the map values are
     * sorted lists of attendees from each team roster.
     *
@@ -220,6 +256,16 @@ public class GameEntry implements Serializable {
          return teams.get(0);
       }
       return teams.get(1);
+   }
+
+   public TeamSeasonEntry getTeam(String teamSeasonId) {
+      for (final TeamEvent te : teams) {
+         final TeamSeasonEntry tse = te.getTeamSeason();
+         if (tse.getId().equals(teamSeasonId)) {
+            return tse;
+         }
+      }
+      return null;
    }
 
    /* ---------- Getter/Setters ---------- */
@@ -353,6 +399,28 @@ public class GameEntry implements Serializable {
          final int s1 = t1.getSeconds();
          final int s2 = t2.getSeconds();
          return s1 > s2 ? 1 : s1 < s2 ? -1 : 0;
+      }
+   }
+
+   private static class PlayComparator implements Comparator<PlayEntry> {
+      @Override
+      public int compare(PlayEntry o1, PlayEntry o2) {
+         final int p1 = o1.getPeriod();
+         final int p2 = o2.getPeriod();
+
+         if (p1 < p2) {
+            return -1;
+         } else if (p1 > p2) {
+            return 1;
+         } else if (o1.getElapsedTime() != null && o2.getElapsedTime() != null) {
+            final int s1 = o1.getElapsedTime().toStandardSeconds().getSeconds();
+            final int s2 = o2.getElapsedTime().toStandardSeconds().getSeconds();
+            return s1 < s2 ? -1 : (s1 > s2 ? 1 : 0);
+         }
+
+         final int i1 = o1.getSequenceNumber();
+         final int i2 = o2.getSequenceNumber();
+         return i1 < i2 ? -1 : (i1 > i2 ? 1 : 0);
       }
    }
 }

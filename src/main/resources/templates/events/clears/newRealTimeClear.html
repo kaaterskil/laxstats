@@ -13,11 +13,14 @@
 					th:if="${teamSeason} != null">Team Season</h2>
 					
 				<form action="#" 
+					  id="real-time-clear-form"
 					  th:action="@{'/admin/events/' + ${event.id} + '/clears'}" 
 					  th:object="${clearForm}" 
 					  method="post" 
 					  role="form" >
 					  
+					<input type="hidden" id="play-type" th:field="*{playType}" />
+					<input type="hidden" id="play-key" th:field="*{playKey}" />
 					<input type="hidden" id="game-id" th:field="*{gameId}" />
 					<input type="hidden" id="team-season-id" th:field="*{teamSeasonId}" />
 					
@@ -59,8 +62,8 @@
 					</div>
 					
 					<div class="form-group">
-						<label for="comments">Comments</label>
-						<textarea id="comments" 
+						<label for="comment">Comments</label>
+						<textarea id="comment" 
 								  class="form-control"
 								  rows="3" 
 								  th:field="*{comment}"></textarea>

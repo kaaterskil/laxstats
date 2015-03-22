@@ -13,11 +13,14 @@
 					th:if="${teamSeason} != null">Team Season</h2>
 					
 				<form action="#" 
+					  id="real-time-faceoff-form"
 					  th:action="@{'/admin/events/' + ${event.id} + '/faceOffs'}" 
 					  th:object="${faceOffForm}" 
 					  method="post" 
 					  role="form">
 					  
+					<input type="hidden" id="play-type" th:field="*{playType}" />
+					<input type="hidden" id="play-key" th:field="*{playKey}" />
 					<input type="hidden" id="game-id" th:field="*{gameId}" />
 					<input type="hidden" id="team-season-id" th:field="*{teamSeasonId}" />
 						   
@@ -33,10 +36,10 @@
 							   th:field="*{period}"
 							   aria-required="true"
 							   aria-describedby="period-error" />
-							<div th:if="${#fields.hasErrors('period')}"
-								 id="period-error"
-								 class="lax-error"
-								 th:errors="*{period}">Invalid period</div>
+						<div th:if="${#fields.hasErrors('period')}"
+							 id="period-error"
+							 class="lax-error"
+							 th:errors="*{period}">Invalid period</div>
 					</div>
 					
 					<div class="form-group required">
@@ -119,8 +122,8 @@
 					</div>
 					
 					<div class="form-group">
-						<label for="comments">Comments</label>
-						<textarea id="comments" 
+						<label for="comment">Comments</label>
+						<textarea id="comment" 
 								  class="form-control"
 								  rows="3" 
 								  th:field="*{comment}"></textarea>

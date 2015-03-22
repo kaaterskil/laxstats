@@ -13,6 +13,7 @@
 					th:if="${teamSeason} != null">Team Season</h2>
 					
 				<form action="#" 
+					  id="real-time-shot-form"
 					  th:action="@{'/admin/events/' + ${event.id} + '/shots'}" 
 					  th:object="${shotForm}" 
 					  method="post" 

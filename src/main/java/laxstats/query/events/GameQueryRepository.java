@@ -6,8 +6,10 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 @RepositoryRestResource(collectionResourceRel = "gameEntrys", path = "events")
 public interface GameQueryRepository extends
-   PagingAndSortingRepository<GameEntry, String>
-{
+   PagingAndSortingRepository<GameEntry, String> {
+
+   @Query("select pl from PlayEntry pl where pl.id = ?1")
+   PlayEntry getPlay(String playId);
 
    @Query(value = "select count(*) from games g "
       + "left join team_events te1 on te1.game_id = g.id "

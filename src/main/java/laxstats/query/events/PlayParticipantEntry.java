@@ -22,156 +22,157 @@ import org.joda.time.LocalDateTime;
 
 @Entity
 @Table(name = "play_participants", indexes = {
-		@Index(name = "play_participants_idx1", columnList = "role"),
-		@Index(name = "play_participants_idx2", columnList = "pointCredit"),
-		@Index(name = "play_participants_idx3", columnList = "team_season_id") }, uniqueConstraints = { @UniqueConstraint(name = "play_participants_uk1", columnNames = {
-		"id", "play_id", "attendee_id" }) })
+   @Index(name = "play_participants_idx1", columnList = "role"),
+   @Index(name = "play_participants_idx2", columnList = "pointCredit"),
+   @Index(name = "play_participants_idx3", columnList = "team_season_id") },
+   uniqueConstraints = { @UniqueConstraint(name = "play_participants_uk1", columnNames = {
+      "id", "play_id", "attendee_id" }) })
 public class PlayParticipantEntry implements Serializable {
-	private static final long serialVersionUID = -6213837582683090644L;
+   private static final long serialVersionUID = -6213837582683090644L;
 
-	@Id
-	@Column(length = 36)
-	private String id;
+   @Id
+   @Column(length = 36)
+   private String id;
 
-	@ManyToOne
-	@JoinColumn(name = "play_id", nullable = false)
-	private PlayEntry play;
+   @ManyToOne
+   @JoinColumn(name = "play_id", nullable = false)
+   private PlayEntry play;
 
-	@ManyToOne
-	@JoinColumn(name = "attendee_id", nullable = false)
-	private AttendeeEntry attendee;
+   @ManyToOne
+   @JoinColumn(name = "attendee_id", nullable = false)
+   private AttendeeEntry attendee;
 
-	@ManyToOne
-	@JoinColumn(name = "team_season_id")
-	private TeamSeasonEntry teamSeason;
+   @ManyToOne
+   @JoinColumn(name = "team_season_id")
+   private TeamSeasonEntry teamSeason;
 
-	@Enumerated(EnumType.STRING)
-	@Column(length = 20, nullable = false)
-	private PlayRole role;
+   @Enumerated(EnumType.STRING)
+   @Column(length = 20, nullable = false)
+   private PlayRole role;
 
-	private boolean pointCredit = false;
+   private boolean pointCredit = false;
 
-	private int cumulativeAssists;
+   private int cumulativeAssists;
 
-	private int cumulativeGoals;
+   private int cumulativeGoals;
 
-	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
-	private LocalDateTime createdAt;
+   @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+   private LocalDateTime createdAt;
 
-	@ManyToOne
-	private UserEntry createdBy;
+   @ManyToOne
+   private UserEntry createdBy;
 
-	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
-	private LocalDateTime modifiedAt;
+   @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+   private LocalDateTime modifiedAt;
 
-	@ManyToOne
-	private UserEntry modifiedBy;
+   @ManyToOne
+   private UserEntry modifiedBy;
 
-	/*---------- Methods ----------*/
+   /*---------- Methods ----------*/
 
-	public void clear() {
-		play = null;
-		attendee = null;
-		teamSeason = null;
-		createdAt = null;
-		modifiedBy = null;
-	}
+   public void clear() {
+      play = null;
+      attendee = null;
+      teamSeason = null;
+      createdAt = null;
+      modifiedBy = null;
+   }
 
-	/*---------- Getter/Setters ----------*/
+   /*---------- Getter/Setters ----------*/
 
-	public String getId() {
-		return id;
-	}
+   public String getId() {
+      return id;
+   }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+   public void setId(String id) {
+      this.id = id;
+   }
 
-	public PlayEntry getPlay() {
-		return play;
-	}
+   public PlayEntry getPlay() {
+      return play;
+   }
 
-	public void setPlay(PlayEntry play) {
-		this.play = play;
-	}
+   public void setPlay(PlayEntry play) {
+      this.play = play;
+   }
 
-	public AttendeeEntry getAttendee() {
-		return attendee;
-	}
+   public AttendeeEntry getAttendee() {
+      return attendee;
+   }
 
-	public void setAttendee(AttendeeEntry attendee) {
-		this.attendee = attendee;
-	}
+   public void setAttendee(AttendeeEntry attendee) {
+      this.attendee = attendee;
+   }
 
-	public TeamSeasonEntry getTeamSeason() {
-		return teamSeason;
-	}
+   public TeamSeasonEntry getTeamSeason() {
+      return teamSeason;
+   }
 
-	public void setTeamSeason(TeamSeasonEntry teamSeason) {
-		this.teamSeason = teamSeason;
-	}
+   public void setTeamSeason(TeamSeasonEntry teamSeason) {
+      this.teamSeason = teamSeason;
+   }
 
-	public PlayRole getRole() {
-		return role;
-	}
+   public PlayRole getRole() {
+      return role;
+   }
 
-	public void setRole(PlayRole role) {
-		this.role = role;
-	}
+   public void setRole(PlayRole role) {
+      this.role = role;
+   }
 
-	public boolean isPointCredit() {
-		return pointCredit;
-	}
+   public boolean isPointCredit() {
+      return pointCredit;
+   }
 
-	public void setPointCredit(boolean pointCredit) {
-		this.pointCredit = pointCredit;
-	}
+   public void setPointCredit(boolean pointCredit) {
+      this.pointCredit = pointCredit;
+   }
 
-	public int getCumulativeAssists() {
-		return cumulativeAssists;
-	}
+   public int getCumulativeAssists() {
+      return cumulativeAssists;
+   }
 
-	public void setCumulativeAssists(int cumulativeAssists) {
-		this.cumulativeAssists = cumulativeAssists;
-	}
+   public void setCumulativeAssists(int cumulativeAssists) {
+      this.cumulativeAssists = cumulativeAssists;
+   }
 
-	public int getCumulativeGoals() {
-		return cumulativeGoals;
-	}
+   public int getCumulativeGoals() {
+      return cumulativeGoals;
+   }
 
-	public void setCumulativeGoals(int cumulativeGoals) {
-		this.cumulativeGoals = cumulativeGoals;
-	}
+   public void setCumulativeGoals(int cumulativeGoals) {
+      this.cumulativeGoals = cumulativeGoals;
+   }
 
-	public LocalDateTime getCreatedAt() {
-		return createdAt;
-	}
+   public LocalDateTime getCreatedAt() {
+      return createdAt;
+   }
 
-	public void setCreatedAt(LocalDateTime createdAt) {
-		this.createdAt = createdAt;
-	}
+   public void setCreatedAt(LocalDateTime createdAt) {
+      this.createdAt = createdAt;
+   }
 
-	public UserEntry getCreatedBy() {
-		return createdBy;
-	}
+   public UserEntry getCreatedBy() {
+      return createdBy;
+   }
 
-	public void setCreatedBy(UserEntry createdBy) {
-		this.createdBy = createdBy;
-	}
+   public void setCreatedBy(UserEntry createdBy) {
+      this.createdBy = createdBy;
+   }
 
-	public LocalDateTime getModifiedAt() {
-		return modifiedAt;
-	}
+   public LocalDateTime getModifiedAt() {
+      return modifiedAt;
+   }
 
-	public void setModifiedAt(LocalDateTime modifiedAt) {
-		this.modifiedAt = modifiedAt;
-	}
+   public void setModifiedAt(LocalDateTime modifiedAt) {
+      this.modifiedAt = modifiedAt;
+   }
 
-	public UserEntry getModifiedBy() {
-		return modifiedBy;
-	}
+   public UserEntry getModifiedBy() {
+      return modifiedBy;
+   }
 
-	public void setModifiedBy(UserEntry modifiedBy) {
-		this.modifiedBy = modifiedBy;
-	}
+   public void setModifiedBy(UserEntry modifiedBy) {
+      this.modifiedBy = modifiedBy;
+   }
 }

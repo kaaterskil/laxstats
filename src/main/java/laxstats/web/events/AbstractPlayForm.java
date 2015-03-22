@@ -15,6 +15,9 @@ public abstract class AbstractPlayForm {
    private String teamSeasonId;
    private int period = 0;
    private String comment;
+
+   private String teamName;
+
    private Map<String, String> teams = new HashMap<String, String>();
    private Map<String, String> participants = new HashMap<String, String>();
    private Map<String, List<AttendeeEntry>> attendees = new HashMap<>();
@@ -72,6 +75,14 @@ public abstract class AbstractPlayForm {
 
    public void setComment(String comment) {
       this.comment = comment;
+   }
+
+   public String getTeamName() {
+      return teamName;
+   }
+
+   public void setTeamName(String teamName) {
+      this.teamName = teamName;
    }
 
    /*---------- Drop-down menu options ----------*/
