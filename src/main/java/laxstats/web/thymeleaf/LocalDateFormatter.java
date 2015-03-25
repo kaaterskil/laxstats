@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class LocalDateFormatter implements Formatter<LocalDate> {
    private static Logger logger = LoggerFactory.getLogger(LocalDate.class);
-   private static String DEFAULT_DATE_STYLE = "MM/dd/yyyy";
+   private static String DEFAULT_DATE_STYLE = "yyyy-MM-dd";
    DateTimeFormatter formatter;
 
    public LocalDateFormatter() {

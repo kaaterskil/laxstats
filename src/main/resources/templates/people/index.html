@@ -7,20 +7,20 @@
 	<div layout:fragment="content">
 		<div class="row">
 			<div class="col-md-7 col-md-offset-2 col-sm-9 col-sm-offset-1">
-				<a href="#" 
-				   th:href="@{'/admin/people/new'}" 
-				   class="btn btn-default btn-sm lax-btn-new pull-right">New Person</a>
+				<a href="#" th:href="@{'/admin/people/new'}"
+				   class="lax-btn lax-btn-new pull-right">New Person</a>
 				<h1 class="lax-form-title">People</h1>
 				<h2 class="lax-form-subtitle">Search</h2>
 			</div>
-			
+
 			<div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2 lax-search-people-form">
-				<div th:replace="partials/searchPeopleForm :: searchPeople">Search People Form</div>
+				<div th:replace="partials/searchPeopleForm :: searchPeople">Search
+					People Form</div>
 			</div>
 		</div>
-		
+
 		<div class="row">
-			<div id="search-results" 
+			<div id="search-results"
 				 class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 lax-search-people-results">
 				<h2 class="lax-form-subtitle">Results</h2>
 				<table class="table table-striped lax-admin-table">
@@ -43,44 +43,50 @@
 				</table>
 			</div>
 		</div>
-		
+
 		<script type="text/javascript">
-			(function(){
-				
-				$('#search-people-form').submit(function(event){
-					var $form = $(this),
-						token = $form.find("input[name='_csrf']").val(),
-						data = {
-							firstName: $('#first-name').val(),
-							lastName: $('#last-name').val(),
-							city: $('#city').val(),
-							region: $('#region').val(),
-							postalCode: $('#postal-code').val(),
-							contact: $('#contact').val()
-						}, df;
-					
+			// <![CDATA[
+			(function() {
+				'use strict';
+
+				function searchPeople() {
+					var data = {
+						firstName : $(this).find('#first-name').val(),
+						lastName : $(this).find('#last-name').val(),
+						city : $(this).find('#city').val(),
+						region : $(this).find('#region').val(),
+						postalCode : $(this).find('#postal-code').val(),
+						contact : $(this).find('#contact').val()
+					}, token = $(this).find("input[name='_csrf']").val();
+
 					event.preventDefault();
-					df = $.ajax({
-						type: 'POST',
-						url: '/api/people/search',
-						data: JSON.stringify(data),
-						dataType: 'text',
-						contentType: 'application/json',
-						headers: { 'X-CSRF-TOKEN': token }
-					});
-					
-					df.done(function(data){
+
+					$.ajax({
+						contentType : 'application/json',
+						data : JSON.stringify(data),
+						dataType : 'text',
+						headers : {
+							'X-CSRF-TOKEN' : token
+						},
+						method : 'POST',
+						url : '/api/people/search'
+					})
+					.done(function(data) {
 						$('#search-results').html(data);
-					});
-					
-					df.fail(function(jqXHR, status, error){
-						var msg = 'Error (' 
-								+ jqXHR.status + '): ' + jqXHR.responseText;
+					})
+					.fail(function(jqXHR, status, error) {
+						var msg = 'Error (' + jqXHR.status + '): '
+								+ jqXHR.responseText;
 						$('#search-results').text(msg);
 					});
 					return false;
+				}
+
+				$(document).ready(function() {
+					$('#search-people-form').submit(searchPeople);
 				});
 			})();
+			// ]]>
 		</script>
 	</div>
 </body>
