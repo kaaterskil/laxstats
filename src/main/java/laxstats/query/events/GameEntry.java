@@ -17,6 +17,7 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -35,8 +36,7 @@ import org.joda.time.LocalDateTime;
 import org.joda.time.Seconds;
 
 @Entity
-@Table(name = "games", indexes = {
-   @Index(name = "event_idx1", columnList = "schedule"),
+@Table(name = "games", indexes = { @Index(name = "event_idx1", columnList = "schedule"),
    @Index(name = "event_idx2", columnList = "startsAt"),
    @Index(name = "event_idx3", columnList = "alignment"),
    @Index(name = "event_idx4", columnList = "status"),
@@ -86,13 +86,15 @@ public class GameEntry implements Serializable {
    @ManyToOne
    private UserEntry modifiedBy;
 
-   @OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
+   @OneToMany(cascade = CascadeType.ALL, mappedBy = "event", orphanRemoval = true)
+   @MapKeyColumn(name = "id")
    private final Map<String, AttendeeEntry> eventAttendees = new HashMap<>();
 
-   @OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
+   @OneToMany(cascade = CascadeType.ALL, mappedBy = "event", orphanRemoval = true)
    private final List<TeamEvent> teams = new ArrayList<>();
 
-   @OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
+   @OneToMany(cascade = CascadeType.ALL, mappedBy = "event", orphanRemoval = true)
+   @MapKeyColumn(name = "id")
    private final Map<String, PlayEntry> plays = new HashMap<>();
 
    /*---------- Methods ----------*/
@@ -378,9 +380,7 @@ public class GameEntry implements Serializable {
       return plays;
    }
 
-   private static class AttendeeComparator implements
-      Comparator<AttendeeEntry>
-   {
+   private static class AttendeeComparator implements Comparator<AttendeeEntry> {
       @Override
       public int compare(AttendeeEntry o1, AttendeeEntry o2) {
          final String l1 = o1.label();
@@ -392,10 +392,10 @@ public class GameEntry implements Serializable {
    private static class PenaltyComparator implements Comparator<PenaltyEntry> {
       @Override
       public int compare(PenaltyEntry o1, PenaltyEntry o2) {
-         final Seconds t1 = PlayUtils.getTotalElapsedTime(o1.getPeriod(),
-            o1.getElapsedTime()).toStandardSeconds();
-         final Seconds t2 = PlayUtils.getTotalElapsedTime(o2.getPeriod(),
-            o2.getElapsedTime()).toStandardSeconds();
+         final Seconds t1 =
+            PlayUtils.getTotalElapsedTime(o1.getPeriod(), o1.getElapsedTime()).toStandardSeconds();
+         final Seconds t2 =
+            PlayUtils.getTotalElapsedTime(o2.getPeriod(), o2.getElapsedTime()).toStandardSeconds();
          final int s1 = t1.getSeconds();
          final int s2 = t2.getSeconds();
          return s1 > s2 ? 1 : s1 < s2 ? -1 : 0;

@@ -30,10 +30,25 @@
 							<td colspan="4">No plays found.</td>
 						</tr>
 						<tr th:each="play : ${game.getHomePlays()}">
-							<td></td>
+							<td>
+								<form class="lax-btn-delete" 
+									  th:action="@{'/action/events/' + ${game.id} + '/' + ${play.getUrlType()} + '/' + ${play.id}}" 
+									  th:method="delete" 
+									  role="form">
+									<input th:type="hidden" th:field="${game.id}" />
+									<input th:type="hidden" name="play-type" th:value="${play.getUrlType()}" />
+									<input th:type="hidden" name="play-id" th:value="${play.id}" />
+									<button type="submit" 
+											class="btn btn-link lax-btn-delete">
+										<span class="glyphicon glyphicon-remove red"></span>
+									</button>
+								</form>
+							</td>
 							<td th:text="${play.period}">Per</td>
 							<td th:text="${{play.elapsedTime}}">Time</td>
-							<td th:text="${play.playType}">Play</td>
+							<td class="lax-link-edit" 
+								th:attr="data-game=${game.id},data-play-type=${play.getUrlType()},data-play=${play.id}"
+								th:text="${play.playType}">Play</td>
 							<td th:text="${play.getListedPlayer()}"></td>
 						</tr>
 					</tbody>
@@ -57,10 +72,29 @@
 							<td colspan="4">No plays found.</td>
 						</tr>
 						<tr th:each="play : ${game.getVisitorPlays()}">
-							<td></td>
+							<td>
+								<form class="lax-btn-delete" 
+									  th:method="delete" 
+									  role="form">
+									<input th:type="hidden" 
+										   th:field="${game.id}" />
+									<input th:type="hidden" 
+										   name="play-type" 
+										   th:value="${play.getUrlType()}" />
+									<input th:type="hidden" 
+										   name="play-id" 
+										   th:value="${play.id}" />
+									<button type="submit" 
+											class="btn btn-link lax-btn-delete">
+										<span class="glyphicon glyphicon-remove red"></span>
+									</button>
+								</form>
+							</td>
 							<td th:text="${play.period}">Per</td>
 							<td th:text="${{play.elapsedTime}}">Time</td>
-							<td th:text="${play.playType}">Play</td>
+							<td class="lax-link-edit" 
+								th:attr="data-game=${game.id},data-play-type=${play.getUrlType()},data-play=${play.id}"
+								th:text="${play.playType}">Play</td>
 							<td th:text="${play.getListedPlayer()}"></td>
 						</tr>
 					</tbody>

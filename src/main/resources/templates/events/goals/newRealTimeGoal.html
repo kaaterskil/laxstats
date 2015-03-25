@@ -19,8 +19,10 @@
 					  method="post" 
 					  role="form">
 					  
-					<input type="hidden" id="team-season-id" th:field="*{teamSeasonId}" />
+					<input type="hidden" id="play-type" th:field="*{playType}" />
+					<input type="hidden" id="play-key" th:field="*{playKey}" />
 					<input type="hidden" id="game-id" th:field="*{gameId}" />
+					<input type="hidden" id="team-season-id" th:field="*{teamSeasonId}" />
 						   
 					<div class="row">
 						<div class="col-xs-6 form-group required">
@@ -136,45 +138,6 @@
 				</form>
 			</div>
 		</div>
-		<script type="text/javascript">
-			// <![CDATA[
-			(function laxGoalEntry() {
-				$('#real-time-goal-form').submit(function(event){
-					var $form = $(this),
-						token = $form.find("input[name='_csrf']").val(),
-						data = {
-							gameId: $('#game-id').val(),
-							teamSeasonId: $('#team-season-id').val(),
-							period = $('#period').val(),
-							elapsedTime = $('#clock').val(),
-							scorerId = $('#scorer').val(),
-							attemptType = $('#attempt-type').val(),
-							assistId = $('#assist').val(),
-							comment = $('#comments').val()
-						}, df;
-					event.preventDefault();
-					df = $.ajax({
-						type: 'POST',
-						url: $form.attr('action'),
-						data: JSON.stringify(data),
-						dataType: 'text',
-						contentType: 'application/json',
-						headers: { 'X-CSRF-TOKEN', token }
-					});
-					
-					df.done(function(data){
-						console.log(data);
-					});
-					
-					df.fail(function(jqXHR, status error){
-						var msg = 'Error (' 
-							+ jqXHR.status + '): ' + jqXHR.responseText;
-						console.log('ERROR: ' + msg);
-					});
-				});
-			})();
-			// ]]>
-		</script>
 	</div>
 </body>
 </html>

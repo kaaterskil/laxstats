@@ -13,7 +13,8 @@
 					th:text="${teamSeason.getTeam().getFullName()}" 
 					th:if="${teamSeason} != null">Team Season</h2>
 					
-				<form action="#" 
+				<form action="#"
+					  id="real-time-faceoff-form" 
 					  th:action="@{'/admin/events/' + ${event.id} + '/faceOffs'}" 
 					  th:object="${faceOffForm}" 
 					  method="post" 

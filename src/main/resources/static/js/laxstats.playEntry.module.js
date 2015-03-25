@@ -2,9 +2,17 @@
 (function laxPlayEntry() {
 	'use strict';
 
-	function playEntry($clearForm, $faceOffForm, $goalForm, $groundBallForm,
-			$penaltyForm, $shotForm) {
-		function post(url, data, token) {
+	function playEntry() {
+		var PANELS = [{ id : '#real-time-entry', playType : 'carousel' }, 
+					{ id : '#goal', playType : 'goals' }, 
+					{ id : '#shot', playType : 'shots' }, 
+					{ id : '#groundBall', playType : 'groundBalls' }, 
+					{ id : '#penalty', playType : 'penalties' }, 
+					{ id : '#clear', playType : 'clears' }, 
+					{ id : '#faceOff', playType : 'faceOffs' }];
+		var $clearForm, $faceOffForm, $goalForm, $groundBallForm, $penaltyForm, $shotForm, that = this;
+
+		function send(url, method, data, token) {
 			var df;
 
 			df = $.ajax({
@@ -15,22 +23,16 @@
 					'Content-Type' : 'application/json',
 					'X-CSRF-TOKEN' : token
 				},
-				method : 'POST',
+				method : method,
 				url : url
 			});
-
 			return df;
 		}
 
-		function postSuccess(panelNum, data, status, jqXHR) {
-			var $panel;
-
-			console.log(data);
-			console.log('Status: ' + status);
-			console.log(jqXHR);
-
+		function sendSuccess(panelNum, data, status, jqXHR) {
 			$('#real-time-entry').carousel(0);
 			$('#play-index').html(data);
+			setPlayIndexHandlers();
 		}
 
 		function fail(jqXHR, status, error) {
@@ -39,76 +41,261 @@
 		}
 
 		function getPanel(panelNum) {
+			return $(PANELS[panelNum].id);
+		}
+
+		function getPanelByType(playType) {
 			var $panel = null;
-			switch (panelNum) {
-			case 1:
-				$panel = $('#goal');
-				break;
-			case 2:
-				$panel = $('#shot');
-				break;
-			case 3:
-				$panel = $('#groundBall');
-				break;
-			case 4:
-				$panel = $('#penalty');
-				break;
-			case 5:
-				$panel = $('#clear');
-				break;
-			case 6:
-				$panel = $('#faceOff');
-				break;
-			}
+
+			PANELS.forEach(function(elem) {
+				if (elem.playType == playType) {
+					$panel = $(elem.id);
+				}
+			});
 			return $panel;
+		}
+
+		function getPanelNum(playType) {
+			var panelNum = -1;
+
+			PANELS.forEach(function(elem, index) {
+				if (elem.playType == playType) {
+					panelNum = index;
+				}
+			});
+			return panelNum;
+		}
+
+		function getMethod($form) {
+			var method = $form.find("input[name='_method']").val();
+			if (!method) {
+				method = $form.attr('method');
+			}
+			return method;
+		}
+		
+		function setPlayIndexHandlers() {
+			$('.lax-btn-delete').on('submit', deletePlay);
+			$('.lax-link-edit').on('click', editPlay);
 		}
 
 		function setFormElementHandlers(panelNum) {
 			switch (panelNum) {
-			case 1:
-				$goalForm = $('#real-time-goal-form');
-				$goalForm.submit(createGoal);
-				break;
-			case 2:
-				$shotForm = $('#real-time-shot-form');
-				$shotForm.submit(createShot);
-				break;
-			case 3:
-				$groundBallForm = $('#real-time-ground-ball-form');
-				$groundBallForm.submit(createGroundBall);
-				break;
-			case 4:
-				$penaltyForm = $('#real-time-penalty-form');
-				$penaltyForm.submit(createPenalty);
-				break;
-			case 5:
-				$clearForm = $('#real-time-clear-form');
-				$clearForm.submit(createClear);
-				break;
-			case 6:
-				$faceOffForm = $('#real-time-faceoff-form');
-				$faceOffForm.submit(createFaceOff);
-				break;
+				case 1 :
+					$goalForm = $('#real-time-goal-form');
+					$goalForm.submit(saveOrUpdateGoal);
+					break;
+				case 2 :
+					$shotForm = $('#real-time-shot-form');
+					$shotForm.submit(saveOrUpdateShot);
+					break;
+				case 3 :
+					$groundBallForm = $('#real-time-ground-ball-form');
+					$groundBallForm.submit(saveOrUpdateGroundBall);
+					break;
+				case 4 :
+					$penaltyForm = $('#real-time-penalty-form');
+					$penaltyForm.submit(saveOrUpdatePenalty);
+					break;
+				case 5 :
+					$clearForm = $('#real-time-clear-form');
+					$clearForm.submit(saveOrUpdateClear);
+					break;
+				case 6 :
+					$faceOffForm = $('#real-time-faceoff-form');
+					$faceOffForm.submit(saveOrUpdateFaceOff);
+					break;
 			}
+			$('.lax-btn-cancel').on('click', cancelPlay);
+		}
+
+		function saveOrUpdateClear(event) {
+			var url = $(this).attr('action'), 
+				data = {
+					playType : $(this).find('#play-type').val(),
+					playKey : $(this).find('#play-key').val(),
+					gameId : $(this).find('#game-id').val(),
+					teamSeasonId : $(this).find('#team-season-id').val(),
+					period : $(this).find('#period').val(),
+					result : $(this).find('#result').val(),
+					comment : $(this).find('#comment').val()
+				}, 
+				token = $(this).find("input[name='_csrf']").val(), 
+				method = getMethod($(this)), df;
+
+			event.preventDefault();
+			df = send(url, method, data, token);
+
+			df.done(function(data, status, jqXHR) {
+				sendSuccess(5, data, status, jqXHR);
+			});
+
+			df.fail(function(jqXHR, status, error) {
+				fail(jqXHR, status, error);
+			});
+		}
+
+		function saveOrUpdateFaceOff(event) {
+			var url = $(this).attr('action'), 
+				data = {
+					gameId : $(this).find('#game-id').val(),
+					teamSeasonId : $(this).find('#team-season-id').val(),
+					period : $(this).find('#period').val(),
+					elapsedTime : $(this).find('#clock').val(),
+					winnerId : $(this).find('#winner').val(),
+					loserId : $(this).find('#loser').val(),
+					comment : $(this).find('#comments').val()
+				}, 
+				token = $(this).find("input[name='_csrf']").val(), 
+				method = getMethod($(this)), df;
+
+			event.preventDefault();
+			df = send(url, method, data, token);
+
+			df.done(function(data) {
+				sendSuccess(6, data);
+			});
+
+			df.fail(function(jqXHR, status, error) {
+				fail(jqXHR, status, error);
+			});
+		}
+
+		function saveOrUpdateGoal(event) {
+			var url = $(this).attr('action'), 
+				data = {
+					gameId : $(this).find('#game-id').val(),
+					teamSeasonId : $(this).find('#team-season-id').val(),
+					period : $(this).find('#period').val(),
+					elapsedTime : $(this).find('#clock').val(),
+					scorerId : $(this).find('#scorer').val(),
+					attemptType : $(this).find('#attempt-type').val(),
+					assistId : $(this).find('#assist').val(),
+					comment : $(this).find('#comments').val()
+				}, 
+				token = $(this).find("input[name='_csrf']").val(), 
+				method = getMethod($(this)), df;
+
+			event.preventDefault();
+			df = send(url, method, data, token);
+
+			df.done(function(data) {
+				sendSuccess(1, data);
+			});
+
+			df.fail(function(jqXHR, status, error) {
+				fail(jqXHR, status, error);
+			});
+		}
+
+		function saveOrUpdateGroundBall(event) {
+			var url = $(this).attr('action'), 
+				data = {
+					gameId : $(this).find('#game-id').val(),
+					teamSeasonId : $(this).find('#team-season-id').val(),
+					period : $(this).find('#period').val(),
+					playerId : $(this).find('#player').val(),
+					comment : $(this).find('#comment').val()
+				}, 
+				token = $(this).find("input[name='_csrf']").val(), 
+				method = getMethod($(this)), df;
+
+			event.preventDefault();
+			df = send(url, method, data, token);
+
+			df.done(function(data) {
+				sendSuccess(3, data);
+			});
+
+			df.fail(function(jqXHR, status, error) {
+				fail(jqXHR, status, error);
+			});
+		}
+
+		function saveOrUpdatePenalty(event) {
+			var url = $(this).attr('action'), 
+				data = {
+					gameId : $(this).find('#game-id').val(),
+					teamSeasonId : $(this).find('#team-season-id').val(),
+					period : $(this).find('#period').val(),
+					elapsedTime : $(this).find('#clock').val(),
+					violationId : $(this).find('#violation').val(),
+					committedById : $(this).find('#violator').val(),
+					committedAgainstId : $(this).find('#against').val(),
+					duration : $(this).find('#duration').val(),
+					comment : $(this).find('#comments').val()
+				}, 
+				token = $(this).find("input[name='_csrf']").val(), 
+				method = getMethod($(this)), df;
+
+			event.preventDefault();
+			df = send(url, method, data, token);
+
+			df.done(function(data) {
+				sendSuccess(4, data);
+			});
+
+			df.fail(function(jqXHR, status, error) {
+				fail(jqXHR, status, error);
+			});
+		}
+
+		function saveOrUpdateShot(event) {
+			var url = $(this).attr('action'), 
+				data = {
+					gameId : $(this).find('#game-id').val(),
+					teamSeasonId : $(this).find('#team-season-id').val(),
+					period : $(this).find('#period').val(),
+					playerId : $(this).find('#shooter').val(),
+					attemptType : $(this).find('#attempt-type').val(),
+					result : $(this).find('#result').val(),
+					comment : $(this).find('#comment').val()
+				}, 
+				token = $(this).find("input[name='_csrf']").val(), 
+				method = getMethod($(this)), df;
+
+			event.preventDefault();
+			df = send(url, method, data, token);
+
+			df.done(function(data) {
+				sendSuccess(2, data);
+			});
+
+			df.fail(function(jqXHR, status, error) {
+				fail(jqXHR, status, error);
+			});
 		}
 
 		/*---------- Public methods ----------*/
 
-		function createClear(event) {
-			var url = $clearForm.attr('action'), data = {
-				playType : $clearForm.find('#play-type').val(),
-				playKey : $clearForm.find('#play-key').val(),
-				gameId : $clearForm.find('#game-id').val(),
-				teamSeasonId : $clearForm.find('#team-season-id').val(),
-				period : $clearForm.find('#period').val(),
-				result : $clearForm.find('#result').val(),
-				comment : $clearForm.find('#comments').val()
-			}, token = $clearForm.find("input[name='_csrf']").val(), df;
+		function cancelPlay() {
+			$('#real-time-header').css('display', 'block');
+			$('#real-time-entry').carousel(0);
+		}
+
+		function deletePlay(event) {
+			var gameId = $(this).find('#id').val(), 
+				playType = $(this).find("input[name='play-type']").val(), 
+				playId = $(this).find("input[name='play-id']").val(), 
+				token = $(this).find("input[name='_csrf']").val(), 
+				url = '/admin/events/' + gameId + '/' + playType + '/' + playId, 
+				df;
+
 			event.preventDefault();
-			df = post(url, data, token);
+
+			df = $.ajax({
+				url : url,
+				method : 'delete',
+				headers : {
+					'X-CSRF-TOKEN' : token
+				},
+				dataType : 'text'
+			});
 
 			df.done(function(data, status, jqXHR) {
-				postSuccess(5, data, status, jqXHR);
+				$('#play-index').html(data);
+				setPlayIndexHandlers();
+				$('#real-time-entry').carousel(0);
 			});
 
 			df.fail(function(jqXHR, status, error) {
@@ -116,132 +303,47 @@
 			});
 		}
 
-		function createFaceOff(event) {
-			var url = $faceOffForm.attr('action'), data = {
-				gameId : $faceOffForm.find('#game-id').val(),
-				teamSeasonId : $faceOffForm.find('#team-season-id').val(),
-				period : $faceOffForm.find('#period').val(),
-				elapsedTime : $faceOffForm.find('#clock').val(),
-				winnerId : $faceOffForm.find('#winner').val(),
-				loserId : $faceOffForm.find('#loser').val(),
-				comment : $faceOffForm.find('#comments').val()
-			}, token = $faceOffForm.find("input[name='_csrf']").val(), df;
-			event.preventDefault();
-			df = post(url, data, token);
+		function editPlay() {
+			var gameId = $(this).data('game'), 
+				playType = $(this).data('play-type'), 
+				playId = $(this).data('play'), 
+				url = '/admin/events/' + gameId + '/' + playType + '/'
+					+ playId + '/edit', df;
 
-			df.done(function(data) {
-				postSuccess(6, data);
+			df = $.ajax({
+				url : url,
+				method : 'GET',
+				dataType : 'text'
+			});
+
+			df.done(function(data, status, jqXHR) {
+				var $panel = getPanelByType(playType), panelNum = getPanelNum(playType);
+				if ($panel) {
+					$panel.html(data);
+					setFormElementHandlers(panelNum);
+					$('#real-time-header').css('display', 'none');
+					$('#real-time-entry').carousel(panelNum);
+				}
 			});
 
 			df.fail(function(jqXHR, status, error) {
 				fail(jqXHR, status, error);
 			});
-		}
-
-		function createGoal(event) {
-			var url = $goalForm.attr('action'), data = {
-				gameId : $goalForm.find('#game-id').val(),
-				teamSeasonId : $goalForm.find('#team-season-id').val(),
-				period : $goalForm.find('#period').val(),
-				elapsedTime : $goalForm.find('#clock').val(),
-				scorerId : $goalForm.find('#scorer').val(),
-				attemptType : $goalForm.find('#attempt-type').val(),
-				assistId : $goalForm.find('#assist').val(),
-				comment : $goalForm.find('#comments').val()
-			}, token = $goalForm.find("input[name='_csrf']").val(), df;
-			event.preventDefault();
-			df = post(url, data, token);
-
-			df.done(function(data) {
-				postSuccess(1, data);
-			});
-
-			df.fail(function(jqXHR, status, error) {
-				fail(jqXHR, status, error);
-			});
-		}
-
-		function createGroundBall(event) {
-			var url = $groundBallForm.attr('action'), data = {
-				gameId : $groundBallForm.find('#game-id').val(),
-				teamSeasonId : $groundBallForm.find('#team-season-id').val(),
-				period : $groundBallForm.find('#period').val(),
-				playerId : $groundBallForm.find('#player').val(),
-				comment : $groundBallForm.find('#comment').val()
-			}, token = $groundBallForm.find("input[name='_csrf']").val(), df;
-			event.preventDefault();
-			df = post(url, data, token);
-
-			df.done(function(data) {
-				postSuccess(3, data);
-			});
-
-			df.fail(function(jqXHR, status, error) {
-				fail(jqXHR, status, error);
-			});
-		}
-
-		function createPenalty(event) {
-			var url = $penaltyForm.attr('action'), data = {
-				gameId : $penaltyForm.find('#game-id').val(),
-				teamSeasonId : $penaltyForm.find('#team-season-id').val(),
-				period : $penaltyForm.find('#period').val(),
-				elapsedTime : $penaltyForm.find('#clock').val(),
-				violationId : $penaltyForm.find('#violation').val(),
-				committedById : $penaltyForm.find('#violator').val(),
-				committedAgainstId : $penaltyForm.find('#against').val(),
-				duration : $penaltyForm.find('#duration').val(),
-				comment : $penaltyForm.find('#comments').val()
-			}, token = $penaltyForm.find("input[name='_csrf']").val(), df;
-			event.preventDefault();
-			df = post(url, data, token);
-
-			df.done(function(data) {
-				postSuccess(4, data);
-			});
-
-			df.fail(function(jqXHR, status, error) {
-				fail(jqXHR, status, error);
-			});
-		}
-
-		function createShot(event) {
-			var url = $penaltyForm.attr('action'), data = {
-				gameId : $shotForm.find('#game-id').val(),
-				teamSeasonId : $shotForm.find('#team-season-id').val(),
-				period : $shotForm.find('#period').val(),
-				playerId : $shotForm.find('#shooter').val(),
-				attemptType : $shotForm.find('#attempt-type').val(),
-				result : $shotForm.find('#result').val(),
-				comment : $penaltyForm.find('#comment').val()
-			}, token = $shotForm.find("input[name='_csrf']").val(), df;
-			event.preventDefault();
-			df = post(url, data, token);
-
-			df.done(function(data) {
-				postSuccess(2, data);
-			});
-
-			df.fail(function(jqXHR, status, error) {
-				fail(jqXHR, status, error);
-			});
-		}
-
-		function cancelPlay() {
-			$header.css('display', 'block');
-			$carousel.carousel(0);
 		}
 
 		function newPlay() {
-			var game = $('#game').data('game'), playType = $(this).data('play'), team = $(
-					this).data('team'), panel = parseInt($(this).data('panel')), teamSeason = team == 1 ? $(
-					'#team-1').data('team')
-					: $('#team-2').data('team'), state = laxstats.Timer
-					.getCurrentTime(), df;
-
-			var url = '/admin/events/' + game + '/teamSeasons/' + teamSeason
-					+ '/' + playType + '/new', query = '?p=' + state.currPeriod
-					+ '&t=' + state.secsElapsed;
+			var game = $('#game').data('game'), 
+				playType = $(this).data('play'), 
+				team = $(this).data('team'), 
+				panel = parseInt($(this).data('panel')), 
+				teamSeason = team == 1
+					? $('#team-1').data('team')
+					: $('#team-2').data('team'), 
+				state = laxstats.Timer.getCurrentTime(), 
+				df, 
+				url = '/admin/events/' + game + '/teamSeasons/' + teamSeason 
+					+ '/' + playType + '/new', query = '?p='
+					+ state.currPeriod + '&t=' + state.secsElapsed;
 
 			df = $.ajax({
 				url : url + query,
@@ -253,10 +355,8 @@
 				var $panel = getPanel(panel);
 				if ($panel) {
 					$panel.html(data);
-
 					setFormElementHandlers(panel);
 					$('#real-time-header').css('display', 'none');
-					$('.lax-btn-cancel').on('click', cancelPlay);
 					$('#real-time-entry').carousel(panel);
 				}
 			});
@@ -266,21 +366,27 @@
 			});
 		}
 
+		function initialize() {
+			$clearForm = $('#real-time-clear-form');
+			$faceOffForm = $('#real-time-faceoff-form');
+			$goalForm = $('#real-time-goal-form');
+			$groundBallForm = $('#real-time-ground-ball-form');
+			$penaltyForm = $('#real-time-penalty-form');
+			$shotForm = $('#real-time-shot-form');
+
+			$('.lax-btn-play').on('click', newPlay);
+			setPlayIndexHandlers();
+		}
+
 		return {
-			createClear : createClear,
-			createFaceOff : createFaceOff,
-			createGoal : createGoal,
-			createGroundBall : createGroundBall,
-			createPenalty : createPenalty,
-			createShot : createShot,
+			initialize : initialize,
 			cancelPlay : cancelPlay,
+			deletePlay : deletePlay,
+			editPlay : editPlay,
 			newPlay : newPlay
 		}
 	}
 
-	var $clearForm = $('#real-time-clear-form'), $faceOffForm = $('#real-time-faceoff-form'), $goalForm = $('#real-time-goal-form'), $groundBallForm = $('#real-time-ground-ball-form'), $penaltyForm = $('#real-time-penalty-form'), $shotForm = $('#real-time-shot-form'), $header = $('#real-time-header'), $carousel = $('#real-time-entry');
-
-	laxstats.module('Play', [ $clearForm, $faceOffForm, $goalForm,
-			$groundBallForm, $penaltyForm, $shotForm ], playEntry);
+	laxstats.module('Play', [], playEntry);
 })();
 // }}>

@@ -1,25 +1,28 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-	layout:decorator="layout">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
 </head>
 <body>
-	<div layout:fragment="content">
+	<div th:fragment="content">
 		<div class="row">
 			<div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3">
 				<h1 class="text-center">Edit Goal</h1>
 				<h2 class="text-center" 
 					th:text="${teamSeason.getTeam().getFullName()}" 
 					th:if="${teamSeason} != null">Team Season</h2>
+					
 				<form action="#" 
+					  id="real-time-goal-form"
 					  th:action="@{'/admin/events/' + ${event.id} + '/goals/' + ${play.id}}" 
 					  th:object="${goalForm}" 
 					  th:method="put" 
 					  role="form">
 					  
-					<input type="hidden" id="team-season-id" th:field="*{teamSeasonId}" />
+					<input type="hidden" id="play-type" th:field="*{playType}" />
+					<input type="hidden" id="play-key" th:field="*{playKey}" />
 					<input type="hidden" id="game-id" th:field="*{gameId}" />
+					<input type="hidden" id="team-season-id" th:field="*{teamSeasonId}" />
 					
 					<div class="row">
 						<div class="col-xs-6 form-group required">
@@ -41,16 +44,19 @@
 						</div>
 						<div class="col-xs-6 form-group required">
 							<label for="clock">Clock</label> 
-							<input th:type="time" 
+							<input th:type="text" 
 								   id="clock"
 								   min="00:00"
-								   class="form-control" 
+								   class="form-control"
+								   pattern="\d\d:\d\d" 
 								   required="required"
+								   step="00:01"
+								   title="mm:ss format"
 								   th:field="*{elapsedTime}"
 								   aria-required="true"
-								   aria-describedby="elapsed-time-error" />
+								   aria-describedby="clock-error" />
 							<div th:if="${#fields.hasErrors('elapsedTime')}"
-								 id="elapsed-time-error"
+								 id="clock-error"
 								 class="lax-error"
 								 th:errors="*{elapsedTime}">Invalid elapsed time</div>
 						</div>
@@ -127,7 +133,8 @@
 								  th:field="*{comment}"></textarea>
 					</div>
 					
-					<button th:type="submit" class="btn btn-default btn-sm">Update</button>
+					<button th:type="submit" class="lax-btn lax-btn-save">Update</button>
+					<button th:type="button" class="lax-btn lax-btn-cancel">Cancel</button>
 				</form>
 			</div>
 		</div>

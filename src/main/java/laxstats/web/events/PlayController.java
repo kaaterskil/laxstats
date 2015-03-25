@@ -185,58 +185,65 @@ public class PlayController extends ApplicationController {
    }
 
    @RequestMapping(value = "/admin/events/{eventId}/clears/{playId}", method = RequestMethod.DELETE)
-   public String deleteClear(@PathVariable String eventId, @PathVariable String playId) {
+   public String deleteClear(@PathVariable("eventId") String eventId,
+      @PathVariable("playId") String playId, Model model) {
       final EventId identifier = new EventId(eventId);
       final DeleteClearCommand payload = new DeleteClearCommand(identifier, playId);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
-      return "redirect:/admin/events/" + eventId + "/clears";
+
+      final GameEntry refreshedAggregate = eventRepository.findOne(eventId);
+      model.addAttribute("game", refreshedAggregate);
+      return "events/realTimePlayIndex :: content";
    }
 
    @RequestMapping(value = "/admin/events/{eventId}/clears/{playId}", method = RequestMethod.PUT)
-   public String updateClear(@PathVariable String eventId, @PathVariable String playId,
-      @ModelAttribute("clearForm") @Valid ClearForm form, BindingResult result) {
+   public String updateClear(@PathVariable("eventId") String eventId,
+      @PathVariable("playId") String playId, @Valid @RequestBody ClearForm clearForm,
+      BindingResult result, Model model) {
       if (result.hasErrors()) {
          return "events/clears/editClear";
       }
       final LocalDateTime now = LocalDateTime.now();
       final UserEntry user = getCurrentUser();
-      final GameEntry event = eventRepository.findOne(eventId);
-      final TeamSeasonEntry teamSeason = teamRepository.findOne(form.getTeamSeasonId());
+      final GameEntry aggregate = eventRepository.findOne(eventId);
+      final TeamSeasonEntry teamSeason = aggregate.getTeam(clearForm.getTeamSeasonId());
       final List<PlayParticipantDTO> participants = new ArrayList<>();
-      final int sequence = event.getPlays().size();
+      final int sequence = aggregate.getPlays().size();
 
       // Edit clear
       final PlayDTO dto =
-         new PlayDTO(playId, PlayType.CLEAR, PlayKey.PLAY, event, teamSeason, form.getPeriod(),
-            null, null, form.getResult(), null, null, form.getComment(), sequence, now, user,
-            participants);
+         new PlayDTO(playId, PlayType.CLEAR, PlayKey.PLAY, aggregate, teamSeason,
+            clearForm.getPeriod(), null, null, clearForm.getResult(), null, null,
+            clearForm.getComment(), sequence, now, user, participants);
 
       final UpdateClearCommand payload = new UpdateClearCommand(new EventId(eventId), playId, dto);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
-      return "redirect:/admin/events/" + eventId + "/clears";
+
+      final GameEntry refreshedAggregate = eventRepository.findOne(eventId);
+      model.addAttribute("game", refreshedAggregate);
+      return "events/realTimePlayIndex :: content";
    }
 
    @RequestMapping(value = "/admin/events/{eventId}/clears/{playId}/edit",
       method = RequestMethod.GET)
-   public String editClear(@PathVariable String eventId, @PathVariable String playId, Model model) {
-      final Map<String, Object> attributes = new HashMap<>();
-
-      final GameEntry aggregate = eventRepository.findOne(eventId);
-      attributes.put("event", aggregate);
-
+   public String editClear(@PathVariable("eventId") GameEntry aggregate,
+      @PathVariable("playId") String playId, Model model) {
       final PlayEntry play = aggregate.getPlays().get(playId);
-      attributes.put("play", play);
+      final TeamSeasonEntry teamSeason = play.getTeam();
 
       final ClearForm form = new ClearForm();
+      form.setPlayId(playId);
+      form.setGameId(aggregate.getId());
+      form.setTeamName(teamSeason.getFullName());
       form.setTeamSeasonId(play.getTeam().getId());
       form.setPeriod(play.getPeriod());
       form.setResult(play.getResult());
       form.setComment(play.getComment());
-      form.setTeams(getTeams(aggregate));
-      attributes.put("clearForm", form);
 
-      model.addAllAttributes(attributes);
-      return "events/clears/editClear";
+      model.addAttribute("clearForm", form);
+      model.addAttribute("event", aggregate);
+      model.addAttribute("teamSeason", teamSeason);
+      return "events/clears/editClear :: content";
    }
 
    /*---------- Faceoff actions ----------*/
@@ -317,11 +324,15 @@ public class PlayController extends ApplicationController {
 
    @RequestMapping(value = "/admin/events/{eventId}/faceOffs/{playId}",
       method = RequestMethod.DELETE)
-   public String deleteFaceOff(@PathVariable String eventId, @PathVariable String playId) {
+   public String deleteFaceOff(@PathVariable("eventId") String eventId,
+      @PathVariable("eventId") String playId, Model model) {
       final EventId identifier = new EventId(eventId);
       final DeleteFaceOffCommand payload = new DeleteFaceOffCommand(identifier, playId);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
-      return "redirect:/admin/events/" + eventId + "/faceOffs";
+
+      final GameEntry refreshedAggregate = eventRepository.findOne(eventId);
+      model.addAttribute("game", refreshedAggregate);
+      return "events/realTimePlayIndex :: content";
    }
 
    @RequestMapping(value = "/admin/events/{eventId}/faceOffs/{playId}", method = RequestMethod.PUT)
@@ -474,11 +485,15 @@ public class PlayController extends ApplicationController {
    }
 
    @RequestMapping(value = "/admin/events/{eventId}/goals/{playId}", method = RequestMethod.DELETE)
-   public String deleteGoal(@PathVariable String eventId, @PathVariable String playId) {
+   public String deleteGoal(@PathVariable("eventId") String eventId,
+      @PathVariable("playId") String playId, Model model) {
       final EventId identifier = new EventId(eventId);
       final DeleteGoalCommand payload = new DeleteGoalCommand(identifier, playId);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
-      return "redirect:/admin/events/" + eventId + "/goals";
+
+      final GameEntry refreshedAggregate = eventRepository.findOne(eventId);
+      model.addAttribute("game", refreshedAggregate);
+      return "events/realTimePlayIndex :: content";
    }
 
    @RequestMapping(value = "/admin/events/{eventId}/goals/{playId}", method = RequestMethod.PUT)
@@ -644,11 +659,15 @@ public class PlayController extends ApplicationController {
 
    @RequestMapping(value = "/admin/events/{eventId}/groundBalls/{playId}",
       method = RequestMethod.DELETE)
-   public String deleteGroundBall(@PathVariable String eventId, @PathVariable String playId) {
+   public String deleteGroundBall(@PathVariable("eventId") String eventId,
+      @PathVariable("playId") String playId, Model model) {
       final EventId identifier = new EventId(eventId);
       final DeleteGroundBallCommand payload = new DeleteGroundBallCommand(identifier, playId);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
-      return "redirect:/admin/events/" + eventId + "/groundBalls";
+
+      final GameEntry refreshedAggregate = eventRepository.findOne(eventId);
+      model.addAttribute("game", refreshedAggregate);
+      return "events/realTimePlayIndex :: content";
    }
 
    @RequestMapping(value = "/admin/events/{eventId}/groundBalls/{playId}",
@@ -869,11 +888,15 @@ public class PlayController extends ApplicationController {
 
    @RequestMapping(value = "/admin/events/{eventId}/penalties/{playId}",
       method = RequestMethod.DELETE)
-   public String deletePenalty(@PathVariable String eventId, @PathVariable String playId) {
+   public String deletePenalty(@PathVariable("eventId") String eventId,
+      @PathVariable("playId") String playId, Model model) {
       final EventId identifier = new EventId(eventId);
       final DeletePenaltyCommand payload = new DeletePenaltyCommand(identifier, playId);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
-      return "redirect:/admin/events/" + eventId + "/penalties";
+
+      final GameEntry refreshedAggregate = eventRepository.findOne(eventId);
+      model.addAttribute("game", refreshedAggregate);
+      return "events/realTimePlayIndex :: content";
    }
 
    @RequestMapping(value = "/admin/events/{eventId}/penalties/{playId}/edit",
@@ -1006,11 +1029,15 @@ public class PlayController extends ApplicationController {
    }
 
    @RequestMapping(value = "/admin/events/{eventId}/shots/{playId}", method = RequestMethod.DELETE)
-   public String deleteShot(@PathVariable String eventId, @PathVariable String playId) {
+   public String deleteShot(@PathVariable("eventId") String eventId,
+      @PathVariable("playId") String playId, Model model) {
       final EventId identifier = new EventId(eventId);
       final DeleteShotCommand payload = new DeleteShotCommand(identifier, playId);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
-      return "redirect:/admin/events/" + eventId + "/shots";
+
+      final GameEntry refreshedAggregate = eventRepository.findOne(eventId);
+      model.addAttribute("game", refreshedAggregate);
+      return "events/realTimePlayIndex :: content";
    }
 
    @RequestMapping(value = "/admin/events/{eventId}/shots/{playId}/edit", method = RequestMethod.GET)
@@ -1041,14 +1068,6 @@ public class PlayController extends ApplicationController {
    }
 
    /*---------- Methods ----------*/
-
-   private Map<String, String> getTeams(GameEntry event) {
-      final Map<String, String> result = new HashMap<>();
-      for (final TeamEvent each : event.getTeams()) {
-         result.put(each.getTeamSeason().getId(), each.getTeamSeason().getTeam().getName());
-      }
-      return result;
-   }
 
    private Map<String, String> getViolations() {
       if (violations == null) {

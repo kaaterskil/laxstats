@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-	layout:decorator="layout">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
 </head>
 <body>
-	<div layout:fragment="content">
+	<div th:fragment="content">
 		<div class="row">
 			<div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3">
 				<h1 class="text-center">Edit Clear</h1>
@@ -14,11 +13,14 @@
 					th:if="${teamSeason} != null">Team Season</h2>
 					
 				<form action="#" 
-					  th:action="@{'/admin/events/' + ${event.id} + '/clears/' + ${play.id}}" 
+					  id="real-time-clear-form"
+					  th:action="@{'/admin/events/' + ${event.id} + '/clears/' + ${clearForm.playId}}" 
 					  th:object="${clearForm}" 
 					  th:method="put" 
 					  role="form">
 					  
+					<input type="hidden" id="play-type" th:field="*{playType}" />
+					<input type="hidden" id="play-key" th:field="*{playKey}" />
 					<input type="hidden" id="game-id" th:field="*{gameId}" />
 					<input type="hidden" id="team-season-id" th:field="*{teamSeasonId}" />
 					
@@ -60,14 +62,15 @@
 					</div>
 					
 					<div class="form-group">
-						<label for="comments">Comments</label>
-						<textarea id="comments" 
+						<label for="comment">Comments</label>
+						<textarea id="comment" 
 								  class="form-control"
 								  rows="3" 
 								  th:field="*{comment}"></textarea>
 					</div>
 					
-					<button th:type="submit" class="btn btn-default btn-sm">Update</button>
+					<button th:type="submit" class="lax-btn lax-btn-save">Update</button>
+					<button th:type="button" class="lax-btn lax-btn-cancel">Cancel</button>
 				</form>
 			</div>
 		</div>

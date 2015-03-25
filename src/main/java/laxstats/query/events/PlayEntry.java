@@ -37,8 +37,7 @@ import org.joda.time.Period;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "play_type", length = 20, discriminatorType = DiscriminatorType.STRING)
-@Table(name = "plays", indexes = {
-   @Index(name = "play_idx1", columnList = "play_type"),
+@Table(name = "plays", indexes = { @Index(name = "play_idx1", columnList = "play_type"),
    @Index(name = "play_idx2", columnList = "game_id, play_type"),
    @Index(name = "play_idx3", columnList = "period"),
    @Index(name = "play_idx4", columnList = "strength"),
@@ -46,8 +45,8 @@ import org.joda.time.Period;
    @Index(name = "play_idx6", columnList = "result"),
    @Index(name = "play_idx7", columnList = "playKey, result"),
    @Index(name = "play_idx8", columnList = "period, elapsedTime") },
-   uniqueConstraints = { @UniqueConstraint(name = "play_uk1", columnNames = {
-      "game_id", "sequenceNumber" }) })
+   uniqueConstraints = { @UniqueConstraint(name = "play_uk1", columnNames = { "game_id",
+      "sequenceNumber" }) })
 abstract public class PlayEntry implements Serializable {
    private static final long serialVersionUID = -9074132185978497348L;
 
@@ -132,6 +131,27 @@ abstract public class PlayEntry implements Serializable {
 
    /*---------- Methods ----------*/
 
+   public String getUrlType() {
+      String result = null;
+
+      if (this instanceof ClearEntry) {
+         result = "clears";
+      } else if (this instanceof FaceOffEntry) {
+         result = "faceOffs";
+      } else if (this instanceof GoalEntry) {
+         result = "goals";
+      } else if (this instanceof GroundBallEntry) {
+         result = "groundBalls";
+      } else if (this instanceof PenaltyEntry) {
+         result = "penalties";
+      } else if (this instanceof ShotEntry) {
+         result = "shots";
+      } else {
+         throw new IllegalStateException("no playType defined");
+      }
+      return result;
+   }
+
    public void addParticipant(PlayParticipantEntry participant) {
       participant.setPlay(this);
       participants.add(participant);
@@ -173,8 +193,8 @@ abstract public class PlayEntry implements Serializable {
          sequenceNumber + ", team=" + team + ", elapsedtime=" + elapsedTime + ", playKey=" +
          playKey + ", scoreAttemptType=" + scoreAttemptType + ", result=" + result + ", comment=" +
          comment + ", teamScore=" + teamScore + ", opponentScore=" + opponentScore + ", strenght=" +
-         strength + ", manUpAdvantage=" + manUpAdvantage + ", manUpTeam=" +
-         manUpTeam + ", violation=" + violation + ", duration=" + duration + "]";
+         strength + ", manUpAdvantage=" + manUpAdvantage + ", manUpTeam=" + manUpTeam +
+         ", violation=" + violation + ", duration=" + duration + "]";
    }
 
    /*---------- Getter/Setters ----------*/

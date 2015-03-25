@@ -388,14 +388,38 @@ nav .navbar-nav>li>a:hover {
 	-moz-box-shadow: none;
 	-o-box-shadow: none;
 	box-shadow: none;
+	text-decoration: none;
 }
 
 .lax-btn-new {
-	margin: 4px 0;
+	border: 1px solid rgb(173, 124, 89);
+	margin-top: 8px;
+	min-width: 0;
+}
+
+.lax-btn-new:hover, .lax-btn-new:active {
+	background: rgb(173, 124, 89);
+	color: rgb(255, 255, 255);
 }
 
 .lax-btn-new-person {
 	float: right;
+}
+
+.lax-btn-new-contact {
+	margin-left: 10px;
+}
+
+.lax-btn-info {
+	border: 1px solid rgb(70, 184, 218);
+	color: rgb(70, 184, 218);
+	margin-top: 10px;
+	min-width: 0 !important;
+}
+
+.lax-btn-info:hover, .lax-btn-info:active {
+	background: rgb(70, 184, 218);
+	color: rgb(255, 255, 255);
 }
 
 .lax-btn-delete {
@@ -635,6 +659,16 @@ nav .navbar-nav>li>a:hover {
 	background: rgb(186, 20, 26);
 	border: 1px solid rgb(186, 20, 26);
 	color: rgb(255, 255, 255);
+}
+
+.lax-link-edit {
+	color: rgb(51, 51, 51);
+	cursor: pointer;
+	text-decoration: underline;
+}
+
+.lax-link-edit:hover {
+	color: rgb(173, 124 ,89);
 }
 
 /*---------- FAQ styles ----------*/

@@ -64,17 +64,16 @@
 		<script type="text/javascript">
 			// <![CDATA[
 			(function laxRealTimeEntry() {
-				var $carousel = $('#real-time-entry'), 
-					$playBtn = $('.lax-btn-play');
-
+				'use strict';
+	
 				$(document).ready(function() {
-					$carousel.carousel({
+					$('#real-time-entry').carousel({
 						interval : false,
 						wrap : false,
 						keyboard : false
 					});
-
-					$playBtn.on('click', laxstats.Play.newPlay);
+	
+					laxstats.Play.initialize();
 				});
 			})();
 			// ]]>
