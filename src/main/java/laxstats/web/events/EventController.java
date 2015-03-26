@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import laxstats.api.Region;
@@ -65,10 +66,8 @@ public class EventController extends ApplicationController {
 
    @Autowired
    protected EventController(GameQueryRepository eventRepository,
-      SiteQueryRepository siteRepository,
-      TeamQueryRepository teamRepository,
-      UserQueryRepository userRepository, CommandBus commandBus)
-   {
+      SiteQueryRepository siteRepository, TeamQueryRepository teamRepository,
+      UserQueryRepository userRepository, CommandBus commandBus) {
       super(userRepository, commandBus);
       this.eventRepository = eventRepository;
       this.siteRepository = siteRepository;
@@ -95,8 +94,7 @@ public class EventController extends ApplicationController {
    }
 
    @RequestMapping(value = "/admin/events/{eventId}/plays", method = RequestMethod.GET)
-   public String newRealTimeIndex(@PathVariable("eventId") GameEntry aggregate,
-      Model model) {
+   public String newRealTimeIndex(@PathVariable("eventId") GameEntry aggregate, Model model) {
       model.addAttribute("game", aggregate);
       model.addAttribute("homeTeam", aggregate.getHomeTeam());
       model.addAttribute("homeTeamEvent", aggregate.getHomeTeamEvent());
@@ -106,9 +104,7 @@ public class EventController extends ApplicationController {
    }
 
    @RequestMapping(value = "/admin/events", method = RequestMethod.POST)
-   public String createEvent(@Valid EventForm form, BindingResult result,
-      Model model)
-   {
+   public String createEvent(@Valid EventForm form, BindingResult result, Model model) {
       if (result.hasErrors()) {
          form.setTeams(getTeams());
          form.setSites(getSites());
@@ -129,8 +125,7 @@ public class EventController extends ApplicationController {
             result.rejectValue("teamOne", "event.nullTeamOneSeason");
             return "events/newEvent";
          }
-         teamOneAlignment = getTeamAlignment(form.getAlignment(),
-            form.isTeamOneHome());
+         teamOneAlignment = getTeamAlignment(form.getAlignment(), form.isTeamOneHome());
       }
 
       // Set team two
@@ -143,34 +138,28 @@ public class EventController extends ApplicationController {
             result.rejectValue("teamTwo", "event.nullTeamTwoSeason");
             return "events/newEvent";
          }
-         teamTwoAlignment = getTeamAlignment(form.getAlignment(),
-            form.isTeamTwoHome());
+         teamTwoAlignment = getTeamAlignment(form.getAlignment(), form.isTeamTwoHome());
       }
 
-      final EventDTO dto = new EventDTO(identifier.toString(), site,
-         teamOneSeason, teamTwoSeason, teamOneAlignment,
-         teamTwoAlignment, form.getAlignment(), form.getStartsAt(),
-         form.getSchedule(), form.getStatus(), form.getWeather(),
-         form.getDescription(), now, user, now, user);
+      final EventDTO dto =
+         new EventDTO(identifier.toString(), site, teamOneSeason, teamTwoSeason, teamOneAlignment,
+            teamTwoAlignment, form.getAlignment(), form.getStartsAt(), form.getSchedule(),
+            form.getStatus(), form.getWeather(), form.getDescription(), now, user, now, user);
 
-      final CreateEventCommand payload = new CreateEventCommand(identifier,
-         dto);
+      final CreateEventCommand payload = new CreateEventCommand(identifier, dto);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
       return "redirect:/admin/events";
    }
 
    @RequestMapping(value = "/admin/events/{eventId}", method = RequestMethod.GET)
-   public String showEvent(@PathVariable("eventId") GameEntry aggregate,
-      Model model)
-   {
+   public String showEvent(@PathVariable("eventId") GameEntry aggregate, Model model) {
       model.addAttribute("item", aggregate);
       return "events/showEvent";
    }
 
    @RequestMapping(value = "/admin/events/{eventId}", method = RequestMethod.PUT)
-   public String updateEvent(@PathVariable String eventId,
-      @Valid EventForm form, BindingResult result, Model model)
-   {
+   public String updateEvent(@PathVariable String eventId, @Valid EventForm form,
+      BindingResult result, Model model) {
       if (result.hasErrors()) {
          form.setTeams(getTeams());
          form.setSites(getSites());
@@ -191,8 +180,7 @@ public class EventController extends ApplicationController {
             result.rejectValue("teamOne", "event.nullTeamOneSeason");
             return "events/editEvent";
          }
-         teamOneAlignment = getTeamAlignment(form.getAlignment(),
-            form.isTeamOneHome());
+         teamOneAlignment = getTeamAlignment(form.getAlignment(), form.isTeamOneHome());
       }
 
       // Set team two
@@ -205,18 +193,15 @@ public class EventController extends ApplicationController {
             result.rejectValue("teamTwo", "event.nullTeamTwoSeason");
             return "events/editEvent";
          }
-         teamTwoAlignment = getTeamAlignment(form.getAlignment(),
-            form.isTeamTwoHome());
+         teamTwoAlignment = getTeamAlignment(form.getAlignment(), form.isTeamTwoHome());
       }
 
-      final EventDTO dto = new EventDTO(identifier.toString(), site,
-         teamOneSeason, teamTwoSeason, teamOneAlignment,
-         teamTwoAlignment, form.getAlignment(), form.getStartsAt(),
-         form.getSchedule(), form.getStatus(), form.getWeather(),
-         form.getDescription(), now, user);
+      final EventDTO dto =
+         new EventDTO(identifier.toString(), site, teamOneSeason, teamTwoSeason, teamOneAlignment,
+            teamTwoAlignment, form.getAlignment(), form.getStartsAt(), form.getSchedule(),
+            form.getStatus(), form.getWeather(), form.getDescription(), now, user);
 
-      final UpdateEventCommand payload = new UpdateEventCommand(identifier,
-         dto);
+      final UpdateEventCommand payload = new UpdateEventCommand(identifier, dto);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
       return "redirect:/admin/events";
    }
@@ -243,9 +228,8 @@ public class EventController extends ApplicationController {
    }
 
    @RequestMapping(value = "/admin/events/{eventId}/edit", method = RequestMethod.GET)
-   public String editEvent(@PathVariable("eventId") GameEntry aggregate,
-      Model model)
-   {
+   public String editEvent(@PathVariable("eventId") GameEntry aggregate, Model model,
+      HttpServletRequest request) {
       final TeamEvent teamOne = aggregate.getTeams().get(0);
       final TeamEvent teamTwo = aggregate.getTeams().get(1);
 
@@ -257,15 +241,16 @@ public class EventController extends ApplicationController {
       form.setSite(aggregate.getSite().getId());
       form.setStartsAt(aggregate.getStartsAt());
       form.setStatus(aggregate.getStatus());
-      form.setTeamOne(teamOne.getTeamSeason().getId());
+      form.setTeamOne(teamOne.getTeamSeason().getTeam().getId());
       form.setTeamOneHome(teamOne.getAlignment().equals(Alignment.HOME));
-      form.setTeamTwo(teamTwo.getTeamSeason().getId());
-      form.setTeamOneHome(teamTwo.getAlignment().equals(Alignment.HOME));
+      form.setTeamTwo(teamTwo.getTeamSeason().getTeam().getId());
+      form.setTeamTwoHome(teamTwo.getAlignment().equals(Alignment.HOME));
       form.setTeams(getTeams());
       form.setSites(getSites());
 
       model.addAttribute("eventForm", form);
       model.addAttribute("event", aggregate);
+      model.addAttribute("back", request.getHeader("Referer"));
       return "events/editEvent";
    }
 
@@ -284,11 +269,8 @@ public class EventController extends ApplicationController {
    @RequestMapping(value = "/admin/events{eventId}/teamSeasons/{teamSeasonId}",
       method = RequestMethod.GET)
    public String attendeeIndex(@PathVariable("eventId") GameEntry aggregate,
-      @PathVariable("teamSeasonId") TeamSeasonEntry teamSeason,
-      Model model)
-   {
-      final List<AttendeeEntry> roster = aggregate.getAttendees().get(
-         teamSeason.getName());
+      @PathVariable("teamSeasonId") TeamSeasonEntry teamSeason, Model model) {
+      final List<AttendeeEntry> roster = aggregate.getAttendees().get(teamSeason.getName());
 
       model.addAttribute("event", aggregate);
       model.addAttribute("teamSeason", teamSeason);
@@ -299,38 +281,32 @@ public class EventController extends ApplicationController {
    @RequestMapping(value = "/admin/events/{eventId}/teamSeasons/{teamSeasonId}",
       method = RequestMethod.POST)
    public String createAttendee(@PathVariable("eventId") GameEntry aggregate,
-      @PathVariable("teamSeasonId") TeamSeasonEntry teamSeason,
-      @Valid AttendeeForm form, BindingResult result)
-   {
+      @PathVariable("teamSeasonId") TeamSeasonEntry teamSeason, @Valid AttendeeForm form,
+      BindingResult result) {
       if (result.hasErrors()) {
          return "events/newAttendee";
       }
       final LocalDateTime now = LocalDateTime.now();
       final UserEntry user = getCurrentUser();
-      final String attendeeId = IdentifierFactory.getInstance()
-         .generateIdentifier();
+      final String attendeeId = IdentifierFactory.getInstance().generateIdentifier();
       final PlayerEntry player = teamSeason.getPlayer(form.getPlayerId());
 
-      final AttendeeDTO dto = new AttendeeDTO(attendeeId, aggregate, player,
-         teamSeason, form.getRole(), form.getStatus(),
-         player.getFullName(), player.getJerseyNumber(), now, user, now,
-         user);
+      final AttendeeDTO dto =
+         new AttendeeDTO(attendeeId, aggregate, player, teamSeason, form.getRole(),
+            form.getStatus(), player.getFullName(), player.getJerseyNumber(), now, user, now, user);
 
-      final RegisterAttendeeCommand payload = new RegisterAttendeeCommand(
-         new EventId(aggregate.getId()), dto);
+      final RegisterAttendeeCommand payload =
+         new RegisterAttendeeCommand(new EventId(aggregate.getId()), dto);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
-      return "redirect:/admin/events/" + aggregate.getId() + "/teamSeasons/"
-         + teamSeason.getId();
+      return "redirect:/admin/events/" + aggregate.getId() + "/teamSeasons/" + teamSeason.getId();
    }
 
    @RequestMapping(
       value = "/admin/events/{eventId}/teamSeasons/{teamSeasonId}/attendees/{attendeeId}",
       method = RequestMethod.PUT)
    public String updateAttendee(@PathVariable("eventId") GameEntry event,
-      @PathVariable("teamSeasonId") TeamSeasonEntry teamSeason,
-      @PathVariable String attendeeId, @Valid AttendeeForm form,
-      BindingResult result)
-   {
+      @PathVariable("teamSeasonId") TeamSeasonEntry teamSeason, @PathVariable String attendeeId,
+      @Valid AttendeeForm form, BindingResult result) {
       if (result.hasErrors()) {
          return "events/editAttendee";
       }
@@ -338,37 +314,31 @@ public class EventController extends ApplicationController {
       final UserEntry user = getCurrentUser();
       final PlayerEntry player = teamSeason.getPlayer(form.getPlayerId());
 
-      final AttendeeDTO dto = new AttendeeDTO(attendeeId, event, player,
-         teamSeason, form.getRole(), form.getStatus(),
-         player.getFullName(), player.getJerseyNumber(), now, user);
+      final AttendeeDTO dto =
+         new AttendeeDTO(attendeeId, event, player, teamSeason, form.getRole(), form.getStatus(),
+            player.getFullName(), player.getJerseyNumber(), now, user);
 
-      final UpdateAttendeeCommand payload = new UpdateAttendeeCommand(
-         new EventId(event.getId()), dto);
+      final UpdateAttendeeCommand payload =
+         new UpdateAttendeeCommand(new EventId(event.getId()), dto);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
-      return "redirect:/admin/events/" + event.getId() + "/teamSeasons/"
-         + teamSeason.getId();
+      return "redirect:/admin/events/" + event.getId() + "/teamSeasons/" + teamSeason.getId();
    }
 
    @RequestMapping(
       value = "/admin/events/{eventId}/teamSeasons/{teamSeasonId}/attendees/{attendeeId}",
       method = RequestMethod.DELETE)
-   public String deleteAttendee(@PathVariable String eventId,
-      @PathVariable String teamSeasonId, @PathVariable String attendeeId)
-   {
+   public String deleteAttendee(@PathVariable String eventId, @PathVariable String teamSeasonId,
+      @PathVariable String attendeeId) {
       final EventId identifier = new EventId(eventId);
-      final DeleteAttendeeCommand payload = new DeleteAttendeeCommand(
-         identifier, attendeeId);
+      final DeleteAttendeeCommand payload = new DeleteAttendeeCommand(identifier, attendeeId);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
-      return "redirect:/admin/events/" + eventId + "/teamSeasons/"
-         + teamSeasonId;
+      return "redirect:/admin/events/" + eventId + "/teamSeasons/" + teamSeasonId;
    }
 
    @RequestMapping(value = "/admin/events{eventId}/teamSeasons/{teamSeasonId}/attendees/new",
       method = RequestMethod.GET)
    public String newAttendee(@PathVariable String eventId,
-      @PathVariable("teamSeasonId") TeamSeasonEntry teamSeason,
-      Model model)
-   {
+      @PathVariable("teamSeasonId") TeamSeasonEntry teamSeason, Model model) {
 
       final AttendeeForm form = new AttendeeForm();
       form.setRole(Role.ATHLETE);
@@ -386,8 +356,7 @@ public class EventController extends ApplicationController {
       method = RequestMethod.GET)
    public String editAttendee(@PathVariable String eventId,
       @PathVariable("teamSeasonId") TeamSeasonEntry teamSeason,
-      @PathVariable("attendeeId") AttendeeEntry entity, Model model)
-   {
+      @PathVariable("attendeeId") AttendeeEntry entity, Model model) {
 
       final AttendeeForm form = new AttendeeForm();
       form.setPlayerId(entity.getPlayer().getId());
@@ -403,14 +372,11 @@ public class EventController extends ApplicationController {
 
    /*----------  Utilities ----------*/
 
-   private Alignment getTeamAlignment(SiteAlignment siteAlignment,
-      boolean isHomeTeam)
-   {
+   private Alignment getTeamAlignment(SiteAlignment siteAlignment, boolean isHomeTeam) {
       Alignment result = null;
       if (siteAlignment.equals(SiteAlignment.NEUTRAL)) {
          result = Alignment.NEUTRAL;
-      }
-      else {
+      } else {
          result = isHomeTeam ? Alignment.HOME : Alignment.AWAY;
       }
       return result;
@@ -418,23 +384,18 @@ public class EventController extends ApplicationController {
 
    private Map<Region, List<SiteEntry>> getSites() {
       final Map<Region, List<SiteEntry>> result = new HashMap<>();
-      final Iterable<SiteEntry> collection = siteRepository
-         .findAll(getSiteSorter());
+      final Iterable<SiteEntry> collection = siteRepository.findAll(getSiteSorter());
 
       Region currentRegion = null;
       for (final SiteEntry each : collection) {
-         final Region targetRegion = each.getAddress() == null ? null : each
-            .getAddress().getRegion();
+         final Region targetRegion =
+            each.getAddress() == null ? null : each.getAddress().getRegion();
          List<SiteEntry> list = null;
-         if (currentRegion == null
-            || (targetRegion != null && !currentRegion
-               .equals(targetRegion)))
-         {
+         if (currentRegion == null || (targetRegion != null && !currentRegion.equals(targetRegion))) {
             currentRegion = targetRegion;
             list = new ArrayList<SiteEntry>();
             result.put(targetRegion, list);
-         }
-         else {
+         } else {
             list = result.get(targetRegion);
          }
          list.add(each);
@@ -452,8 +413,8 @@ public class EventController extends ApplicationController {
    private Map<Region, List<TeamEntry>> getTeams() {
       final Map<Region, List<TeamEntry>> result = new HashMap<>();
 
-      final Iterable<TeamEntry> collection = teamRepository.findAll(new Sort(
-         new Sort.Order("region")));
+      final Iterable<TeamEntry> collection =
+         teamRepository.findAll(new Sort(new Sort.Order("region")));
 
       Region currentRegion = null;
       for (final TeamEntry each : collection) {
@@ -463,8 +424,7 @@ public class EventController extends ApplicationController {
             list = new ArrayList<>();
             result.put(targetRegion, list);
             currentRegion = targetRegion;
-         }
-         else {
+         } else {
             list = result.get(targetRegion);
          }
          list.add(each);

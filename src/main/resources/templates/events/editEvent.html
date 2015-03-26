@@ -17,10 +17,11 @@
 					  th:method="put"
 					  th:object="${eventForm}"
 					  role="form">
+					  
 					<div class="row">
 						<div class="col-sm-6 form-group required">
 							<label for="starts-at">Date and Time</label>
-							<input type="datetime-local"
+							<input th:type="datetime-local"
 								   id="starts-at"
 								   class="form-control"
 								   required="required"
@@ -151,7 +152,7 @@
 						<div class="col-sm-6 form-group checkbox">
 							<label for="team-two-home">
 								<input type="checkbox"
-									   id="team-ontwo-form"
+									   id="team-two-home"
 									   th:field="*{teamTwoHome}"
 									   aria-describedby="team-two-home-error"/>
 								<span>Home team?</span>	  
@@ -207,7 +208,8 @@
 								  rows="3" 
 								  th:field="*{description}"></textarea>
 					</div>
-					<button th:type="submit" class="btn btn-default">Update</button>
+					<button th:type="submit" class="lax-btn lax-btn-save">Update</button>
+					<a class="lax-btn lax-btn-cancel" href="#" th:href="@{${back}}">Cancel</a>
 				</form>
 			</div>
 		</div>

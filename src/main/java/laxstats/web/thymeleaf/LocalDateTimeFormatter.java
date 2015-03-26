@@ -5,8 +5,8 @@ import java.util.Locale;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
+import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.format.Formatter;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +20,7 @@ public class LocalDateTimeFormatter implements Formatter<LocalDateTime> {
 
    public DateTimeFormatter getFormatter() {
       if (formatter == null) {
-         formatter = ISODateTimeFormat.dateTime();
+         formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm");
       }
       return formatter;
    }
@@ -36,9 +36,7 @@ public class LocalDateTimeFormatter implements Formatter<LocalDateTime> {
    }
 
    @Override
-   public LocalDateTime parse(String text, Locale locale)
-      throws ParseException
-   {
+   public LocalDateTime parse(String text, Locale locale) throws ParseException {
       LocalDateTime localDateTime = null;
       if (text != null) {
          try {
