@@ -1,18 +1,49 @@
 package laxstats.api.users;
 
 /**
- * For authorization
+ * {@code UserRole} enumerates the role-based authorization of this application.
  */
 public enum UserRole {
-	ROLE_MANAGER("Manager"), ROLE_COACH("Coach"), ROLE_ADMIN("Administrator"), ROLE_SUPERADMIN(
-			"Super Admin");
-	private String label;
 
-	private UserRole(String label) {
-		this.label = label;
-	}
+   /**
+    * A team-based user.
+    */
+   ROLE_MANAGER("Manager"),
 
-	public String getLabel() {
-		return label;
-	}
+   /**
+    * A team-based user with the highest level of privileges.
+    */
+   ROLE_COACH("Coach"),
+
+   /**
+    * An application administrator.
+    */
+   ROLE_ADMIN("Administrator"),
+
+   /**
+    * An application administrator with the highest level of privileges.
+    */
+   ROLE_SUPERADMIN("Super Admin");
+
+   /**
+    * Returns the pretty name of a {@code UserRole} for use in a drop-down menu.
+    * 
+    * @return
+    */
+   public String getLabel() {
+      return label;
+   }
+
+   /**
+    * Creates a {@code UserRole} with the given pretty name.
+    * 
+    * @param label
+    */
+   private UserRole(String label) {
+      assert label != null;
+
+      this.label = label;
+   }
+
+   private String label;
 }

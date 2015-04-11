@@ -1,16 +1,49 @@
 package laxstats.api.events;
 
+/**
+ * {@code ScoreAttemptType} enumerates the type of shots a player may make.
+ */
 public enum ScoreAttemptType {
-	REGULAR("Regular"), PENALTY_SHOT("Penalty Shot"), EMPTY_NET("Empty Net"), OWN_GOAL(
-			"Own Goal");
 
-	private String label;
+   /**
+    * A shot against an opponent's goal.
+    */
+   REGULAR("Regular"),
 
-	private ScoreAttemptType(String label) {
-		this.label = label;
-	}
+   /**
+    * A shot against an opponent's goal permitted as the results of a violation.
+    */
+   PENALTY_SHOT("Penalty Shot"),
 
-	public String getLabel() {
-		return label;
-	}
+   /**
+    * A shot against an undefended oponent's goal.
+    */
+   EMPTY_NET("Empty Net"),
+
+   /**
+    * A shot against one's own goal.
+    */
+   OWN_GOAL("Own Goal");
+
+   /**
+    * Returns the pretty name of a {@code ShotAttemptType} for use in a drop-down menu.
+    *
+    * @return
+    */
+   public String getLabel() {
+      return label;
+   }
+
+   /**
+    * Creates a {@code ShotAttemptType} with the given label.
+    *
+    * @param label
+    */
+   private ScoreAttemptType(String label) {
+      assert label != null;
+
+      this.label = label;
+   }
+
+   private String label;
 }

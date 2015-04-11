@@ -1,15 +1,39 @@
 package laxstats.api.violations;
 
+/**
+ * {@code PenaltyCategory} enumerates the classification of penalties.
+ */
 public enum PenaltyCategory {
-	PERSONAL_FOUL("Personal"), TEAM_FOUL("Team");
 
-	private final String label;
+   /**
+    * Serious violations.
+    */
+   PERSONAL_FOUL("Personal"),
 
-	private PenaltyCategory(String label) {
-		this.label = label;
-	}
+   /**
+    * Less serious and procedural violations.
+    */
+   TECHNICAL_FOUL("Technical");
 
-	public String getLabel() {
-		return label;
-	}
+   /**
+    * Returns the pretty name of a {@code PenaltyCategory} for use in a drop-down menu.
+    * 
+    * @return
+    */
+   public String getLabel() {
+      return label;
+   }
+
+   /**
+    * Creates a {@code PenaltyCategory} with the given pretty name.
+    * 
+    * @param label
+    */
+   private PenaltyCategory(String label) {
+      assert label != null;
+
+      this.label = label;
+   }
+
+   private final String label;
 }
