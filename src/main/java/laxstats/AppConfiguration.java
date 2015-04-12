@@ -1,15 +1,8 @@
 package laxstats;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-
-import laxstats.web.seasons.SeasonFormValidator;
-import laxstats.web.site.SiteFormValidator;
-import laxstats.web.teamSeasons.TeamSeasonFormValidator;
-import laxstats.web.teams.TeamFormValidator;
-import laxstats.web.thymeleaf.LocalDateFormatter;
-import laxstats.web.thymeleaf.LocalDateTimeFormatter;
-import laxstats.web.thymeleaf.MinuteSecondFormatter;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,13 +10,30 @@ import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.format.Formatter;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.format.support.FormattingConversionServiceFactoryBean;
+import org.springframework.mobile.device.DeviceHandlerMethodArgumentResolver;
+import org.springframework.mobile.device.DeviceResolverHandlerInterceptor;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+
+import laxstats.web.thymeleaf.LocalDateFormatter;
+import laxstats.web.thymeleaf.LocalDateTimeFormatter;
+import laxstats.web.thymeleaf.MinuteSecondFormatter;
 
 @Configuration
 @EnableSpringDataWebSupport
 public class AppConfiguration extends WebMvcConfigurerAdapter {
+
+   /*---------- Validation ----------*/
+
+   @Bean
+   public Validator localValidatorFactoryBean() {
+      return new LocalValidatorFactoryBean();
+   }
+
+   /*---------- Formatting/Conversion ----------*/
 
    @Bean
    public FormattingConversionService conversionService() {
@@ -43,28 +53,25 @@ public class AppConfiguration extends WebMvcConfigurerAdapter {
       return converters;
    }
 
+   /*---------- Spring Mobile ----------*/
+
    @Bean
-   public Validator localValidatorFactoryBean() {
-      return new LocalValidatorFactoryBean();
+   public DeviceResolverHandlerInterceptor deviceResolverHandlerInterceptor() {
+      return new DeviceResolverHandlerInterceptor();
    }
 
    @Bean
-   public Validator seasonValidator() {
-      return new SeasonFormValidator();
+   public DeviceHandlerMethodArgumentResolver deviceHandlerMethodArgumentResolver() {
+      return new DeviceHandlerMethodArgumentResolver();
    }
 
-   @Bean
-   public Validator siteValidator() {
-      return new SiteFormValidator();
+   @Override
+   public void addInterceptors(InterceptorRegistry registry) {
+      registry.addInterceptor(deviceResolverHandlerInterceptor());
    }
 
-   @Bean
-   public Validator teamValidator() {
-      return new TeamFormValidator();
-   }
-
-   @Bean
-   public Validator teamSeasonValidator() {
-      return new TeamSeasonFormValidator();
+   @Override
+   public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+      argumentResolvers.add(deviceHandlerMethodArgumentResolver());
    }
 }
