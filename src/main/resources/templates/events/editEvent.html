@@ -7,16 +7,20 @@
 <body>
 	<div layout:fragment="content">
 		<div class="row">
-			<div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-1">
+			<div class="col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-1">
 				<h1>Edit Event</h1>
 			
 				<form action="#"
 					  id="edit-event-form"
 					  name="edit-event-form"
-					  th:action="@{'/admin/events/' + ${event.id}}"
+					  th:action="@{'/admin/events/' + ${eventForm.id}}"
 					  th:method="put"
 					  th:object="${eventForm}"
 					  role="form">
+					  
+					<input type="hidden" 
+						   id="id" 
+						   th:field="*{id}" />
 					  
 					<div class="row">
 						<div class="col-sm-6 form-group required">
@@ -114,13 +118,19 @@
 								 th:errors="*{teamOne}">Invalid team</div>
 						</div>
 						<div class="col-sm-6 form-group checkbox">
-							<label for="team-one-home">
-								<input type="checkbox"
-									   id="team-one-form"
-									   th:field="*{teamOneHome}"
-									   aria-describedby="team-one-home-error"/>
-								<span>Home team?</span>	  
-							</label>
+							<div>
+								<label for="team-one-home">
+									<input type="checkbox"
+										   class="checkbox"
+										   id="team-one-form"
+										   th:field="*{teamOneHome}"
+										   aria-describedby="team-one-home-error"/>
+									<span>Home team?</span>	  
+								</label>
+								<a href="#" 
+								   class="lax-btn lax-btn-register" 
+								   th:href="@{'/admin/events/' + ${event.id} + '/attendees'}">Register Roster</a>
+							</div>
 							<div th:if="${#fields.hasErrors('teamOneHome')}"
 								 id="team-one-home-error"
 								 class="lax-error"
@@ -150,13 +160,19 @@
 								 th:errors="*{teamTwo}">Invalid team</div>
 						</div>
 						<div class="col-sm-6 form-group checkbox">
-							<label for="team-two-home">
-								<input type="checkbox"
-									   id="team-two-home"
-									   th:field="*{teamTwoHome}"
-									   aria-describedby="team-two-home-error"/>
-								<span>Home team?</span>	  
-							</label>
+							<div>
+								<label for="team-two-home">
+									<input type="checkbox"
+										   class="checkbox"
+										   id="team-two-home"
+										   th:field="*{teamTwoHome}"
+										   aria-describedby="team-two-home-error"/>
+									<span>Home team?</span>	  
+								</label>
+								<a href="#" 
+								   class="lax-btn lax-btn-register" 
+								   th:href="@{'/admin/events/' + ${event.id} + '/attendees'}">Register Roster</a>
+							</div>
 							<div th:if="${#fields.hasErrors('teamTwoHome')}"
 								 id="team-two-home-error"
 								 class="lax-error"

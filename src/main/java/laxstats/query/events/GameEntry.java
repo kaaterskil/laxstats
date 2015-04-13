@@ -245,16 +245,16 @@ public class GameEntry implements Serializable {
    public TeamSeasonEntry getVisitingTeam() {
       if (teams.size() < 2) {
          return null;
-      } else if (teams.get(0).getAlignment().equals(Alignment.AWAY)) {
+      } else if (!teams.get(0).getAlignment().equals(Alignment.HOME)) {
          return teams.get(0).getTeamSeason();
       }
       return teams.get(1).getTeamSeason();
    }
 
    public TeamEvent getVisitingTeamEvent() {
-      if (teams.size() < 0) {
+      if (teams.size() == 0) {
          return null;
-      } else if (teams.get(0).getAlignment().equals(Alignment.AWAY)) {
+      } else if (!teams.get(0).getAlignment().equals(Alignment.HOME)) {
          return teams.get(0);
       }
       return teams.get(1);

@@ -29,14 +29,14 @@
 			return df;
 		}
 
-		function sendSuccess(panelNum, data, status, jqXHR) {
+		function sendSuccess(panelNum, data, status, xhr) {
 			$('#real-time-entry').carousel(0);
 			$('#play-index').html(data);
 			setPlayIndexHandlers();
 		}
 
-		function fail(jqXHR, status, error) {
-			var msg = 'Error (' + jqXHR.status + '): ' + jqXHR.responseText;
+		function fail(xhr, status, error) {
+			var msg = 'Error (' + xhr.status + '): ' + xhr.responseText;
 			console.log('Error: ' + msg);
 		}
 
@@ -126,12 +126,12 @@
 			event.preventDefault();
 			df = send(url, method, data, token);
 
-			df.done(function(data, status, jqXHR) {
-				sendSuccess(5, data, status, jqXHR);
+			df.done(function(data, status, xhr) {
+				sendSuccess(5, data, status, xhr);
 			});
 
-			df.fail(function(jqXHR, status, error) {
-				fail(jqXHR, status, error);
+			df.fail(function(xhr, status, error) {
+				fail(xhr, status, error);
 			});
 		}
 
@@ -156,8 +156,8 @@
 				sendSuccess(6, data);
 			});
 
-			df.fail(function(jqXHR, status, error) {
-				fail(jqXHR, status, error);
+			df.fail(function(xhr, status, error) {
+				fail(xhr, status, error);
 			});
 		}
 
@@ -183,8 +183,8 @@
 				sendSuccess(1, data);
 			});
 
-			df.fail(function(jqXHR, status, error) {
-				fail(jqXHR, status, error);
+			df.fail(function(xhr, status, error) {
+				fail(xhr, status, error);
 			});
 		}
 
@@ -207,8 +207,8 @@
 				sendSuccess(3, data);
 			});
 
-			df.fail(function(jqXHR, status, error) {
-				fail(jqXHR, status, error);
+			df.fail(function(xhr, status, error) {
+				fail(xhr, status, error);
 			});
 		}
 
@@ -235,8 +235,8 @@
 				sendSuccess(4, data);
 			});
 
-			df.fail(function(jqXHR, status, error) {
-				fail(jqXHR, status, error);
+			df.fail(function(xhr, status, error) {
+				fail(xhr, status, error);
 			});
 		}
 
@@ -261,8 +261,8 @@
 				sendSuccess(2, data);
 			});
 
-			df.fail(function(jqXHR, status, error) {
-				fail(jqXHR, status, error);
+			df.fail(function(xhr, status, error) {
+				fail(xhr, status, error);
 			});
 		}
 
@@ -292,14 +292,14 @@
 				dataType : 'text'
 			});
 
-			df.done(function(data, status, jqXHR) {
+			df.done(function(data, status, xhr) {
 				$('#play-index').html(data);
 				setPlayIndexHandlers();
 				$('#real-time-entry').carousel(0);
 			});
 
-			df.fail(function(jqXHR, status, error) {
-				fail(jqXHR, status, error);
+			df.fail(function(xhr, status, error) {
+				fail(xhr, status, error);
 			});
 		}
 
@@ -316,7 +316,7 @@
 				dataType : 'text'
 			});
 
-			df.done(function(data, status, jqXHR) {
+			df.done(function(data, status, xhr) {
 				var $panel = getPanelByType(playType), panelNum = getPanelNum(playType);
 				if ($panel) {
 					$panel.html(data);
@@ -326,8 +326,8 @@
 				}
 			});
 
-			df.fail(function(jqXHR, status, error) {
-				fail(jqXHR, status, error);
+			df.fail(function(xhr, status, error) {
+				fail(xhr, status, error);
 			});
 		}
 
@@ -361,8 +361,8 @@
 				}
 			});
 
-			df.fail(function(jqXHR, status, error) {
-				fail(jqXHR, status, error);
+			df.fail(function(xhr, status, error) {
+				fail(xhr, status, error);
 			});
 		}
 

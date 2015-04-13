@@ -1,5 +1,6 @@
 package laxstats.web.seasons;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import laxstats.api.Common;
@@ -35,197 +36,185 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class SeasonController extends ApplicationController {
-	private static final Logger logger = LoggerFactory
-			.getLogger(SeasonController.class);
-	private static final String PACKAGE_NAME = SeasonController.class
-			.getPackage().getName();
+   private static final Logger logger = LoggerFactory.getLogger(SeasonController.class);
+   private static final String PACKAGE_NAME = SeasonController.class.getPackage().getName();
 
-	private final SeasonQueryRepository seasonRepository;
+   private final SeasonQueryRepository seasonRepository;
 
-	@Autowired
-	private SeasonFormValidator seasonValidator;
+   @Autowired
+   private SeasonFormValidator seasonValidator;
 
-	@Autowired
-	public SeasonController(SeasonQueryRepository seasonRepository,
-			UserQueryRepository userRepository, CommandBus commandBus) {
-		super(userRepository, commandBus);
-		this.seasonRepository = seasonRepository;
-	}
+   @Autowired
+   public SeasonController(SeasonQueryRepository seasonRepository,
+      UserQueryRepository userRepository, CommandBus commandBus) {
+      super(userRepository, commandBus);
+      this.seasonRepository = seasonRepository;
+   }
 
-	@InitBinder(value = "seasonForm")
-	protected void initBinder(WebDataBinder binder) {
-		binder.setValidator(seasonValidator);
-	}
+   @InitBinder(value = "seasonForm")
+   protected void initBinder(WebDataBinder binder) {
+      binder.setValidator(seasonValidator);
+   }
 
-	/*---------- Action methods ----------*/
+   /*---------- Action methods ----------*/
 
-	@RequestMapping(value = "/admin/seasons", method = RequestMethod.GET)
-	public String seasonIndex(Model model) {
-		final Iterable<SeasonEntry> list = seasonRepository.findAll(new Sort(
-				Direction.DESC, "startsOn"));
-		model.addAttribute("seasons", list);
-		return "seasons/index";
-	}
+   @RequestMapping(value = "/admin/seasons", method = RequestMethod.GET)
+   public String seasonIndex(Model model) {
+      final Iterable<SeasonEntry> list =
+         seasonRepository.findAll(new Sort(Direction.DESC, "startsOn"));
+      model.addAttribute("seasons", list);
+      return "seasons/index";
+   }
 
-	@RequestMapping(value = "/admin/seasons", method = RequestMethod.POST)
-	public String createSeason(@Valid SeasonForm seasonForm,
-			BindingResult result, RedirectAttributes redirectAttributes) {
-		final String proc = PACKAGE_NAME + ".createSeason.";
+   @RequestMapping(value = "/admin/seasons", method = RequestMethod.POST)
+   public String createSeason(@Valid SeasonForm seasonForm, BindingResult result,
+      RedirectAttributes redirectAttributes)
+   {
+      final String proc = PACKAGE_NAME + ".createSeason.";
 
-		logger.debug("Entering: " + proc + "10");
-		if (result.hasErrors()) {
-			logger.debug("Returning errors: " + proc + "20");
-			return "seasons/newSeason";
-		}
+      logger.debug("Entering: " + proc + "10");
+      if (result.hasErrors()) {
+         logger.debug("Returning errors: " + proc + "20");
+         return "seasons/newSeason";
+      }
 
-		final LocalDateTime now = LocalDateTime.now();
-		final UserEntry user = getCurrentUser();
-		final SeasonId identifier = new SeasonId();
-		final SeasonDTO dto = new SeasonDTO(identifier,
-				seasonForm.getDescription(), seasonForm.getStartsOn(),
-				seasonForm.getEndsOn(), now, user, now, user);
-		logger.debug(proc + "30");
+      final LocalDateTime now = LocalDateTime.now();
+      final UserEntry user = getCurrentUser();
+      final SeasonId identifier = new SeasonId();
+      final SeasonDTO dto =
+         new SeasonDTO(identifier, seasonForm.getDescription(), seasonForm.getStartsOn(),
+            seasonForm.getEndsOn(), now, user, now, user);
+      logger.debug(proc + "30");
 
-		try {
-			final CreateSeasonCommand payload = new CreateSeasonCommand(
-					identifier, dto);
-			commandBus.dispatch(new GenericCommandMessage<>(payload));
-		} catch (final Exception e) {
-			logger.debug(proc + "40");
-			redirectAttributes
-					.addFlashAttribute("flashMessage", e.getMessage());
-		}
+      try {
+         final CreateSeasonCommand payload = new CreateSeasonCommand(identifier, dto);
+         commandBus.dispatch(new GenericCommandMessage<>(payload));
+      }
+      catch (final Exception e) {
+         logger.debug(proc + "40");
+         redirectAttributes.addFlashAttribute("flashMessage", e.getMessage());
+      }
 
-		logger.debug("Leaving: " + proc + "50");
-		return "redirect:/admin/seasons";
-	}
+      logger.debug("Leaving: " + proc + "50");
+      return "redirect:/admin/seasons";
+   }
 
-	@RequestMapping(value = "/admin/seasons/{seasonId}", method = RequestMethod.GET)
-	public String showSeason(@PathVariable("seasonId") SeasonEntry season,
-			Model model) {
-		model.addAttribute("item", season);
-		return "seasons/showSeason";
-	}
+   @RequestMapping(value = "/admin/seasons/{seasonId}", method = RequestMethod.GET)
+   public String showSeason(@PathVariable("seasonId") SeasonEntry season, Model model) {
+      model.addAttribute("item", season);
+      return "seasons/showSeason";
+   }
 
-	@RequestMapping(value = "/admin/seasons/{seasonId}", method = RequestMethod.PUT)
-	public String updateSeason(@PathVariable String seasonId,
-			@Valid SeasonForm seasonForm, BindingResult bindingResult,
-			RedirectAttributes redirectAttributes) {
-		final String proc = PACKAGE_NAME + ".updateSeason.";
+   @RequestMapping(value = "/admin/seasons/{seasonId}", method = RequestMethod.PUT)
+   public String updateSeason(@PathVariable String seasonId, @Valid SeasonForm seasonForm,
+      BindingResult bindingResult, RedirectAttributes redirectAttributes)
+   {
+      final String proc = PACKAGE_NAME + ".updateSeason.";
 
-		logger.debug("Entering: " + proc + "10");
-		if (bindingResult.hasErrors()) {
-			logger.debug("Returning errors: " + proc + "20");
-			return "seasons/editSeason";
-		}
+      logger.debug("Entering: " + proc + "10");
+      if (bindingResult.hasErrors()) {
+         logger.debug("Returning errors: " + proc + "20");
+         return "seasons/editSeason";
+      }
 
-		final LocalDateTime now = LocalDateTime.now();
-		final UserEntry user = getCurrentUser();
-		final SeasonId identifier = new SeasonId(seasonId);
-		final SeasonDTO dto = new SeasonDTO(identifier,
-				seasonForm.getDescription(), seasonForm.getStartsOn(),
-				seasonForm.getEndsOn(), now, user);
-		logger.debug(proc + "30");
+      final LocalDateTime now = LocalDateTime.now();
+      final UserEntry user = getCurrentUser();
+      final SeasonId identifier = new SeasonId(seasonId);
+      final SeasonDTO dto =
+         new SeasonDTO(identifier, seasonForm.getDescription(), seasonForm.getStartsOn(),
+            seasonForm.getEndsOn(), now, user);
+      logger.debug(proc + "30");
 
-		try {
-			final UpdateSeasonCommand payload = new UpdateSeasonCommand(
-					identifier, dto);
-			commandBus.dispatch(new GenericCommandMessage<>(payload));
-		} catch (final Exception e) {
-			logger.debug(proc + "40");
-			redirectAttributes
-					.addFlashAttribute("flashMessage", e.getMessage());
-		}
+      try {
+         final UpdateSeasonCommand payload = new UpdateSeasonCommand(identifier, dto);
+         commandBus.dispatch(new GenericCommandMessage<>(payload));
+      }
+      catch (final Exception e) {
+         logger.debug(proc + "40");
+         redirectAttributes.addFlashAttribute("flashMessage", e.getMessage());
+      }
 
-		logger.debug("Leaving: " + proc + "50");
-		return "redirect:/admin/seasons";
-	}
+      logger.debug("Leaving: " + proc + "50");
+      return "redirect:/admin/seasons";
+   }
 
-	@RequestMapping(value = "/admin/seasons/{seasonId}", method = RequestMethod.DELETE)
-	public String deleteSeason(@PathVariable String seasonId,
-			RedirectAttributes redirectAttributes) {
-		final String proc = PACKAGE_NAME + ".deleteSeason.";
-		final SeasonId identifier = new SeasonId(seasonId);
+   @RequestMapping(value = "/admin/seasons/{seasonId}", method = RequestMethod.DELETE)
+   public String deleteSeason(@PathVariable String seasonId, RedirectAttributes redirectAttributes) {
+      final String proc = PACKAGE_NAME + ".deleteSeason.";
+      final SeasonId identifier = new SeasonId(seasonId);
 
-		logger.debug("Entering: " + proc + "10");
-		try {
-			checkDelete(seasonId);
-			logger.debug(proc + "20");
+      logger.debug("Entering: " + proc + "10");
+      try {
+         checkDelete(seasonId);
+         logger.debug(proc + "20");
 
-			final DeleteSeasonCommand payload = new DeleteSeasonCommand(
-					identifier);
-			commandBus.dispatch(new GenericCommandMessage<>(payload));
-		} catch (final Exception e) {
-			logger.debug(proc + "30");
-			redirectAttributes
-					.addFlashAttribute("flashMessage", e.getMessage());
-		}
+         final DeleteSeasonCommand payload = new DeleteSeasonCommand(identifier);
+         commandBus.dispatch(new GenericCommandMessage<>(payload));
+      }
+      catch (final Exception e) {
+         logger.debug(proc + "30");
+         redirectAttributes.addFlashAttribute("flashMessage", e.getMessage());
+      }
 
-		logger.debug("Leaving: " + proc + "40");
-		return "redirect:/admin/seasons";
-	}
+      logger.debug("Leaving: " + proc + "40");
+      return "redirect:/admin/seasons";
+   }
 
-	@RequestMapping(value = "/admin/seasons/new", method = RequestMethod.GET)
-	public String newSeason(SeasonForm seasonForm) {
-		return "seasons/newSeason";
-	}
+   @RequestMapping(value = "/admin/seasons/new", method = RequestMethod.GET)
+   public String newSeason(SeasonForm seasonForm, Model model, HttpServletRequest request) {
+      model.addAttribute("seasonForm", seasonForm);
+      model.addAttribute("back", request.getHeader("Referer"));
+      return "seasons/newSeason";
+   }
 
-	@RequestMapping(value = "/admin/seasons/{seasonId}/edit", method = RequestMethod.GET)
-	public String editSeason(@PathVariable("seasonId") SeasonEntry season,
-			Model model) {
-		final String proc = PACKAGE_NAME + ".editSeason.";
+   @RequestMapping(value = "/admin/seasons/{seasonId}/edit", method = RequestMethod.GET)
+   public String editSeason(@PathVariable("seasonId") SeasonEntry season, Model model,
+      HttpServletRequest request)
+   {
+      final SeasonForm form = new SeasonForm();
+      form.setId(season.getId());
+      form.setDescription(season.getDescription());
+      form.setStartsOn(season.getStartsOn());
+      form.setEndsOn(season.getEndsOn());
 
-		logger.debug("Entering: " + proc + "10");
+      model.addAttribute("seasonForm", form);
+      model.addAttribute("seasonId", season.getId());
+      model.addAttribute("back", request.getHeader("Referer"));
+      return "seasons/editSeason";
+   }
 
-		final SeasonForm form = new SeasonForm();
-		form.setId(season.getId());
-		form.setDescription(season.getDescription());
-		form.setStartsOn(season.getStartsOn());
-		form.setEndsOn(season.getEndsOn());
-		logger.debug(proc + "20");
+   /*---------- Ajax methods ----------*/
 
-		model.addAttribute("seasonForm", form);
-		model.addAttribute("seasonId", season.getId());
+   @RequestMapping(value = "/api/seasons/{seasonId}", method = RequestMethod.GET)
+   public @ResponseBody SeasonInfo getSeason(@PathVariable("seasonId") SeasonEntry season) {
+      return new SeasonInfo(season.getId(), season.getDescription(), season.getStartsOn().toString(
+         "yyyy-MM-dd"), season.getEndsOn().toString("yyyy-MM-dd"));
+   }
 
-		logger.debug("Leaving: " + proc + "40");
-		return "seasons/editSeason";
-	}
+   /*---------- Utilities ----------*/
 
-	/*---------- Ajax methods ----------*/
+   private void checkDelete(String seasonId) {
+      final String proc = PACKAGE_NAME + ".checkDelete.";
+      int found = 0;
 
-	@RequestMapping(value = "/api/seasons/{seasonId}", method = RequestMethod.GET)
-	public @ResponseBody SeasonInfo getSeason(
-			@PathVariable("seasonId") SeasonEntry season) {
-		return new SeasonInfo(season.getId(), season.getDescription(), season
-				.getStartsOn().toString("yyyy-MM-dd"), season.getEndsOn()
-				.toString("yyyy-MM-dd"));
-	}
+      logger.debug("Entering: " + proc + "10");
 
-	/*---------- Utilities ----------*/
+      // Check that there are no values in TeamSeasons or Games
+      found = seasonRepository.countTeamSeasons(seasonId);
+      if (found > 0) {
+         throw new IllegalArgumentException("Cannot delete season with associated teams.");
+      }
+      logger.debug(proc + "20");
 
-	private void checkDelete(String seasonId) {
-		final String proc = PACKAGE_NAME + ".checkDelete.";
-		int found = 0;
+      final SeasonEntry season = seasonRepository.findOne(seasonId);
+      logger.debug(proc + "30");
 
-		logger.debug("Entering: " + proc + "10");
-
-		// Check that there are no values in TeamSeasons or Games
-		found = seasonRepository.countTeamSeasons(seasonId);
-		if (found > 0) {
-			throw new IllegalArgumentException(
-					"Cannot delete season with associated teams.");
-		}
-		logger.debug(proc + "20");
-
-		final SeasonEntry season = seasonRepository.findOne(seasonId);
-		logger.debug(proc + "30");
-
-		found = seasonRepository.countGames(season.getStartsOn(),
-				Common.nvl(season.getEndsOn(), Common.EOT.toLocalDate()));
-		if (found > 0) {
-			throw new IllegalArgumentException(
-					"Cannot delete season with associated games.");
-		}
-		logger.debug("Leaving: " + proc + "40");
-	}
+      found =
+         seasonRepository.countGames(season.getStartsOn(),
+            Common.nvl(season.getEndsOn(), Common.EOT.toLocalDate()));
+      if (found > 0) {
+         throw new IllegalArgumentException("Cannot delete season with associated games.");
+      }
+      logger.debug("Leaving: " + proc + "40");
+   }
 }

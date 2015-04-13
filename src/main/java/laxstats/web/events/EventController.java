@@ -41,6 +41,8 @@ import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.commandhandling.GenericCommandMessage;
 import org.axonframework.domain.IdentifierFactory;
 import org.joda.time.LocalDateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
@@ -51,9 +53,13 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class EventController extends ApplicationController {
+   private static Logger logger = LoggerFactory.getLogger(EventController.class);
+   private static String PACKAGE_NAME = EventController.class.getPackage().getName();
+
    private final GameQueryRepository eventRepository;
    private final SiteQueryRepository siteRepository;
    private final TeamQueryRepository teamRepository;
@@ -104,10 +110,16 @@ public class EventController extends ApplicationController {
    }
 
    @RequestMapping(value = "/admin/events", method = RequestMethod.POST)
-   public String createEvent(@Valid EventForm form, BindingResult result, Model model) {
+   public String createEvent(@Valid EventForm form, BindingResult result, Model model,
+      RedirectAttributes redirectAttributes)
+   {
+      final String proc = EventController.PACKAGE_NAME + ".createEvent.";
+
+      logger.debug("Entering: " + proc + "10");
       if (result.hasErrors()) {
          form.setTeams(getTeams());
          form.setSites(getSites());
+         logger.debug("Returning errors: " + proc + "20");
          return "events/newEvent";
       }
       final LocalDateTime now = LocalDateTime.now();
@@ -123,10 +135,14 @@ public class EventController extends ApplicationController {
          teamOneSeason = teamOne.getSeason(form.getStartsAt());
          if (teamOneSeason == null) {
             result.rejectValue("teamOne", "event.nullTeamOneSeason");
+            form.setTeams(getTeams());
+            form.setSites(getSites());
+            logger.debug("Returning errors: " + proc + "30");
             return "events/newEvent";
          }
          teamOneAlignment = getTeamAlignment(form.getAlignment(), form.isTeamOneHome());
       }
+      logger.debug(proc + "40");
 
       // Set team two
       TeamSeasonEntry teamTwoSeason = null;
@@ -136,18 +152,31 @@ public class EventController extends ApplicationController {
          teamTwoSeason = teamTwo.getSeason(form.getStartsAt());
          if (teamTwoSeason == null) {
             result.rejectValue("teamTwo", "event.nullTeamTwoSeason");
+            form.setTeams(getTeams());
+            form.setSites(getSites());
+            logger.debug("Returning errors: " + proc + "50");
             return "events/newEvent";
          }
          teamTwoAlignment = getTeamAlignment(form.getAlignment(), form.isTeamTwoHome());
       }
+      logger.debug(proc + "60");
 
       final EventDTO dto =
          new EventDTO(identifier.toString(), site, teamOneSeason, teamTwoSeason, teamOneAlignment,
             teamTwoAlignment, form.getAlignment(), form.getStartsAt(), form.getSchedule(),
             form.getStatus(), form.getWeather(), form.getDescription(), now, user, now, user);
+      logger.debug(proc + "70");
 
-      final CreateEventCommand payload = new CreateEventCommand(identifier, dto);
-      commandBus.dispatch(new GenericCommandMessage<>(payload));
+      try {
+         final CreateEventCommand payload = new CreateEventCommand(identifier, dto);
+         commandBus.dispatch(new GenericCommandMessage<>(payload));
+      }
+      catch (final Exception e) {
+         logger.debug(proc + "80");
+         redirectAttributes.addFlashAttribute("flashMessage", e.getMessage());
+      }
+
+      logger.debug("Leaving: " + proc + "90");
       return "redirect:/admin/events";
    }
 
@@ -158,51 +187,57 @@ public class EventController extends ApplicationController {
    }
 
    @RequestMapping(value = "/admin/events/{eventId}", method = RequestMethod.PUT)
-   public String updateEvent(@PathVariable String eventId, @Valid EventForm form,
-      BindingResult result, Model model) {
+   public String updateEvent(@PathVariable String eventId, @Valid EventForm eventForm,
+      BindingResult result, Model model, RedirectAttributes redirectAttributes)
+   {
+      final String proc = EventController.PACKAGE_NAME + ".updateEvent.";
+
+      logger.debug("Entering: " + proc + "10");
       if (result.hasErrors()) {
-         form.setTeams(getTeams());
-         form.setSites(getSites());
+         eventForm.setTeams(getTeams());
+         eventForm.setSites(getSites());
+         logger.debug("Returning errors: " + proc + "20");
          return "events/editEvent";
       }
+
       final LocalDateTime now = LocalDateTime.now();
       final UserEntry user = getCurrentUser();
       final EventId identifier = new EventId(eventId);
-      final SiteEntry site = siteRepository.findOne(form.getSite());
-
-      // Set team one
+      final SiteEntry site = siteRepository.findOne(eventForm.getSite());
       TeamSeasonEntry teamOneSeason = null;
       Alignment teamOneAlignment = null;
-      if (form.getTeamOne() != null) {
-         final TeamEntry teamOne = teamRepository.findOne(form.getTeamOne());
-         teamOneSeason = teamOne.getSeason(form.getStartsAt());
-         if (teamOneSeason == null) {
-            result.rejectValue("teamOne", "event.nullTeamOneSeason");
-            return "events/editEvent";
-         }
-         teamOneAlignment = getTeamAlignment(form.getAlignment(), form.isTeamOneHome());
-      }
-
-      // Set team two
       TeamSeasonEntry teamTwoSeason = null;
       Alignment teamTwoAlignment = null;
-      if (form.getTeamTwo() != null) {
-         final TeamEntry teamTwo = teamRepository.findOne(form.getTeamTwo());
-         teamTwoSeason = teamTwo.getSeason(form.getStartsAt());
-         if (teamTwoSeason == null) {
-            result.rejectValue("teamTwo", "event.nullTeamTwoSeason");
-            return "events/editEvent";
-         }
-         teamTwoAlignment = getTeamAlignment(form.getAlignment(), form.isTeamTwoHome());
+
+      // Set teams and alignments
+      if (eventForm.getTeamOne() != null) {
+         final TeamEntry teamOne = teamRepository.findOne(eventForm.getTeamOne());
+         teamOneSeason = teamOne.getSeason(eventForm.getStartsAt());
+         teamOneAlignment = getTeamAlignment(eventForm.getAlignment(), eventForm.isTeamOneHome());
+      }
+      if (eventForm.getTeamTwo() != null) {
+         final TeamEntry teamTwo = teamRepository.findOne(eventForm.getTeamTwo());
+         teamTwoSeason = teamTwo.getSeason(eventForm.getStartsAt());
+         teamTwoAlignment = getTeamAlignment(eventForm.getAlignment(), eventForm.isTeamTwoHome());
       }
 
       final EventDTO dto =
          new EventDTO(identifier.toString(), site, teamOneSeason, teamTwoSeason, teamOneAlignment,
-            teamTwoAlignment, form.getAlignment(), form.getStartsAt(), form.getSchedule(),
-            form.getStatus(), form.getWeather(), form.getDescription(), now, user);
+            teamTwoAlignment, eventForm.getAlignment(), eventForm.getStartsAt(),
+            eventForm.getSchedule(), eventForm.getStatus(), eventForm.getWeather(),
+            eventForm.getDescription(), now, user);
+      logger.debug(proc + "30");
 
-      final UpdateEventCommand payload = new UpdateEventCommand(identifier, dto);
-      commandBus.dispatch(new GenericCommandMessage<>(payload));
+      try {
+         final UpdateEventCommand payload = new UpdateEventCommand(identifier, dto);
+         commandBus.dispatch(new GenericCommandMessage<>(payload));
+      }
+      catch (final Exception e) {
+         logger.debug(proc + "40");
+         redirectAttributes.addFlashAttribute("flashMessage", e.getMessage());
+      }
+
+      logger.debug("Leaving: " + proc + "50");
       return "redirect:/admin/events";
    }
 
@@ -229,11 +264,13 @@ public class EventController extends ApplicationController {
 
    @RequestMapping(value = "/admin/events/{eventId}/edit", method = RequestMethod.GET)
    public String editEvent(@PathVariable("eventId") GameEntry aggregate, Model model,
-      HttpServletRequest request) {
+      HttpServletRequest request)
+   {
       final TeamEvent teamOne = aggregate.getTeams().get(0);
       final TeamEvent teamTwo = aggregate.getTeams().get(1);
 
       final EventForm form = new EventForm();
+      form.setId(aggregate.getId());
       form.setAlignment(aggregate.getAlignment());
       form.setWeather(aggregate.getConditions());
       form.setDescription(aggregate.getDescription());
@@ -269,7 +306,8 @@ public class EventController extends ApplicationController {
    @RequestMapping(value = "/admin/events{eventId}/teamSeasons/{teamSeasonId}",
       method = RequestMethod.GET)
    public String attendeeIndex(@PathVariable("eventId") GameEntry aggregate,
-      @PathVariable("teamSeasonId") TeamSeasonEntry teamSeason, Model model) {
+      @PathVariable("teamSeasonId") TeamSeasonEntry teamSeason, Model model)
+   {
       final List<AttendeeEntry> roster = aggregate.getAttendees().get(teamSeason.getName());
 
       model.addAttribute("event", aggregate);
@@ -282,7 +320,8 @@ public class EventController extends ApplicationController {
       method = RequestMethod.POST)
    public String createAttendee(@PathVariable("eventId") GameEntry aggregate,
       @PathVariable("teamSeasonId") TeamSeasonEntry teamSeason, @Valid AttendeeForm form,
-      BindingResult result) {
+      BindingResult result)
+   {
       if (result.hasErrors()) {
          return "events/newAttendee";
       }
@@ -306,7 +345,8 @@ public class EventController extends ApplicationController {
       method = RequestMethod.PUT)
    public String updateAttendee(@PathVariable("eventId") GameEntry event,
       @PathVariable("teamSeasonId") TeamSeasonEntry teamSeason, @PathVariable String attendeeId,
-      @Valid AttendeeForm form, BindingResult result) {
+      @Valid AttendeeForm form, BindingResult result)
+   {
       if (result.hasErrors()) {
          return "events/editAttendee";
       }
@@ -328,7 +368,8 @@ public class EventController extends ApplicationController {
       value = "/admin/events/{eventId}/teamSeasons/{teamSeasonId}/attendees/{attendeeId}",
       method = RequestMethod.DELETE)
    public String deleteAttendee(@PathVariable String eventId, @PathVariable String teamSeasonId,
-      @PathVariable String attendeeId) {
+      @PathVariable String attendeeId)
+   {
       final EventId identifier = new EventId(eventId);
       final DeleteAttendeeCommand payload = new DeleteAttendeeCommand(identifier, attendeeId);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
@@ -338,7 +379,8 @@ public class EventController extends ApplicationController {
    @RequestMapping(value = "/admin/events{eventId}/teamSeasons/{teamSeasonId}/attendees/new",
       method = RequestMethod.GET)
    public String newAttendee(@PathVariable String eventId,
-      @PathVariable("teamSeasonId") TeamSeasonEntry teamSeason, Model model) {
+      @PathVariable("teamSeasonId") TeamSeasonEntry teamSeason, Model model)
+   {
 
       final AttendeeForm form = new AttendeeForm();
       form.setRole(Role.ATHLETE);
@@ -356,7 +398,8 @@ public class EventController extends ApplicationController {
       method = RequestMethod.GET)
    public String editAttendee(@PathVariable String eventId,
       @PathVariable("teamSeasonId") TeamSeasonEntry teamSeason,
-      @PathVariable("attendeeId") AttendeeEntry entity, Model model) {
+      @PathVariable("attendeeId") AttendeeEntry entity, Model model)
+   {
 
       final AttendeeForm form = new AttendeeForm();
       form.setPlayerId(entity.getPlayer().getId());
@@ -376,7 +419,8 @@ public class EventController extends ApplicationController {
       Alignment result = null;
       if (siteAlignment.equals(SiteAlignment.NEUTRAL)) {
          result = Alignment.NEUTRAL;
-      } else {
+      }
+      else {
          result = isHomeTeam ? Alignment.HOME : Alignment.AWAY;
       }
       return result;
@@ -395,7 +439,8 @@ public class EventController extends ApplicationController {
             currentRegion = targetRegion;
             list = new ArrayList<SiteEntry>();
             result.put(targetRegion, list);
-         } else {
+         }
+         else {
             list = result.get(targetRegion);
          }
          list.add(each);
@@ -424,7 +469,8 @@ public class EventController extends ApplicationController {
             list = new ArrayList<>();
             result.put(targetRegion, list);
             currentRegion = targetRegion;
-         } else {
+         }
+         else {
             list = result.get(targetRegion);
          }
          list.add(each);
