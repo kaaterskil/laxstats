@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
+<head></head>
+<body>
+	<div th:fragment="header">
+		<header>
+			<nav class="navbar navbar-inverse" role="navigation">
+				<div class="container">
+					<div class="navbar-header">
+						<button type="button" 
+								class="navbar-toggle collapsed"
+								data-toggle="collapse"
+								data-target="#top-admin-navbar-collapse">
+							<span class="sr-only">Toggle navigation</span>
+							<div class="nav-icon-container">
+								<div id="nav-icon">
+									<span></span> 
+									<span></span> 
+									<span></span> 
+									<span></span>
+								</div>
+							</div>
+						</button>
+						<a class="navbar-brand" href="/"></a>
+					</div>
+					<div id="top-admin-navbar-collapse" class="collapse navbar-collapse">
+						<ul class="nav navbar-nav">
+							<li><a href="#" th:href="@{'/admin/events'}">New Game</a></li>
+							<li><a href="#" th:href="@{'/admin/teams'}">Team</a></li>
+							<li><a href="#" th:href="@{'/admin/people'}">People</a></li>
+							<li><a href="#" th:href="@{'/'}">Blog</a></li>
+							<li><a href="#" th:href="@{'/'}">Playbook</a></li>
+							<li><a href="#" th:href="@{'/'}">Media</a></li>
+							<li class="dropdown">
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Settings</a>
+								<ul class="dropdown-menu" role="menu">
+									<li><a href="#" th:href="@{'/admin/sites'}">Fields</a></li>
+									<li><a href="#" th:href="@{'/admin/violations'}">Violations</a></li>
+									<li><a href="#" th:href="@{'/admin/seasons'}">Seasons</a></li>
+									<li><a href="#" th:href="@{'/admin/users'}">Users</a></li>
+								</ul>
+							</li>
+						</ul>
+						<ul class="nav navbar-nav navbar-right">
+							<li><span th:text="${#httpServletRequest.remoteUser}">User</span></li>
+							<li><a href="#" th:href="@{/logout}">Log Out</a></li>
+						</ul>
+					</div>
+				</div>
+			</nav>
+		</header>
+		<script type="text/javascript">
+			(function laxAdminHeader() {
+				$(document).ready(function() {
+					$('#nav-icon').click(function() {
+						$(this).toggleClass('open');
+					});
+				});
+			})();
+		</script>
+	</div>
+</body>
+</html>

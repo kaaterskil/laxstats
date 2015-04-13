@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head lang="en">
+<meta charset="UTF-8" />
+<meta name="viewport"
+	content="user-scalable=no, width=device-width, initial-scale=1" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+<title>Laxstats</title>
+<link rel="stylesheet" type="text/css"
+	href="http://fonts.googleapis.com/css?family=Roboto:100,300,400"
+	th:href="@{http://fonts.googleapis.com/css?family=Roboto:100,300,400}" />
+<link rel="stylesheet" type="text/css" media="all" href="/css/mob.css"
+	th:href="@{/css/styles.mob.css}" />
+<link rel="stylesheet" type="text/css" media="all"
+	href="/css/ionicons.min.css" th:href="@{/css/ionicons.min.css}" />
+<script type="text/javascript"
+	th:src="@{http://code.jquery.com/jquery-1.11.2.min.js}"
+	src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
+<script type="text/javascript"
+		th:src="@{/js/laxstats.mob.js}"
+		src="/js/laxstats.mob.js"></script>
+</head>
+<body role="document">
+	<section class="hidden" id="view-nav">
+		<div th:replace="partials/header.mob :: header"></div>
+	</section>
+
+	<section id="view-base" class="active">
+		<header>
+			<button class="back" data-target="view-nav" data-slide="sr">
+				<span class="ion ion-android-menu"></span>
+			</button>
+			<h1 th:text="${title}">Title</h1>
+		</header>
+		<div class="scroll-mask"></div>
+		<div class="scroll-wrap">
+			<div class="scroll">
+				<div class="content">
+					<div layout:fragment="content">Content</div>
+				</div>
+			</div>
+		</div>
+	</section>
+</body>
+</html>

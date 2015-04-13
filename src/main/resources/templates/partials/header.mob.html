@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
+<head></head>
+<body>
+	<div th:fragment="header">
+		<header>
+			<button class="left arrow" data-target="view-base" data-slide="sl">
+				<span class="ion ion-chevron-left"></span> Close
+			</button>
+			<h1>Navigation</h1>
+		</header>
+		<div class="scroll-mask"></div>
+		<div class="scroll-wrap">
+			<div class="scroll">
+				<div class="content">
+					<ul>
+						<li th:attr="data-url=@{mob/scoreboard}" data-target="view-base" data-slide="sl">
+							<div class="inner-li">
+								<div class="nav-link">
+									Scoreboard<span class="ion ion-chevron-right pull-right"></span>
+								</div>
+							</div>
+						</li>
+						<li th:attr="data-url=@{mob/schedule}" data-target="view-base" data-slide="sl">
+							<div class="inner-li">
+								<div class="nav-link">
+									Schedule<span class="ion ion-chevron-right pull-right"></span>
+								</div>
+							</div>
+						</li>
+						<li th:attr="data-url=@{mob/players}" data-target="view-base" data-slide="sl">
+							<div class="inner-li">
+								<div class="nav-link">
+									Players<span class="ion ion-chevron-right pull-right"></span>
+								</div>
+							</div>
+						</li>
+						<li th:attr="data-url=@{mpb/sites}" data-target="view-base" data-slide="sl">
+							<div class="inner-li">
+								<div class="nav-link">
+									Fields<span class="ion ion-chevron-right pull-right"></span>
+								</div>
+							</div>
+						</li>
+						<li th:attr="data-url=@{mob/fans}" data-target="view-base" data-slide="sl">
+							<div class="inner-li">
+								<div class="nav-link">
+									Fans<span class="ion ion-chevron-right pull-right"></span>
+								</div>
+							</div>
+						</li>
+						<li th:attr="data-url=@{admin/mob/office}" data-target="view-base" data-slide="sl">
+							<div class="inner-li">
+								<div class="nav-link">
+									The Office<span class="ion ion-chevron-right pull-right"></span>
+								</div>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
