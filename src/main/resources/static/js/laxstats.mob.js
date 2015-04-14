@@ -1,16 +1,13 @@
 (function laxMobile() {
     'use strict';
-    
+
     var slideOptions = {
-        sl: ['slin', 'slout'],
-        sr: ['srin', 'srout']
+        sl : [ 'slin', 'slout' ],
+        sr : [ 'srin', 'srout' ]
     }
 
-    function navSlide() {
-        var $in = $('#' + $(this).data('target')), 
-            $out = $('section.active'),
-            slideType = $(this).data('slide');
-        
+    function slide($in, $out, slideType) {
+
         function onAnimationEnd() {
             $out.addClass('hidden');
             $in.addClass('active');
@@ -29,25 +26,35 @@
         $out.addClass(slideOptions[slideType][1]);
     }
 
+    function navSlide() {
+        var $in = $('#' + $(this).data('target')), 
+            $out = $('section.active'), 
+            slideType = $(this).data('slide');
+        slide($in, $out, slideType);
+    }
+
     function linkSlide() {
-        var $in = $('#view-base'),
-            url = $(this).data('url'),
+        var $in = $('#view-base'), 
+            $out = $('section.active'),
+            url = $(this).data('url'), 
+            slideType = $(this).data('slide'), 
             $that = $(this), df;
-        
-        df = $.ajax({
-            url: url,
-            type: 'GET',
-            dataType: 'text/html'
-        });
-        
-        df.done(function (data, status, xhr) {
+
+        url = 'http://' + window.location.host + url;
+
+        $.ajax({
+            url : url,
+            type : 'GET',
+            dataType : 'text'
+        })
+        .done(function(data, status, xhr) {
+            console.log('data: ' + data);
             $in.html(data);
-            $that.on('click', navSlide);
-            $that.click();
-            $that.off('click', navSlide);
-        });
-        
-        df.fail(function (xhr, status, error) {
+            $('#view-base header button').on('click', navSlide);
+            
+            slide($in, $out, slideType);
+        })
+        .fail(function(xhr, status, error) {
             var msg = 'Error (' + xhr.status + '): ' + xhr.responseText;
             console.log('Error: ' + msg);
         });
@@ -78,12 +85,8 @@
     function setListeners() {
         var $nav = $('header button'), $listItems = $('#view-nav li');
 
-        $nav.each(function () {
-            $(this).on('click', navSlide);
-        });
-        $listItems.each(function () {
-            $(this).on('click', linkSlide);
-        });
+        $nav.on('click', '', navSlide);
+        $listItems.on('click', linkSlide);
     }
 
     function setup(window) {
@@ -102,7 +105,7 @@
 
     setup(window);
 
-    $(document).ready(function () {
+    $(document).ready(function() {
         geoFindMe();
         setListeners();
     });
