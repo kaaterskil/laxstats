@@ -3,6 +3,20 @@ package laxstats.web.site;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import org.axonframework.commandhandling.CommandBus;
+import org.axonframework.commandhandling.GenericCommandMessage;
+import org.axonframework.domain.IdentifierFactory;
+import org.joda.time.LocalDateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
 import laxstats.api.people.AddressDTO;
 import laxstats.api.people.AddressType;
 import laxstats.api.sites.CreateSiteCommand;
@@ -18,20 +32,6 @@ import laxstats.query.sites.SiteQueryRepository;
 import laxstats.query.users.UserEntry;
 import laxstats.query.users.UserQueryRepository;
 import laxstats.web.ApplicationController;
-
-import org.axonframework.commandhandling.CommandBus;
-import org.axonframework.commandhandling.GenericCommandMessage;
-import org.axonframework.domain.IdentifierFactory;
-import org.joda.time.LocalDateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
 public class SiteController extends ApplicationController {
@@ -74,14 +74,12 @@ public class SiteController extends ApplicationController {
       final SiteId identifier = new SiteId();
       final String addressId = IdentifierFactory.getInstance().generateIdentifier();
 
-      final AddressDTO address =
-               new AddressDTO(addressId, null, null, AddressType.SITE, form.getAddress1(),
-                  form.getAddress2(), form.getCity(), form.getRegion(), form.getPostalCode(), true, false,
-                  user, now, user, now);
+      final AddressDTO address = new AddressDTO(addressId, null, null, AddressType.SITE,
+         form.getAddress1(), form.getAddress2(), form.getCity(), form.getRegion(),
+         form.getPostalCode(), true, false, user, now, user, now);
 
-      final SiteDTO dto =
-               new SiteDTO(identifier, form.getName(), form.getStyle(), form.getSurface(), address,
-                  form.getDirections(), now, user, now, user);
+      final SiteDTO dto = new SiteDTO(identifier, form.getName(), form.getStyle(), form.getSurface(),
+         address, form.getDirections(), now, user, now, user);
 
       final CreateSiteCommand payload = new CreateSiteCommand(identifier, dto);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
@@ -105,14 +103,12 @@ public class SiteController extends ApplicationController {
       final UserEntry user = getCurrentUser();
       final SiteId identifier = new SiteId(site.getId());
 
-      final AddressDTO address =
-               new AddressDTO(site.getAddress().getId(), site, null, AddressType.SITE, form.getAddress1(),
-                  form.getAddress2(), form.getCity(), form.getRegion(), form.getPostalCode(), true, false,
-                  user, now);
+      final AddressDTO address = new AddressDTO(site.getAddress().getId(), site, null,
+         AddressType.SITE, form.getAddress1(), form.getAddress2(), form.getCity(), form.getRegion(),
+         form.getPostalCode(), true, false, user, now);
 
-      final SiteDTO dto =
-               new SiteDTO(identifier, form.getName(), form.getStyle(), form.getSurface(), address,
-                  form.getDirections(), now, user);
+      final SiteDTO dto = new SiteDTO(identifier, form.getName(), form.getStyle(), form.getSurface(),
+         address, form.getDirections(), now, user);
 
       final UpdateSiteCommand payload = new UpdateSiteCommand(identifier, dto);
       commandBus.dispatch(new GenericCommandMessage<>(payload));

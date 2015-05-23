@@ -14,18 +14,19 @@ public class HomeController {
    public String index(Model model, HttpServletRequest request) {
       model.addAttribute("title", "Laxstats");
       model.addAttribute("back", request.getHeader("Referer"));
-      return "home/index";
+      return "home/ngindex";
    }
 
    @RequestMapping(value = "/home", method = RequestMethod.GET)
    public String home(Model model, HttpServletRequest request) {
       model.addAttribute("title", "Laxstats");
       model.addAttribute("back", request.getHeader("Referer"));
-      return "redirect:home/index";
+      return "redirect:home/ngindex";
    }
 
    @RequestMapping(value = "/admin/office", method = RequestMethod.GET)
-   public String office() {
+   public String office(Model model) {
+      model.addAttribute("title", "The Office");
       return "home/office";
    }
 
@@ -47,13 +48,5 @@ public class HomeController {
    @RequestMapping(value = "/subscribe", method = RequestMethod.GET)
    public String subscribe() {
       return "home/subscribe";
-   }
-
-   /*---------- Mobile actions ----------*/
-
-   @RequestMapping(value = "/admin/mob/office", method = RequestMethod.GET)
-   public String mobileOffice(Model model) {
-      model.addAttribute("title", "The Office");
-      return "home/office";
    }
 }

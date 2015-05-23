@@ -31,7 +31,7 @@ public class LocalDateFormatter implements Formatter<LocalDate> {
 
    @Override
    public String print(LocalDate object, Locale locale) {
-      logger.info("Printing a LocalDate");
+      logger.debug("Printing a LocalDate");
       String str = "";
       if (object != null) {
          final DateTime date = object.toDateTimeAtCurrentTime();
@@ -42,12 +42,13 @@ public class LocalDateFormatter implements Formatter<LocalDate> {
 
    @Override
    public LocalDate parse(String text, Locale locale) throws ParseException {
-      logger.info("Parsing a LocalDate");
+      logger.debug("Parsing a LocalDate");
       LocalDate date = null;
       if (text != null) {
          try {
             date = getFormatter().parseLocalDate(text);
-         } catch (final Exception e) {
+         }
+         catch (final Exception e) {
             throw new ParseException(e.getMessage(), 0);
          }
       }

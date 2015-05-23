@@ -1,5 +1,8 @@
 package laxstats.api;
 
+/**
+ * {@code Region} enumerates the U.S. states and protectorates.
+ */
 public enum Region {
    AL("Alabama"),
    AK("Alaska"),
@@ -61,17 +64,34 @@ public enum Region {
    PR("Puerto Rico"),
    VI("Virgin Islands");
 
-   private String label;
-
-   private Region(String label) {
-      this.label = label;
-   }
-
+   /**
+    * Returns the pretty name of a {@code Region} for use in a drop-down menu.
+    *
+    * @return
+    */
    public String getLabel() {
       return label;
    }
 
+   /**
+    * Returns the abbreviation of a {@code Region}.
+    *
+    * @return
+    */
    public String getAbbreviation() {
       return name();
    }
+
+   /**
+    * Creates a {@code Region} with the given abbreviation and label.
+    *
+    * @param label
+    */
+   private Region(String label) {
+      assert label != null;
+
+      this.label = label;
+   }
+
+   private String label;
 }
