@@ -9,6 +9,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.servlet.configuration.EnableWebMvcSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.csrf.CsrfFilter;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 
 @Configuration
 @EnableWebMvcSecurity
@@ -26,17 +29,15 @@ public class HttpSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
    @Override
    protected void configure(HttpSecurity http) throws Exception {
-      http.authorizeRequests()
-         .antMatchers("/", "/home", "/scoreboard", "/schedule", "/events", "/teams", "/players",
-            "/sitemap", "/terms", "/privacy", "/subscribe")
-         .permitAll().antMatchers("/resources/**", "/static/**", "/fonts/**", "/images/**")
-         .permitAll().antMatchers("/admin/**", "/api/**")
-         .hasAnyRole("MANAGER", "COACH", "ADMIN", "SUPERADMIN").antMatchers("/super/**")
-         .hasAnyRole("ADMIN", "SUPERADMIN").anyRequest().authenticated();
+      http.httpBasic().and().authorizeRequests()
+         .antMatchers("/", "/schedule", "/scoreboard", "/fields", "/user").permitAll().anyRequest()
+         .hasRole("USER").and().addFilterAfter(new CsrfHeaderFilter(), CsrfFilter.class).csrf()
+      .csrfTokenRepository(csrfTokenRepository());
+   }
 
-      http.formLogin().defaultSuccessUrl("/admin/office").failureUrl("/login?error")
-         .loginPage("/login").permitAll();
-
-      http.logout().permitAll();
+   private CsrfTokenRepository csrfTokenRepository() {
+      final HttpSessionCsrfTokenRepository repository = new HttpSessionCsrfTokenRepository();
+      repository.setHeaderName("X-XSRF-TOKEN");
+      return repository;
    }
 }

@@ -1,13 +1,15 @@
 package laxstats.web.security;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
+import java.security.Principal;
 
-@Controller
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
 public class SecurityController {
 
-	@RequestMapping(value = "/login")
-	public String index() {
-		return "security/index";
-	}
+   @RequestMapping(value = "/user")
+   public Principal user(Principal user) {
+      return user;
+   }
 }
