@@ -18,9 +18,10 @@ import org.springframework.stereotype.Component;
 /**
  * Configuration class for RESTful web services to include CORS access control headers in the
  * response. This class will response to all requests with <code>Access-Control-*</code> headers set
- * to allow POST, GET, OPTIONS or DELETE requests from clients originated from any host. The results
- * of a pre-flight request may be cached for up to 3,600 seconds (1 hour), and the request may
- * include an <code>x-requested-with</code> header.
+ * to allow POST, PUT, GET, OPTIONS or DELETE requests from clients originated from any host. The
+ * results of a pre-flight request may be cached for up to 3,600 seconds (1 hour), and the request
+ * may include <code>x-requested-with</code>, <code>x-auth-token</code>n, <code>authorization</code>
+ * and <code>content-type</code> headers.
  *
  * @see https://spring.io/guides/gs/rest-service-cors/
  */
@@ -41,7 +42,7 @@ public class SimpleCORSFilter implements Filter {
       response.setHeader("Access-Control-Allow-Origin", "*");
       response.setHeader("Access-Control-Allow-Methods", "POST, PUT, GET, OPTIONS, DELETE");
       response.setHeader("Access-Control-Allow-Headers",
-         "x-requested-with, authorization, content-type");
+         "x-auth-token, x-requested-with, authorization, content-type");
       response.setHeader("Access-Control-Max-Age", "3600");
 
       final HttpServletRequest request = (HttpServletRequest)req;

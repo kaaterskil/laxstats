@@ -29,10 +29,9 @@ public class HttpSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
    @Override
    protected void configure(HttpSecurity http) throws Exception {
-      http.httpBasic().and().authorizeRequests()
-         .antMatchers("/", "/schedule", "/scoreboard", "/fields", "/user").permitAll().anyRequest()
-         .hasRole("USER").and().addFilterAfter(new CsrfHeaderFilter(), CsrfFilter.class).csrf()
-      .csrfTokenRepository(csrfTokenRepository());
+      http.httpBasic().and().authorizeRequests().antMatchers("/").permitAll().anyRequest()
+      .authenticated().and().csrf().csrfTokenRepository(csrfTokenRepository()).and()
+         .addFilterAfter(new CsrfHeaderFilter(), CsrfFilter.class);
    }
 
    private CsrfTokenRepository csrfTokenRepository() {
