@@ -12,6 +12,7 @@ import org.springframework.format.support.FormattingConversionService;
 import org.springframework.format.support.FormattingConversionServiceFactoryBean;
 import org.springframework.mobile.device.DeviceHandlerMethodArgumentResolver;
 import org.springframework.mobile.device.DeviceResolverHandlerInterceptor;
+import org.springframework.session.web.http.HeaderHttpSessionStrategy;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -38,7 +39,7 @@ public class AppConfiguration extends WebMvcConfigurerAdapter {
    @Bean
    public FormattingConversionService conversionService() {
       final FormattingConversionServiceFactoryBean bean =
-         new FormattingConversionServiceFactoryBean();
+               new FormattingConversionServiceFactoryBean();
 
       bean.setRegisterDefaultFormatters(true);
       bean.setFormatters(getFormatters());
@@ -51,6 +52,13 @@ public class AppConfiguration extends WebMvcConfigurerAdapter {
       converters.add(new LocalDateFormatter());
       converters.add(new MinuteSecondFormatter());
       return converters;
+   }
+
+   /*---------- Session ----------*/
+
+   @Bean
+   public HeaderHttpSessionStrategy sessionStrategy() {
+      return new HeaderHttpSessionStrategy();
    }
 
    /*---------- Spring Mobile ----------*/
