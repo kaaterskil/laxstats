@@ -56,6 +56,15 @@
 			<artifactId>spring-session</artifactId>
 			<version>1.0.1.RELEASE</version>
 		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt</artifactId>
+			<version>0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-redis</artifactId>
+		</dependency>
 		<!-- end::security[] -->
 
 		<!-- tag::joda[] -->
@@ -68,10 +77,6 @@
 			<groupId>org.jadira.usertype</groupId>
 			<artifactId>usertype.core</artifactId>
 			<version>3.2.0.GA</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-redis</artifactId>
 		</dependency>
 		<!-- end::joda[] -->
 

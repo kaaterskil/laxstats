@@ -28,6 +28,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class SimpleCORSFilter implements Filter {
+   static String ORIGIN = "Origin";
 
    @Override
    public void destroy() {
@@ -36,13 +37,18 @@ public class SimpleCORSFilter implements Filter {
 
    @Override
    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
-            throws IOException, ServletException
+      throws IOException, ServletException
    {
+      String origin = ((HttpServletRequest)req).getHeader(ORIGIN);
+      origin = origin != null ? origin : "*";
+
       final HttpServletResponse response = (HttpServletResponse)res;
-      response.setHeader("Access-Control-Allow-Origin", "*");
+      response.setHeader("Access-Control-Allow-Origin", origin);
       response.setHeader("Access-Control-Allow-Methods", "HEAD, POST, PUT, GET, OPTIONS, DELETE");
+      response.setHeader("Access-Control-Allow-Credentials", "true");
       response.setHeader("Access-Control-Allow-Headers",
-         "x-auth-token, x-requested-with, x-csrf-token, authorization, content-type");
+         "x-auth-token, x-requested-with, authorization, content-type, origin, accept");
+      response.setHeader("Access-Control-Expose-Headers", "x-auth-token");
       response.setHeader("Access-Control-Max-Age", "3600");
 
       final HttpServletRequest request = (HttpServletRequest)req;
