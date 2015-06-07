@@ -1,32 +1,65 @@
 package laxstats.web.seasons;
 
+import javax.validation.constraints.NotNull;
+
+/**
+ * {@code SeasonInfo} represents a presentation-level DTO of a {@code SeasonEntry} entity that does
+ * not expose extraneous fields.
+ */
 public class SeasonInfo {
-	private final String id;
-	private final String description;
-	private final String startsOn;
-	private final String endsOn;
+   private String id;
 
-	public SeasonInfo(String id, String description, String startsOn,
-			String endsOn) {
-		this.id = id;
-		this.description = description;
-		this.startsOn = startsOn;
-		this.endsOn = endsOn;
-	}
+   @NotNull
+   private String description;
 
-	public String getId() {
-		return id;
-	}
+   @NotNull
+   private String startsOn;
 
-	public String getDescription() {
-		return description;
-	}
+   private String endsOn;
 
-	public String getStartsOn() {
-		return startsOn;
-	}
+   /*---------- Constructors ----------*/
 
-	public String getEndsOn() {
-		return endsOn;
-	}
+   public SeasonInfo(String id, String description, String startsOn, String endsOn) {
+      this.id = id;
+      this.description = description;
+      this.startsOn = startsOn;
+      this.endsOn = endsOn;
+   }
+
+   public SeasonInfo() {
+   }
+
+   /*---------- Getter/Setters ----------*/
+
+   public String getId() {
+      return id;
+   }
+
+   public void setId(String id) {
+      this.id = id;
+   }
+
+   public String getDescription() {
+      return description;
+   }
+
+   public void setDescription(String description) {
+      this.description = description;
+   }
+
+   public String getStartsOn() {
+      return startsOn;
+   }
+
+   public void setStartsOn(String startsOn) {
+      this.startsOn = startsOn;
+   }
+
+   public String getEndsOn() {
+      return endsOn;
+   }
+
+   public void setEndsOn(String endsOn) {
+      this.endsOn = endsOn;
+   }
 }
