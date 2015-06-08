@@ -3,18 +3,6 @@ package laxstats.web.seasons;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import laxstats.api.Common;
-import laxstats.api.seasons.CreateSeasonCommand;
-import laxstats.api.seasons.DeleteSeasonCommand;
-import laxstats.api.seasons.SeasonDTO;
-import laxstats.api.seasons.SeasonId;
-import laxstats.api.seasons.UpdateSeasonCommand;
-import laxstats.query.seasons.SeasonEntry;
-import laxstats.query.seasons.SeasonQueryRepository;
-import laxstats.query.users.UserEntry;
-import laxstats.query.users.UserQueryRepository;
-import laxstats.web.ApplicationController;
-
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.commandhandling.GenericCommandMessage;
 import org.joda.time.LocalDateTime;
@@ -33,6 +21,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import laxstats.api.Common;
+import laxstats.api.seasons.CreateSeasonCommand;
+import laxstats.api.seasons.DeleteSeasonCommand;
+import laxstats.api.seasons.SeasonDTO;
+import laxstats.api.seasons.SeasonId;
+import laxstats.api.seasons.UpdateSeasonCommand;
+import laxstats.query.seasons.SeasonEntry;
+import laxstats.query.seasons.SeasonQueryRepository;
+import laxstats.query.users.UserEntry;
+import laxstats.query.users.UserQueryRepository;
+import laxstats.web.ApplicationController;
 
 @Controller
 public class SeasonController extends ApplicationController {
@@ -81,9 +81,8 @@ public class SeasonController extends ApplicationController {
       final LocalDateTime now = LocalDateTime.now();
       final UserEntry user = getCurrentUser();
       final SeasonId identifier = new SeasonId();
-      final SeasonDTO dto =
-         new SeasonDTO(identifier, seasonForm.getDescription(), seasonForm.getStartsOn(),
-            seasonForm.getEndsOn(), now, user, now, user);
+      final SeasonDTO dto = new SeasonDTO(identifier, seasonForm.getDescription(),
+         seasonForm.getStartsOn(), seasonForm.getEndsOn(), now, user, now, user);
       logger.debug(proc + "30");
 
       try {
@@ -120,9 +119,8 @@ public class SeasonController extends ApplicationController {
       final LocalDateTime now = LocalDateTime.now();
       final UserEntry user = getCurrentUser();
       final SeasonId identifier = new SeasonId(seasonId);
-      final SeasonDTO dto =
-         new SeasonDTO(identifier, seasonForm.getDescription(), seasonForm.getStartsOn(),
-            seasonForm.getEndsOn(), now, user);
+      final SeasonDTO dto = new SeasonDTO(identifier, seasonForm.getDescription(),
+         seasonForm.getStartsOn(), seasonForm.getEndsOn(), now, user);
       logger.debug(proc + "30");
 
       try {
@@ -185,10 +183,15 @@ public class SeasonController extends ApplicationController {
 
    /*---------- Ajax methods ----------*/
 
+   @RequestMapping(value = "/api/seasons", method = RequestMethod.GET)
+   public @ResponseBody Iterable<SeasonEntry> apiSeasons() {
+      return seasonRepository.findAll(new Sort(Direction.DESC, "startsOn"));
+   }
+
    @RequestMapping(value = "/api/seasons/{seasonId}", method = RequestMethod.GET)
    public @ResponseBody SeasonInfo getSeason(@PathVariable("seasonId") SeasonEntry season) {
-      return new SeasonInfo(season.getId(), season.getDescription(), season.getStartsOn().toString(
-         "yyyy-MM-dd"), season.getEndsOn().toString("yyyy-MM-dd"));
+      return new SeasonInfo(season.getId(), season.getDescription(),
+         season.getStartsOn().toString("yyyy-MM-dd"), season.getEndsOn().toString("yyyy-MM-dd"));
    }
 
    /*---------- Utilities ----------*/
@@ -209,10 +212,11 @@ public class SeasonController extends ApplicationController {
       final SeasonEntry season = seasonRepository.findOne(seasonId);
       logger.debug(proc + "30");
 
-      found =
-         seasonRepository.countGames(season.getStartsOn(),
-            Common.nvl(season.getEndsOn(), Common.EOT.toLocalDate()));
-      if (found > 0) {
+      final LocalDateTime startsAt = season.getStartsOn().toDateTimeAtStartOfDay().toLocalDateTime();
+      final LocalDateTime endsAt = season.getEndsOn() == null ? Common.EOT
+         : season.getEndsOn().toDateTimeAtStartOfDay().toLocalDateTime();
+      final int foundGames = seasonRepository.countGames(startsAt, endsAt);
+      if (foundGames > 0) {
          throw new IllegalArgumentException("Cannot delete season with associated games.");
       }
       logger.debug("Leaving: " + proc + "40");

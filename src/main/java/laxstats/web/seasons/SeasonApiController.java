@@ -21,7 +21,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import laxstats.api.Common;
 import laxstats.api.seasons.CreateSeasonCommand;
+import laxstats.api.seasons.DeleteSeasonCommand;
 import laxstats.api.seasons.SeasonDTO;
 import laxstats.api.seasons.SeasonId;
 import laxstats.api.seasons.UpdateSeasonCommand;
@@ -92,13 +94,15 @@ public class SeasonApiController extends ApplicationController {
    /**
     * POST
     *
-    * @param form
-    * @param result
+    * @param resource
+    * @param bindingResult
     * @return
     */
    @RequestMapping(method = RequestMethod.POST)
-   public SeasonInfo createSeason(@Valid SeasonInfo resource, BindingResult result) {
-      if (result.hasErrors()) {
+   public SeasonInfo createSeason(@Valid @RequestBody SeasonInfo resource,
+      BindingResult bindingResult)
+   {
+      if (bindingResult.hasErrors()) {
          return resource;
       }
 
@@ -118,6 +122,7 @@ public class SeasonApiController extends ApplicationController {
       final CreateSeasonCommand payload = new CreateSeasonCommand(identifier, dto);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
 
+      resource.setId(identifier.toString());
       return resource;
    }
 
@@ -155,5 +160,34 @@ public class SeasonApiController extends ApplicationController {
       commandBus.dispatch(new GenericCommandMessage<>(payload));
 
       return resource;
+   }
+
+   /**
+    * DELETE
+    *
+    * @param seasonId
+    */
+   @RequestMapping(value = "/{seasonId}", method = RequestMethod.DELETE)
+   public void deleteSeason(@PathVariable String seasonId) {
+      final SeasonId identifier = new SeasonId(seasonId);
+      checkDelete(seasonId);
+      final DeleteSeasonCommand payload = new DeleteSeasonCommand(identifier);
+      commandBus.dispatch(new GenericCommandMessage<>(payload));
+   }
+
+   private void checkDelete(String seasonId) {
+      final int foundTeams = seasonRepository.countTeamSeasons(seasonId);
+      if (foundTeams > 0) {
+         throw new IllegalArgumentException("Cannot delete season with associated teams.");
+      }
+
+      final SeasonEntry season = seasonRepository.findOne(seasonId);
+      final LocalDateTime startsAt = season.getStartsOn().toDateTimeAtStartOfDay().toLocalDateTime();
+      final LocalDateTime endsAt = season.getEndsOn() == null ? Common.EOT
+         : season.getEndsOn().toDateTimeAtStartOfDay().toLocalDateTime();
+      final int foundGames = seasonRepository.countGames(startsAt, endsAt);
+      if (foundGames > 0) {
+         throw new IllegalArgumentException("Cannot delete season with associated games.");
+      }
    }
 }
