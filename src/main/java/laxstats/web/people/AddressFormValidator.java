@@ -1,12 +1,5 @@
 package laxstats.web.people;
 
-import laxstats.api.Common;
-import laxstats.api.Region;
-import laxstats.api.people.AddressType;
-import laxstats.query.people.AddressEntry;
-import laxstats.query.people.PersonEntry;
-import laxstats.query.people.PersonQueryRepository;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +7,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
+
+import laxstats.api.Common;
+import laxstats.api.Region;
+import laxstats.api.people.AddressType;
+import laxstats.query.people.AddressEntry;
+import laxstats.query.people.PersonEntry;
+import laxstats.query.people.PersonQueryRepository;
+import laxstats.web.validators.PostalCodeValidator;
 
 @Service
 public class AddressFormValidator implements Validator {
@@ -45,12 +46,16 @@ public class AddressFormValidator implements Validator {
 
       // Validate primary designation
       checkPrimary(form, errors);
-      logger.debug("Leaving: " + proc + "40");
+      logger.debug(proc + "40");
+
+      // Validate postal code
+      checkZipCode(form, errors);
+      logger.debug("Leaving: " + proc + "50");
    }
 
    /**
     * Validates that mandatory arguments have been set.
-    * 
+    *
     * @param form
     * @param errors
     */
@@ -69,7 +74,7 @@ public class AddressFormValidator implements Validator {
    /**
     * Validates that the address is unique for the given person. If the address type, street, city
     * and region combination are unique, then processing continues.
-    * 
+    *
     * @param form
     * @param errors
     */
@@ -108,7 +113,8 @@ public class AddressFormValidator implements Validator {
                errors.rejectValue("city", "address.duplicate");
             }
          }
-      } else {
+      }
+      else {
          logger.debug(proc + "50");
          found = personRepository.uniqueAddress(type, address1, city, region, personId);
          if (found > 0) {
@@ -152,7 +158,8 @@ public class AddressFormValidator implements Validator {
                if (oldPrimaryAddress.isPrimary() && !oldPrimaryAddress.getId().equals(addressId)) {
                   errors.rejectValue("isPrimary", "address.isPrimary.multiplePrimary");
                }
-            } else {
+            }
+            else {
                logger.debug(proc + "60");
                if (oldPrimaryAddress.isPrimary()) {
                   errors.rejectValue("isPrimary", "address.isPrimary.multiplePrimary");
@@ -161,6 +168,55 @@ public class AddressFormValidator implements Validator {
          }
       }
       logger.debug("Leaving: " + proc + "70");
+   }
+
+   /**
+    * Validates that the postal code is a valid US ZIP code. If the postal code is null or is a
+    * valid US ZIP code, then processing continues.
+    *
+    * @param form
+    * @param errors
+    */
+   private void checkZipCode(AddressForm form, Errors errors) {
+      final String proc = PACKAGE_NAME + ".checkZipCode";
+      final String addressId = form.getId();
+      final String personId = form.getPersonId();
+      final String postalCode = form.getPostalCode();
+      final boolean exists = false;
+
+      logger.debug("Entering: " + proc + "10");
+
+      // Proceed with validation only if the record is new or the ZIP code changed.
+
+      if (postalCode != null) {
+         logger.debug(proc + "20");
+
+         final boolean isUpdating = apiUpdating(addressId);
+         if (isUpdating) {
+            logger.debug(proc + "30");
+
+            final PersonEntry person = personRepository.findOne(personId);
+            final AddressEntry oldAddress = person.getAddress(addressId);
+            final String oldPostalCode = oldAddress == null ? null : oldAddress.getPostalCode();
+            if (!postalCode.equals(Common.nvl(oldPostalCode, null))) {
+               logger.debug(proc + "40");
+
+               final laxstats.web.validators.Validator validator = PostalCodeValidator.getInstance();
+               if (!validator.isValid(postalCode)) {
+                  errors.rejectValue("postalCode", "address.postalCode.invalid");
+               }
+            }
+         }
+         else {
+            logger.debug(proc + "50");
+
+            final laxstats.web.validators.Validator validator = PostalCodeValidator.getInstance();
+            if (!validator.isValid(postalCode)) {
+               errors.rejectValue("postalCode", "address.postalCode.invalid");
+            }
+         }
+      }
+      logger.debug("Leaving: " + proc + "60");
    }
 
    /**
@@ -174,7 +230,8 @@ public class AddressFormValidator implements Validator {
       boolean result = false;
       if (addressId == null) {
          result = false;
-      } else {
+      }
+      else {
          final boolean exists = personRepository.checkAddressExists(addressId);
          if (!exists) {
             throw new IllegalStateException("Invalid primary key");
