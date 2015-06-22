@@ -182,7 +182,6 @@ public class AddressFormValidator implements Validator {
       final String addressId = form.getId();
       final String personId = form.getPersonId();
       final String postalCode = form.getPostalCode();
-      final boolean exists = false;
 
       logger.debug("Entering: " + proc + "10");
 
