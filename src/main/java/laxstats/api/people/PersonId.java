@@ -2,14 +2,25 @@ package laxstats.api.people;
 
 import laxstats.api.AggregateId;
 
+/**
+ * {@code PerdonId} represents the AggregateIdentifier of a person.
+ */
 public class PersonId extends AggregateId {
-	private static final long serialVersionUID = 3188225379496683390L;
+   private static final long serialVersionUID = 3188225379496683390L;
 
-	public PersonId() {
-		super();
-	}
+   /**
+    * Creates an new {@code PersonId} with an internally generated key.
+    */
+   public PersonId() {
+      super();
+   }
 
-	public PersonId(String identifier) {
-		super(identifier);
-	}
+   /**
+    * Creates a {@code PersonId} with the given primary key.
+    *
+    * @param identifier
+    */
+   public PersonId(String identifier) {
+      super(identifier);
+   }
 }

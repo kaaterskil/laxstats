@@ -4,38 +4,60 @@ import java.io.Serializable;
 
 import org.axonframework.domain.IdentifierFactory;
 
+/**
+ * {@code AggregateId} is the base class for all aggregate identifiers.
+ */
 public class AggregateId implements Serializable {
-	private static final long serialVersionUID = -2466843517557507562L;
-	
-	private final String identifier;
-	
-	public AggregateId() {
-		identifier = IdentifierFactory.getInstance().generateIdentifier();
-	}
+   private static final long serialVersionUID = -2466843517557507562L;
 
-	public AggregateId(String identifier) {
-		this.identifier = identifier;
-	}
+   private final String identifier;
 
-	@Override
-	public int hashCode() {
-		return identifier.hashCode();
-	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		if(this == obj) {
-			return true;
-		}
-		if(obj != null && getClass() == obj.getClass()) {
-			AggregateId that = (AggregateId) obj;
-			return this.identifier.equals(that.identifier);
-		}
-		return false;
-	}
+   /**
+    * Creates a new {@code AggregateId} with an internally generated key. To be used when creating a
+    * new persistent aggregate.
+    */
+   public AggregateId() {
+      identifier = IdentifierFactory.getInstance().generateIdentifier();
+   }
 
-	@Override
-	public String toString() {
-		return identifier;
-	}
+   /**
+    * Creates a new {@code AggregateId} with the given key. To be used when instantiating a
+    * persisted aggregate.
+    *
+    * @param identifier
+    */
+   public AggregateId(String identifier) {
+      this.identifier = identifier;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public int hashCode() {
+      return identifier.hashCode();
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj) {
+         return true;
+      }
+      if (obj != null && getClass() == obj.getClass()) {
+         final AggregateId that = (AggregateId)obj;
+         return identifier.equals(that.identifier);
+      }
+      return false;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public String toString() {
+      return identifier;
+   }
 }

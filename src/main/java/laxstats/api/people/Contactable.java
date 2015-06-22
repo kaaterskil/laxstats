@@ -8,11 +8,34 @@ package laxstats.api.people;
  */
 public interface Contactable {
 
-   boolean isPrimary();
+   /**
+    * Returns true if the {@code Contactable} is the primary entity in the collection, false
+    * otherwise.
+    * 
+    * @return
+    */
+      boolean isPrimary();
 
-   void setPrimary(boolean isPrimary);
+   /**
+    * Sets the flag to indicate that the {@code Contactable} is the primary entity in the
+    * collection.
+    * 
+    * @param isPrimary
+    */
+      void setPrimary(boolean isPrimary);
 
-   boolean isDoNotUse();
+   /**
+    * Returns true if the {@code Contactable} entity is obsolete or incorrect and should not be
+    * used, false otherwise.
+    * 
+    * @return
+    */
+      boolean isDoNotUse();
 
-   void setDoNotUse(boolean doNotUse);
+   /**
+    * Sets the flag that indicates whether the {@code Contactable} should not be used.
+    * 
+    * @param doNotUse
+    */
+      void setDoNotUse(boolean doNotUse);
 }
