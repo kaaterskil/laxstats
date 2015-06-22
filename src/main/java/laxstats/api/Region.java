@@ -1,8 +1,12 @@
 package laxstats.api;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * {@code Region} enumerates the U.S. states and protectorates.
  */
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum Region {
    AL("Alabama"),
    AK("Alaska"),
@@ -11,6 +15,7 @@ public enum Region {
    CA("California"),
    CO("Colorado"),
    CT("Connecticut"),
+   DC("Distric of Columbia"),
    DE("Delaware"),
    FL("Florida"),
    GA("Georgia"),
@@ -55,7 +60,6 @@ public enum Region {
    WI("Wisconsin"),
    WY("Wyoming"),
    AS("American Samoa"),
-   DC("Distric of Columbia"),
    FM("Federated States of Micronesia"),
    GU("Guam"),
    MH("Marshall Islands"),
@@ -69,6 +73,7 @@ public enum Region {
     *
     * @return
     */
+   @JsonProperty("label")
    public String getLabel() {
       return label;
    }
@@ -78,6 +83,7 @@ public enum Region {
     *
     * @return
     */
+   @JsonProperty("value")
    public String getAbbreviation() {
       return name();
    }

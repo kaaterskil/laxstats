@@ -1,8 +1,12 @@
 package laxstats.api.sites;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
- * {@code Surface} enumerates the types of plyaing field surfaces.
+ * {@code Surface} enumerates the types of playing field surfaces.
  */
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum Surface {
 
    /**
@@ -22,16 +26,22 @@ public enum Surface {
 
    /**
     * Returns the pretty name of a {@code Surface} for use in a drop-down menu.
-    * 
+    *
     * @return
     */
+   @JsonProperty("label")
    public String getLabel() {
       return label;
    }
 
+   @JsonProperty("value")
+   public String getValue() {
+      return name();
+   }
+
    /**
     * Creates a {@code Surface} with the given pretty name.
-    * 
+    *
     * @param label
     */
    private Surface(String label) {
