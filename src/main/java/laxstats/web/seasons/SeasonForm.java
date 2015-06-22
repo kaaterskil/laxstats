@@ -8,50 +8,60 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 public class SeasonForm {
 
-	private String id;
+   private String id;
 
-	@NotNull
-	@Size(min = 3)
-	private String description;
+   @NotNull
+   @Size(min = 3)
+   private String description;
 
-	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	@NotNull
-	private LocalDate startsOn;
+   @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @NotNull
+   private LocalDate startsOn;
 
-	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	private LocalDate endsOn;
+   @DateTimeFormat(pattern = "yyyy-MM-dd")
+   private LocalDate endsOn;
 
-	/*---------- Getter/Setters ----------*/
+   public SeasonForm() {
+   }
 
-	public String getId() {
-		return id;
-	}
+   public SeasonForm(String id, String description, LocalDate startsOn, LocalDate endsOn) {
+      this.id = id;
+      this.description = description;
+      this.startsOn = startsOn;
+      this.endsOn = endsOn;
+   }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+   /*---------- Getter/Setters ----------*/
 
-	public String getDescription() {
-		return description;
-	}
+   public String getId() {
+      return id;
+   }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+   public void setId(String id) {
+      this.id = id;
+   }
 
-	public LocalDate getStartsOn() {
-		return startsOn;
-	}
+   public String getDescription() {
+      return description;
+   }
 
-	public void setStartsOn(LocalDate startsOn) {
-		this.startsOn = startsOn;
-	}
+   public void setDescription(String description) {
+      this.description = description;
+   }
 
-	public LocalDate getEndsOn() {
-		return endsOn;
-	}
+   public LocalDate getStartsOn() {
+      return startsOn;
+   }
 
-	public void setEndsOn(LocalDate endsOn) {
-		this.endsOn = endsOn;
-	}
+   public void setStartsOn(LocalDate startsOn) {
+      this.startsOn = startsOn;
+   }
+
+   public LocalDate getEndsOn() {
+      return endsOn;
+   }
+
+   public void setEndsOn(LocalDate endsOn) {
+      this.endsOn = endsOn;
+   }
 }

@@ -1,9 +1,5 @@
 package laxstats.web.seasons;
 
-import laxstats.api.Common;
-import laxstats.query.seasons.SeasonEntry;
-import laxstats.query.seasons.SeasonQueryRepository;
-
 import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,218 +9,252 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
+import laxstats.api.Common;
+import laxstats.query.seasons.SeasonEntry;
+import laxstats.query.seasons.SeasonQueryRepository;
+
 @Service
 public class SeasonFormValidator implements Validator {
-	private static final Logger logger = LoggerFactory
-			.getLogger(SeasonFormValidator.class);
-	private static final String PACKAGE_NAME = SeasonFormValidator.class
-			.getPackage().getName();
+   private static final Logger logger = LoggerFactory.getLogger(SeasonFormValidator.class);
+   private static final String PACKAGE_NAME = SeasonFormValidator.class.getPackage().getName();
 
-	@Autowired
-	private SeasonQueryRepository seasonRepository;
+   @Autowired
+   private SeasonQueryRepository seasonRepository;
 
-	@Override
-	public boolean supports(Class<?> clazz) {
-		return SeasonForm.class.equals(clazz);
-	}
+   @Override
+   public boolean supports(Class<?> clazz) {
+      return SeasonForm.class.equals(clazz) || SeasonInfo.class.equals(clazz);
+   }
 
-	@Override
-	public void validate(Object target, Errors errors) {
-		final String proc = PACKAGE_NAME + ".validate.";
-		final SeasonForm form = (SeasonForm) target;
+   @Override
+   public void validate(Object target, Errors errors) {
+      final String proc = PACKAGE_NAME + ".validate.";
 
-		logger.debug("Entering: " + proc + "10");
+      logger.debug("Entering: " + proc + "10");
 
-		// Validate mandatory arguments
-		checkMandatoryArgs(form, errors);
-		logger.debug(proc + "20");
+      // Validate mandatory arguments
+      checkMandatoryArgs(target, errors);
+      logger.debug(proc + "20");
 
-		// Validate description
-		checkDescription(form, errors);
-		logger.debug(proc + "30");
+      // Validate description
+      checkDescription(target, errors);
+      logger.debug(proc + "30");
 
-		// Validate endsOn
-		checkEndDate(form, errors);
-		logger.debug(proc + "40");
+      // Validate endsOn
+      checkEndDate(target, errors);
+      logger.debug(proc + "40");
 
-		// Validate date overlap with other seasons
-		checkDates(form, errors);
+      // Validate date overlap with other seasons
+      checkDates(target, errors);
 
-		logger.debug("Leaving: " + proc + "50");
-	}
+      logger.debug("Leaving: " + proc + "50");
+   }
 
-	/**
-	 * Validates that mandatory arguments have been set
-	 *
-	 * @param form
-	 * @param errors
-	 */
-	private void checkMandatoryArgs(SeasonForm form, Errors errors) {
-		final String proc = PACKAGE_NAME + ".checkMandatoryArgs.";
+   /**
+    * Validates that mandatory arguments have been set
+    *
+    * @param form
+    * @param errors
+    */
+   private void checkMandatoryArgs(Object target, Errors errors) {
+      final String proc = PACKAGE_NAME + ".checkMandatoryArgs.";
 
-		logger.debug("Entering: " + proc + "10");
+      logger.debug("Entering: " + proc + "10");
 
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description",
-				"season.description.required");
-		logger.debug(proc + "20");
+      ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description",
+         "season.description.required");
+      logger.debug(proc + "20");
 
-		ValidationUtils.rejectIfEmpty(errors, "startsOn",
-				"season.startsOn.required");
+      ValidationUtils.rejectIfEmpty(errors, "startsOn", "season.startsOn.required");
 
-		logger.debug("Leaving: " + proc + "30");
-	}
+      logger.debug("Leaving: " + proc + "30");
+   }
 
-	/**
-	 * Validates that <code>description</code> is unique.
-	 *
-	 * @param form
-	 * @param errors
-	 */
-	private void checkDescription(SeasonForm form, Errors errors) {
-		final String proc = PACKAGE_NAME + ".checkDescription.";
-		final String seasonId = form.getId();
-		final String description = form.getDescription();
-		int found = 0;
+   /**
+    * Validates that <code>description</code> is unique.
+    *
+    * @param form
+    * @param errors
+    */
+   private void checkDescription(Object target, Errors errors) {
+      final String proc = PACKAGE_NAME + ".checkDescription.";
+      String seasonId = null;
+      String description = null;
+      int found = 0;
 
-		logger.debug("Entering: " + proc + "10");
+      if (target instanceof SeasonForm) {
+         final SeasonForm seasonForm = (SeasonForm)target;
+         seasonId = seasonForm.getId();
+         description = seasonForm.getDescription();
+      }
+      else if (target instanceof SeasonInfo) {
+         final SeasonInfo seasonInfo = (SeasonInfo)target;
+         seasonId = seasonInfo.getId();
+         description = seasonInfo.getDescription();
+      }
 
-		final boolean isUpdating = apiUpdating(seasonId);
-		logger.debug(proc + "20");
+      logger.debug("Entering: " + proc + "10");
 
-		if (isUpdating) {
-			final SeasonEntry season = seasonRepository.findOne(seasonId);
-			logger.debug(proc + "30");
+      final boolean isUpdating = apiUpdating(seasonId);
+      logger.debug(proc + "20");
 
-			if ((description != null && season.getDescription() == null)
-					|| !season.getDescription().equals(description)) {
-				logger.debug(proc + "40");
+      if (isUpdating) {
+         final SeasonEntry season = seasonRepository.findOne(seasonId);
+         logger.debug(proc + "30");
 
-				found = seasonRepository.updateDescription(description,
-						seasonId);
-				if (found > 0) {
-					errors.rejectValue("description",
-							"season.description.duplicate");
-				}
-			}
-		} else if (!isUpdating) {
-			logger.debug(proc + "50");
+         if ((description != null && season.getDescription() == null) ||
+            !season.getDescription().equals(description)) {
+            logger.debug(proc + "40");
 
-			found = seasonRepository.uniqueDescription(description);
-			if (found > 0) {
-				errors.rejectValue("description",
-						"season.description.duplicate");
-			}
-		}
-		logger.debug("Leaving: " + proc + "60");
-	}
+            found = seasonRepository.updateDescription(description, seasonId);
+            if (found > 0) {
+               errors.rejectValue("description", "season.description.duplicate");
+            }
+         }
+      }
+      else if (!isUpdating) {
+         logger.debug(proc + "50");
 
-	/**
-	 * Validates that <code>endsOn</code>, when set, is not less than or equal
-	 * to the value for <code>startsOn</code> on the same Season record.
-	 *
-	 * @param form
-	 * @param errors
-	 */
-	private void checkEndDate(SeasonForm form, Errors errors) {
-		final String proc = PACKAGE_NAME + ".checkEndDate.";
-		final String seasonId = form.getId();
-		final LocalDate startsOn = form.getStartsOn();
-		final LocalDate endsOn = form.getEndsOn();
-		final LocalDate eot = Common.EOT.toLocalDate();
+         found = seasonRepository.uniqueDescription(description);
+         if (found > 0) {
+            errors.rejectValue("description", "season.description.duplicate");
+         }
+      }
+      logger.debug("Leaving: " + proc + "60");
+   }
 
-		logger.debug("Entering: " + proc + "10");
+   /**
+    * Validates that <code>endsOn</code>, when set, is not less than or equal to the value for
+    * <code>startsOn</code> on the same Season record.
+    *
+    * @param form
+    * @param errors
+    */
+   private void checkEndDate(Object target, Errors errors) {
+      final String proc = PACKAGE_NAME + ".checkEndDate.";
+      String seasonId = null;
+      LocalDate startsOn = null;
+      LocalDate endsOn = null;
+      final LocalDate eot = Common.EOT.toLocalDate();
 
-		final boolean isUpdating = apiUpdating(seasonId);
-		logger.debug(proc + "20");
+      if (target instanceof SeasonForm) {
+         final SeasonForm seasonForm = (SeasonForm)target;
+         seasonId = seasonForm.getId();
+         startsOn = seasonForm.getStartsOn();
+         endsOn = seasonForm.getEndsOn();
+      }
+      else if (target instanceof SeasonInfo) {
+         final SeasonInfo seasonInfo = (SeasonInfo)target;
+         seasonId = seasonInfo.getId();
+         startsOn = LocalDate.parse(seasonInfo.getStartsOn());
+         endsOn = LocalDate.parse(seasonInfo.getEndsOn());
+      }
 
-		boolean doValidation = false;
-		if (isUpdating) {
-			final SeasonEntry season = seasonRepository.findOne(seasonId);
-			logger.debug(proc + "30");
+      logger.debug("Entering: " + proc + "10");
 
-			// Test if either the startsOn or endsOn dates have changed
-			if (!Common.nvl(season.getEndsOn(), eot).equals(
-					Common.nvl(endsOn, eot))
-					|| !season.getStartsOn().equals(startsOn)) {
-				logger.debug(proc + "40");
-				doValidation = true;
-			}
-		} else {
-			logger.debug(proc + "50");
-			doValidation = true;
-		}
+      final boolean isUpdating = apiUpdating(seasonId);
+      logger.debug(proc + "20");
 
-		if (doValidation && startsOn.isAfter(Common.nvl(endsOn, eot))) {
-			errors.rejectValue("endsOn", "season.endsOn.beforeStart");
-		}
-		logger.debug("Leaving: " + proc + "60");
-	}
+      boolean doValidation = false;
+      if (isUpdating) {
+         final SeasonEntry season = seasonRepository.findOne(seasonId);
+         logger.debug(proc + "30");
 
-	/**
-	 * Validates that <code>startsOn</code> and <code>endsOn</code> for the
-	 * given record are unique and do not overlap with other records.
-	 *
-	 * @param form
-	 * @param errors
-	 */
-	private void checkDates(SeasonForm form, Errors errors) {
-		final String proc = PACKAGE_NAME + ".checkDates.";
-		final String seasonId = form.getId();
-		final LocalDate startsOn = form.getStartsOn();
-		final LocalDate endsOn = Common.nvl(form.getEndsOn(),
-				Common.EOT.toLocalDate());
+         // Test if either the startsOn or endsOn dates have changed
+         if (!Common.nvl(season.getEndsOn(), eot).equals(Common.nvl(endsOn, eot)) ||
+            !season.getStartsOn().equals(startsOn)) {
+            logger.debug(proc + "40");
+            doValidation = true;
+         }
+      }
+      else {
+         logger.debug(proc + "50");
+         doValidation = true;
+      }
 
-		logger.debug("Entering: " + proc + "10");
+      if (doValidation && startsOn.isAfter(Common.nvl(endsOn, eot))) {
+         errors.rejectValue("endsOn", "season.endsOn.beforeStart");
+      }
+      logger.debug("Leaving: " + proc + "60");
+   }
 
-		final boolean isUpdating = apiUpdating(seasonId);
-		logger.debug(proc + "20");
+   /**
+    * Validates that <code>startsOn</code> and <code>endsOn</code> for the given record are unique
+    * and do not overlap with other records.
+    *
+    * @param form
+    * @param errors
+    */
+   private void checkDates(Object target, Errors errors) {
+      final String proc = PACKAGE_NAME + ".checkDates.";
+      String seasonId = null;
+      LocalDate startsOn = null;
+      LocalDate endsOn = null;
 
-		final Iterable<SeasonEntry> list = seasonRepository.findAll();
-		logger.debug(proc + "30");
+      if (target instanceof SeasonForm) {
+         final SeasonForm seasonForm = (SeasonForm)target;
+         seasonId = seasonForm.getId();
+         startsOn = seasonForm.getStartsOn();
+         endsOn = Common.nvl(seasonForm.getEndsOn(), Common.EOT.toLocalDate());
+      }
+      else if (target instanceof SeasonInfo) {
+         final SeasonInfo seasonInfo = (SeasonInfo)target;
+         seasonId = seasonInfo.getId();
+         startsOn = LocalDate.parse(seasonInfo.getStartsOn());
+         endsOn = Common.nvl(LocalDate.parse(seasonInfo.getEndsOn()), Common.EOT.toLocalDate());
+      }
 
-		if (isUpdating) {
-			logger.debug(proc + "40");
-			for (final SeasonEntry each : list) {
-				if (!each.getId().equals(seasonId)
-						&& each.overlaps(startsOn, endsOn)) {
-					errors.rejectValue("endsOn", "season.overlap");
-					break;
-				}
-			}
-		} else {
-			logger.debug(proc + "50");
-			for (final SeasonEntry each : list) {
-				if (each.overlaps(startsOn, endsOn)) {
-					errors.rejectValue("endsOn", "season.overlap");
-					break;
-				}
-			}
-		}
-		logger.debug("Leaving: " + proc + "60");
-	}
+      logger.debug("Entering: " + proc + "10");
 
-	/**
-	 * Returns <code>true</code> if the record with the given primary key is
-	 * being updated, <code>false</code> otherwise.
-	 *
-	 * @param seasonId
-	 * @return boolean
-	 * @throws IllegalStateException if no record exists for the given primary
-	 *             key
-	 */
-	private boolean apiUpdating(String seasonId) {
-		boolean result = false;
-		if (seasonId == null) {
-			// The primary key is null
-			result = false;
-		} else {
-			final boolean found = seasonRepository.exists(seasonId);
-			if (!found) {
-				// The primary key is invalid
-				throw new IllegalStateException("Invalid primary key");
-			}
-			result = true;
-		}
-		return result;
-	}
+      final boolean isUpdating = apiUpdating(seasonId);
+      logger.debug(proc + "20");
+
+      final Iterable<SeasonEntry> list = seasonRepository.findAll();
+      logger.debug(proc + "30");
+
+      if (isUpdating) {
+         logger.debug(proc + "40");
+         for (final SeasonEntry each : list) {
+            if (!each.getId().equals(seasonId) && each.overlaps(startsOn, endsOn)) {
+               errors.rejectValue("endsOn", "season.overlap");
+               break;
+            }
+         }
+      }
+      else {
+         logger.debug(proc + "50");
+         for (final SeasonEntry each : list) {
+            if (each.overlaps(startsOn, endsOn)) {
+               errors.rejectValue("endsOn", "season.overlap");
+               break;
+            }
+         }
+      }
+      logger.debug("Leaving: " + proc + "60");
+   }
+
+   /**
+    * Returns <code>true</code> if the record with the given primary key is being updated,
+    * <code>false</code> otherwise.
+    *
+    * @param seasonId
+    * @return boolean
+    * @throws IllegalStateException if no record exists for the given primary key
+    */
+   private boolean apiUpdating(String seasonId) {
+      boolean result = false;
+      if (seasonId == null) {
+         // The primary key is null
+         result = false;
+      }
+      else {
+         final boolean found = seasonRepository.exists(seasonId);
+         if (!found) {
+            // The primary key is invalid
+            throw new IllegalStateException("Invalid primary key");
+         }
+         result = true;
+      }
+      return result;
+   }
 }
