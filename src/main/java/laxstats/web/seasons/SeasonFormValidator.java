@@ -1,5 +1,11 @@
 package laxstats.web.seasons;
 
+import java.util.List;
+
+import laxstats.api.Common;
+import laxstats.query.seasons.SeasonEntry;
+import laxstats.query.seasons.SeasonQueryRepository;
+
 import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,17 +15,18 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
-import laxstats.api.Common;
-import laxstats.query.seasons.SeasonEntry;
-import laxstats.query.seasons.SeasonQueryRepository;
-
 @Service
 public class SeasonFormValidator implements Validator {
    private static final Logger logger = LoggerFactory.getLogger(SeasonFormValidator.class);
    private static final String PACKAGE_NAME = SeasonFormValidator.class.getPackage().getName();
 
    @Autowired
-   private SeasonQueryRepository seasonRepository;
+   private SeasonQueryRepository seasonQueryRepository;
+
+   // @Autowired
+   public void setseasonQueryRepository(SeasonQueryRepository seasonQueryRepository) {
+      this.seasonQueryRepository = seasonQueryRepository;
+   }
 
    @Override
    public boolean supports(Class<?> clazz) {
@@ -61,8 +68,8 @@ public class SeasonFormValidator implements Validator {
 
       logger.debug("Entering: " + proc + "10");
 
-      ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description",
-         "season.description.required");
+      ValidationUtils
+      .rejectIfEmptyOrWhitespace(errors, "description", "season.description.required");
       logger.debug(proc + "20");
 
       ValidationUtils.rejectIfEmpty(errors, "startsOn", "season.startsOn.required");
@@ -99,14 +106,14 @@ public class SeasonFormValidator implements Validator {
       logger.debug(proc + "20");
 
       if (isUpdating) {
-         final SeasonEntry season = seasonRepository.findOne(seasonId);
+         final SeasonEntry season = seasonQueryRepository.findOne(seasonId);
          logger.debug(proc + "30");
 
          if ((description != null && season.getDescription() == null) ||
             !season.getDescription().equals(description)) {
             logger.debug(proc + "40");
 
-            found = seasonRepository.updateDescription(description, seasonId);
+            found = seasonQueryRepository.updateDescription(description, seasonId);
             if (found > 0) {
                errors.rejectValue("description", "season.description.duplicate");
             }
@@ -115,7 +122,7 @@ public class SeasonFormValidator implements Validator {
       else if (!isUpdating) {
          logger.debug(proc + "50");
 
-         found = seasonRepository.uniqueDescription(description);
+         found = seasonQueryRepository.uniqueDescription(description);
          if (found > 0) {
             errors.rejectValue("description", "season.description.duplicate");
          }
@@ -157,7 +164,7 @@ public class SeasonFormValidator implements Validator {
 
       boolean doValidation = false;
       if (isUpdating) {
-         final SeasonEntry season = seasonRepository.findOne(seasonId);
+         final SeasonEntry season = seasonQueryRepository.findOne(seasonId);
          logger.debug(proc + "30");
 
          // Test if either the startsOn or endsOn dates have changed
@@ -172,7 +179,7 @@ public class SeasonFormValidator implements Validator {
          doValidation = true;
       }
 
-      if (doValidation && startsOn.isAfter(Common.nvl(endsOn, eot))) {
+      if (doValidation && startsOn != null && startsOn.isAfter(Common.nvl(endsOn, eot))) {
          errors.rejectValue("endsOn", "season.endsOn.beforeStart");
       }
       logger.debug("Leaving: " + proc + "60");
@@ -209,28 +216,30 @@ public class SeasonFormValidator implements Validator {
       final boolean isUpdating = apiUpdating(seasonId);
       logger.debug(proc + "20");
 
-      final Iterable<SeasonEntry> list = seasonRepository.findAll();
+      final List<SeasonEntry> list = (List<SeasonEntry>)seasonQueryRepository.findAll();
       logger.debug(proc + "30");
 
-      if (isUpdating) {
-         logger.debug(proc + "40");
-         for (final SeasonEntry each : list) {
-            if (!each.getId().equals(seasonId) && each.overlaps(startsOn, endsOn)) {
-               errors.rejectValue("endsOn", "season.overlap");
-               break;
+      if (list != null && list.size() > 0) {
+         if (isUpdating) {
+            logger.debug(proc + "40");
+            for (final SeasonEntry each : list) {
+               if (!each.getId().equals(seasonId) && each.overlaps(startsOn, endsOn)) {
+                  errors.rejectValue("endsOn", "season.overlap");
+                  break;
+               }
             }
          }
-      }
-      else {
-         logger.debug(proc + "50");
-         for (final SeasonEntry each : list) {
-            if (each.overlaps(startsOn, endsOn)) {
-               errors.rejectValue("endsOn", "season.overlap");
-               break;
+         else {
+            logger.debug(proc + "50");
+            for (final SeasonEntry each : list) {
+               if (each.overlaps(startsOn, endsOn)) {
+                  errors.rejectValue("endsOn", "season.overlap");
+                  break;
+               }
             }
          }
+         logger.debug("Leaving: " + proc + "60");
       }
-      logger.debug("Leaving: " + proc + "60");
    }
 
    /**
@@ -248,7 +257,7 @@ public class SeasonFormValidator implements Validator {
          result = false;
       }
       else {
-         final boolean found = seasonRepository.exists(seasonId);
+         final boolean found = seasonQueryRepository.exists(seasonId);
          if (!found) {
             // The primary key is invalid
             throw new IllegalStateException("Invalid primary key");
