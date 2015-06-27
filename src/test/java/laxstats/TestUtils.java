@@ -2,14 +2,17 @@ package laxstats;
 
 import laxstats.api.Region;
 import laxstats.api.people.AddressType;
+import laxstats.api.people.ContactMethod;
 import laxstats.api.people.Gender;
 import laxstats.api.sites.SiteStyle;
 import laxstats.api.sites.Surface;
 import laxstats.query.people.AddressEntry;
+import laxstats.query.people.ContactEntry;
 import laxstats.query.people.PersonEntry;
 import laxstats.query.seasons.SeasonEntry;
 import laxstats.query.sites.SiteEntry;
 import laxstats.web.people.AddressForm;
+import laxstats.web.people.ContactForm;
 import laxstats.web.seasons.SeasonForm;
 import laxstats.web.sites.SiteForm;
 
@@ -59,6 +62,20 @@ public class TestUtils {
       form.setPrimary(true);
       form.setRegion(Region.MA);
       form.setType(AddressType.HOME);
+      return form;
+   }
+
+   /**
+    * Returns a completed {@code ContactForm} for a new contact with ContactMethod.TELEPHONE.
+    *
+    * @return
+    */
+   public static ContactForm newContactForm() {
+      final ContactForm form = new ContactForm();
+      form.setMethod(ContactMethod.TELEPHONE);
+      form.setValue("888-555-1212");
+      form.setPrimary(true);
+      form.setDoNotUse(false);
       return form;
    }
 
@@ -114,6 +131,26 @@ public class TestUtils {
    }
 
    /**
+    * Returns a {@code PersonEntry} with a primary key and primary telephone contact.
+    *
+    * @return
+    */
+   public static PersonEntry getPersonWithPrimaryContact() {
+      final String personId = IdentifierFactory.getInstance().generateIdentifier();
+      final String contactId = IdentifierFactory.getInstance().generateIdentifier();
+
+      final PersonEntry person = getPerson();
+      person.setId(personId);
+
+      final ContactEntry contact = getTelephoneContact();
+      contact.setId(contactId);
+      contact.setPrimary(true);
+
+      person.addContact(contact);
+      return person;
+   }
+
+   /**
     * Returns a new {@code PersonEntry} with no address or contacts.
     *
     * @return
@@ -134,6 +171,17 @@ public class TestUtils {
       person.setParentReleaseReceivedOn(LocalDate.parse("2014-10-12"));
 
       return person;
+   }
+
+   public static ContactEntry getTelephoneContact() {
+      final ContactEntry contact = new ContactEntry();
+      contact.setCreatedAt(LocalDateTime.now());
+      contact.setDoNotUse(false);
+      contact.setMethod(ContactMethod.TELEPHONE);
+      contact.setModifiedAt(LocalDateTime.now());
+      contact.setPrimary(false);
+      contact.setValue("888-555-1212");
+      return contact;
    }
 
    /**

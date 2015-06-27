@@ -1,5 +1,6 @@
 package laxstats.web.people;
 
+import laxstats.TestUtils;
 import laxstats.api.people.ContactMethod;
 import laxstats.query.people.ContactEntry;
 import laxstats.query.people.PersonEntry;
@@ -12,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 @Service
@@ -20,8 +20,12 @@ public class ContactFormValidator implements Validator {
    private static final Logger logger = LoggerFactory.getLogger(ContactFormValidator.class);
    private static final String PACKAGE_NAME = ContactFormValidator.class.getPackage().getName();
 
+   PersonQueryRepository personQueryRepository;
+
    @Autowired
-   PersonQueryRepository personRepository;
+   public void setPersonQueryRepository(PersonQueryRepository personQueryRepository) {
+      this.personQueryRepository = personQueryRepository;
+   }
 
    @Override
    public boolean supports(Class<?> clazz) {
@@ -63,10 +67,14 @@ public class ContactFormValidator implements Validator {
 
       logger.debug("Entering: " + proc + "10");
 
-      ValidationUtils.rejectIfEmpty(errors, "method", "contact.method.required");
+      if (form.getMethod() == null) {
+         errors.rejectValue("method", "contact.method.required");
+      }
       logger.debug(proc + "20");
 
-      ValidationUtils.rejectIfEmptyOrWhitespace(errors, "value", "contact.value.required");
+      if (TestUtils.isEmptyOrWhitespace(form.getValue())) {
+         errors.rejectValue("value", "contact.value.required");
+      }
       logger.debug("Leaving: " + proc + "30");
    }
 
@@ -95,20 +103,21 @@ public class ContactFormValidator implements Validator {
       if (isUpdating) {
          logger.debug(proc + "30");
 
-         final PersonEntry person = personRepository.findOne(personId);
+         final PersonEntry person = personQueryRepository.findOne(personId);
          final ContactEntry contact = person.getContact(contactId);
          if (!contact.getMethod().equals(method) || !contact.getValue().equalsIgnoreCase(value)) {
             logger.debug(proc + "40");
 
-            found = personRepository.updateContact(method, value, personId, contactId);
+            found = personQueryRepository.updateContact(method, value, personId, contactId);
             if (found > 0) {
                errors.rejectValue("value", "contact.value.duplicate");
             }
          }
-      } else {
+      }
+      else {
          logger.debug(proc + "50");
 
-         found = personRepository.uniqueContact(method, value, personId);
+         found = personQueryRepository.uniqueContact(method, value, personId);
          if (found > 0) {
             errors.rejectValue("value", "contact.value.duplicate");
          }
@@ -125,7 +134,7 @@ public class ContactFormValidator implements Validator {
     * @param errors
     */
    private void checkPrimary(ContactForm form, Errors errors) {
-      final String proc = PACKAGE_NAME + ".checkDuplicate.";
+      final String proc = PACKAGE_NAME + ".checkPrimary.";
       final String addressId = form.getId();
       final String personId = form.getPersonId();
       final boolean isPrimary = form.isPrimary();
@@ -133,7 +142,7 @@ public class ContactFormValidator implements Validator {
       logger.debug("Entering: " + proc + "10");
 
       if (isPrimary) {
-         final PersonEntry person = personRepository.findOne(personId);
+         final PersonEntry person = personQueryRepository.findOne(personId);
          logger.debug(proc + "20");
 
          final ContactEntry oldPrimaryContact = person.primaryContact();
@@ -149,12 +158,13 @@ public class ContactFormValidator implements Validator {
             if (isUpdating) {
                logger.debug(proc + "50");
                if (oldPrimaryContact.isPrimary() && !oldPrimaryContact.getId().equals(addressId)) {
-                  errors.rejectValue("isPrimary", "contact.isPrimary.multiplePrimary");
+                  errors.rejectValue("primary", "contact.primary.multiplePrimary");
                }
-            } else {
+            }
+            else {
                logger.debug(proc + "60");
                if (oldPrimaryContact.isPrimary()) {
-                  errors.rejectValue("isPrimary", "contact.isPrimary.multiplePrimary");
+                  errors.rejectValue("primary", "contact.primary.multiplePrimary");
                }
             }
          }
@@ -188,18 +198,19 @@ public class ContactFormValidator implements Validator {
       if (isUpdating) {
          logger.debug(proc + "30");
 
-         final PersonEntry person = personRepository.findOne(personId);
+         final PersonEntry person = personQueryRepository.findOne(personId);
          final ContactEntry contact = person.getContact(contactId);
          if (!contact.getValue().equalsIgnoreCase(value)) {
             logger.debug(proc + "40");
             doValidation = true;
          }
-      } else {
+      }
+      else {
          logger.debug(proc + "50");
          doValidation = true;
       }
 
-      if (doValidation) {
+      if (doValidation && method != null) {
          if (method.equals(ContactMethod.EMAIL)) {
             logger.debug(proc + "60");
 
@@ -207,11 +218,12 @@ public class ContactFormValidator implements Validator {
             if (!emailValidator.isValid(value)) {
                errors.rejectValue("value", "contact.value.invalidEmail");
             }
-         } else {
+         }
+         else {
             logger.debug(proc + "70");
 
             final laxstats.web.validators.Validator telephoneValidator =
-               TelephoneValidator.getInstance();
+                     TelephoneValidator.getInstance();
             if (!telephoneValidator.isValid(value)) {
                errors.rejectValue("value", "contact.value.invalidTelephone");
             }
@@ -231,8 +243,9 @@ public class ContactFormValidator implements Validator {
       boolean result = false;
       if (contactId == null) {
          result = false;
-      } else {
-         final boolean exists = personRepository.checkContactExists(contactId);
+      }
+      else {
+         final boolean exists = personQueryRepository.checkContactExists(contactId);
          if (!exists) {
             throw new IllegalStateException("Invalid primary key");
          }
