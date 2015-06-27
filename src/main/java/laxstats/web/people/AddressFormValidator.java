@@ -1,13 +1,5 @@
 package laxstats.web.people;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
-import org.springframework.validation.Validator;
-
 import laxstats.api.Common;
 import laxstats.api.Region;
 import laxstats.api.people.AddressType;
@@ -16,6 +8,14 @@ import laxstats.query.people.PersonEntry;
 import laxstats.query.people.PersonQueryRepository;
 import laxstats.web.validators.PostalCodeValidator;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
+import org.springframework.validation.Validator;
+
 @Service
 public class AddressFormValidator implements Validator {
    private static final Logger logger = LoggerFactory.getLogger(AddressFormValidator.class);
@@ -23,6 +23,13 @@ public class AddressFormValidator implements Validator {
 
    @Autowired
    private PersonQueryRepository personRepository;
+
+   private PostalCodeValidator postalCodeValidator;
+
+   @Autowired
+   public void setPostalCodeValidator(PostalCodeValidator postalCodeValidator) {
+      this.postalCodeValidator = postalCodeValidator;
+   }
 
    @Override
    public boolean supports(Class<?> clazz) {
@@ -102,13 +109,13 @@ public class AddressFormValidator implements Validator {
          final PersonEntry person = personRepository.findOne(personId);
          final AddressEntry address = person.getAddress(addressId);
          if (!address.getAddressType().equals(type) ||
-            !Common.nvl(address.getAddress1(), "").equalsIgnoreCase(Common.nvl(address1, "")) ||
-            !address.getCity().equals(city) ||
-            !Common.nvl(address.getRegion(), Region.MA).equals(Common.nvl(region, Region.MA))) {
+                  !Common.nvl(address.getAddress1(), "").equalsIgnoreCase(Common.nvl(address1, "")) ||
+                  !address.getCity().equals(city) ||
+                  !Common.nvl(address.getRegion(), Region.MA).equals(Common.nvl(region, Region.MA))) {
             logger.debug(proc + "40");
 
             found =
-               personRepository.updateAddress(type, address1, city, region, personId, addressId);
+                     personRepository.updateAddress(type, address1, city, region, personId, addressId);
             if (found > 0) {
                errors.rejectValue("city", "address.duplicate");
             }
@@ -132,7 +139,7 @@ public class AddressFormValidator implements Validator {
     * @param errors
     */
    private void checkPrimary(AddressForm form, Errors errors) {
-      final String proc = PACKAGE_NAME + ".checkDuplicate.";
+      final String proc = PACKAGE_NAME + ".checkPrimary.";
       final String addressId = form.getId();
       final String personId = form.getPersonId();
       final boolean isPrimary = form.isPrimary();
@@ -143,7 +150,10 @@ public class AddressFormValidator implements Validator {
          final PersonEntry person = personRepository.findOne(personId);
          logger.debug(proc + "20");
 
-         final AddressEntry oldPrimaryAddress = person.primaryAddress();
+         AddressEntry oldPrimaryAddress = null;
+         if (person != null) {
+            oldPrimaryAddress = person.primaryAddress();
+         }
          logger.debug(proc + "30");
 
          if (oldPrimaryAddress != null) {
@@ -156,13 +166,13 @@ public class AddressFormValidator implements Validator {
             if (isUpdating) {
                logger.debug(proc + "50");
                if (oldPrimaryAddress.isPrimary() && !oldPrimaryAddress.getId().equals(addressId)) {
-                  errors.rejectValue("isPrimary", "address.isPrimary.multiplePrimary");
+                  errors.rejectValue("primary", "address.primary.multiplePrimary");
                }
             }
             else {
                logger.debug(proc + "60");
                if (oldPrimaryAddress.isPrimary()) {
-                  errors.rejectValue("isPrimary", "address.isPrimary.multiplePrimary");
+                  errors.rejectValue("primary", "address.primary.multiplePrimary");
                }
             }
          }
@@ -178,7 +188,7 @@ public class AddressFormValidator implements Validator {
     * @param errors
     */
    private void checkZipCode(AddressForm form, Errors errors) {
-      final String proc = PACKAGE_NAME + ".checkZipCode";
+      final String proc = PACKAGE_NAME + ".checkZipCode.";
       final String addressId = form.getId();
       final String personId = form.getPersonId();
       final String postalCode = form.getPostalCode();
@@ -200,8 +210,7 @@ public class AddressFormValidator implements Validator {
             if (!postalCode.equals(Common.nvl(oldPostalCode, null))) {
                logger.debug(proc + "40");
 
-               final laxstats.web.validators.Validator validator = PostalCodeValidator.getInstance();
-               if (!validator.isValid(postalCode)) {
+               if (!postalCodeValidator.isValid(postalCode)) {
                   errors.rejectValue("postalCode", "address.postalCode.invalid");
                }
             }
@@ -209,8 +218,7 @@ public class AddressFormValidator implements Validator {
          else {
             logger.debug(proc + "50");
 
-            final laxstats.web.validators.Validator validator = PostalCodeValidator.getInstance();
-            if (!validator.isValid(postalCode)) {
+            if (!postalCodeValidator.isValid(postalCode)) {
                errors.rejectValue("postalCode", "address.postalCode.invalid");
             }
          }
