@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 @Service
@@ -20,11 +19,10 @@ public class SeasonFormValidator implements Validator {
    private static final Logger logger = LoggerFactory.getLogger(SeasonFormValidator.class);
    private static final String PACKAGE_NAME = SeasonFormValidator.class.getPackage().getName();
 
-   @Autowired
    private SeasonQueryRepository seasonQueryRepository;
 
-   // @Autowired
-   public void setseasonQueryRepository(SeasonQueryRepository seasonQueryRepository) {
+   @Autowired
+   public void setSeasonQueryRepository(SeasonQueryRepository seasonQueryRepository) {
       this.seasonQueryRepository = seasonQueryRepository;
    }
 
@@ -65,15 +63,30 @@ public class SeasonFormValidator implements Validator {
     */
    private void checkMandatoryArgs(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkMandatoryArgs.";
+      String description = null;
+      LocalDate startsOn = null;
+
+      if (target instanceof SeasonForm) {
+         final SeasonForm seasonForm = (SeasonForm)target;
+         description = seasonForm.getDescription();
+         startsOn = seasonForm.getStartsOn();
+      }
+      else if (target instanceof SeasonInfo) {
+         final SeasonInfo seasonInfo = (SeasonInfo)target;
+         description = seasonInfo.getDescription();
+         startsOn = LocalDate.parse(seasonInfo.getStartsOn());
+      }
 
       logger.debug("Entering: " + proc + "10");
 
-      ValidationUtils
-      .rejectIfEmptyOrWhitespace(errors, "description", "season.description.required");
+      if (description == null || description.length() == 0) {
+         errors.rejectValue("description", "season.description.required");
+      }
       logger.debug(proc + "20");
 
-      ValidationUtils.rejectIfEmpty(errors, "startsOn", "season.startsOn.required");
-
+      if (startsOn == null) {
+         errors.rejectValue("startsOn", "season.startsOn.required");
+      }
       logger.debug("Leaving: " + proc + "30");
    }
 
@@ -110,7 +123,7 @@ public class SeasonFormValidator implements Validator {
          logger.debug(proc + "30");
 
          if ((description != null && season.getDescription() == null) ||
-            !season.getDescription().equals(description)) {
+                  !season.getDescription().equals(description)) {
             logger.debug(proc + "40");
 
             found = seasonQueryRepository.updateDescription(description, seasonId);
@@ -169,7 +182,7 @@ public class SeasonFormValidator implements Validator {
 
          // Test if either the startsOn or endsOn dates have changed
          if (!Common.nvl(season.getEndsOn(), eot).equals(Common.nvl(endsOn, eot)) ||
-            !season.getStartsOn().equals(startsOn)) {
+                  !season.getStartsOn().equals(startsOn)) {
             logger.debug(proc + "40");
             doValidation = true;
          }
@@ -179,7 +192,8 @@ public class SeasonFormValidator implements Validator {
          doValidation = true;
       }
 
-      if (doValidation && startsOn != null && startsOn.isAfter(Common.nvl(endsOn, eot))) {
+      if (doValidation && startsOn != null &&
+         (startsOn.isAfter(Common.nvl(endsOn, eot)) || startsOn.isEqual(Common.nvl(endsOn, eot)))) {
          errors.rejectValue("endsOn", "season.endsOn.beforeStart");
       }
       logger.debug("Leaving: " + proc + "60");

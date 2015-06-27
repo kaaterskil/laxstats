@@ -7,10 +7,12 @@ import laxstats.api.sites.SiteStyle;
 import laxstats.api.sites.Surface;
 import laxstats.query.people.AddressEntry;
 import laxstats.query.people.PersonEntry;
+import laxstats.query.seasons.SeasonEntry;
 import laxstats.web.people.AddressForm;
 import laxstats.web.seasons.SeasonForm;
 import laxstats.web.sites.SiteForm;
 
+import org.axonframework.domain.IdentifierFactory;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
@@ -44,8 +46,8 @@ public class TestUtils {
    public static SeasonForm newSeasonForm() {
       final SeasonForm form = new SeasonForm();
       form.setDescription("2014-2015 Season");
-      form.setEndsOn(LocalDate.parse("2015-06-30"));
       form.setStartsOn(LocalDate.parse("2014-07-01"));
+      form.setEndsOn(LocalDate.parse("2015-06-30"));
       return form;
    }
 
@@ -70,7 +72,7 @@ public class TestUtils {
 
    /**
     * Returns a {@code PersonEntry} with a primary home address.
-    * 
+    *
     * @return
     */
    public static PersonEntry getPersonWithPrimaryAddress() {
@@ -119,6 +121,34 @@ public class TestUtils {
       address.setPrimary(true);
       address.setRegion(Region.MA);
       return address;
+   }
+
+   /**
+    * Returns a new {@code SeasonEntry}
+    *
+    * @return
+    */
+   public static SeasonEntry getSeason() {
+      final SeasonEntry season = new SeasonEntry();
+      season.setDescription("2014-2015 Season");
+      season.setStartsOn(LocalDate.parse("2014-07-01"));
+      season.setEndsOn(LocalDate.parse("2015-06-30"));
+      return season;
+   }
+
+   /**
+    * Returns a {@code SeasonEntry} with a primary key, and set to the prior year.
+    *
+    * @return
+    */
+   public static SeasonEntry getExistingSeason() {
+      final String id = IdentifierFactory.getInstance().generateIdentifier();
+      final SeasonEntry season = new SeasonEntry();
+      season.setDescription("2013-2014 Season");
+      season.setStartsOn(LocalDate.parse("2013-07-01"));
+      season.setEndsOn(LocalDate.parse("2014-06-30"));
+      season.setId(id);
+      return season;
    }
 
    protected TestUtils() {
