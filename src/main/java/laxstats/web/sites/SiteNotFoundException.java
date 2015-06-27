@@ -1,4 +1,4 @@
-package laxstats.web.site;
+package laxstats.web.sites;
 
 public class SiteNotFoundException extends RuntimeException {
    private static final long serialVersionUID = 1L;

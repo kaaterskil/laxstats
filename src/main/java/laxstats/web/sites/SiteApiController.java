@@ -1,4 +1,4 @@
-package laxstats.web.site;
+package laxstats.web.sites;
 
 import java.util.ArrayList;
 import java.util.List;

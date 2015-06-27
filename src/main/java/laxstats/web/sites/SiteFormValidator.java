@@ -1,4 +1,10 @@
-package laxstats.web.site;
+package laxstats.web.sites;
+
+import laxstats.api.Common;
+import laxstats.api.Region;
+import laxstats.query.sites.SiteEntry;
+import laxstats.query.sites.SiteQueryRepository;
+import laxstats.web.validators.PostalCodeValidator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,12 +14,6 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
-import laxstats.api.Common;
-import laxstats.api.Region;
-import laxstats.query.sites.SiteEntry;
-import laxstats.query.sites.SiteQueryRepository;
-import laxstats.web.validators.PostalCodeValidator;
-
 @Service
 public class SiteFormValidator implements Validator {
    private static final Logger logger = LoggerFactory.getLogger(SiteFormValidator.class);
@@ -21,6 +21,13 @@ public class SiteFormValidator implements Validator {
 
    @Autowired
    private SiteQueryRepository siteRepository;
+
+   private PostalCodeValidator postalCodeValidator;
+
+   @Autowired
+   public void setPostalCodeValidator(PostalCodeValidator postalCodeValidator) {
+      this.postalCodeValidator = postalCodeValidator;
+   }
 
    @Override
    public boolean supports(Class<?> clazz) {
@@ -96,8 +103,8 @@ public class SiteFormValidator implements Validator {
 
          final SiteEntry site = siteRepository.findOne(siteId);
          if (!site.getName().equals(name) ||
-            (site.getAddress() != null && (!site.getAddress().getCity().equals(city) ||
-               !site.getAddress().getRegion().equals(region)))) {
+                  (site.getAddress() != null && (!site.getAddress().getCity().equals(city) || !site
+               .getAddress().getRegion().equals(region)))) {
             logger.debug(proc + "40");
 
             found = siteRepository.updateName(name, city, region, siteId);
@@ -140,11 +147,12 @@ public class SiteFormValidator implements Validator {
 
             final SiteEntry site = siteRepository.findOne(siteId);
             if (site.getAddress() != null &&
-               !postalCode.equals(Common.nvl(site.getAddress().getPostalCode(), null))) {
+                     !postalCode.equals(Common.nvl(site.getAddress().getPostalCode(), null))) {
                logger.debug(proc + "30");
 
-               final laxstats.web.validators.Validator validator = PostalCodeValidator.getInstance();
-               if (!validator.isValid(postalCode)) {
+               // final laxstats.web.validators.Validator validator =
+               // PostalCodeValidator.getInstance();
+               if (!postalCodeValidator.isValid(postalCode)) {
                   errors.rejectValue("postalCode", "site.address.postalCode.invalid");
                }
             }
@@ -152,8 +160,9 @@ public class SiteFormValidator implements Validator {
          else {
             logger.debug(proc + "40");
 
-            final laxstats.web.validators.Validator validator = PostalCodeValidator.getInstance();
-            if (!validator.isValid(postalCode)) {
+            // final laxstats.web.validators.Validator validator =
+            // PostalCodeValidator.getInstance();
+            if (!postalCodeValidator.isValid(postalCode)) {
                errors.rejectValue("postalCode", "site.address.postalCode.invalid");
             }
          }

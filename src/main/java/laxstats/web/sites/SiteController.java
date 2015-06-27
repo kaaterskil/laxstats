@@ -1,4 +1,4 @@
-package laxstats.web.site;
+package laxstats.web.sites;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
