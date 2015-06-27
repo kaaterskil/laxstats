@@ -1,9 +1,10 @@
 package laxstats.web.seasons;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import laxstats.TestUtils;
 import laxstats.query.seasons.SeasonQueryRepository;
 
-import org.joda.time.LocalDate;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -23,21 +24,18 @@ public class SeasonFormValidatorTests {
 
    @Test
    public void supports() {
-      Assert.assertTrue(validator.supports(SeasonForm.class));
-      Assert.assertTrue(validator.supports(SeasonInfo.class));
-      Assert.assertFalse(validator.supports(Object.class));
+      assertTrue(validator.supports(SeasonForm.class));
+      assertTrue(validator.supports(SeasonInfo.class));
+      assertFalse(validator.supports(Object.class));
    }
 
    @Test
    public void newSeasonIsValid() {
-      final SeasonForm form = new SeasonForm();
-      form.setDescription("2003-2004 Season");
-      form.setStartsOn(LocalDate.parse("2003-07-01"));
-      form.setEndsOn(LocalDate.parse("2004-06-30"));
+      final SeasonForm form = TestUtils.newSeasonForm();
 
       final BindException errors = new BindException(form, "seasonForm");
       ValidationUtils.invokeValidator(validator, form, errors);
-      Assert.assertFalse(errors.hasErrors());
+      assertFalse(errors.hasErrors());
    }
 
    @Test
@@ -49,38 +47,36 @@ public class SeasonFormValidatorTests {
 
       final BindException errors = new BindException(dto, "seasonInfo");
       ValidationUtils.invokeValidator(validator, dto, errors);
-      Assert.assertFalse(errors.hasErrors());
+      assertFalse(errors.hasErrors());
    }
 
    @Test
    public void newSeasonWithoutDescription() {
-      final SeasonForm form = new SeasonForm();
-      form.setStartsOn(LocalDate.parse("2003-07-01"));
-      form.setEndsOn(LocalDate.parse("2004-06-30"));
+      final SeasonForm form = TestUtils.newSeasonForm();
+      form.setDescription(null);
 
       final BindException errors = new BindException(form, "seasonForm");
       ValidationUtils.invokeValidator(validator, form, errors);
-      Assert.assertTrue(errors.hasErrors());
+      assertTrue(errors.hasErrors());
    }
 
    @Test
    public void newSeasonWithoutStartDate() {
-      final SeasonForm form = new SeasonForm();
-      form.setDescription("2003-2004 Season");
+      final SeasonForm form = TestUtils.newSeasonForm();
+      form.setStartsOn(null);
 
       final BindException errors = new BindException(form, "seasonForm");
       ValidationUtils.invokeValidator(validator, form, errors);
-      Assert.assertTrue(errors.hasErrors());
+      assertTrue(errors.hasErrors());
    }
 
    @Test
    public void newSeasonWithoutEndDate() {
-      final SeasonForm form = new SeasonForm();
-      form.setDescription("2003-2004 Season");
-      form.setStartsOn(LocalDate.parse("2003-07-01"));
+      final SeasonForm form = TestUtils.newSeasonForm();
+      form.setEndsOn(null);
 
       final BindException errors = new BindException(form, "seasonForm");
       ValidationUtils.invokeValidator(validator, form, errors);
-      Assert.assertFalse(errors.hasErrors());
+      assertFalse(errors.hasErrors());
    }
 }

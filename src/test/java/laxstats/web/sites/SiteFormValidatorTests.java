@@ -1,13 +1,12 @@
 package laxstats.web.sites;
 
-import laxstats.api.Region;
-import laxstats.api.sites.SiteStyle;
-import laxstats.api.sites.Surface;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import laxstats.TestUtils;
 import laxstats.query.people.ZipCodeQueryRepository;
 import laxstats.query.sites.SiteQueryRepository;
 import laxstats.web.validators.PostalCodeValidator;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,77 +38,63 @@ public class SiteFormValidatorTests {
 
    @Test
    public void supports() {
-      Assert.assertTrue(validator.supports(SiteForm.class));
-      Assert.assertFalse(validator.supports(Object.class));
+      assertTrue(validator.supports(SiteForm.class));
+      assertFalse(validator.supports(Object.class));
    }
 
    @Test
    public void newSiteIsValid() {
       Mockito.when(zipCodeQueryRespository.exists("01776")).thenReturn(true);
 
-      final SiteForm form = getForm();
+      final SiteForm form = TestUtils.newSiteForm();
       final BindException errors = new BindException(form, "siteForm");
       ValidationUtils.invokeValidator(validator, form, errors);
-      Assert.assertFalse(errors.hasErrors());
+      assertFalse(errors.hasErrors());
    }
 
    @Test
    public void newSiteHasNoName() {
       Mockito.when(zipCodeQueryRespository.exists("01776")).thenReturn(true);
 
-      final SiteForm form = getForm();
+      final SiteForm form = TestUtils.newSiteForm();
       form.setName(null);
 
       final BindException errors = new BindException(form, "siteForm");
       ValidationUtils.invokeValidator(validator, form, errors);
-      Assert.assertTrue(errors.hasErrors());
+      assertTrue(errors.hasErrors());
    }
 
    @Test
    public void newSiteHasNoCity() {
       Mockito.when(zipCodeQueryRespository.exists("01776")).thenReturn(true);
 
-      final SiteForm form = getForm();
+      final SiteForm form = TestUtils.newSiteForm();
       form.setCity(null);
 
       final BindException errors = new BindException(form, "siteForm");
       ValidationUtils.invokeValidator(validator, form, errors);
-      Assert.assertTrue(errors.hasErrors());
+      assertTrue(errors.hasErrors());
    }
 
    @Test
    public void newSiteHasNoRegion() {
       Mockito.when(zipCodeQueryRespository.exists("01776")).thenReturn(true);
 
-      final SiteForm form = getForm();
+      final SiteForm form = TestUtils.newSiteForm();
       form.setRegion(null);
 
       final BindException errors = new BindException(form, "siteForm");
       ValidationUtils.invokeValidator(validator, form, errors);
-      Assert.assertTrue(errors.hasErrors());
+      assertTrue(errors.hasErrors());
    }
 
    @Test
    public void newSiteHasNoPostalCode() {
-      final SiteForm form = getForm();
+      final SiteForm form = TestUtils.newSiteForm();
       form.setPostalCode(null);
 
       final BindException errors = new BindException(form, "siteForm");
       ValidationUtils.invokeValidator(validator, form, errors);
-      Assert.assertFalse(errors.hasErrors());
-   }
-
-   private SiteForm getForm() {
-      final SiteForm form = new SiteForm();
-      form.setAddress1("40 Tall Pine Drive");
-      form.setAddress2("#21");
-      form.setCity("Sudbury");
-      form.setName("Lincoln Sudbury field");
-      form.setPostalCode("01776");
-      form.setRegion(Region.MA);
-      form.setStyle(SiteStyle.COMPETITION);
-      form.setSurface(Surface.GRASS);
-
-      return form;
+      assertFalse(errors.hasErrors());
    }
 }
