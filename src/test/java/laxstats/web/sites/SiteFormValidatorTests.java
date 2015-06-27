@@ -4,6 +4,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import laxstats.TestUtils;
 import laxstats.query.people.ZipCodeQueryRepository;
+import laxstats.query.sites.SiteEntry;
 import laxstats.query.sites.SiteQueryRepository;
 import laxstats.web.validators.PostalCodeValidator;
 
@@ -42,6 +43,8 @@ public class SiteFormValidatorTests {
       assertFalse(validator.supports(Object.class));
    }
 
+   /*---------- New Site Tests ----------*/
+
    @Test
    public void newSiteIsValid() {
       Mockito.when(zipCodeQueryRespository.exists("01776")).thenReturn(true);
@@ -53,7 +56,7 @@ public class SiteFormValidatorTests {
    }
 
    @Test
-   public void newSiteHasNoName() {
+   public void newSiteMissingName() {
       Mockito.when(zipCodeQueryRespository.exists("01776")).thenReturn(true);
 
       final SiteForm form = TestUtils.newSiteForm();
@@ -65,7 +68,7 @@ public class SiteFormValidatorTests {
    }
 
    @Test
-   public void newSiteHasNoCity() {
+   public void newSiteMissingCity() {
       Mockito.when(zipCodeQueryRespository.exists("01776")).thenReturn(true);
 
       final SiteForm form = TestUtils.newSiteForm();
@@ -77,7 +80,7 @@ public class SiteFormValidatorTests {
    }
 
    @Test
-   public void newSiteHasNoRegion() {
+   public void newSiteMissingRegion() {
       Mockito.when(zipCodeQueryRespository.exists("01776")).thenReturn(true);
 
       final SiteForm form = TestUtils.newSiteForm();
@@ -89,12 +92,76 @@ public class SiteFormValidatorTests {
    }
 
    @Test
-   public void newSiteHasNoPostalCode() {
+   public void newSiteMissingPostalCode() {
       final SiteForm form = TestUtils.newSiteForm();
       form.setPostalCode(null);
 
       final BindException errors = new BindException(form, "siteForm");
       ValidationUtils.invokeValidator(validator, form, errors);
       assertFalse(errors.hasErrors());
+   }
+
+   @Test
+   public void newSiteHasDuplicateName() {
+      final SiteForm form = TestUtils.newSiteForm();
+
+      Mockito.when(siteQueryRepository.uniqueName(form.getName(), form.getCity(), form.getRegion()))
+         .thenReturn(1);
+
+      final BindException errors = new BindException(form, "siteForm");
+      ValidationUtils.invokeValidator(validator, form, errors);
+      assertTrue(errors.hasErrors());
+   }
+
+   @Test
+   public void newSiteInvalidPostalCode() {
+      final SiteForm form = TestUtils.newSiteForm();
+
+      final BindException errors = new BindException(form, "siteForm");
+      ValidationUtils.invokeValidator(validator, form, errors);
+      assertTrue(errors.hasErrors());
+   }
+
+   /*---------- Existing Site Tests ----------*/
+
+   @Test
+   public void updateSiteDuplicateName() {
+      final SiteEntry site = TestUtils.getExistingSite();
+      final String id = site.getId();
+
+      final SiteForm form = TestUtils.newSiteForm();
+      form.setId(id);
+      form.setName("This is a duplicate name");
+
+      Mockito.when(siteQueryRepository.exists(id)).thenReturn(true);
+      Mockito.when(siteQueryRepository.findOne(id)).thenReturn(TestUtils.getExistingSite());
+      Mockito.when(
+         siteQueryRepository.updateName(form.getName(), form.getCity(), form.getRegion(), id))
+         .thenReturn(1);
+
+      final BindException errors = new BindException(form, "siteForm");
+      ValidationUtils.invokeValidator(validator, form, errors);
+      assertTrue(errors.hasErrors());
+   }
+
+   @Test
+   public void updateSiteInvalidPostalCode() {
+      final SiteEntry site = TestUtils.getExistingSite();
+      final String id = site.getId();
+
+      final SiteForm form = TestUtils.newSiteForm();
+      form.setId(id);
+      form.setPostalCode("02482");
+
+      Mockito.when(siteQueryRepository.exists(id)).thenReturn(true);
+      Mockito.when(siteQueryRepository.findOne(id)).thenReturn(TestUtils.getExistingSite());
+      Mockito.when(
+         siteQueryRepository.updateName(form.getName(), form.getCity(), form.getRegion(), id))
+         .thenReturn(0);
+
+      final BindException errors = new BindException(form, "siteForm");
+      ValidationUtils.invokeValidator(validator, form, errors);
+      assertTrue(errors.hasErrors());
+
    }
 }

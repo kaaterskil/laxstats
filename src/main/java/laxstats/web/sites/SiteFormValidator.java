@@ -1,5 +1,6 @@
 package laxstats.web.sites;
 
+import laxstats.TestUtils;
 import laxstats.api.Common;
 import laxstats.api.Region;
 import laxstats.query.sites.SiteEntry;
@@ -11,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 @Service
@@ -65,13 +65,19 @@ public class SiteFormValidator implements Validator {
 
       logger.debug("Entering: " + proc + "10");
 
-      ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "site.name.required");
+      if (TestUtils.isEmptyOrWhitespace(form.getName())) {
+         errors.reject("name", "site.name.required");
+      }
       logger.debug(proc + "20");
 
-      ValidationUtils.rejectIfEmptyOrWhitespace(errors, "city", "site.city.required");
+      if (TestUtils.isEmptyOrWhitespace(form.getCity())) {
+         errors.rejectValue("city", "site.city.required");
+      }
       logger.debug(proc + "30");
 
-      ValidationUtils.rejectIfEmpty(errors, "region", "site.region.required");
+      if (form.getRegion() == null) {
+         errors.rejectValue("region", "site.region.required");
+      }
 
       logger.debug("Leaving: " + proc + "40");
    }
@@ -103,8 +109,8 @@ public class SiteFormValidator implements Validator {
 
          final SiteEntry site = siteRepository.findOne(siteId);
          if (!site.getName().equals(name) ||
-                  (site.getAddress() != null && (!site.getAddress().getCity().equals(city) || !site
-               .getAddress().getRegion().equals(region)))) {
+            (site.getAddress() != null && (!site.getAddress().getCity().equals(city) || !site
+                           .getAddress().getRegion().equals(region)))) {
             logger.debug(proc + "40");
 
             found = siteRepository.updateName(name, city, region, siteId);
@@ -147,11 +153,9 @@ public class SiteFormValidator implements Validator {
 
             final SiteEntry site = siteRepository.findOne(siteId);
             if (site.getAddress() != null &&
-                     !postalCode.equals(Common.nvl(site.getAddress().getPostalCode(), null))) {
+               !postalCode.equals(Common.nvl(site.getAddress().getPostalCode(), null))) {
                logger.debug(proc + "30");
 
-               // final laxstats.web.validators.Validator validator =
-               // PostalCodeValidator.getInstance();
                if (!postalCodeValidator.isValid(postalCode)) {
                   errors.rejectValue("postalCode", "site.address.postalCode.invalid");
                }

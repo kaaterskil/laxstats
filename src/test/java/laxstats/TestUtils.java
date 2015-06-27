@@ -8,6 +8,7 @@ import laxstats.api.sites.Surface;
 import laxstats.query.people.AddressEntry;
 import laxstats.query.people.PersonEntry;
 import laxstats.query.seasons.SeasonEntry;
+import laxstats.query.sites.SiteEntry;
 import laxstats.web.people.AddressForm;
 import laxstats.web.seasons.SeasonForm;
 import laxstats.web.sites.SiteForm;
@@ -147,6 +148,25 @@ public class TestUtils {
    }
 
    /**
+    * Returns a new {@code AddressEntry} of type AddressType.SITE.
+    *
+    * @return
+    */
+   public static AddressEntry getSiteAddress() {
+      final AddressEntry address = new AddressEntry();
+      address.setAddress1("390 Lincoln Road");
+      address.setAddress2("Unit 32");
+      address.setAddressType(AddressType.SITE);
+      address.setCity("Sudbury");
+      address.setCreatedAt(LocalDateTime.now());
+      address.setModifiedAt(LocalDateTime.now());
+      address.setPostalCode("01776");
+      address.setPrimary(true);
+      address.setRegion(Region.MA);
+      return address;
+   }
+
+   /**
     * Returns a new {@code SeasonEntry}
     *
     * @return
@@ -172,6 +192,28 @@ public class TestUtils {
       season.setEndsOn(LocalDate.parse("2014-06-30"));
       season.setId(id);
       return season;
+   }
+
+   /**
+    * Returns a {@code SiteEntry} with a primary key and address.
+    *
+    * @return
+    */
+   public static SiteEntry getExistingSite() {
+      final String id = IdentifierFactory.getInstance().generateIdentifier();
+      final SiteEntry site = new SiteEntry();
+      site.setName("Lincoln Sudbury Regional High School");
+      site.setId(id);
+      site.setStyle(SiteStyle.COMPETITION);
+      site.setSurface(Surface.GRASS);
+      site.setCreatedAt(LocalDateTime.now());
+      site.setModifiedAt(LocalDateTime.now());
+
+      final AddressEntry address = getSiteAddress();
+      site.setAddress(address);
+      address.setSite(site);
+
+      return site;
    }
 
    protected TestUtils() {
