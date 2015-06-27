@@ -18,6 +18,7 @@ import laxstats.web.people.AddressForm;
 import laxstats.web.people.ContactForm;
 import laxstats.web.seasons.SeasonForm;
 import laxstats.web.sites.SiteForm;
+import laxstats.web.users.UserForm;
 import laxstats.web.violations.ViolationForm;
 
 import org.axonframework.domain.IdentifierFactory;
@@ -110,6 +111,21 @@ public class TestUtils {
       form.setRegion(Region.MA);
       form.setStyle(SiteStyle.COMPETITION);
       form.setSurface(Surface.GRASS);
+      return form;
+   }
+
+   /**
+    * Returns a completed {@code UserForm} for a new user.
+    * 
+    * @return
+    */
+   public static UserForm newUserForm() {
+      final UserForm form = new UserForm();
+      form.setEmail("john@example.com");
+      form.setEnabled(true);
+      form.setFirstName("John");
+      form.setLastName("Doe");
+      form.setPassword("user");
       return form;
    }
 
@@ -293,7 +309,7 @@ public class TestUtils {
 
    /**
     * Returns a {@code ViolationEntry}
-    * 
+    *
     * @return
     */
    public static ViolationEntry getViolation() {
