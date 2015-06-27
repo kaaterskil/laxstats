@@ -1,53 +1,48 @@
 package laxstats.web.validators;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.util.Assert;
-
-import laxstats.Application;
 import laxstats.query.people.ZipCodeQueryRepository;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
-@WebAppConfiguration
-@IntegrationTest
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
+
+@RunWith(MockitoJUnitRunner.class)
 public class ZipCodeValidatorTests {
 
-   @Autowired
+   @Mock
    ZipCodeQueryRepository repository;
 
-   PostalCodeValidator validator;
-
-   @Before
-   public void setUp() {
-      validator = (PostalCodeValidator)PostalCodeValidator.getInstance();
-      validator.setRepository(repository);
-   }
+   @InjectMocks
+   PostalCodeValidator validator = new PostalCodeValidator();
 
    @Test
    public void test5DigitZipCode() {
+      Mockito.when(repository.exists("01776")).thenReturn(true);
+
       final String zipCode = "01776";
       final boolean isValid = validator.isValid(zipCode);
-      Assert.isTrue(isValid);
+      Assert.assertTrue(isValid);
    }
 
    @Test
    public void test9DigitZipCode() {
+      Mockito.when(repository.exists("01776")).thenReturn(true);
+
       final String zipCode = "01776-4616";
       final boolean isValid = validator.isValid(zipCode);
-      Assert.isTrue(isValid);
+      Assert.assertTrue(isValid);
    }
 
    @Test
    public void testTooLongZipCode() {
+      Mockito.when(repository.exists("01776")).thenReturn(true);
+
       final String zipCode = "0177668";
       final boolean isValid = validator.isValid(zipCode);
-      Assert.isTrue(!isValid);
+      Assert.assertFalse(isValid);
    }
 }

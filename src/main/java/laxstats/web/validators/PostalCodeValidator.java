@@ -3,44 +3,26 @@ package laxstats.web.validators;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import laxstats.query.people.ZipCodeQueryRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * {@code PostalCodeValidator} is a validator that verifies that a user-defined postal code matches
  * the primary key of a persistent {@code ZipCode}. Null postal codes are considered valid.
  */
+@Service
 public class PostalCodeValidator implements Validator {
    private static String US_ZIP_CODE = "\\d{5}(?:[-\\s]\\d{4})?";
 
-   private static Validator INSTANCE = new PostalCodeValidator();
-
-   /**
-    * Returns the singleton instance of this {@code Validator}.
-    *
-    * @return
-    */
-   public static Validator getInstance() {
-      return INSTANCE;
-   }
-
+   @Autowired
    private ZipCodeQueryRepository repository;
 
    private Pattern pattern;
 
-   protected PostalCodeValidator() {
+   public PostalCodeValidator() {
       initialize();
-   }
-
-   /**
-    * Sets the postal code repository.
-    *
-    * @param repository
-    */
-   @Autowired
-   public void setRepository(ZipCodeQueryRepository repository) {
-      this.repository = repository;
    }
 
    /**
