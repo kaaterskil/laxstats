@@ -1,9 +1,10 @@
 package laxstats.web.validators;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Before;
 import org.junit.Test;
-
-import io.jsonwebtoken.lang.Assert;
 
 public class EmailValidatorTests {
 
@@ -18,27 +19,27 @@ public class EmailValidatorTests {
    public void testValidEmail() {
       final String email = "blair@kaaterskil.com";
       final boolean isValid = validator.isValid(email);
-      Assert.isTrue(isValid);
+      assertTrue(isValid);
    }
 
    @Test
    public void testInvalidAccountName() {
       final String email = "foo.com";
       final boolean isValid = validator.isValid(email);
-      Assert.isTrue(!isValid);
+      assertFalse(isValid);
    }
 
    @Test
    public void testMultipleAtSigns() {
       final String email = "blair@foo@foo.com";
       final boolean isValid = validator.isValid(email);
-      Assert.isTrue(!isValid);
+      assertFalse(isValid);
    }
 
    @Test
    public void testIpAddress() {
       final String email = "blair@192.168.1.1";
       final boolean isValid = validator.isValid(email);
-      Assert.isTrue(isValid);
+      assertTrue(isValid);
    }
 }
