@@ -95,13 +95,21 @@ public class TestUtils {
    /*---------- Entities ----------*/
 
    /**
-    * Returns a {@code PersonEntry} with a primary home address.
+    * Returns a {@code PersonEntry} with a primary key and primary home address.
     *
     * @return
     */
    public static PersonEntry getPersonWithPrimaryAddress() {
+      final String personId = IdentifierFactory.getInstance().generateIdentifier();
+      final String addressId = IdentifierFactory.getInstance().generateIdentifier();
+
       final PersonEntry person = getPerson();
-      person.addAddress(getHomeAddress());
+      person.setId(personId);
+
+      final AddressEntry address = getHomeAddress();
+      address.setId(addressId);
+
+      person.addAddress(address);
       return person;
    }
 

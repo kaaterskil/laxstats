@@ -1,5 +1,6 @@
 package laxstats.web.people;
 
+import laxstats.TestUtils;
 import laxstats.api.Common;
 import laxstats.api.Region;
 import laxstats.api.people.AddressType;
@@ -13,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 @Service
@@ -71,11 +71,15 @@ public class AddressFormValidator implements Validator {
 
       logger.debug("Entering: " + proc + "10");
 
-      ValidationUtils.rejectIfEmpty(errors, "type", "address.type.required");
+      if (form.getType() == null) {
+         errors.rejectValue("type", "address.type.required");
+      }
       logger.debug(proc + "20");
 
-      ValidationUtils.rejectIfEmptyOrWhitespace(errors, "city", "address.city.required");
-      logger.debug("Leaving: " + proc + "40");
+      if (TestUtils.isEmptyOrWhitespace(form.getCity())) {
+         errors.rejectValue("city", "address.city.required");
+      }
+      logger.debug("Leaving: " + proc + "30");
    }
 
    /**
@@ -109,13 +113,13 @@ public class AddressFormValidator implements Validator {
          final PersonEntry person = personRepository.findOne(personId);
          final AddressEntry address = person.getAddress(addressId);
          if (!address.getAddressType().equals(type) ||
-                  !Common.nvl(address.getAddress1(), "").equalsIgnoreCase(Common.nvl(address1, "")) ||
-                  !address.getCity().equals(city) ||
-                  !Common.nvl(address.getRegion(), Region.MA).equals(Common.nvl(region, Region.MA))) {
+            !Common.nvl(address.getAddress1(), "").equalsIgnoreCase(Common.nvl(address1, "")) ||
+            !address.getCity().equals(city) ||
+            !Common.nvl(address.getRegion(), Region.MA).equals(Common.nvl(region, Region.MA))) {
             logger.debug(proc + "40");
 
             found =
-                     personRepository.updateAddress(type, address1, city, region, personId, addressId);
+               personRepository.updateAddress(type, address1, city, region, personId, addressId);
             if (found > 0) {
                errors.rejectValue("city", "address.duplicate");
             }
