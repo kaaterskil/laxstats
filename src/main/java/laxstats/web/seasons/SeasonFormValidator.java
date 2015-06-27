@@ -2,6 +2,7 @@ package laxstats.web.seasons;
 
 import java.util.List;
 
+import laxstats.TestUtils;
 import laxstats.api.Common;
 import laxstats.query.seasons.SeasonEntry;
 import laxstats.query.seasons.SeasonQueryRepository;
@@ -79,7 +80,7 @@ public class SeasonFormValidator implements Validator {
 
       logger.debug("Entering: " + proc + "10");
 
-      if (description == null || description.length() == 0) {
+      if (TestUtils.isEmptyOrWhitespace(description)) {
          errors.rejectValue("description", "season.description.required");
       }
       logger.debug(proc + "20");
@@ -123,7 +124,7 @@ public class SeasonFormValidator implements Validator {
          logger.debug(proc + "30");
 
          if ((description != null && season.getDescription() == null) ||
-                  !season.getDescription().equals(description)) {
+            !season.getDescription().equals(description)) {
             logger.debug(proc + "40");
 
             found = seasonQueryRepository.updateDescription(description, seasonId);
@@ -182,7 +183,7 @@ public class SeasonFormValidator implements Validator {
 
          // Test if either the startsOn or endsOn dates have changed
          if (!Common.nvl(season.getEndsOn(), eot).equals(Common.nvl(endsOn, eot)) ||
-                  !season.getStartsOn().equals(startsOn)) {
+            !season.getStartsOn().equals(startsOn)) {
             logger.debug(proc + "40");
             doValidation = true;
          }
@@ -193,7 +194,7 @@ public class SeasonFormValidator implements Validator {
       }
 
       if (doValidation && startsOn != null &&
-         (startsOn.isAfter(Common.nvl(endsOn, eot)) || startsOn.isEqual(Common.nvl(endsOn, eot)))) {
+               (startsOn.isAfter(Common.nvl(endsOn, eot)) || startsOn.isEqual(Common.nvl(endsOn, eot)))) {
          errors.rejectValue("endsOn", "season.endsOn.beforeStart");
       }
       logger.debug("Leaving: " + proc + "60");

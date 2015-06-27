@@ -18,6 +18,29 @@ import org.joda.time.LocalDateTime;
 
 public class TestUtils {
 
+   /**
+    * Returns true if the given string is null, empty or contains only whitespace characters, false
+    * otherwise.
+    *
+    * @param str
+    * @return
+    */
+   public static boolean isEmptyOrWhitespace(String str) {
+      if (str == null || str.length() == 0) {
+         return true;
+      }
+
+      boolean hasOnlyWhitespace = true;
+      final int len = str.length();
+      for (int i = 0; i < len; i++) {
+         if (!Character.isWhitespace(str.charAt(i))) {
+            hasOnlyWhitespace = false;
+            break;
+         }
+      }
+      return hasOnlyWhitespace;
+   }
+
    /*---------- Forms ----------*/
 
    /**
