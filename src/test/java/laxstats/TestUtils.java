@@ -6,15 +6,19 @@ import laxstats.api.people.ContactMethod;
 import laxstats.api.people.Gender;
 import laxstats.api.sites.SiteStyle;
 import laxstats.api.sites.Surface;
+import laxstats.api.violations.PenaltyCategory;
+import laxstats.api.violations.PenaltyLength;
 import laxstats.query.people.AddressEntry;
 import laxstats.query.people.ContactEntry;
 import laxstats.query.people.PersonEntry;
 import laxstats.query.seasons.SeasonEntry;
 import laxstats.query.sites.SiteEntry;
+import laxstats.query.violations.ViolationEntry;
 import laxstats.web.people.AddressForm;
 import laxstats.web.people.ContactForm;
 import laxstats.web.seasons.SeasonForm;
 import laxstats.web.sites.SiteForm;
+import laxstats.web.violations.ViolationForm;
 
 import org.axonframework.domain.IdentifierFactory;
 import org.joda.time.LocalDate;
@@ -106,6 +110,21 @@ public class TestUtils {
       form.setRegion(Region.MA);
       form.setStyle(SiteStyle.COMPETITION);
       form.setSurface(Surface.GRASS);
+      return form;
+   }
+
+   /**
+    * Returns a completed {@code ViolationForm} for a new violation.
+    *
+    * @return
+    */
+   public static ViolationForm newViolationForm() {
+      final ViolationForm form = new ViolationForm();
+      form.setCategory(PenaltyCategory.PERSONAL_FOUL);
+      form.setDescription("This is a slash");
+      form.setName("Slash");
+      form.setPenaltyLength(PenaltyLength.ONE_MINUTE);
+      form.setReleasable(true);
       return form;
    }
 
@@ -270,6 +289,23 @@ public class TestUtils {
       address.setSite(site);
 
       return site;
+   }
+
+   /**
+    * Returns a {@code ViolationEntry}
+    * 
+    * @return
+    */
+   public static ViolationEntry getViolation() {
+      final ViolationEntry violation = new ViolationEntry();
+      violation.setCategory(PenaltyCategory.PERSONAL_FOUL);
+      violation.setCreatedAt(LocalDateTime.now());
+      violation.setDescription("This is a long description of a slash");
+      violation.setModifiedAt(LocalDateTime.now());
+      violation.setName("Slash");
+      violation.setPenaltyLength(PenaltyLength.ONE_MINUTE);
+      violation.setReleasable(true);
+      return violation;
    }
 
    protected TestUtils() {
