@@ -3,6 +3,7 @@ package laxstats;
 import laxstats.api.Region;
 import laxstats.api.people.AddressType;
 import laxstats.api.people.ContactMethod;
+import laxstats.api.people.DominantHand;
 import laxstats.api.people.Gender;
 import laxstats.api.sites.SiteStyle;
 import laxstats.api.sites.Surface;
@@ -16,6 +17,7 @@ import laxstats.query.sites.SiteEntry;
 import laxstats.query.violations.ViolationEntry;
 import laxstats.web.people.AddressForm;
 import laxstats.web.people.ContactForm;
+import laxstats.web.people.PersonForm;
 import laxstats.web.seasons.SeasonForm;
 import laxstats.web.sites.SiteForm;
 import laxstats.web.users.UserForm;
@@ -85,6 +87,27 @@ public class TestUtils {
    }
 
    /**
+    * Returns a complete {@code PersonForm} for a new person.
+    * 
+    * @return
+    */
+   public static PersonForm newPersonForm() {
+      final PersonForm form = new PersonForm();
+      form.setBirthdate(LocalDate.parse("1988-09-30"));
+      form.setCollege("Colgate University");
+      form.setDominantHand(DominantHand.RIGHT);
+      form.setFirstName("Stanley");
+      form.setGender(Gender.MALE);
+      form.setLastName("Caple");
+      form.setMiddleName("NMI");
+      form.setNickname("Stan");
+      form.setParentReleaseReceivedOn(LocalDate.parse("2014-10-12"));
+      form.setParentReleaseSentOn(LocalDate.parse("2014-10-05"));
+      form.setReleased(true);
+      return form;
+   }
+
+   /**
     * Returns a completed {@code SeasonForm} for a new season.
     *
     * @return
@@ -116,7 +139,7 @@ public class TestUtils {
 
    /**
     * Returns a completed {@code UserForm} for a new user.
-    * 
+    *
     * @return
     */
    public static UserForm newUserForm() {
@@ -192,7 +215,7 @@ public class TestUtils {
     */
    public static PersonEntry getPerson() {
       final PersonEntry person = new PersonEntry();
-      person.setBirthdate(LocalDate.parse("1988-02-15"));
+      person.setBirthdate(LocalDate.parse("1988-09-30"));
       person.setCollege("Colgate University");
       person.setCreatedAt(LocalDateTime.now());
       person.setFirstName("Stanley");

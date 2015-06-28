@@ -1,5 +1,6 @@
 package laxstats.web.people;
 
+import laxstats.TestUtils;
 import laxstats.api.Common;
 import laxstats.api.people.Gender;
 import laxstats.api.players.Role;
@@ -15,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 @Service
@@ -70,7 +70,9 @@ public class PersonFormValidator implements Validator {
 
       logger.debug("Entering: " + proc + "10");
 
-      ValidationUtils.rejectIfEmptyOrWhitespace(errors, "lastName", "person.lastName.required");
+      if (TestUtils.isEmptyOrWhitespace(form.getLastName())) {
+         errors.rejectValue("lastName", "person.lastName.required");
+      }
       logger.debug("Leaving: " + proc + "20");
    }
 
@@ -96,31 +98,35 @@ public class PersonFormValidator implements Validator {
          logger.debug(proc + "30");
 
          if (isUpdating) {
-            final PersonEntry person = personRepository.findOne(personId);
-            if (!person.getPlayedSeasons().isEmpty() &&
-               !Common.nvl(person.getBirthdate(), eot).equals(birthDate)) {
-               logger.debug(proc + "40");
+            logger.debug(proc + "40");
 
-               LocalDate startsOn = LocalDate.now();
+            final PersonEntry person = personRepository.findOne(personId);
+            LocalDate startsOn = LocalDate.now();
+
+            if (!person.getPlayedSeasons().isEmpty() &&
+                     !Common.nvl(person.getBirthdate(), eot).equals(birthDate)) {
+               logger.debug(proc + "50");
+
                for (final PlayerEntry each : person.getPlayedSeasons()) {
                   final TeamSeasonEntry team = each.getTeamSeason();
                   if (team.getStartsOn().isBefore(startsOn)) {
                      startsOn = team.getStartsOn();
                   }
                }
-               if (birthDate.isAfter(startsOn)) {
-                  errors.rejectValue("birthdate", "person.birthdate.invalid");
-               }
             }
-         } else {
-            logger.debug(proc + "50");
+            if (birthDate.isAfter(startsOn)) {
+               errors.rejectValue("birthdate", "person.birthdate.invalid");
+            }
+         }
+         else {
+            logger.debug(proc + "60");
             final LocalDate today = LocalDate.now();
             if (birthDate.isAfter(today)) {
                errors.rejectValue("birthdate", "person.birthdate.invalid");
             }
          }
       }
-      logger.debug("Leaving: " + proc + "60");
+      logger.debug("Leaving: " + proc + "70");
    }
 
    /**
@@ -154,7 +160,8 @@ public class PersonFormValidator implements Validator {
 
                if (genderType.equals(TeamGender.BOYS) || genderType.equals(TeamGender.MEN)) {
                   teamGender = Gender.MALE;
-               } else {
+               }
+               else {
                   teamGender = Gender.FEMALE;
                }
                if (!teamGender.equals(gender)) {
@@ -196,7 +203,8 @@ public class PersonFormValidator implements Validator {
                errors.rejectValue("parentReleaseSentOn", "person.parentReleaseSentOn.invalid");
             }
          }
-      } else {
+      }
+      else {
          logger.debug(proc + "50");
          if (Common.nvl(sentOn, eot).isAfter(Common.nvl(receivedOn, eot))) {
             errors.rejectValue("parentReleaseSentOn", "person.parentReleaseSentOn.invalid");
@@ -235,19 +243,20 @@ public class PersonFormValidator implements Validator {
             logger.debug(proc + "40");
 
             final PersonEntry person = personRepository.findOne(personId);
-            if (Common.nvl(person.getParentReleaseReceivedOn(), eot).equals(
+            if (!Common.nvl(person.getParentReleaseReceivedOn(), eot).equals(
                Common.nvl(receivedOn, eot))) {
                logger.debug(proc + "50");
 
-               if (Common.nvl(receivedOn, eot).isBefore(sentOn)) {
+               if (Common.nvl(receivedOn, eot).isBefore(Common.nvl(sentOn, eot))) {
                   errors.rejectValue("parentReleaseReceivedOn",
                      "person.parentReleaseReceivedOn.invalid");
                }
             }
 
-         } else {
+         }
+         else {
             logger.debug(proc + "60");
-            if (Common.nvl(receivedOn, eot).isBefore(sentOn)) {
+            if (Common.nvl(receivedOn, eot).isBefore(Common.nvl(sentOn, eot))) {
                errors.rejectValue("parentReleaseReceivedOn",
                   "person.parentReleaseReceivedOn.invalid");
             }
@@ -267,7 +276,8 @@ public class PersonFormValidator implements Validator {
       boolean result = false;
       if (personId == null) {
          result = false;
-      } else {
+      }
+      else {
          final boolean exists = personRepository.exists(personId);
          if (!exists) {
             throw new IllegalStateException("Invalid primary key");
