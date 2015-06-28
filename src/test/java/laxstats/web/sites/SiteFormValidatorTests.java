@@ -47,9 +47,10 @@ public class SiteFormValidatorTests {
 
    @Test
    public void newSiteIsValid() {
-      Mockito.when(zipCodeQueryRespository.exists("01776")).thenReturn(true);
-
       final SiteForm form = TestUtils.newSiteForm();
+
+      Mockito.when(zipCodeQueryRespository.exists(form.getPostalCode())).thenReturn(true);
+
       final BindException errors = new BindException(form, "siteForm");
       ValidationUtils.invokeValidator(validator, form, errors);
       assertFalse(errors.hasErrors());
@@ -57,10 +58,10 @@ public class SiteFormValidatorTests {
 
    @Test
    public void newSiteMissingName() {
-      Mockito.when(zipCodeQueryRespository.exists("01776")).thenReturn(true);
-
       final SiteForm form = TestUtils.newSiteForm();
       form.setName(null);
+
+      Mockito.when(zipCodeQueryRespository.exists(form.getPostalCode())).thenReturn(true);
 
       final BindException errors = new BindException(form, "siteForm");
       ValidationUtils.invokeValidator(validator, form, errors);
@@ -69,10 +70,10 @@ public class SiteFormValidatorTests {
 
    @Test
    public void newSiteMissingCity() {
-      Mockito.when(zipCodeQueryRespository.exists("01776")).thenReturn(true);
-
       final SiteForm form = TestUtils.newSiteForm();
       form.setCity(null);
+
+      Mockito.when(zipCodeQueryRespository.exists(form.getPostalCode())).thenReturn(true);
 
       final BindException errors = new BindException(form, "siteForm");
       ValidationUtils.invokeValidator(validator, form, errors);
@@ -81,10 +82,10 @@ public class SiteFormValidatorTests {
 
    @Test
    public void newSiteMissingRegion() {
-      Mockito.when(zipCodeQueryRespository.exists("01776")).thenReturn(true);
-
       final SiteForm form = TestUtils.newSiteForm();
       form.setRegion(null);
+
+      Mockito.when(zipCodeQueryRespository.exists(form.getPostalCode())).thenReturn(true);
 
       final BindException errors = new BindException(form, "siteForm");
       ValidationUtils.invokeValidator(validator, form, errors);
@@ -106,7 +107,7 @@ public class SiteFormValidatorTests {
       final SiteForm form = TestUtils.newSiteForm();
 
       Mockito.when(siteQueryRepository.uniqueName(form.getName(), form.getCity(), form.getRegion()))
-         .thenReturn(1);
+      .thenReturn(1);
 
       final BindException errors = new BindException(form, "siteForm");
       ValidationUtils.invokeValidator(validator, form, errors);
@@ -151,7 +152,7 @@ public class SiteFormValidatorTests {
 
       final SiteForm form = TestUtils.newSiteForm();
       form.setId(id);
-      form.setPostalCode("02482");
+      form.setPostalCode("000");
 
       Mockito.when(siteQueryRepository.exists(id)).thenReturn(true);
       Mockito.when(siteQueryRepository.findOne(id)).thenReturn(TestUtils.getExistingSite());

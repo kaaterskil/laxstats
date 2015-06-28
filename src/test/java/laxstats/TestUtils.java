@@ -7,6 +7,8 @@ import laxstats.api.people.DominantHand;
 import laxstats.api.people.Gender;
 import laxstats.api.sites.SiteStyle;
 import laxstats.api.sites.Surface;
+import laxstats.api.teams.Letter;
+import laxstats.api.teams.TeamGender;
 import laxstats.api.violations.PenaltyCategory;
 import laxstats.api.violations.PenaltyLength;
 import laxstats.query.people.AddressEntry;
@@ -14,12 +16,14 @@ import laxstats.query.people.ContactEntry;
 import laxstats.query.people.PersonEntry;
 import laxstats.query.seasons.SeasonEntry;
 import laxstats.query.sites.SiteEntry;
+import laxstats.query.teams.TeamEntry;
 import laxstats.query.violations.ViolationEntry;
 import laxstats.web.people.AddressForm;
 import laxstats.web.people.ContactForm;
 import laxstats.web.people.PersonForm;
 import laxstats.web.seasons.SeasonForm;
 import laxstats.web.sites.SiteForm;
+import laxstats.web.teams.TeamForm;
 import laxstats.web.users.UserForm;
 import laxstats.web.violations.ViolationForm;
 
@@ -88,7 +92,7 @@ public class TestUtils {
 
    /**
     * Returns a complete {@code PersonForm} for a new person.
-    * 
+    *
     * @return
     */
    public static PersonForm newPersonForm() {
@@ -127,13 +131,29 @@ public class TestUtils {
     */
    public static SiteForm newSiteForm() {
       final SiteForm form = new SiteForm();
-      form.setAddress1("390 Lincoln Road");
-      form.setCity("Sudbury");
-      form.setName("Lincoln Sudbury Regional High School");
-      form.setPostalCode("01776");
+      form.setAddress1("40 Rice Street");
+      form.setCity("Wellesley");
+      form.setName("Wellesley High School");
+      form.setPostalCode("02482");
       form.setRegion(Region.MA);
       form.setStyle(SiteStyle.COMPETITION);
       form.setSurface(Surface.GRASS);
+      return form;
+   }
+
+   /**
+    * Returns a completed {@code TeamForm} for a new team. NOTE: The home site is null.
+    *
+    * @return
+    */
+   public static TeamForm newTeamForm() {
+      final TeamForm form = new TeamForm();
+      form.setAbbreviation("WHS");
+      form.setGender(TeamGender.BOYS);
+      form.setLetter(Letter.VARSITY);
+      form.setName("Wellesley Raiders");
+      form.setRegion(Region.MA);
+      form.setSponsor("Wellesley High School");
       return form;
    }
 
@@ -267,14 +287,15 @@ public class TestUtils {
     * @return
     */
    public static AddressEntry getSiteAddress() {
+      final String id = IdentifierFactory.getInstance().generateIdentifier();
       final AddressEntry address = new AddressEntry();
-      address.setAddress1("390 Lincoln Road");
-      address.setAddress2("Unit 32");
+      address.setAddress1("40 Rice Street");
       address.setAddressType(AddressType.SITE);
-      address.setCity("Sudbury");
+      address.setCity("Wellesley");
       address.setCreatedAt(LocalDateTime.now());
+      address.setId(id);
       address.setModifiedAt(LocalDateTime.now());
-      address.setPostalCode("01776");
+      address.setPostalCode("02482");
       address.setPrimary(true);
       address.setRegion(Region.MA);
       return address;
@@ -316,7 +337,7 @@ public class TestUtils {
    public static SiteEntry getExistingSite() {
       final String id = IdentifierFactory.getInstance().generateIdentifier();
       final SiteEntry site = new SiteEntry();
-      site.setName("Lincoln Sudbury Regional High School");
+      site.setName("Wellesley High School");
       site.setId(id);
       site.setStyle(SiteStyle.COMPETITION);
       site.setSurface(Surface.GRASS);
@@ -328,6 +349,30 @@ public class TestUtils {
       address.setSite(site);
 
       return site;
+   }
+
+   /**
+    * Returns a {@code TeamEntry} with a primary key and a home site.
+    *
+    * @return
+    */
+   public static TeamEntry getExistingTeam() {
+      final String id = IdentifierFactory.getInstance().generateIdentifier();
+      final TeamEntry team = new TeamEntry();
+      team.setAbbreviation("WHS");
+      team.setCreatedAt(LocalDateTime.now());
+      team.setGender(TeamGender.BOYS);
+      team.setId(id);
+      team.setLetter(Letter.VARSITY);
+      team.setModifiedAt(LocalDateTime.now());
+      team.setName("Wellesley Raiders");
+      team.setRegion(Region.MA);
+      team.setSponsor("Wellesley High School");
+
+      final SiteEntry homeSite = getExistingSite();
+      team.setHomeSite(homeSite);
+
+      return team;
    }
 
    /**
