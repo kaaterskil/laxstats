@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beansProjectDescription>
 	<version>1</version>
-	<pluginVersion><![CDATA[3.6.3.201411271034-RELEASE]]></pluginVersion>
+	<pluginVersion><![CDATA[3.6.4.201503051146-RELEASE]]></pluginVersion>
 	<configSuffixes>
 		<configSuffix><![CDATA[xml]]></configSuffix>
 	</configSuffixes>
@@ -13,6 +13,30 @@
 		<config>java:laxstats.HttpSecurityConfiguration</config>
 	</configs>
 	<autoconfigs>
+		<config>java:laxstats.Application</config>
+		<config>java:laxstats.query.people.PersonListener</config>
+		<config>java:laxstats.query.relationships.RelationshipListener</config>
+		<config>java:laxstats.query.leagues.LeagueListener</config>
+		<config>java:laxstats.domain.users.UserCommandHandler</config>
+		<config>java:laxstats.web.thymeleaf.MinuteSecondFormatter</config>
+		<config>java:laxstats.web.thymeleaf.LocalDateFormatter</config>
+		<config>java:laxstats.query.seasons.SeasonListener</config>
+		<config>java:laxstats.domain.teamSeasons.TeamSeasonCommandHandler</config>
+		<config>java:laxstats.domain.leagues.LeagueCommandHandler</config>
+		<config>java:laxstats.web.thymeleaf.LocalDateTimeFormatter</config>
+		<config>java:laxstats.SimpleCORSFilter</config>
+		<config>java:laxstats.domain.people.PersonCommandHandler</config>
+		<config>java:laxstats.domain.seasons.SeasonCommandHandler</config>
+		<config>java:laxstats.query.teamSeasons.TeamSeasonListener</config>
+		<config>java:laxstats.domain.violations.ViolationCommandHandler</config>
+		<config>java:laxstats.query.players.PlayerListener</config>
+		<config>java:laxstats.domain.teams.TeamCommandHandler</config>
+		<config>java:laxstats.query.sites.SiteListener</config>
+		<config>java:laxstats.query.users.UserListener</config>
+		<config>java:laxstats.query.teams.TeamListener</config>
+		<config>java:laxstats.domain.sites.SiteCommandHandler</config>
+		<config>java:laxstats.domain.relationships.RelationshipCommandHandler</config>
+		<config>java:laxstats.query.violations.ViolationListener</config>
 	</autoconfigs>
 	<configSets>
 	</configSets>

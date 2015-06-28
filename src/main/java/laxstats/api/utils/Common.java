@@ -1,4 +1,4 @@
-package laxstats.api;
+package laxstats.api.utils;
 
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
