@@ -2,9 +2,9 @@ package laxstats.web.violations;
 
 import javax.validation.Valid;
 
-import laxstats.api.violations.CreateViolationCommand;
-import laxstats.api.violations.DeleteViolationCommand;
-import laxstats.api.violations.UpdateViolationCommand;
+import laxstats.api.violations.CreateViolation;
+import laxstats.api.violations.DeleteViolation;
+import laxstats.api.violations.UpdateViolation;
 import laxstats.api.violations.ViolationDTO;
 import laxstats.api.violations.ViolationId;
 import laxstats.query.users.UserEntry;
@@ -70,7 +70,7 @@ public class ViolationController extends ApplicationController {
 				form.getPenaltyLength(), form.isReleasable(), now, user, now,
 				user);
 
-		final CreateViolationCommand command = new CreateViolationCommand(
+		final CreateViolation command = new CreateViolation(
 				identifier, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(command));
 		return "redirect:/admin/violations";
@@ -97,7 +97,7 @@ public class ViolationController extends ApplicationController {
 				form.getDescription(), form.getCategory(),
 				form.getPenaltyLength(), form.isReleasable(), now, user);
 
-		final UpdateViolationCommand command = new UpdateViolationCommand(
+		final UpdateViolation command = new UpdateViolation(
 				identifier, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(command));
 		return "redirect:/admin/violations";
@@ -105,7 +105,7 @@ public class ViolationController extends ApplicationController {
 
 	@RequestMapping(value = "/admin/violations/{violationId}", method = RequestMethod.DELETE)
 	public String deleteViolation(@PathVariable String violationId) {
-		final DeleteViolationCommand command = new DeleteViolationCommand(
+		final DeleteViolation command = new DeleteViolation(
 				new ViolationId(violationId));
 		commandBus.dispatch(new GenericCommandMessage<>(command));
 		return "redirect:/admin/violations";

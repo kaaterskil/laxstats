@@ -2,98 +2,162 @@ package laxstats.domain.violations;
 
 import laxstats.api.violations.PenaltyCategory;
 import laxstats.api.violations.PenaltyLength;
-import laxstats.api.violations.ViolationCreatedEvent;
+import laxstats.api.violations.ViolationCreated;
 import laxstats.api.violations.ViolationDTO;
-import laxstats.api.violations.ViolationDeletedEvent;
+import laxstats.api.violations.ViolationDeleted;
 import laxstats.api.violations.ViolationId;
-import laxstats.api.violations.ViolationUpdatedEvent;
+import laxstats.api.violations.ViolationUpdated;
 
 import org.axonframework.eventsourcing.annotation.AbstractAnnotatedAggregateRoot;
 import org.axonframework.eventsourcing.annotation.AggregateIdentifier;
 import org.axonframework.eventsourcing.annotation.EventSourcingHandler;
 
+/**
+ * {@code Violation} represents a persistent domain object model of a breach of a defined playing
+ * rule.
+ */
 public class Violation extends AbstractAnnotatedAggregateRoot<ViolationId> {
-	private static final long serialVersionUID = -132099412870035181L;
+   private static final long serialVersionUID = -132099412870035181L;
 
-	@AggregateIdentifier
-	private ViolationId violationId;
-	private String name;
-	private String description;
-	private PenaltyCategory category;
-	private PenaltyLength duration;
-	private boolean releasable;
+   @AggregateIdentifier
+   private ViolationId violationId;
 
-	public Violation(ViolationId violationId, ViolationDTO violationDTO) {
-		apply(new ViolationCreatedEvent(violationId, violationDTO));
-	}
+   private String name;
+   private String description;
+   private PenaltyCategory category;
+   private PenaltyLength duration;
+   private boolean releasable;
 
-	protected Violation() {
-	}
+   /**
+    * Applies a creation event to a violation aggregate.
+    *
+    * @param violationId
+    * @param violationDTO
+    */
+   public Violation(ViolationId violationId, ViolationDTO violationDTO) {
+      apply(new ViolationCreated(violationId, violationDTO));
+   }
 
-	// ---------- Methods ----------//
+   /**
+    * Instantiates a violation. Internal use only.
+    */
+   protected Violation() {
+   }
 
-	public void update(ViolationId violationId, ViolationDTO violationDTO) {
-		apply(new ViolationUpdatedEvent(violationId, violationDTO));
-	}
+   /**
+    * Instructs the framework to update the state of this violation.
+    *
+    * @param violationId
+    * @param violationDTO
+    */
+   public void update(ViolationId violationId, ViolationDTO violationDTO) {
+      apply(new ViolationUpdated(violationId, violationDTO));
+   }
 
-	public void delete(ViolationId violationId) {
-		apply(new ViolationDeletedEvent(violationId));
-	}
+   /**
+    * Instructs the framework to mark this violation for deletion.
+    *
+    * @param violationId
+    */
+   public void delete(ViolationId violationId) {
+      apply(new ViolationDeleted(violationId));
+   }
 
-	// ---------- Event handlers ----------//
+   /**
+    * Stores and persists the initial state of this violation.
+    *
+    * @param event
+    */
+   @EventSourcingHandler
+   protected void handle(ViolationCreated event) {
+      final ViolationDTO dto = event.getPenaltyTypeDTO();
 
-	@EventSourcingHandler
-	protected void handle(ViolationCreatedEvent event) {
-		final ViolationDTO dto = event.getPenaltyTypeDTO();
+      violationId = event.getPenaltyTypeId();
+      name = dto.getName();
+      description = dto.getDescription();
+      category = dto.getCategory();
+      duration = dto.getPenaltyLength();
+      releasable = dto.isReleasable();
+   }
 
-		violationId = event.getPenaltyTypeId();
-		name = dto.getName();
-		description = dto.getDescription();
-		category = dto.getCategory();
-		duration = dto.getPenaltyLength();
-		releasable = dto.isReleasable();
-	}
+   /**
+    * Updates and persists the state of this violation.
+    *
+    * @param event
+    */
+   @EventSourcingHandler
+   protected void handle(ViolationUpdated event) {
+      final ViolationDTO dto = event.getPenaltyTypeDTO();
 
-	@EventSourcingHandler
-	protected void handle(ViolationUpdatedEvent event) {
-		final ViolationDTO dto = event.getPenaltyTypeDTO();
+      name = dto.getName();
+      description = dto.getDescription();
+      category = dto.getCategory();
+      duration = dto.getPenaltyLength();
+      releasable = dto.isReleasable();
+   }
 
-		name = dto.getName();
-		description = dto.getDescription();
-		category = dto.getCategory();
-		duration = dto.getPenaltyLength();
-		releasable = dto.isReleasable();
-	}
+   /**
+    * Marks this violation for deletion.
+    *
+    * @param event
+    */
+   @EventSourcingHandler
+   protected void handle(ViolationDeleted event) {
+      markDeleted();
+   }
 
-	@EventSourcingHandler
-	protected void handle(ViolationDeletedEvent event) {
-		markDeleted();
-	}
+   /**
+    *
+    * {@inheritDoc}
+    */
+   @Override
+   public ViolationId getIdentifier() {
+      return violationId;
+   }
 
-	// ---------- Getters ----------//
+   /**
+    * Returns the name of this violation.
+    *
+    * @return
+    */
+   public String getName() {
+      return name;
+   }
 
-	@Override
-	public ViolationId getIdentifier() {
-		return violationId;
-	}
+   /**
+    * Returns a description of this violation.
+    *
+    * @return
+    */
+   public String getDescription() {
+      return description;
+   }
 
-	public String getName() {
-		return name;
-	}
+   /**
+    * Returns the violation category.
+    *
+    * @return
+    */
+   public PenaltyCategory getCategory() {
+      return category;
+   }
 
-	public String getDescription() {
-		return description;
-	}
+   /**
+    * Returns the length of the penalty required by this violation.
+    *
+    * @return
+    */
+   public PenaltyLength getDuration() {
+      return duration;
+   }
 
-	public PenaltyCategory getCategory() {
-		return category;
-	}
-
-	public PenaltyLength getDuration() {
-		return duration;
-	}
-
-	public boolean isReleasable() {
-		return releasable;
-	}
+   /**
+    * Returns true if the player who committed this violation can be released from the penalty,
+    * false otherwise.
+    *
+    * @return
+    */
+   public boolean isReleasable() {
+      return releasable;
+   }
 }
