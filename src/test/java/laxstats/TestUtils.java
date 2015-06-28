@@ -7,6 +7,7 @@ import laxstats.api.people.DominantHand;
 import laxstats.api.people.Gender;
 import laxstats.api.sites.SiteStyle;
 import laxstats.api.sites.Surface;
+import laxstats.api.teamSeasons.TeamStatus;
 import laxstats.api.teams.Letter;
 import laxstats.api.teams.TeamGender;
 import laxstats.api.violations.PenaltyCategory;
@@ -16,6 +17,7 @@ import laxstats.query.people.ContactEntry;
 import laxstats.query.people.PersonEntry;
 import laxstats.query.seasons.SeasonEntry;
 import laxstats.query.sites.SiteEntry;
+import laxstats.query.teamSeasons.TeamSeasonEntry;
 import laxstats.query.teams.TeamEntry;
 import laxstats.query.violations.ViolationEntry;
 import laxstats.web.people.AddressForm;
@@ -23,6 +25,7 @@ import laxstats.web.people.ContactForm;
 import laxstats.web.people.PersonForm;
 import laxstats.web.seasons.SeasonForm;
 import laxstats.web.sites.SiteForm;
+import laxstats.web.teamSeasons.TeamSeasonForm;
 import laxstats.web.teams.TeamForm;
 import laxstats.web.users.UserForm;
 import laxstats.web.violations.ViolationForm;
@@ -154,6 +157,25 @@ public class TestUtils {
       form.setName("Wellesley Raiders");
       form.setRegion(Region.MA);
       form.setSponsor("Wellesley High School");
+      return form;
+   }
+
+   /**
+    * Returns a completed {@code TeamSeasonForm} for a new team season.
+    *
+    * @return
+    */
+   public static TeamSeasonForm newTeamSeasonForm() {
+      final TeamEntry team = getExistingTeam();
+      final SeasonEntry season = getExistingSeason();
+
+      final TeamSeasonForm form = new TeamSeasonForm();
+      form.setEndsOn(LocalDate.parse("2014-06-30"));
+      form.setName("Wellesley Raiders");
+      form.setSeason(season.getId());
+      form.setStartsOn(LocalDate.parse("2013-07-01"));
+      form.setStatus(TeamStatus.ACTIVE);
+      form.setTeam(team.getId());
       return form;
    }
 
@@ -373,6 +395,25 @@ public class TestUtils {
       team.setHomeSite(homeSite);
 
       return team;
+   }
+
+   public static TeamSeasonEntry getExistingTeamSeason() {
+      final SeasonEntry season = getExistingSeason();
+      final TeamEntry team = getExistingTeam();
+
+      final String id = IdentifierFactory.getInstance().generateIdentifier();
+      final TeamSeasonEntry teamSeason = new TeamSeasonEntry();
+      teamSeason.setCreatedAt(LocalDateTime.now());
+      teamSeason.setEndsOn(season.getEndsOn());
+      teamSeason.setId(id);
+      teamSeason.setModifiedAt(LocalDateTime.now());
+      teamSeason.setName("Raiders");
+      teamSeason.setSeason(season);
+      teamSeason.setStartsOn(season.getStartsOn());
+      teamSeason.setStatus(TeamStatus.ACTIVE);
+      teamSeason.setTeam(team);
+
+      return teamSeason;
    }
 
    /**
