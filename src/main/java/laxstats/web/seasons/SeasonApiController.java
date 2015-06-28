@@ -21,12 +21,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import laxstats.api.Common;
-import laxstats.api.seasons.CreateSeasonCommand;
-import laxstats.api.seasons.DeleteSeasonCommand;
+import laxstats.api.seasons.CreateSeason;
+import laxstats.api.seasons.DeleteSeason;
 import laxstats.api.seasons.SeasonDTO;
 import laxstats.api.seasons.SeasonId;
-import laxstats.api.seasons.UpdateSeasonCommand;
+import laxstats.api.seasons.UpdateSeason;
+import laxstats.api.utils.Common;
 import laxstats.query.seasons.SeasonEntry;
 import laxstats.query.seasons.SeasonQueryRepository;
 import laxstats.query.users.UserEntry;
@@ -119,7 +119,7 @@ public class SeasonApiController extends ApplicationController {
       final SeasonDTO dto = new SeasonDTO(identifier, resource.getDescription(), startsOn, endsOn,
          now, user, now, user);
 
-      final CreateSeasonCommand payload = new CreateSeasonCommand(identifier, dto);
+      final CreateSeason payload = new CreateSeason(identifier, dto);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
 
       resource.setId(identifier.toString());
@@ -156,7 +156,7 @@ public class SeasonApiController extends ApplicationController {
       final SeasonDTO dto =
          new SeasonDTO(identifier, resource.getDescription(), startsOn, endsOn, now, user);
 
-      final UpdateSeasonCommand payload = new UpdateSeasonCommand(identifier, dto);
+      final UpdateSeason payload = new UpdateSeason(identifier, dto);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
 
       return resource;
@@ -171,7 +171,7 @@ public class SeasonApiController extends ApplicationController {
    public void deleteSeason(@PathVariable String seasonId) {
       final SeasonId identifier = new SeasonId(seasonId);
       checkDelete(seasonId);
-      final DeleteSeasonCommand payload = new DeleteSeasonCommand(identifier);
+      final DeleteSeason payload = new DeleteSeason(identifier);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
    }
 

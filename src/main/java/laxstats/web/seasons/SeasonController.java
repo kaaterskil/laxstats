@@ -22,12 +22,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import laxstats.api.Common;
-import laxstats.api.seasons.CreateSeasonCommand;
-import laxstats.api.seasons.DeleteSeasonCommand;
+import laxstats.api.seasons.CreateSeason;
+import laxstats.api.seasons.DeleteSeason;
 import laxstats.api.seasons.SeasonDTO;
 import laxstats.api.seasons.SeasonId;
-import laxstats.api.seasons.UpdateSeasonCommand;
+import laxstats.api.seasons.UpdateSeason;
+import laxstats.api.utils.Common;
 import laxstats.query.seasons.SeasonEntry;
 import laxstats.query.seasons.SeasonQueryRepository;
 import laxstats.query.users.UserEntry;
@@ -86,7 +86,7 @@ public class SeasonController extends ApplicationController {
       logger.debug(proc + "30");
 
       try {
-         final CreateSeasonCommand payload = new CreateSeasonCommand(identifier, dto);
+         final CreateSeason payload = new CreateSeason(identifier, dto);
          commandBus.dispatch(new GenericCommandMessage<>(payload));
       }
       catch (final Exception e) {
@@ -124,7 +124,7 @@ public class SeasonController extends ApplicationController {
       logger.debug(proc + "30");
 
       try {
-         final UpdateSeasonCommand payload = new UpdateSeasonCommand(identifier, dto);
+         final UpdateSeason payload = new UpdateSeason(identifier, dto);
          commandBus.dispatch(new GenericCommandMessage<>(payload));
       }
       catch (final Exception e) {
@@ -146,7 +146,7 @@ public class SeasonController extends ApplicationController {
          checkDelete(seasonId);
          logger.debug(proc + "20");
 
-         final DeleteSeasonCommand payload = new DeleteSeasonCommand(identifier);
+         final DeleteSeason payload = new DeleteSeason(identifier);
          commandBus.dispatch(new GenericCommandMessage<>(payload));
       }
       catch (final Exception e) {

@@ -1,9 +1,9 @@
 package laxstats.query.seasons;
 
-import laxstats.api.seasons.SeasonCreatedEvent;
+import laxstats.api.seasons.SeasonCreated;
 import laxstats.api.seasons.SeasonDTO;
-import laxstats.api.seasons.SeasonDeletedEvent;
-import laxstats.api.seasons.SeasonUpdatedEvent;
+import laxstats.api.seasons.SeasonDeleted;
+import laxstats.api.seasons.SeasonUpdated;
 
 import org.axonframework.eventhandling.annotation.EventHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ public class SeasonListener {
 	}
 
 	@EventHandler
-	protected void handle(SeasonCreatedEvent event) {
+	protected void handle(SeasonCreated event) {
 		final String id = event.getSeasonId().toString();
 		final SeasonDTO dto = event.getSeasonDTO();
 
@@ -37,7 +37,7 @@ public class SeasonListener {
 	}
 
 	@EventHandler
-	protected void handle(SeasonUpdatedEvent event) {
+	protected void handle(SeasonUpdated event) {
 		final String id = event.getSeasonId().toString();
 		final SeasonDTO dto = event.getSeasonDTO();
 
@@ -52,7 +52,7 @@ public class SeasonListener {
 	}
 
 	@EventHandler
-	protected void handle(SeasonDeletedEvent event) {
+	protected void handle(SeasonDeleted event) {
 		final String id = event.getSeasonId().toString();
 		final SeasonEntry aggregate = seasonRepository.findOne(id);
 		seasonRepository.delete(aggregate);

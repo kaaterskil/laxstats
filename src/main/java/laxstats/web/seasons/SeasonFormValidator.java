@@ -3,7 +3,7 @@ package laxstats.web.seasons;
 import java.util.List;
 
 import laxstats.TestUtils;
-import laxstats.api.Common;
+import laxstats.api.utils.Common;
 import laxstats.query.seasons.SeasonEntry;
 import laxstats.query.seasons.SeasonQueryRepository;
 
