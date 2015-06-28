@@ -3,7 +3,7 @@ package laxstats.domain.teamSeasons;
 import java.util.ArrayList;
 import java.util.List;
 
-import laxstats.api.events.EventDTO;
+import laxstats.api.games.GameDTO;
 import laxstats.api.players.PlayerDTO;
 import laxstats.api.players.PlayerId;
 import laxstats.api.teamSeasons.DeleteTeamSeasonCommand;
@@ -85,7 +85,7 @@ public class TeamSeason extends AbstractAnnotatedAggregateRoot<TeamSeasonId> {
       return false;
    }
 
-   public void scheduleEvent(EventDTO dto) {
+   public void scheduleEvent(GameDTO dto) {
       if (alreadyScheduled(dto)) {
          throw new EventAlreadyScheduledException();
       }
@@ -95,7 +95,7 @@ public class TeamSeason extends AbstractAnnotatedAggregateRoot<TeamSeasonId> {
       apply(new EventScheduledEvent(id, dto));
    }
 
-   public boolean alreadyScheduled(EventDTO dto) {
+   public boolean alreadyScheduled(GameDTO dto) {
       for (final EventInfo event : events) {
          if (event.getEventId().equals(dto.getId())) {
             return true;
@@ -104,7 +104,7 @@ public class TeamSeason extends AbstractAnnotatedAggregateRoot<TeamSeasonId> {
       return false;
    }
 
-   private boolean scheduleConflicts(EventDTO dto) {
+   private boolean scheduleConflicts(GameDTO dto) {
       for (final EventInfo event : events) {
          if (!event.getEventId().equals(dto.getId()) &&
             event.getStartsAt().equals(dto.getStartsAt())) {
@@ -114,7 +114,7 @@ public class TeamSeason extends AbstractAnnotatedAggregateRoot<TeamSeasonId> {
       return false;
    }
 
-   public void updateEvent(EventDTO dto) {
+   public void updateEvent(GameDTO dto) {
       if (scheduleConflicts(dto)) {
          throw new EventScheduleConflictException();
       }
@@ -181,7 +181,7 @@ public class TeamSeason extends AbstractAnnotatedAggregateRoot<TeamSeasonId> {
 
    @EventSourcingHandler
    protected void handle(EventScheduledEvent event) {
-      final EventDTO dto = event.getEvent();
+      final GameDTO dto = event.getEvent();
       String siteId = null;
       String teamOneId = null;
       String teamTwoId = null;
@@ -200,7 +200,7 @@ public class TeamSeason extends AbstractAnnotatedAggregateRoot<TeamSeasonId> {
 
    @EventSourcingHandler
    protected void handle(EventRevisedEvent event) {
-      final EventDTO dto = event.getEventDTO();
+      final GameDTO dto = event.getEventDTO();
       String siteId = null;
       String teamOneId = null;
       String teamTwoId = null;

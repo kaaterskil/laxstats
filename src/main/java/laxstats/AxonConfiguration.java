@@ -3,7 +3,7 @@ package laxstats;
 import java.io.File;
 import java.util.Arrays;
 
-import laxstats.domain.events.Event;
+import laxstats.domain.games.Game;
 import laxstats.domain.leagues.League;
 import laxstats.domain.people.Person;
 import laxstats.domain.players.Player;
@@ -72,7 +72,7 @@ public class AxonConfiguration {
 		return processor;
 	}
 
-	/*---------- Event Listeners ----------*/
+	/*---------- Game Listeners ----------*/
 
 	@Bean
 	public AnnotationEventListenerBeanPostProcessor annotationEventListenerBeanPostProcessor() {
@@ -84,9 +84,9 @@ public class AxonConfiguration {
 	/*---------- Repositories ----------*/
 
 	@Bean
-	public Repository<Event> eventRepository() {
-		final EventSourcingRepository<Event> repository = new EventSourcingRepository<>(
-				Event.class, eventStore());
+	public Repository<Game> eventRepository() {
+		final EventSourcingRepository<Game> repository = new EventSourcingRepository<>(
+				Game.class, eventStore());
 		repository.setEventBus(eventBus());
 		return repository;
 	}

@@ -20,7 +20,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 import laxstats.api.teamSeasons.TeamStatus;
-import laxstats.query.events.TeamEvent;
+import laxstats.query.games.TeamEvent;
 import laxstats.query.leagues.LeagueEntry;
 import laxstats.query.people.PersonEntry;
 import laxstats.query.players.PlayerEntry;

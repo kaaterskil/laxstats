@@ -1,21 +1,21 @@
 package laxstats.api.teamSeasons;
 
-import laxstats.api.events.EventDTO;
+import laxstats.api.games.GameDTO;
 
 public class EventRevisedEvent {
 	private final TeamSeasonId teamSeasonId;
-	private final EventDTO eventDTO;
+	private final GameDTO gameDTO;
 
-	public EventRevisedEvent(TeamSeasonId teamSeasonId, EventDTO eventDTO) {
+	public EventRevisedEvent(TeamSeasonId teamSeasonId, GameDTO gameDTO) {
 		this.teamSeasonId = teamSeasonId;
-		this.eventDTO = eventDTO;
+		this.gameDTO = gameDTO;
 	}
 
 	public TeamSeasonId getTeamSeasonId() {
 		return teamSeasonId;
 	}
 
-	public EventDTO getEventDTO() {
-		return eventDTO;
+	public GameDTO getEventDTO() {
+		return gameDTO;
 	}
 }
