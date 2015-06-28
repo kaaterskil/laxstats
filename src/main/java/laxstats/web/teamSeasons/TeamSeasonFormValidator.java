@@ -1,6 +1,6 @@
 package laxstats.web.teamSeasons;
 
-import laxstats.api.Common;
+import laxstats.api.utils.Common;
 import laxstats.query.seasons.SeasonEntry;
 import laxstats.query.seasons.SeasonQueryRepository;
 import laxstats.query.teamSeasons.TeamSeasonEntry;

@@ -1,7 +1,7 @@
 package laxstats.web.games;
 
-import laxstats.api.Common;
 import laxstats.api.sites.SiteAlignment;
+import laxstats.api.utils.Common;
 import laxstats.query.games.GameEntry;
 import laxstats.query.games.GameQueryRepository;
 import laxstats.query.games.TeamEvent;

@@ -1,8 +1,8 @@
 package laxstats.web.sites;
 
 import laxstats.TestUtils;
-import laxstats.api.Common;
 import laxstats.api.Region;
+import laxstats.api.utils.Common;
 import laxstats.query.sites.SiteEntry;
 import laxstats.query.sites.SiteQueryRepository;
 import laxstats.web.validators.PostalCodeValidator;

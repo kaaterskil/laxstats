@@ -1,10 +1,10 @@
 package laxstats.web.people;
 
 import laxstats.TestUtils;
-import laxstats.api.Common;
 import laxstats.api.people.Gender;
 import laxstats.api.players.Role;
 import laxstats.api.teams.TeamGender;
+import laxstats.api.utils.Common;
 import laxstats.query.people.PersonEntry;
 import laxstats.query.people.PersonQueryRepository;
 import laxstats.query.players.PlayerEntry;

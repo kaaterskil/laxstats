@@ -1,9 +1,9 @@
 package laxstats.web.people;
 
 import laxstats.TestUtils;
-import laxstats.api.Common;
 import laxstats.api.Region;
 import laxstats.api.people.AddressType;
+import laxstats.api.utils.Common;
 import laxstats.query.people.AddressEntry;
 import laxstats.query.people.PersonEntry;
 import laxstats.query.people.PersonQueryRepository;
