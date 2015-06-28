@@ -5,6 +5,9 @@ import laxstats.api.people.AddressType;
 import laxstats.api.people.ContactMethod;
 import laxstats.api.people.DominantHand;
 import laxstats.api.people.Gender;
+import laxstats.api.players.PlayerStatus;
+import laxstats.api.players.Position;
+import laxstats.api.players.Role;
 import laxstats.api.sites.SiteStyle;
 import laxstats.api.sites.Surface;
 import laxstats.api.teamSeasons.TeamStatus;
@@ -15,6 +18,7 @@ import laxstats.api.violations.PenaltyLength;
 import laxstats.query.people.AddressEntry;
 import laxstats.query.people.ContactEntry;
 import laxstats.query.people.PersonEntry;
+import laxstats.query.players.PlayerEntry;
 import laxstats.query.seasons.SeasonEntry;
 import laxstats.query.sites.SiteEntry;
 import laxstats.query.teamSeasons.TeamSeasonEntry;
@@ -23,6 +27,7 @@ import laxstats.query.violations.ViolationEntry;
 import laxstats.web.people.AddressForm;
 import laxstats.web.people.ContactForm;
 import laxstats.web.people.PersonForm;
+import laxstats.web.players.PlayerForm;
 import laxstats.web.seasons.SeasonForm;
 import laxstats.web.sites.SiteForm;
 import laxstats.web.teamSeasons.TeamSeasonForm;
@@ -111,6 +116,20 @@ public class TestUtils {
       form.setParentReleaseReceivedOn(LocalDate.parse("2014-10-12"));
       form.setParentReleaseSentOn(LocalDate.parse("2014-10-05"));
       form.setReleased(true);
+      return form;
+   }
+
+   /**
+    * Returns a complete {@code PlayerForm} for a new player. NOTE: The person and the team season
+    * must be applied.
+    *
+    * @return
+    */
+   public static PlayerForm newPlayerForm() {
+      final PlayerForm form = new PlayerForm();
+      form.setCaptain(false);
+      form.setJerseyNumber("18");
+      form.setPosition(Position.ATTACK);
       return form;
    }
 
@@ -321,6 +340,33 @@ public class TestUtils {
       address.setPrimary(true);
       address.setRegion(Region.MA);
       return address;
+   }
+
+   /**
+    * Returns a new {@code PlayerEntry} of type Role.ATHLETE
+    *
+    * @return
+    */
+   public static PlayerEntry getExistingPlayer() {
+      final PersonEntry person = getPersonWithPrimaryContact();
+      final TeamSeasonEntry teamSeason = getExistingTeamSeason();
+
+      final String id = IdentifierFactory.getInstance().generateIdentifier();
+      final PlayerEntry player = new PlayerEntry();
+      player.setCaptain(false);
+      player.setCreatedAt(LocalDateTime.now());
+      player.setFullName(person.getFullName());
+      player.setId(id);
+      player.setJerseyNumber("18");
+      player.setModifiedAt(LocalDateTime.now());
+      player.setPerson(person);
+      player.setPosition(Position.ATTACK);
+      player.setRole(Role.ATHLETE);
+      player.setStatus(PlayerStatus.ACTIVE);
+
+      teamSeason.addPlayerToRoster(player);
+
+      return player;
    }
 
    /**

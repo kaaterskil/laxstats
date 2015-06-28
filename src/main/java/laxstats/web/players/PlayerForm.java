@@ -10,117 +10,139 @@ import laxstats.api.players.Position;
 import laxstats.api.players.Role;
 
 public class PlayerForm {
-	@NotNull
-	private String personId;
+   private String id;
 
-	@NotNull
-	private Role role = Role.ATHLETE;
+   @NotNull
+   private String person;
 
-	@NotNull
-	private PlayerStatus status = PlayerStatus.ACTIVE;
+   @NotNull
+   private String teamSeason;
 
-	private String jerseyNumber;
-	private Position position;
-	private boolean captain;
-	private int depth = 1;
-	private int height;
-	private int weight;
-	private List<Role> roles;
-	private List<PlayerStatus> statuses;
-	private List<Position> positions;
+   @NotNull
+   private Role role = Role.ATHLETE;
 
-	public String getPersonId() {
-		return personId;
-	}
+   @NotNull
+   private PlayerStatus status = PlayerStatus.ACTIVE;
 
-	public void setPersonId(String personId) {
-		this.personId = personId;
-	}
+   private String jerseyNumber;
+   private Position position;
+   private boolean captain;
+   private int depth = 1;
+   private int height;
+   private int weight;
 
-	public Role getRole() {
-		return role;
-	}
+   private List<Role> roles;
+   private List<PlayerStatus> statuses;
+   private List<Position> positions;
 
-	public void setRole(Role role) {
-		this.role = role;
-	}
+   public String getId() {
+      return id;
+   }
 
-	public PlayerStatus getStatus() {
-		return status;
-	}
+   public void setId(String id) {
+      this.id = id;
+   }
 
-	public void setStatus(PlayerStatus status) {
-		this.status = status;
-	}
+   public String getPerson() {
+      return person;
+   }
 
-	public String getJerseyNumber() {
-		return jerseyNumber;
-	}
+   public void setPerson(String person) {
+      this.person = person;
+   }
 
-	public void setJerseyNumber(String jerseyNumber) {
-		this.jerseyNumber = jerseyNumber;
-	}
+   public String getTeamSeason() {
+      return teamSeason;
+   }
 
-	public Position getPosition() {
-		return position;
-	}
+   public void setTeamSeason(String teamSeason) {
+      this.teamSeason = teamSeason;
+   }
 
-	public void setPosition(Position position) {
-		this.position = position;
-	}
+   public Role getRole() {
+      return role;
+   }
 
-	public boolean isCaptain() {
-		return captain;
-	}
+   public void setRole(Role role) {
+      this.role = role;
+   }
 
-	public void setCaptain(boolean captain) {
-		this.captain = captain;
-	}
+   public PlayerStatus getStatus() {
+      return status;
+   }
 
-	public int getDepth() {
-		return depth;
-	}
+   public void setStatus(PlayerStatus status) {
+      this.status = status;
+   }
 
-	public void setDepth(int depth) {
-		this.depth = depth;
-	}
+   public String getJerseyNumber() {
+      return jerseyNumber;
+   }
 
-	public int getHeight() {
-		return height;
-	}
+   public void setJerseyNumber(String jerseyNumber) {
+      this.jerseyNumber = jerseyNumber;
+   }
 
-	public void setHeight(int height) {
-		this.height = height;
-	}
+   public Position getPosition() {
+      return position;
+   }
 
-	public int getWeight() {
-		return weight;
-	}
+   public void setPosition(Position position) {
+      this.position = position;
+   }
 
-	public void setWeight(int weight) {
-		this.weight = weight;
-	}
+   public boolean isCaptain() {
+      return captain;
+   }
 
-	/*---------- Select element option values ----------*/
+   public void setCaptain(boolean captain) {
+      this.captain = captain;
+   }
 
-	public List<Role> getRoles() {
-		if (roles == null) {
-			roles = Arrays.asList(Role.values());
-		}
-		return roles;
-	}
+   public int getDepth() {
+      return depth;
+   }
 
-	public List<PlayerStatus> getStatuses() {
-		if (statuses == null) {
-			statuses = Arrays.asList(PlayerStatus.values());
-		}
-		return statuses;
-	}
+   public void setDepth(int depth) {
+      this.depth = depth;
+   }
 
-	public List<Position> getPositions() {
-		if (positions == null) {
-			positions = Arrays.asList(Position.values());
-		}
-		return positions;
-	}
+   public int getHeight() {
+      return height;
+   }
+
+   public void setHeight(int height) {
+      this.height = height;
+   }
+
+   public int getWeight() {
+      return weight;
+   }
+
+   public void setWeight(int weight) {
+      this.weight = weight;
+   }
+
+   /*---------- Select element option values ----------*/
+
+   public List<Role> getRoles() {
+      if (roles == null) {
+         roles = Arrays.asList(Role.values());
+      }
+      return roles;
+   }
+
+   public List<PlayerStatus> getStatuses() {
+      if (statuses == null) {
+         statuses = Arrays.asList(PlayerStatus.values());
+      }
+      return statuses;
+   }
+
+   public List<Position> getPositions() {
+      if (positions == null) {
+         positions = Arrays.asList(Position.values());
+      }
+      return positions;
+   }
 }

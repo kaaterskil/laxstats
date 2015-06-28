@@ -39,7 +39,7 @@ public class PersonFormValidator implements Validator {
       logger.debug("Entering: " + proc + "10");
 
       // Validate mandatory args
-      checkMandatoryArg(form, errors);
+      checkMandatoryArgs(form, errors);
       logger.debug(proc + "20");
 
       // Validate birth date
@@ -65,8 +65,8 @@ public class PersonFormValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkMandatoryArg(PersonForm form, Errors errors) {
-      final String proc = PACKAGE_NAME + ".validate.";
+   private void checkMandatoryArgs(PersonForm form, Errors errors) {
+      final String proc = PACKAGE_NAME + ".checkMandatoryArgs.";
 
       logger.debug("Entering: " + proc + "10");
 
@@ -104,7 +104,7 @@ public class PersonFormValidator implements Validator {
             LocalDate startsOn = LocalDate.now();
 
             if (!person.getPlayedSeasons().isEmpty() &&
-                     !Common.nvl(person.getBirthdate(), eot).equals(birthDate)) {
+               !Common.nvl(person.getBirthdate(), eot).equals(birthDate)) {
                logger.debug(proc + "50");
 
                for (final PlayerEntry each : person.getPlayedSeasons()) {
@@ -249,7 +249,7 @@ public class PersonFormValidator implements Validator {
 
                if (Common.nvl(receivedOn, eot).isBefore(Common.nvl(sentOn, eot))) {
                   errors.rejectValue("parentReleaseReceivedOn",
-                     "person.parentReleaseReceivedOn.invalid");
+                           "person.parentReleaseReceivedOn.invalid");
                }
             }
 
@@ -258,7 +258,7 @@ public class PersonFormValidator implements Validator {
             logger.debug(proc + "60");
             if (Common.nvl(receivedOn, eot).isBefore(Common.nvl(sentOn, eot))) {
                errors.rejectValue("parentReleaseReceivedOn",
-                  "person.parentReleaseReceivedOn.invalid");
+                        "person.parentReleaseReceivedOn.invalid");
             }
          }
       }
