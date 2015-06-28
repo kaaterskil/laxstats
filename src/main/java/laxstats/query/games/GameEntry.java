@@ -221,7 +221,8 @@ public class GameEntry implements Serializable {
    public TeamSeasonEntry getHomeTeam() {
       if (teams.size() == 0) {
          return null;
-      } else if (teams.size() == 2 && teams.get(1).getAlignment().equals(Alignment.HOME)) {
+      }
+      else if (teams.size() == 2 && teams.get(1).getAlignment().equals(Alignment.HOME)) {
          return teams.get(1).getTeamSeason();
       }
       return teams.get(0).getTeamSeason();
@@ -230,7 +231,8 @@ public class GameEntry implements Serializable {
    public TeamEvent getHomeTeamEvent() {
       if (teams.size() == 0) {
          return null;
-      } else if (teams.size() == 2 && teams.get(1).getAlignment().equals(Alignment.HOME)) {
+      }
+      else if (teams.size() == 2 && teams.get(1).getAlignment().equals(Alignment.HOME)) {
          return teams.get(1);
       }
       return teams.get(0);
@@ -245,7 +247,8 @@ public class GameEntry implements Serializable {
    public TeamSeasonEntry getVisitingTeam() {
       if (teams.size() < 2) {
          return null;
-      } else if (!teams.get(0).getAlignment().equals(Alignment.HOME)) {
+      }
+      else if (!teams.get(0).getAlignment().equals(Alignment.HOME)) {
          return teams.get(0).getTeamSeason();
       }
       return teams.get(1).getTeamSeason();
@@ -254,7 +257,8 @@ public class GameEntry implements Serializable {
    public TeamEvent getVisitingTeamEvent() {
       if (teams.size() == 0) {
          return null;
-      } else if (!teams.get(0).getAlignment().equals(Alignment.HOME)) {
+      }
+      else if (!teams.get(0).getAlignment().equals(Alignment.HOME)) {
          return teams.get(0);
       }
       return teams.get(1);
@@ -410,9 +414,11 @@ public class GameEntry implements Serializable {
 
          if (p1 < p2) {
             return -1;
-         } else if (p1 > p2) {
+         }
+         else if (p1 > p2) {
             return 1;
-         } else if (o1.getElapsedTime() != null && o2.getElapsedTime() != null) {
+         }
+         else if (o1.getElapsedTime() != null && o2.getElapsedTime() != null) {
             final int s1 = o1.getElapsedTime().toStandardSeconds().getSeconds();
             final int s2 = o2.getElapsedTime().toStandardSeconds().getSeconds();
             return s1 < s2 ? -1 : (s1 > s2 ? 1 : 0);

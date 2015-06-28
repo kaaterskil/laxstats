@@ -1,6 +1,8 @@
 package laxstats;
 
 import laxstats.api.Region;
+import laxstats.api.games.Schedule;
+import laxstats.api.games.Status;
 import laxstats.api.people.AddressType;
 import laxstats.api.people.ContactMethod;
 import laxstats.api.people.DominantHand;
@@ -8,6 +10,7 @@ import laxstats.api.people.Gender;
 import laxstats.api.players.PlayerStatus;
 import laxstats.api.players.Position;
 import laxstats.api.players.Role;
+import laxstats.api.sites.SiteAlignment;
 import laxstats.api.sites.SiteStyle;
 import laxstats.api.sites.Surface;
 import laxstats.api.teamSeasons.TeamStatus;
@@ -15,6 +18,7 @@ import laxstats.api.teams.Letter;
 import laxstats.api.teams.TeamGender;
 import laxstats.api.violations.PenaltyCategory;
 import laxstats.api.violations.PenaltyLength;
+import laxstats.query.games.GameEntry;
 import laxstats.query.people.AddressEntry;
 import laxstats.query.people.ContactEntry;
 import laxstats.query.people.PersonEntry;
@@ -24,6 +28,7 @@ import laxstats.query.sites.SiteEntry;
 import laxstats.query.teamSeasons.TeamSeasonEntry;
 import laxstats.query.teams.TeamEntry;
 import laxstats.query.violations.ViolationEntry;
+import laxstats.web.games.GameForm;
 import laxstats.web.people.AddressForm;
 import laxstats.web.people.ContactForm;
 import laxstats.web.people.PersonForm;
@@ -95,6 +100,22 @@ public class TestUtils {
       form.setValue("888-555-1212");
       form.setPrimary(true);
       form.setDoNotUse(false);
+      return form;
+   }
+
+   /**
+    * Returns a complete {@code GameForm} for a new game. NOTE: the two teams and the site must be
+    * assigned.
+    *
+    * @return
+    */
+   public static GameForm newGameForm() {
+      final GameForm form = new GameForm();
+      form.setAlignment(SiteAlignment.HOME);
+      form.setDescription("This is a description");
+      form.setSchedule(Schedule.REGULAR);
+      form.setStartsAt(LocalDateTime.parse("2014-04-01T16:00:00"));
+      form.setStatus(Status.SCHEDULED);
       return form;
    }
 
@@ -229,6 +250,24 @@ public class TestUtils {
    }
 
    /*---------- Entities ----------*/
+
+   /**
+    * Returns a {@code GameEntry} with a primary key, but no assigned teams or site.
+    * 
+    * @return
+    */
+   public static GameEntry getUnassignedGame() {
+      final String id = IdentifierFactory.getInstance().generateIdentifier();
+
+      final GameEntry game = new GameEntry();
+      game.setCreatedAt(LocalDateTime.now());
+      game.setId(id);
+      game.setModifiedAt(LocalDateTime.now());
+      game.setSchedule(Schedule.REGULAR);
+      game.setStartsAt(LocalDateTime.parse("2014-04-01T16:00:00"));
+      game.setStatus(Status.SCHEDULED);
+      return game;
+   }
 
    /**
     * Returns a {@code PersonEntry} with a primary key and primary home address.
@@ -457,7 +496,8 @@ public class TestUtils {
       teamSeason.setSeason(season);
       teamSeason.setStartsOn(season.getStartsOn());
       teamSeason.setStatus(TeamStatus.ACTIVE);
-      teamSeason.setTeam(team);
+
+      team.addSeason(teamSeason);
 
       return teamSeason;
    }

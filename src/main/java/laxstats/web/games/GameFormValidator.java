@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 @Service
@@ -71,17 +70,20 @@ public class GameFormValidator implements Validator {
 
       logger.debug("Entering: " + proc + "10");
 
-      ValidationUtils.rejectIfEmpty(errors, "startsAt", "game.startsAt.required");
+      if (form.getStartsAt() == null) {
+         errors.rejectValue("startsAt", "game.startsAt.required");
+      }
       logger.debug(proc + "20");
 
-      ValidationUtils.rejectIfEmpty(errors, "schedule", "game.schedule.required");
+      if (form.getSchedule() == null) {
+         errors.rejectValue("schedule", "game.schedule.required");
+      }
       logger.debug(proc + "30");
 
-      ValidationUtils.rejectIfEmpty(errors, "status", "game.status.required");
-      logger.debug(proc + "40");
-
-      ValidationUtils.rejectIfEmpty(errors, "site", "game.site.required");
-      logger.debug("Leaving: " + proc + "50");
+      if (form.getStatus() == null) {
+         errors.rejectValue("status", "game.status.required");
+      }
+      logger.debug("Leaving: " + proc + "40");
    }
 
    /**
@@ -96,8 +98,12 @@ public class GameFormValidator implements Validator {
       final String siteId = form.getSite();
       final String teamOneId = form.getTeamOne();
       final String teamTwoId = form.getTeamTwo();
-      final String startsAt = form.getStartsAt().toString("yyyy-MM-dd HH:mm:ss");
+      String startsAt = null;
       int found = 0;
+
+      if (form.getStartsAt() != null) {
+         startsAt = form.getStartsAt().toString("yyyy-MM-dd HH:mm:ss");
+      }
 
       logger.debug("Entering: " + proc + "10");
 
@@ -195,6 +201,8 @@ public class GameFormValidator implements Validator {
       final String teamOneId = form.getTeamOne();
       final String teamTwoId = form.getTeamTwo();
       final LocalDateTime startsAt = form.getStartsAt();
+      String oldTeamOneId = null;
+      String oldTeamTwoId = null;
       boolean doValidation = false;
 
       logger.debug("Entering: " + proc + "10");
@@ -210,23 +218,31 @@ public class GameFormValidator implements Validator {
 
          final GameEntry game = gameRepository.findOne(gameId);
          if (!game.getTeams().isEmpty()) {
+            logger.debug(proc + "40");
+
             final TeamEvent oldTeamOne = game.getTeams().get(0);
+            if (oldTeamOne != null) {
+               oldTeamOneId = oldTeamOne.getId();
+            }
             final TeamEvent oldTeamTwo = game.getTeams().get(1);
-            if ((!Common.nvl(oldTeamOne.getId(), "").equals(Common.nvl(teamOneId, ""))) ||
-               (!Common.nvl(oldTeamTwo.getId(), "").equals(Common.nvl(teamTwoId, "")))) {
-               logger.debug(proc + "40");
+            if (oldTeamTwo != null) {
+               oldTeamTwoId = oldTeamTwo.getId();
+            }
+            if ((!Common.nvl(oldTeamOneId, null).equals(Common.nvl(teamOneId, null))) ||
+               (!Common.nvl(oldTeamTwoId, null).equals(Common.nvl(teamTwoId, null)))) {
+               logger.debug(proc + "50");
                doValidation = true;
             }
          }
       }
       else {
-         logger.debug(proc + "50");
+         logger.debug(proc + "60");
          doValidation = true;
       }
 
       if (doValidation) {
          if (teamOneId != null) {
-            logger.debug(proc + "60");
+            logger.debug(proc + "70");
 
             final TeamEntry teamOne = teamRepository.findOne(teamOneId);
             if (teamOne.getSeason(startsAt) == null) {
@@ -234,7 +250,7 @@ public class GameFormValidator implements Validator {
             }
          }
          if (teamTwoId != null) {
-            logger.debug(proc + "70");
+            logger.debug(proc + "80");
 
             final TeamEntry teamTwo = teamRepository.findOne(teamTwoId);
             if (teamTwo.getSeason(startsAt) == null) {
@@ -242,7 +258,7 @@ public class GameFormValidator implements Validator {
             }
          }
       }
-      logger.debug("Leaving: " + proc + "80");
+      logger.debug("Leaving: " + proc + "90");
    }
 
    /**
@@ -288,28 +304,36 @@ public class GameFormValidator implements Validator {
       }
       else {
          logger.debug(proc + "60");
-         doValidation = false;
+         doValidation = true;
       }
 
-      if (doValidation) {
+      if (doValidation && teamOneId != null && teamTwoId != null) {
          if (alignment.equals(SiteAlignment.HOME)) {
+            logger.debug(proc + "70");
+
             if (!isTeamOneHome && !isTeamTwoHome) {
+               logger.debug(proc + "72");
                errors.rejectValue("teamOneHome", "game.teamOneHome.required");
             }
             if (isTeamOneHome && isTeamTwoHome) {
+               logger.debug(proc + "74");
                errors.rejectValue("teamOneHome", "game.teamOneHome.twoHomeTeams");
             }
          }
          else {
+            logger.debug(proc + "80");
+
             if (isTeamOneHome) {
+               logger.debug(proc + "82");
                errors.rejectValue("teamOneHome", "game.teamOneHome.invalid");
             }
             if (isTeamTwoHome) {
+               logger.debug(proc + "84");
                errors.rejectValue("teamTwoHome", "game.teamTwoHome.invalid");
             }
          }
       }
-      logger.debug("Leaving: " + proc + "70");
+      logger.debug("Leaving: " + proc + "90");
    }
 
    /**

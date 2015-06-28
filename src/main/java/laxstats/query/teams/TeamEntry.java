@@ -28,223 +28,236 @@ import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 
 @Entity
-@Table(name = "teams", indexes = {
-		@Index(name = "team_idx1", columnList = "sponsor"),
-		@Index(name = "team_idx2", columnList = "name"),
-		@Index(name = "team_idx3", columnList = "abbreviation"),
-		@Index(name = "team_idx4", columnList = "gender"),
-		@Index(name = "team_idx5", columnList = "letter"),
-		@Index(name = "team_idx6", columnList = "region") }, uniqueConstraints = { @UniqueConstraint(name = "team_uk1", columnNames = {
-		"sponsor", "name", "gender", "letter" }) })
+@Table(name = "teams", indexes = { @Index(name = "team_idx1", columnList = "sponsor"),
+   @Index(name = "team_idx2", columnList = "name"),
+   @Index(name = "team_idx3", columnList = "abbreviation"),
+   @Index(name = "team_idx4", columnList = "gender"),
+   @Index(name = "team_idx5", columnList = "letter"),
+   @Index(name = "team_idx6", columnList = "region") }, uniqueConstraints = { @UniqueConstraint(
+   name = "team_uk1", columnNames = { "sponsor", "name", "gender", "letter" }) })
 public class TeamEntry {
 
-	@Id
-	@Column(length = 36)
-	private String id;
+   @Id
+   @Column(length = 36)
+   private String id;
 
-	@Column(length = 100, nullable = false)
-	private String sponsor;
+   @Column(length = 100, nullable = false)
+   private String sponsor;
 
-	@Column(length = 100, nullable = false)
-	private String name;
+   @Column(length = 100, nullable = false)
+   private String name;
 
-	@Column(length = 5)
-	private String abbreviation;
+   @Column(length = 5)
+   private String abbreviation;
 
-	@Enumerated(EnumType.STRING)
-	@Column(length = 20, nullable = false)
-	private TeamGender gender;
+   @Enumerated(EnumType.STRING)
+   @Column(length = 20, nullable = false)
+   private TeamGender gender;
 
-	@Enumerated(EnumType.STRING)
-	@Column(length = 20, nullable = false)
-	private Letter letter;
+   @Enumerated(EnumType.STRING)
+   @Column(length = 20, nullable = false)
+   private Letter letter;
 
-	@Enumerated(EnumType.STRING)
-	@Column(length = 20, nullable = false)
-	private Region region;
+   @Enumerated(EnumType.STRING)
+   @Column(length = 20, nullable = false)
+   private Region region;
 
-	@ManyToOne
-	@JoinColumn(name = "league_id")
-	private LeagueEntry league;
+   @ManyToOne
+   @JoinColumn(name = "league_id")
+   private LeagueEntry league;
 
-	@ManyToOne
-	@JoinColumn(name = "home_site_id")
-	private SiteEntry homeSite;
+   @ManyToOne
+   @JoinColumn(name = "home_site_id")
+   private SiteEntry homeSite;
 
-	@Column(length = 50)
-	private String encodedPassword;
+   @Column(length = 50)
+   private String encodedPassword;
 
-	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
-	private LocalDateTime createdAt;
+   @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+   private LocalDateTime createdAt;
 
-	@ManyToOne
-	private UserEntry createdBy;
+   @ManyToOne
+   private UserEntry createdBy;
 
-	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
-	private LocalDateTime modifiedAt;
+   @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+   private LocalDateTime modifiedAt;
 
-	@ManyToOne
-	private UserEntry modifiedBy;
+   @ManyToOne
+   private UserEntry modifiedBy;
 
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "team")
-	private final List<TeamSeasonEntry> seasons = new ArrayList<>();
+   @OneToMany(cascade = CascadeType.ALL, mappedBy = "team")
+   private final List<TeamSeasonEntry> seasons = new ArrayList<>();
 
-	/*---------- Methods ----------*/
+   /*---------- Methods ----------*/
 
-	public String getFullName() {
-		final StringBuilder sb = new StringBuilder();
+   public String getFullName() {
+      final StringBuilder sb = new StringBuilder();
 
-		sb.append(sponsor);
-		if (name != null) {
-			sb.append(" ").append(name);
-		}
-		return sb.toString();
-	}
+      sb.append(sponsor);
+      if (name != null) {
+         sb.append(" ").append(name);
+      }
+      return sb.toString();
+   }
 
-	public String getTitle() {
-		final StringBuilder sb = new StringBuilder();
-		sb.append(sponsor).append(" ").append(gender.getLabel()).append(" ")
-				.append(letter.getLabel());
-		return sb.toString();
-	}
+   public String getTitle() {
+      final StringBuilder sb = new StringBuilder();
+      sb.append(sponsor).append(" ").append(gender.getLabel()).append(" ").append(letter.getLabel());
+      return sb.toString();
+   }
 
-	public TeamSeasonEntry getSeason(String id) {
-		TeamSeasonEntry result = null;
-		for (final TeamSeasonEntry each : seasons) {
-			if (each.getId().equals(id)) {
-				result = each;
-				break;
-			}
-		}
-		return result;
-	}
+   public TeamSeasonEntry getSeason(String id) {
+      TeamSeasonEntry result = null;
+      for (final TeamSeasonEntry each : seasons) {
+         if (each.getId().equals(id)) {
+            result = each;
+            break;
+         }
+      }
+      return result;
+   }
 
-	public TeamSeasonEntry getSeason(LocalDateTime datetime) {
-		TeamSeasonEntry result = null;
-		for (final TeamSeasonEntry each : seasons) {
-			if (each.includes(datetime)) {
-				result = each;
-				break;
-			}
-		}
-		return result;
-	}
+   public TeamSeasonEntry getSeason(LocalDateTime datetime) {
+      TeamSeasonEntry result = null;
+      for (final TeamSeasonEntry each : seasons) {
+         if (each.includes(datetime)) {
+            result = each;
+            break;
+         }
+      }
+      return result;
+   }
 
-	/*---------- Getter/Setters ----------*/
+   /**
+    * Appends the given {@code TeamSeason} to the team's list of seasons. Returns true if the given
+    * team season does not already exist in the collection, false otherwise.
+    *
+    * @param season
+    * @return
+    */
+   public boolean addSeason(TeamSeasonEntry season) {
+      if (!seasons.contains(season)) {
+         season.setTeam(this);
+         return seasons.add(season);
+      }
+      return false;
+   }
 
-	public String getId() {
-		return id;
-	}
+   /*---------- Getter/Setters ----------*/
 
-	public void setId(String id) {
-		this.id = id;
-	}
+   public String getId() {
+      return id;
+   }
 
-	public String getSponsor() {
-		return sponsor;
-	}
+   public void setId(String id) {
+      this.id = id;
+   }
 
-	public void setSponsor(String sponsor) {
-		this.sponsor = sponsor;
-	}
+   public String getSponsor() {
+      return sponsor;
+   }
 
-	public String getName() {
-		return name;
-	}
+   public void setSponsor(String sponsor) {
+      this.sponsor = sponsor;
+   }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+   public String getName() {
+      return name;
+   }
 
-	public String getAbbreviation() {
-		return abbreviation;
-	}
+   public void setName(String name) {
+      this.name = name;
+   }
 
-	public void setAbbreviation(String abbreviation) {
-		this.abbreviation = abbreviation;
-	}
+   public String getAbbreviation() {
+      return abbreviation;
+   }
 
-	public TeamGender getGender() {
-		return gender;
-	}
+   public void setAbbreviation(String abbreviation) {
+      this.abbreviation = abbreviation;
+   }
 
-	public void setGender(TeamGender gender) {
-		this.gender = gender;
-	}
+   public TeamGender getGender() {
+      return gender;
+   }
 
-	public Letter getLetter() {
-		return letter;
-	}
+   public void setGender(TeamGender gender) {
+      this.gender = gender;
+   }
 
-	public void setLetter(Letter letter) {
-		this.letter = letter;
-	}
+   public Letter getLetter() {
+      return letter;
+   }
 
-	public Region getRegion() {
-		return region;
-	}
+   public void setLetter(Letter letter) {
+      this.letter = letter;
+   }
 
-	public void setRegion(Region region) {
-		this.region = region;
-	}
+   public Region getRegion() {
+      return region;
+   }
 
-	public LeagueEntry getLeague() {
-		return league;
-	}
+   public void setRegion(Region region) {
+      this.region = region;
+   }
 
-	public void setLeague(LeagueEntry league) {
-		this.league = league;
-	}
+   public LeagueEntry getLeague() {
+      return league;
+   }
 
-	public SiteEntry getHomeSite() {
-		return homeSite;
-	}
+   public void setLeague(LeagueEntry league) {
+      this.league = league;
+   }
 
-	public void setHomeSite(SiteEntry homeSite) {
-		this.homeSite = homeSite;
-	}
+   public SiteEntry getHomeSite() {
+      return homeSite;
+   }
 
-	public String getEncodedPassword() {
-		return encodedPassword;
-	}
+   public void setHomeSite(SiteEntry homeSite) {
+      this.homeSite = homeSite;
+   }
 
-	public void setEncodedPassword(String encodedPassword) {
-		this.encodedPassword = encodedPassword;
-	}
+   public String getEncodedPassword() {
+      return encodedPassword;
+   }
 
-	public LocalDateTime getCreatedAt() {
-		return createdAt;
-	}
+   public void setEncodedPassword(String encodedPassword) {
+      this.encodedPassword = encodedPassword;
+   }
 
-	public void setCreatedAt(LocalDateTime createdAt) {
-		this.createdAt = createdAt;
-	}
+   public LocalDateTime getCreatedAt() {
+      return createdAt;
+   }
 
-	public UserEntry getCreatedBy() {
-		return createdBy;
-	}
+   public void setCreatedAt(LocalDateTime createdAt) {
+      this.createdAt = createdAt;
+   }
 
-	public void setCreatedBy(UserEntry createdBy) {
-		this.createdBy = createdBy;
-	}
+   public UserEntry getCreatedBy() {
+      return createdBy;
+   }
 
-	public LocalDateTime getModifiedAt() {
-		return modifiedAt;
-	}
+   public void setCreatedBy(UserEntry createdBy) {
+      this.createdBy = createdBy;
+   }
 
-	public void setModifiedAt(LocalDateTime modifiedAt) {
-		this.modifiedAt = modifiedAt;
-	}
+   public LocalDateTime getModifiedAt() {
+      return modifiedAt;
+   }
 
-	public UserEntry getModifiedBy() {
-		return modifiedBy;
-	}
+   public void setModifiedAt(LocalDateTime modifiedAt) {
+      this.modifiedAt = modifiedAt;
+   }
 
-	public void setModifiedBy(UserEntry modifiedBy) {
-		this.modifiedBy = modifiedBy;
-	}
+   public UserEntry getModifiedBy() {
+      return modifiedBy;
+   }
 
-	public List<TeamSeasonEntry> getSeasons() {
-		return seasons;
-	}
+   public void setModifiedBy(UserEntry modifiedBy) {
+      this.modifiedBy = modifiedBy;
+   }
+
+   public List<TeamSeasonEntry> getSeasons() {
+      return seasons;
+   }
 }
