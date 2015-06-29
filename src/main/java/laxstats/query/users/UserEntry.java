@@ -20,6 +20,10 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
+import laxstats.api.users.UserRole;
+import laxstats.api.utils.Constants;
+import laxstats.query.teams.TeamEntry;
+
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 import org.springframework.security.core.GrantedAuthority;
@@ -27,17 +31,24 @@ import org.springframework.security.core.SpringSecurityCoreVersion;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.Assert;
 
-import laxstats.api.users.UserRole;
-import laxstats.query.teams.TeamEntry;
-
+/**
+ * {@code UserEntry} represents a query object model of an application user.
+ */
 @Entity
-@Table(name = "users", indexes = { @Index(name = "users_idx1", columnList = "lastName") },
-   uniqueConstraints = { @UniqueConstraint(name = "users_uk1", columnNames = { "email" }) })
+@Table(name = "users",
+         indexes = { @Index(name = "users_idx1", columnList = "lastName") },
+         uniqueConstraints = { @UniqueConstraint(name = "users_uk1", columnNames = { "email" }) })
 public class UserEntry implements UserDetails {
-   private static final long serialVersionUID = 1L;
+   private static final long serialVersionUID = 4593458673816348289L;
 
-   private static SortedSet<GrantedAuthority>
-      sortAuthorities(Collection<? extends GrantedAuthority> authorities)
+   /**
+    * Returns a set of granted authorities for use in authentication.
+    *
+    * @param authorities
+    * @return
+    */
+   private static SortedSet<GrantedAuthority> sortAuthorities(
+      Collection<? extends GrantedAuthority> authorities)
    {
       Assert.notNull(authorities, "Cannot pass a null GrantedAuthority collection");
       // Ensure array iteration order is predictable (as per UserDetails.getAuthorities() contract
@@ -72,11 +83,9 @@ public class UserEntry implements UserDetails {
       }
    }
 
-   /*---------- Instance properties ----------*/
-
    @Id
    @org.springframework.data.annotation.Id
-   @Column(length = 36)
+   @Column(length = Constants.MAX_LENGTH_DATABASE_KEY)
    private String id;
 
    @ManyToOne
@@ -104,13 +113,13 @@ public class UserEntry implements UserDetails {
    @Column(length = 20)
    private UserRole role;
 
-   @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+   @Type(type = Constants.LOCAL_DATETIME_DATABASE_TYPE)
    private LocalDateTime createdAt;
 
    @ManyToOne
    private UserEntry createdBy;
 
-   @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+   @Type(type = Constants.LOCAL_DATETIME_DATABASE_TYPE)
    private LocalDateTime modifiedAt;
 
    @ManyToOne
@@ -123,18 +132,41 @@ public class UserEntry implements UserDetails {
    @Transient
    private Set<? extends GrantedAuthority> authorities;
 
-   /*---------- Constructors ----------*/
-
+   /**
+    * Creates a {@code UserEntry} with the given username and password.
+    *
+    * @param username
+    * @param password
+    */
    public UserEntry(String username, String password) {
       this(username, password, true, true, true, true, new HashSet<GrantedAuthority>());
    }
 
+   /**
+    * Creates a {@code UserEntry} with the given username, password and collection of granted
+    * authorities.
+    *
+    * @param username
+    * @param password
+    * @param authorities
+    */
    public UserEntry(String username, String password,
       Collection<? extends GrantedAuthority> authorities) {
 
       this(username, password, true, true, true, true, authorities);
    }
 
+   /**
+    * Creates a {@code UserEntry} with the given information.
+    *
+    * @param username
+    * @param password
+    * @param enabled
+    * @param accountNonExpired
+    * @param credentialsNonExpired
+    * @param accountNonLocked
+    * @param authorities
+    */
    public UserEntry(String username, String password, boolean enabled, boolean accountNonExpired,
       boolean credentialsNonExpired, boolean accountNonLocked,
       Collection<? extends GrantedAuthority> authorities) {
@@ -150,11 +182,17 @@ public class UserEntry implements UserDetails {
       this.authorities = Collections.unmodifiableSet(sortAuthorities(authorities));
    }
 
+   /**
+    * Creates a {@code UserEntry}. Internal use only.
+    */
    public UserEntry() {
    }
 
-   /*---------- Methods ----------*/
-
+   /**
+    * Returns the user's concatenated full name.
+    *
+    * @return
+    */
    public String getFullName() {
       final StringBuilder sb = new StringBuilder();
       boolean concat = false;
@@ -171,6 +209,9 @@ public class UserEntry implements UserDetails {
       return sb.toString();
    }
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public boolean equals(Object obj) {
       if (obj instanceof UserEntry) {
@@ -180,11 +221,17 @@ public class UserEntry implements UserDetails {
       return false;
    }
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public int hashCode() {
       return email.hashCode();
    }
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public String toString() {
       final StringBuilder sb = new StringBuilder();
@@ -216,149 +263,302 @@ public class UserEntry implements UserDetails {
       return sb.toString();
    }
 
-   /*---------- UserDetails ----------*/
-
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public Collection<? extends GrantedAuthority> getAuthorities() {
       return authorities;
    }
 
+   /**
+    * Sets the roles by which the user can be authenticated.
+    *
+    * @param authorities
+    */
    public void setAuthorities(Set<? extends GrantedAuthority> authorities) {
       this.authorities = authorities;
    }
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public String getPassword() {
       return encodedPassword;
    }
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public String getUsername() {
       return email;
    }
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public boolean isAccountNonExpired() {
       return accountNonExpired;
    }
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public boolean isAccountNonLocked() {
       return accountNonLocked;
    }
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public boolean isCredentialsNonExpired() {
       return credentialsNonExpired;
    }
 
+   /**
+    * Clears the user's password.
+    */
    public void eraseCredentials() {
       encodedPassword = null;
    }
 
-   /*---------- Getter/Setters ----------*/
-
+   /**
+    * Returns the user's primary key.
+    *
+    * @return
+    */
    public String getId() {
       return id;
    }
 
+   /**
+    * Sets the user's primary key.
+    *
+    * @param id
+    */
    public void setId(String id) {
       this.id = id;
    }
 
+   /**
+    * Returns the user's team association, or null if none.
+    *
+    * @return
+    */
    public TeamEntry getTeam() {
       return team;
    }
 
+   /**
+    * Sets the user's team association, if any.
+    *
+    * @param team
+    */
    public void setTeam(TeamEntry team) {
       this.team = team;
    }
 
+   /**
+    * Returns trus if this user is enabled to use this application. {@inheritDoc}
+    */
    @Override
    public boolean isEnabled() {
       return enabled;
    }
 
+   /**
+    * Sets a flag to determine if the user is enabled to user this application.
+    *
+    * @param enabled
+    */
    public void setEnabled(boolean enabled) {
       this.enabled = enabled;
    }
 
+   /**
+    * Returns the user's email address.
+    *
+    * @return
+    */
    public String getEmail() {
       return email;
    }
 
+   /**
+    * Sets the user's email address. Never null.
+    *
+    * @param email
+    */
    public void setEmail(String email) {
+      assert email != null;
       this.email = email;
    }
 
+   /**
+    * Returns the user's encoded password.
+    *
+    * @return
+    */
    public String getEncodedPassword() {
       return encodedPassword;
    }
 
+   /**
+    * Sets the user's encoded password. Never null.
+    *
+    * @param encodedPassword
+    */
    public void setEncodedPassword(String encodedPassword) {
+      assert encodedPassword != null;
       this.encodedPassword = encodedPassword;
    }
 
+   /**
+    * Returns the user's first name, or null if none.
+    *
+    * @return
+    */
    public String getFirstName() {
       return firstName;
    }
 
+   /**
+    * Sets the user's first name.
+    *
+    * @param firstName
+    */
    public void setFirstName(String firstName) {
       this.firstName = firstName;
    }
 
+   /**
+    * Returns the user's last name.
+    *
+    * @return
+    */
    public String getLastName() {
       return lastName;
    }
 
+   /**
+    * Sets the users's last name. Never null.
+    *
+    * @param lastName
+    */
    public void setLastName(String lastName) {
+      assert lastName != null;
       this.lastName = lastName;
    }
 
+   /**
+    * Returns hte user's IP address, or null if none.
+    *
+    * @return
+    */
    public String getIpAddress() {
       return ipAddress;
    }
 
+   /**
+    * Sets the user's IP address.
+    *
+    * @param ipAddress
+    */
    public void setIpAddress(String ipAddress) {
       this.ipAddress = ipAddress;
    }
 
+   /**
+    * Returns the user's role.
+    *
+    * @return
+    */
    public UserRole getRole() {
       return role;
    }
 
+   /**
+    * Sets the user's role.
+    *
+    * @param role
+    */
    public void setRole(UserRole role) {
       this.role = role;
    }
 
+   /**
+    * Returns the date and time this user wasfirst persisted.
+    *
+    * @return
+    */
    public LocalDateTime getCreatedAt() {
       return createdAt;
    }
 
+   /**
+    * Sets the date and time this user was first persisted.
+    *
+    * @param createdAt
+    */
    public void setCreatedAt(LocalDateTime createdAt) {
       this.createdAt = createdAt;
    }
 
+   /**
+    * Returns the user who first persisted this user.
+    *
+    * @return
+    */
    public UserEntry getCreatedBy() {
       return createdBy;
    }
 
+   /**
+    * Sets the user who first persisted this user.
+    *
+    * @param createdBy
+    */
    public void setCreatedBy(UserEntry createdBy) {
       this.createdBy = createdBy;
    }
 
+   /**
+    * Returns the date and time this user was last modified.
+    *
+    * @return
+    */
    public LocalDateTime getModifiedAt() {
       return modifiedAt;
    }
 
+   /**
+    * Sets the date and time this user was last modified.
+    *
+    * @param modifiedAt
+    */
    public void setModifiedAt(LocalDateTime modifiedAt) {
       this.modifiedAt = modifiedAt;
    }
 
+   /**
+    * Returns the user who last modified this user.
+    *
+    * @return
+    */
    public UserEntry getModifiedBy() {
       return modifiedBy;
    }
 
+   /**
+    * Sets the user who last modified this user.
+    *
+    * @param modifiedBy
+    */
    public void setModifiedBy(UserEntry modifiedBy) {
       this.modifiedBy = modifiedBy;
    }

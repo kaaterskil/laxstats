@@ -24,8 +24,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import laxstats.api.Region;
-import laxstats.api.users.CreateUserCommand;
-import laxstats.api.users.UpdateUserCommand;
+import laxstats.api.users.CreateUser;
+import laxstats.api.users.UpdateUser;
 import laxstats.api.users.UserDTO;
 import laxstats.api.users.UserId;
 import laxstats.api.users.UserRole;
@@ -86,7 +86,7 @@ public class UserController extends ApplicationController {
          form.getFirstName(), form.getLastName(), team, request.getRemoteAddr(), true,
          form.getRole(), now, user, now, user);
 
-      final CreateUserCommand payload = new CreateUserCommand(identifier, dto);
+      final CreateUser payload = new CreateUser(identifier, dto);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
       return "redirect:/admin/users";
    }
@@ -125,7 +125,7 @@ public class UserController extends ApplicationController {
          form.getFirstName(), form.getLastName(), team, request.getRemoteAddr(), form.isEnabled(),
          form.getRole(), now, modifier);
 
-      final UpdateUserCommand payload = new UpdateUserCommand(identifier, dto);
+      final UpdateUser payload = new UpdateUser(identifier, dto);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
       return "redirect:/admin/users";
    }
