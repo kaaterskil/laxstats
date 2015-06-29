@@ -1,5 +1,6 @@
 package laxstats.web.sites;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
@@ -10,134 +11,249 @@ import laxstats.api.Region;
 import laxstats.api.sites.SiteStyle;
 import laxstats.api.sites.Surface;
 
-public class SiteForm {
+/**
+ * {@code SiteForm} contains user-defined information for the creation and update of a site.
+ */
+public class SiteForm implements Serializable {
+   private static final long serialVersionUID = -3804992444594924489L;
 
-	private String id;
+   private String id;
 
-	@NotNull
-	@Size(min = 5, max = 100)
-	private String name;
+   @NotNull
+   @Size(min = 5, max = 100)
+   private String name;
 
-	private SiteStyle style;
-	private Surface surface;
-	private String directions;
-	private String address1;
-	private String address2;
+   private SiteStyle style;
+   private Surface surface;
+   private String directions;
+   private String address1;
+   private String address2;
 
-	@NotNull
-	@Size(min = 5, max = 30)
-	private String city;
+   @NotNull
+   @Size(min = 5, max = 30)
+   private String city;
 
-	@NotNull
-	private Region region;
-	private String postalCode;
+   @NotNull
+   private Region region;
+   private String postalCode;
 
-	private List<SiteStyle> styles;
-	private List<Surface> surfaces;
-	private List<Region> regions;
+   private List<SiteStyle> styles;
+   private List<Surface> surfaces;
+   private List<Region> regions;
 
-	/*---------- Methods ----------*/
+   /**
+    * Returns a list of regions for use in a drop-down menu.
+    *
+    * @return
+    */
+   public List<Region> getRegions() {
+      if (regions == null) {
+         regions = Arrays.asList(Region.values());
+      }
+      return regions;
+   }
 
-	public List<Region> getRegions() {
-		if (regions == null) {
-			regions = Arrays.asList(Region.values());
-		}
-		return regions;
-	}
+   /**
+    * Returns a list of quality designations for use in a drop-down menu,
+    *
+    * @return
+    */
+   public List<SiteStyle> getStyles() {
+      if (styles == null) {
+         styles = Arrays.asList(SiteStyle.values());
+      }
+      return styles;
+   }
 
-	public List<SiteStyle> getStyles() {
-		if (styles == null) {
-			styles = Arrays.asList(SiteStyle.values());
-		}
-		return styles;
-	}
+   /**
+    * Returns a list of site materials for use in a drop-down menu.
+    *
+    * @return
+    */
+   public List<Surface> getSurfaces() {
+      if (surfaces == null) {
+         surfaces = Arrays.asList(Surface.values());
+      }
+      return surfaces;
+   }
 
-	public List<Surface> getSurfaces() {
-		if (surfaces == null) {
-			surfaces = Arrays.asList(Surface.values());
-		}
-		return surfaces;
-	}
+   /**
+    * Returns the site primary key or null if a new site..
+    *
+    * @return
+    */
+   public String getId() {
+      return id;
+   }
 
-	/*---------- Getter/Setters ----------*/
+   /**
+    * Sets the site primary key.
+    *
+    * @param id
+    */
+   public void setId(String id) {
+      this.id = id;
+   }
 
-	public String getId() {
-		return id;
-	}
+   /**
+    * Returns the site name.
+    *
+    * @return
+    */
+   public String getName() {
+      return name;
+   }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+   /**
+    * Sets the site name.
+    *
+    * @param name
+    */
+   public void setName(String name) {
+      this.name = name;
+   }
 
-	public String getName() {
-		return name;
-	}
+   /**
+    * Returns the site quality.
+    *
+    * @return
+    */
+   public SiteStyle getStyle() {
+      return style;
+   }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+   /**
+    * Sets the site quality.
+    *
+    * @param style
+    */
+   public void setStyle(SiteStyle style) {
+      this.style = style;
+   }
 
-	public SiteStyle getStyle() {
-		return style;
-	}
+   /**
+    * Returns the site surface material.
+    *
+    * @return
+    */
+   public Surface getSurface() {
+      return surface;
+   }
 
-	public void setStyle(SiteStyle style) {
-		this.style = style;
-	}
+   /**
+    * Sets the site surface material.
+    *
+    * @param surface
+    */
+   public void setSurface(Surface surface) {
+      this.surface = surface;
+   }
 
-	public Surface getSurface() {
-		return surface;
-	}
+   /**
+    * Returns driving directions.
+    *
+    * @return
+    */
+   public String getDirections() {
+      return directions;
+   }
 
-	public void setSurface(Surface surface) {
-		this.surface = surface;
-	}
+   /**
+    * Sets driving direction.
+    *
+    * @param directions
+    */
+   public void setDirections(String directions) {
+      this.directions = directions;
+   }
 
-	public String getDirections() {
-		return directions;
-	}
+   /**
+    * Returns the first street address line.
+    *
+    * @return
+    */
+   public String getAddress1() {
+      return address1;
+   }
 
-	public void setDirections(String directions) {
-		this.directions = directions;
-	}
+   /**
+    * Sets the first street address line.
+    *
+    * @param address1
+    */
+   public void setAddress1(String address1) {
+      this.address1 = address1;
+   }
 
-	public String getAddress1() {
-		return address1;
-	}
+   /**
+    * Returns the second street address line.
+    *
+    * @return
+    */
+   public String getAddress2() {
+      return address2;
+   }
 
-	public void setAddress1(String address1) {
-		this.address1 = address1;
-	}
+   /**
+    * Sets the second street address line.
+    *
+    * @param address2
+    */
+   public void setAddress2(String address2) {
+      this.address2 = address2;
+   }
 
-	public String getAddress2() {
-		return address2;
-	}
+   /**
+    * Returns the city.
+    *
+    * @return
+    */
+   public String getCity() {
+      return city;
+   }
 
-	public void setAddress2(String address2) {
-		this.address2 = address2;
-	}
+   /**
+    * Sets the city.
+    *
+    * @param city
+    */
+   public void setCity(String city) {
+      this.city = city;
+   }
 
-	public String getCity() {
-		return city;
-	}
+   /**
+    * Returns the region.
+    *
+    * @return
+    */
+   public Region getRegion() {
+      return region;
+   }
 
-	public void setCity(String city) {
-		this.city = city;
-	}
+   /**
+    * Sets the region.
+    *
+    * @param region
+    */
+   public void setRegion(Region region) {
+      this.region = region;
+   }
 
-	public Region getRegion() {
-		return region;
-	}
+   /**
+    * Returns the postal code.
+    *
+    * @return
+    */
+   public String getPostalCode() {
+      return postalCode;
+   }
 
-	public void setRegion(Region region) {
-		this.region = region;
-	}
-
-	public String getPostalCode() {
-		return postalCode;
-	}
-
-	public void setPostalCode(String postalCode) {
-		this.postalCode = postalCode;
-	}
+   /**
+    * Sets the postal code.
+    *
+    * @param postalCode
+    */
+   public void setPostalCode(String postalCode) {
+      this.postalCode = postalCode;
+   }
 }

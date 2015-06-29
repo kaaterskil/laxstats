@@ -21,11 +21,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import laxstats.api.people.AddressDTO;
 import laxstats.api.people.AddressType;
-import laxstats.api.sites.CreateSiteCommand;
-import laxstats.api.sites.DeleteSiteCommand;
+import laxstats.api.sites.CreateSite;
+import laxstats.api.sites.DeleteSite;
 import laxstats.api.sites.SiteDTO;
 import laxstats.api.sites.SiteId;
-import laxstats.api.sites.UpdateSiteCommand;
+import laxstats.api.sites.UpdateSite;
 import laxstats.query.sites.SiteEntry;
 import laxstats.query.sites.SiteQueryRepository;
 import laxstats.query.users.UserEntry;
@@ -126,7 +126,7 @@ public class SiteApiController extends ApplicationController {
       final SiteDTO dto = new SiteDTO(identifier, resource.getName(), resource.getStyle(),
          resource.getSurface(), address, resource.getDirections(), now, user, now, user);
 
-      final CreateSiteCommand payload = new CreateSiteCommand(identifier, dto);
+      final CreateSite payload = new CreateSite(identifier, dto);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
 
       resource.setId(identifier.toString());
@@ -163,7 +163,7 @@ public class SiteApiController extends ApplicationController {
       final SiteDTO dto = new SiteDTO(identifier, resource.getName(), resource.getStyle(),
          resource.getSurface(), address, resource.getDirections(), now, user);
 
-      final UpdateSiteCommand payload = new UpdateSiteCommand(identifier, dto);
+      final UpdateSite payload = new UpdateSite(identifier, dto);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
 
       return resource;
@@ -179,7 +179,7 @@ public class SiteApiController extends ApplicationController {
       checkDelete(siteId);
 
       final SiteId identifier = new SiteId(siteId);
-      final DeleteSiteCommand payload = new DeleteSiteCommand(identifier);
+      final DeleteSite payload = new DeleteSite(identifier);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
    }
 

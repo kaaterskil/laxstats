@@ -19,13 +19,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import laxstats.api.people.AddressDTO;
 import laxstats.api.people.AddressType;
-import laxstats.api.sites.CreateSiteCommand;
-import laxstats.api.sites.DeleteSiteCommand;
+import laxstats.api.sites.CreateSite;
+import laxstats.api.sites.DeleteSite;
 import laxstats.api.sites.SiteDTO;
 import laxstats.api.sites.SiteId;
 import laxstats.api.sites.SiteStyle;
 import laxstats.api.sites.Surface;
-import laxstats.api.sites.UpdateSiteCommand;
+import laxstats.api.sites.UpdateSite;
 import laxstats.query.people.AddressEntry;
 import laxstats.query.sites.SiteEntry;
 import laxstats.query.sites.SiteQueryRepository;
@@ -81,7 +81,7 @@ public class SiteController extends ApplicationController {
       final SiteDTO dto = new SiteDTO(identifier, form.getName(), form.getStyle(), form.getSurface(),
          address, form.getDirections(), now, user, now, user);
 
-      final CreateSiteCommand payload = new CreateSiteCommand(identifier, dto);
+      final CreateSite payload = new CreateSite(identifier, dto);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
       return "redirect:/admin/sites";
    }
@@ -110,7 +110,7 @@ public class SiteController extends ApplicationController {
       final SiteDTO dto = new SiteDTO(identifier, form.getName(), form.getStyle(), form.getSurface(),
          address, form.getDirections(), now, user);
 
-      final UpdateSiteCommand payload = new UpdateSiteCommand(identifier, dto);
+      final UpdateSite payload = new UpdateSite(identifier, dto);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
       return "redirect:/admin/sites";
    }
@@ -118,7 +118,7 @@ public class SiteController extends ApplicationController {
    @RequestMapping(value = "/admin/sites/{siteId}", method = RequestMethod.DELETE)
    public String deleteSite(@PathVariable String siteId) {
       final SiteId identifier = new SiteId(siteId);
-      final DeleteSiteCommand payload = new DeleteSiteCommand(identifier);
+      final DeleteSite payload = new DeleteSite(identifier);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
       return "redirect:/admin/sites";
    }
