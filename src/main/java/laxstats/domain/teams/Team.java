@@ -4,166 +4,276 @@ import java.util.ArrayList;
 import java.util.List;
 
 import laxstats.api.teamSeasons.TeamSeasonDTO;
-import laxstats.api.teams.TeamCreatedEvent;
+import laxstats.api.teams.TeamCreated;
 import laxstats.api.teams.TeamDTO;
-import laxstats.api.teams.TeamDeletedEvent;
+import laxstats.api.teams.TeamDeleted;
 import laxstats.api.teams.TeamGender;
 import laxstats.api.teams.TeamId;
-import laxstats.api.teams.TeamPasswordCreatedEvent;
-import laxstats.api.teams.TeamPasswordUpdatedEvent;
-import laxstats.api.teams.TeamSeasonEditedEvent;
-import laxstats.api.teams.TeamSeasonRegisteredEvent;
-import laxstats.api.teams.TeamUpdatedEvent;
+import laxstats.api.teams.TeamPasswordCreated;
+import laxstats.api.teams.TeamPasswordUpdated;
+import laxstats.api.teams.TeamSeasonEdited;
+import laxstats.api.teams.TeamSeasonRegistered;
+import laxstats.api.teams.TeamUpdated;
 
 import org.axonframework.eventsourcing.annotation.AbstractAnnotatedAggregateRoot;
 import org.axonframework.eventsourcing.annotation.AggregateIdentifier;
 import org.axonframework.eventsourcing.annotation.EventSourcingHandler;
 
+/**
+ * {@code Team} represents a domain object model of a team aggregate. Teams span an unlimited number
+ * of playing seasons.
+ */
 public class Team extends AbstractAnnotatedAggregateRoot<TeamId> {
-	private static final long serialVersionUID = 88398210263680003L;
+   private static final long serialVersionUID = 88398210263680003L;
 
-	@AggregateIdentifier
-	private TeamId teamId;
+   @AggregateIdentifier
+   private TeamId teamId;
 
-	private String name;
-	private TeamGender gender;
-	private String homeSiteId;
-	private String encodedPassword;
-	private final List<TeamSeasonInfo> seasons = new ArrayList<>();
+   private String name;
+   private TeamGender gender;
+   private String homeSiteId;
+   private String encodedPassword;
+   private final List<TeamSeasonInfo> seasons = new ArrayList<>();
 
-	public Team(TeamId teamId, TeamDTO teamDTO) {
-		apply(new TeamCreatedEvent(teamId, teamDTO));
-	}
+   /**
+    * Applies a creation event to the team aggregate with the given identifier and data.
+    *
+    * @param teamId
+    * @param teamDTO
+    */
+   public Team(TeamId teamId, TeamDTO teamDTO) {
+      apply(new TeamCreated(teamId, teamDTO));
+   }
 
-	protected Team() {
-	}
+   /**
+    * Creates a new team. Internal use only.
+    */
+   protected Team() {
+   }
 
-	/*---------- Methods ----------*/
+   /**
+    * Instructs the framework to update and persist the team with the given data.
+    *
+    * @param teamId
+    * @param teamDTO
+    */
+   public void update(TeamId teamId, TeamDTO teamDTO) {
+      apply(new TeamUpdated(teamId, teamDTO));
+   }
 
-	public void update(TeamId teamId, TeamDTO teamDTO) {
-		apply(new TeamUpdatedEvent(teamId, teamDTO));
-	}
+   /**
+    * Instructs the framework to delete the team.
+    *
+    * @param teamId
+    */
+   public void delete(TeamId teamId) {
+      apply(new TeamDeleted(teamId));
+   }
 
-	public void delete(TeamId teamId) {
-		apply(new TeamDeletedEvent(teamId));
-	}
+   /**
+    * Instructs the framework to create a new password.
+    *
+    * @param teamId
+    * @param teamDTO
+    */
+   public void createPassword(TeamId teamId, TeamDTO teamDTO) {
+      apply(new TeamPasswordCreated(teamId, teamDTO));
+   }
 
-	public void createPassword(TeamId teamId, TeamDTO teamDTO) {
-		apply(new TeamPasswordCreatedEvent(teamId, teamDTO));
-	}
+   /**
+    * Instructs the framework to update the team password.
+    *
+    * @param teamId
+    * @param teamDTO
+    */
+   public void updatePassword(TeamId teamId, TeamDTO teamDTO) {
+      apply(new TeamPasswordUpdated(teamId, teamDTO));
+   }
 
-	public void updatePassword(TeamId teamId, TeamDTO teamDTO) {
-		apply(new TeamPasswordUpdatedEvent(teamId, teamDTO));
-	}
+   /**
+    * Instructs the framework to register a new season.
+    *
+    * @param dto
+    */
+   public void registerSeason(TeamSeasonDTO dto) {
+      apply(new TeamSeasonRegistered(teamId, dto));
+   }
 
-	public void registerSeason(TeamSeasonDTO dto) {
-		apply(new TeamSeasonRegisteredEvent(teamId, dto));
-	}
+   /**
+    * Returns true if a season with the given unique identifier can be registered, false otherwise.
+    *
+    * @param seasonId
+    * @return
+    */
+   public boolean canRegisterSeason(String seasonId) {
+      for (final TeamSeasonInfo each : seasons) {
+         if (each.getSeasonId().equals(seasonId)) {
+            return false;
+         }
+      }
+      return true;
+   }
 
-	public boolean canRegisterSeason(String seasonId) {
-		for (final TeamSeasonInfo each : seasons) {
-			if (each.getSeasonId().equals(seasonId)) {
-				return false;
-			}
-		}
-		return true;
-	}
+   /**
+    * Instructs the framework to update a team season with the given data.
+    *
+    * @param dto
+    */
+   public void updateSeason(TeamSeasonDTO dto) {
+      apply(new TeamSeasonEdited(teamId, dto));
+   }
 
-	public void updateSeason(TeamSeasonDTO dto) {
-		apply(new TeamSeasonEditedEvent(teamId, dto));
-	}
+   /**
+    * Stores and persists new team data based on information contained in the given event.
+    *
+    * @param event
+    */
+   @EventSourcingHandler
+   protected void handle(TeamCreated event) {
+      final TeamDTO dto = event.getTeamDTO();
+      teamId = event.getTeamId();
+      name = dto.getName();
+      gender = dto.getGender();
+      if (dto.getHomeSite() != null) {
+         homeSiteId = dto.getHomeSite().toString();
+      }
+   }
 
-	/*---------- Event handlers ----------*/
+   /**
+    * Updates and persists the team with information contained in the given event.
+    *
+    * @param event
+    */
+   @EventSourcingHandler
+   protected void handle(TeamUpdated event) {
+      final TeamDTO dto = event.getTeamDTO();
+      name = dto.getName();
+      gender = dto.getGender();
+      if (dto.getHomeSite() != null) {
+         homeSiteId = dto.getHomeSite().toString();
+      }
+   }
 
-	@EventSourcingHandler
-	protected void handle(TeamCreatedEvent event) {
-		final TeamDTO dto = event.getTeamDTO();
-		teamId = event.getTeamId();
-		name = dto.getName();
-		gender = dto.getGender();
-		if (dto.getHomeSite() != null) {
-			homeSiteId = dto.getHomeSite().toString();
-		}
-	}
+   /**
+    * Marks the team for deletion.
+    *
+    * @param event
+    */
+   @EventSourcingHandler
+   protected void handle(TeamDeleted event) {
+      markDeleted();
+   }
 
-	@EventSourcingHandler
-	protected void handle(TeamUpdatedEvent event) {
-		final TeamDTO dto = event.getTeamDTO();
-		name = dto.getName();
-		gender = dto.getGender();
-		if (dto.getHomeSite() != null) {
-			homeSiteId = dto.getHomeSite().toString();
-		}
-	}
+   /**
+    * Registers a new team season value object from information contained in the given event.
+    *
+    * @param event
+    */
+   @EventSourcingHandler
+   protected void handle(TeamSeasonRegistered event) {
+      final TeamSeasonDTO dto = event.getTeamSeasonDTO();
 
-	@EventSourcingHandler
-	protected void handle(TeamDeletedEvent event) {
-		markDeleted();
-	}
+      final TeamSeasonInfo vo =
+         new TeamSeasonInfo(dto.getTeamSeasonId().toString(), dto.getTeam().getId(), dto.getSeason()
+            .getId(), dto.getStartsOn(), dto.getEndsOn(), dto.getStatus());
+      seasons.add(vo);
+   }
 
-	@EventSourcingHandler
-	protected void handle(TeamSeasonRegisteredEvent event) {
-		final TeamSeasonDTO dto = event.getTeamSeasonDTO();
+   /**
+    * Replaces a team season with a new value object built from information contained in the given
+    * event.
+    *
+    * @param event
+    */
+   @EventSourcingHandler
+   protected void handle(TeamSeasonEdited event) {
+      final TeamSeasonDTO dto = event.getTeamSeasonDTO();
+      final String id = dto.getTeamSeasonId().toString();
 
-		final TeamSeasonInfo vo = new TeamSeasonInfo(dto.getTeamSeasonId()
-				.toString(), dto.getTeam().getId(), dto.getSeason().getId(),
-				dto.getStartsOn(), dto.getEndsOn(), dto.getStatus());
-		seasons.add(vo);
-	}
+      for (final TeamSeasonInfo each : seasons) {
+         if (each.getId().equals(id)) {
+            seasons.remove(each);
+         }
+      }
+      final TeamSeasonInfo vo =
+         new TeamSeasonInfo(dto.getTeamSeasonId().toString(), dto.getTeam().getId(), dto.getSeason()
+            .getId(), dto.getStartsOn(), dto.getEndsOn(), dto.getStatus());
+      seasons.add(vo);
+   }
 
-	@EventSourcingHandler
-	protected void handle(TeamSeasonEditedEvent event) {
-		final TeamSeasonDTO dto = event.getTeamSeasonDTO();
-		final String id = dto.getTeamSeasonId().toString();
+   /**
+    * Creates and persists a new password from information contained in the given event.
+    *
+    * @param event
+    */
+   @EventSourcingHandler
+   protected void handle(TeamPasswordCreated event) {
+      final TeamDTO dto = event.getTeamDTO();
+      encodedPassword = dto.getEncodedPassword();
+   }
 
-		for (final TeamSeasonInfo each : seasons) {
-			if (each.getId().equals(id)) {
-				seasons.remove(each);
-			}
-		}
-		final TeamSeasonInfo vo = new TeamSeasonInfo(dto.getTeamSeasonId()
-				.toString(), dto.getTeam().getId(), dto.getSeason().getId(),
-				dto.getStartsOn(), dto.getEndsOn(), dto.getStatus());
-		seasons.add(vo);
-	}
+   /**
+    * Updates and persists the team password from information contained in the given event.
+    *
+    * @param event
+    */
+   @EventSourcingHandler
+   protected void handle(TeamPasswordUpdated event) {
+      final TeamDTO dto = event.getTeamDTO();
+      encodedPassword = dto.getEncodedPassword();
+   }
 
-	@EventSourcingHandler
-	protected void handle(TeamPasswordCreatedEvent event) {
-		final TeamDTO dto = event.getTeamDTO();
-		encodedPassword = dto.getEncodedPassword();
-	}
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public TeamId getIdentifier() {
+      return teamId;
+   }
 
-	@EventSourcingHandler
-	protected void handle(TeamPasswordUpdatedEvent event) {
-		final TeamDTO dto = event.getTeamDTO();
-		encodedPassword = dto.getEncodedPassword();
-	}
+   /**
+    * Returns the team name.
+    *
+    * @return
+    */
+   public String getName() {
+      return name;
+   }
 
-	/*---------- Getters ----------*/
+   /**
+    * Returns the team gender.
+    *
+    * @return
+    */
+   public TeamGender getGender() {
+      return gender;
+   }
 
-	@Override
-	public TeamId getIdentifier() {
-		return teamId;
-	}
+   /**
+    * Returns the identifier of the home site.
+    *
+    * @return
+    */
+   public String getHomeSiteId() {
+      return homeSiteId;
+   }
 
-	public String getName() {
-		return name;
-	}
+   /**
+    * Returns the encoded password.
+    *
+    * @return
+    */
+   public String getEncodedPassword() {
+      return encodedPassword;
+   }
 
-	public TeamGender getGender() {
-		return gender;
-	}
-
-	public String getHomeSiteId() {
-		return homeSiteId;
-	}
-
-	public String getEncodedPassword() {
-		return encodedPassword;
-	}
-
-	public List<TeamSeasonInfo> getSeasons() {
-		return seasons;
-	}
+   /**
+    * Returns the collection of team seasons.
+    *
+    * @return
+    */
+   public List<TeamSeasonInfo> getSeasons() {
+      return seasons;
+   }
 
 }

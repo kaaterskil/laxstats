@@ -8,8 +8,8 @@ import laxstats.api.teamSeasons.DeleteTeamSeasonCommand;
 import laxstats.api.teamSeasons.TeamSeasonDTO;
 import laxstats.api.teamSeasons.TeamSeasonId;
 import laxstats.api.teamSeasons.TeamStatus;
-import laxstats.api.teams.EditTeamSeasonCommand;
-import laxstats.api.teams.RegisterTeamSeasonCommand;
+import laxstats.api.teams.EditTeamSeason;
+import laxstats.api.teams.RegisterTeamSeason;
 import laxstats.api.teams.TeamId;
 import laxstats.query.seasons.SeasonEntry;
 import laxstats.query.seasons.SeasonQueryRepository;
@@ -87,7 +87,7 @@ public class TeamSeasonController extends ApplicationController {
 				null, form.getStartsOn(), form.getEndsOn(), form.getName(),
 				form.getStatus(), user, now, user, now);
 
-		final RegisterTeamSeasonCommand payload = new RegisterTeamSeasonCommand(
+		final RegisterTeamSeason payload = new RegisterTeamSeason(
 				new TeamId(team.getId()), dto);
 		try {
 			commandBus.dispatch(new GenericCommandMessage<>(payload));
@@ -127,7 +127,7 @@ public class TeamSeasonController extends ApplicationController {
 				null, form.getStartsOn(), form.getEndsOn(), form.getName(),
 				form.getStatus(), user, now);
 
-		final EditTeamSeasonCommand payload = new EditTeamSeasonCommand(
+		final EditTeamSeason payload = new EditTeamSeason(
 				new TeamId(teamId), dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
 		return "redirect:/admin/teams/" + teamId + "/seasons";

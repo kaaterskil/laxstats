@@ -4,13 +4,13 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import laxstats.api.teams.CreateTeamCommand;
-import laxstats.api.teams.CreateTeamPasswordCommand;
-import laxstats.api.teams.DeleteTeamCommand;
+import laxstats.api.teams.CreateTeam;
+import laxstats.api.teams.CreateTeamPassword;
+import laxstats.api.teams.DeleteTeam;
 import laxstats.api.teams.TeamDTO;
 import laxstats.api.teams.TeamId;
-import laxstats.api.teams.UpdateTeamCommand;
-import laxstats.api.teams.UpdateTeamPasswordCommand;
+import laxstats.api.teams.UpdateTeam;
+import laxstats.api.teams.UpdateTeamPassword;
 import laxstats.query.leagues.LeagueEntry;
 import laxstats.query.leagues.LeagueQueryRepository;
 import laxstats.query.sites.SiteEntry;
@@ -97,7 +97,7 @@ public class TeamController extends ApplicationController {
 				form.getLetter(), form.getRegion(), league, homeSite, now,
 				user, now, user);
 
-		final CreateTeamCommand command = new CreateTeamCommand(identifier, dto);
+		final CreateTeam command = new CreateTeam(identifier, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(command));
 		return "redirect:/admin/teams";
 	}
@@ -131,7 +131,7 @@ public class TeamController extends ApplicationController {
 				form.getName(), form.getAbbreviation(), form.getGender(),
 				form.getLetter(), form.getRegion(), league, homeSite, now, user);
 
-		final UpdateTeamCommand command = new UpdateTeamCommand(identifier, dto);
+		final UpdateTeam command = new UpdateTeam(identifier, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(command));
 		return "redirect:/admin/teams";
 	}
@@ -139,7 +139,7 @@ public class TeamController extends ApplicationController {
 	@RequestMapping(value = "/admin/teams/{teamId}", method = RequestMethod.DELETE)
 	public String deleteTeam(@PathVariable String teamId) {
 		final TeamId identifier = new TeamId(teamId);
-		final DeleteTeamCommand command = new DeleteTeamCommand(identifier);
+		final DeleteTeam command = new DeleteTeam(identifier);
 		commandBus.dispatch(new GenericCommandMessage<>(command));
 		return "redirect:/admin/teams";
 	}
@@ -203,7 +203,7 @@ public class TeamController extends ApplicationController {
 		final String encodedPassword = encoder.encode(form.getPassword());
 
 		final TeamDTO dto = new TeamDTO(identifier, encodedPassword, now, user);
-		final CreateTeamPasswordCommand payload = new CreateTeamPasswordCommand(
+		final CreateTeamPassword payload = new CreateTeamPassword(
 				identifier, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
 		return "teams/show";
@@ -234,7 +234,7 @@ public class TeamController extends ApplicationController {
 		final String encodedPassword = encoder.encode(form.getPassword());
 
 		final TeamDTO dto = new TeamDTO(identifier, encodedPassword, now, user);
-		final UpdateTeamPasswordCommand payload = new UpdateTeamPasswordCommand(
+		final UpdateTeamPassword payload = new UpdateTeamPassword(
 				identifier, dto);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
 		return "teams/show";
