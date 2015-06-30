@@ -1,11 +1,11 @@
 package laxstats.domain.players;
 
-import laxstats.api.players.PlayerCreatedEvent;
+import laxstats.api.players.PlayerCreated;
 import laxstats.api.players.PlayerDTO;
-import laxstats.api.players.PlayerDeletedEvent;
+import laxstats.api.players.PlayerDeleted;
 import laxstats.api.players.PlayerId;
 import laxstats.api.players.PlayerStatus;
-import laxstats.api.players.PlayerUpdatedEvent;
+import laxstats.api.players.PlayerUpdated;
 import laxstats.api.players.Position;
 import laxstats.api.players.Role;
 
@@ -13,124 +13,211 @@ import org.axonframework.eventsourcing.annotation.AbstractAnnotatedAggregateRoot
 import org.axonframework.eventsourcing.annotation.AggregateIdentifier;
 import org.axonframework.eventsourcing.annotation.EventSourcingHandler;
 
+/**
+ * {@code Player} represents a domain object model of a person assigned to a particular team season
+ * and roster. A player may have a role other than athlete, such a coach, manager, etc. A person may
+ * be associated with several seasons on a given team, and may be associated with several teams,
+ * although not simultaneously.
+ */
 public class Player extends AbstractAnnotatedAggregateRoot<PlayerId> {
-	private static final long serialVersionUID = 1754082091210983057L;
+   private static final long serialVersionUID = 1754082091210983057L;
 
-	@AggregateIdentifier
-	private PlayerId id;
+   @AggregateIdentifier
+   private PlayerId id;
 
-	private String personId;
-	private String teamSeasonId;
-	private Role role;
-	private PlayerStatus status;
-	private String jerseyNumber;
-	private Position position;
-	private boolean isCaptain;
-	private int depth;
-	private int height;
-	private int weight;
+   private String personId;
+   private String teamSeasonId;
+   private Role role;
+   private PlayerStatus status;
+   private String jerseyNumber;
+   private Position position;
+   private boolean isCaptain;
+   private int depth;
+   private int height;
+   private int weight;
 
-	public Player(PlayerId playerId, PlayerDTO playerDTO) {
-		apply(new PlayerCreatedEvent(playerId, playerDTO));
-	}
+   /**
+    * Creates a {@code Player} and applies the given aggregate identifier and player information.
+    *
+    * @param playerId
+    * @param playerDTO
+    */
+   public Player(PlayerId playerId, PlayerDTO playerDTO) {
+      apply(new PlayerCreated(playerId, playerDTO));
+   }
 
-	protected Player() {
-	}
+   /**
+    * Creates a {@code Player}. Internal user only.
+    */
+   protected Player() {
+   }
 
-	/*---------- Methods ----------*/
+   /**
+    * Instructs the framework to change the state of the player.
+    *
+    * @param playerDTO
+    */
+   public void update(PlayerDTO playerDTO) {
+      apply(new PlayerUpdated(id, playerDTO));
+   }
 
-	public void update(PlayerDTO playerDTO) {
-		apply(new PlayerUpdatedEvent(id, playerDTO));
-	}
+   /**
+    * Instructs the framework to delete the player.
+    */
+   public void delete() {
+      apply(new PlayerDeleted(id));
+   }
 
-	public void delete() {
-		apply(new PlayerDeletedEvent(id));
-	}
+   /**
+    * Stores and persists the player with information contained in the given event.
+    *
+    * @param event
+    */
+   @EventSourcingHandler
+   protected void handle(PlayerCreated event) {
+      final PlayerId identifier = event.getPlayerId();
+      final PlayerDTO dto = event.getPlayerDTO();
 
-	/*---------- Event handlers ----------*/
+      id = identifier;
+      personId = dto.getPerson().getId();
+      teamSeasonId = dto.getTeam().getId();
+      role = dto.getRole();
+      status = dto.getStatus();
+      jerseyNumber = dto.getJerseyNumber();
+      position = dto.getPosition();
+      isCaptain = dto.isCaptain();
+      depth = dto.getDepth();
+      height = dto.getHeight();
+      weight = dto.getWeight();
+   }
 
-	@EventSourcingHandler
-	protected void handle(PlayerCreatedEvent event) {
-		final PlayerId identifier = event.getPlayerId();
-		final PlayerDTO dto = event.getPlayerDTO();
+   /**
+    * Updates and persists the player with information contained in the given event.
+    *
+    * @param event
+    */
+   @EventSourcingHandler
+   protected void handle(PlayerUpdated event) {
+      final PlayerDTO dto = event.getPlayerDTO();
 
-		id = identifier;
-		personId = dto.getPerson().getId();
-		teamSeasonId = dto.getTeam().getId();
-		role = dto.getRole();
-		status = dto.getStatus();
-		jerseyNumber = dto.getJerseyNumber();
-		position = dto.getPosition();
-		isCaptain = dto.isCaptain();
-		depth = dto.getDepth();
-		height = dto.getHeight();
-		weight = dto.getWeight();
-	}
+      personId = dto.getPerson().getId();
+      teamSeasonId = dto.getTeam().getId();
+      role = dto.getRole();
+      status = dto.getStatus();
+      jerseyNumber = dto.getJerseyNumber();
+      position = dto.getPosition();
+      isCaptain = dto.isCaptain();
+      depth = dto.getDepth();
+      height = dto.getHeight();
+      weight = dto.getWeight();
+   }
 
-	@EventSourcingHandler
-	protected void handle(PlayerUpdatedEvent event) {
-		final PlayerDTO dto = event.getPlayerDTO();
+   /**
+    * Marks the player for deletion.
+    *
+    * @param event
+    */
+   @EventSourcingHandler
+   protected void handle(PlayerDeleted event) {
+      markDeleted();
+   }
 
-		personId = dto.getPerson().getId();
-		teamSeasonId = dto.getTeam().getId();
-		role = dto.getRole();
-		status = dto.getStatus();
-		jerseyNumber = dto.getJerseyNumber();
-		position = dto.getPosition();
-		isCaptain = dto.isCaptain();
-		depth = dto.getDepth();
-		height = dto.getHeight();
-		weight = dto.getWeight();
-	}
+   /**
+    * Returns the player's aggregate identifier.
+    *
+    * @return
+    */
+   public PlayerId getId() {
+      return id;
+   }
 
-	@EventSourcingHandler
-	protected void handle(PlayerDeletedEvent event) {
-		markDeleted();
-	}
+   /**
+    * Returns the identifier of the associated person aggregate.
+    *
+    * @return
+    */
+   public String getPersonId() {
+      return personId;
+   }
 
-	/*---------- Getters ----------*/
+   /**
+    * Returns the identifier of the associated team season aggregate.
+    *
+    * @return
+    */
+   public String getTeamSeasonId() {
+      return teamSeasonId;
+   }
 
-	public PlayerId getId() {
-		return id;
-	}
+   /**
+    * Returns the player's role.
+    *
+    * @return
+    */
+   public Role getRole() {
+      return role;
+   }
 
-	public String getPersonId() {
-		return personId;
-	}
+   /**
+    * Returns the player's playing status.
+    *
+    * @return
+    */
+   public PlayerStatus getStatus() {
+      return status;
+   }
 
-	public String getTeamSeasonId() {
-		return teamSeasonId;
-	}
+   /**
+    * Returns the player's jersey number.
+    *
+    * @return
+    */
+   public String getJerseyNumber() {
+      return jerseyNumber;
+   }
 
-	public Role getRole() {
-		return role;
-	}
+   /**
+    * Returns the player's position.
+    *
+    * @return
+    */
+   public Position getPosition() {
+      return position;
+   }
 
-	public PlayerStatus getStatus() {
-		return status;
-	}
+   /**
+    * Returns true if the player is a team captain, false otherwise.
+    *
+    * @return
+    */
+   public boolean isCaptain() {
+      return isCaptain;
+   }
 
-	public String getJerseyNumber() {
-		return jerseyNumber;
-	}
+   /**
+    * Returns the player's depth in the roster.
+    *
+    * @return
+    */
+   public int getDepth() {
+      return depth;
+   }
 
-	public Position getPosition() {
-		return position;
-	}
+   /**
+    * Returns the player's height, in inches.
+    *
+    * @return
+    */
+   public int getHeight() {
+      return height;
+   }
 
-	public boolean isCaptain() {
-		return isCaptain;
-	}
-
-	public int getDepth() {
-		return depth;
-	}
-
-	public int getHeight() {
-		return height;
-	}
-
-	public int getWeight() {
-		return weight;
-	}
+   /**
+    * Returns the player's weight, in pounds.
+    *
+    * @return
+    */
+   public int getWeight() {
+      return weight;
+   }
 }
