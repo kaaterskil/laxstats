@@ -23,7 +23,7 @@ public class PlayerListener {
 
    /**
     * Creates and persists a player with information contained in the given event.
-    * 
+    *
     * @param event
     */
    @EventHandler
@@ -52,8 +52,8 @@ public class PlayerListener {
    }
 
    /**
-    * Updates a player with information contained in teh given event.
-    * 
+    * Updates a player with information contained in the given event.
+    *
     * @param event
     */
    @EventHandler
@@ -80,7 +80,7 @@ public class PlayerListener {
 
    /**
     * Deletes a player matching the primary key contained in the given event.
-    * 
+    *
     * @param event
     */
    @EventHandler

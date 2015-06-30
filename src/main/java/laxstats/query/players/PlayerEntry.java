@@ -16,6 +16,7 @@ import javax.persistence.UniqueConstraint;
 import laxstats.api.players.PlayerStatus;
 import laxstats.api.players.Position;
 import laxstats.api.players.Role;
+import laxstats.api.utils.Constants;
 import laxstats.query.people.PersonEntry;
 import laxstats.query.teamSeasons.TeamSeasonEntry;
 import laxstats.query.users.UserEntry;
@@ -44,7 +45,7 @@ public class PlayerEntry implements Serializable {
    private static final long serialVersionUID = -297221422212373720L;
 
    @Id
-   @Column(length = 36)
+   @Column(length = Constants.MAX_LENGTH_DATABASE_KEY)
    private String id;
 
    @ManyToOne
@@ -78,13 +79,13 @@ public class PlayerEntry implements Serializable {
    private int height;
    private int weight;
 
-   @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+   @Type(type = Constants.LOCAL_DATETIME_DATABASE_TYPE)
    private LocalDateTime createdAt;
 
    @ManyToOne
    private UserEntry createdBy;
 
-   @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+   @Type(type = Constants.LOCAL_DATETIME_DATABASE_TYPE)
    private LocalDateTime modifiedAt;
 
    @ManyToOne
@@ -92,7 +93,7 @@ public class PlayerEntry implements Serializable {
 
    /**
     * Returns the player primary key.
-    * 
+    *
     * @return
     */
    public String getId() {
@@ -101,7 +102,7 @@ public class PlayerEntry implements Serializable {
 
    /**
     * Sets the player primary key.
-    * 
+    *
     * @param id
     */
    public void setId(String id) {
@@ -110,7 +111,7 @@ public class PlayerEntry implements Serializable {
 
    /**
     * Returns the plater's association person. Never null.
-    * 
+    *
     * @return
     */
    public PersonEntry getPerson() {
@@ -119,7 +120,7 @@ public class PlayerEntry implements Serializable {
 
    /**
     * Sets the player's associated person.
-    * 
+    *
     * @param person
     */
    public void setPerson(PersonEntry person) {
@@ -129,7 +130,7 @@ public class PlayerEntry implements Serializable {
 
    /**
     * Returns the player's associated team season. Never null.
-    * 
+    *
     * @return
     */
    public TeamSeasonEntry getTeamSeason() {
@@ -138,7 +139,7 @@ public class PlayerEntry implements Serializable {
 
    /**
     * Sets the associated team season for this player.
-    * 
+    *
     * @param teamSeason
     */
    public void setTeamSeason(TeamSeasonEntry teamSeason) {
@@ -148,7 +149,7 @@ public class PlayerEntry implements Serializable {
 
    /**
     * Returns a concatenation of the player's full name, or null if not known.
-    * 
+    *
     * @return
     */
    public String getFullName() {
@@ -157,7 +158,7 @@ public class PlayerEntry implements Serializable {
 
    /**
     * Sets a concatenation of the player's full name.
-    * 
+    *
     * @param fullName
     */
    public void setFullName(String fullName) {
@@ -166,7 +167,7 @@ public class PlayerEntry implements Serializable {
 
    /**
     * Returns the player's role on the team. Never null.
-    * 
+    *
     * @return
     */
    public Role getRole() {
@@ -175,7 +176,7 @@ public class PlayerEntry implements Serializable {
 
    /**
     * Sets the player's role on the team.
-    * 
+    *
     * @param role
     */
    public void setRole(Role role) {
@@ -185,7 +186,7 @@ public class PlayerEntry implements Serializable {
 
    /**
     * Returns the player's playing status. Never null.
-    * 
+    *
     * @return
     */
    public PlayerStatus getStatus() {
@@ -194,7 +195,7 @@ public class PlayerEntry implements Serializable {
 
    /**
     * Sets the player's playing status.
-    * 
+    *
     * @param status
     */
    public void setStatus(PlayerStatus status) {
@@ -204,7 +205,7 @@ public class PlayerEntry implements Serializable {
 
    /**
     * Returns the player's jersey number, or null if not known or assigned.
-    * 
+    *
     * @return
     */
    public String getJerseyNumber() {
@@ -213,7 +214,7 @@ public class PlayerEntry implements Serializable {
 
    /**
     * Sets the player's jersey number.
-    * 
+    *
     * @param jerseyNumber
     */
    public void setJerseyNumber(String jerseyNumber) {
@@ -222,7 +223,7 @@ public class PlayerEntry implements Serializable {
 
    /**
     * Returns the player's position, or null if not known.
-    * 
+    *
     * @return
     */
    public Position getPosition() {
@@ -231,7 +232,7 @@ public class PlayerEntry implements Serializable {
 
    /**
     * Sets the player's position.
-    * 
+    *
     * @param position
     */
    public void setPosition(Position position) {
@@ -240,7 +241,7 @@ public class PlayerEntry implements Serializable {
 
    /**
     * Returns true if the player is a team captain, false otherwise.
-    * 
+    *
     * @return
     */
    public boolean isCaptain() {
@@ -249,7 +250,7 @@ public class PlayerEntry implements Serializable {
 
    /**
     * Sets a flag to determine if the player is a team captain.
-    * 
+    *
     * @param isCaptain
     */
    public void setCaptain(boolean isCaptain) {
