@@ -6,19 +6,19 @@ import java.util.List;
 import laxstats.api.games.GameDTO;
 import laxstats.api.players.PlayerDTO;
 import laxstats.api.players.PlayerId;
-import laxstats.api.teamSeasons.DeleteTeamSeasonCommand;
+import laxstats.api.teamSeasons.DeleteTeamSeason;
 import laxstats.api.teamSeasons.EventAlreadyScheduledException;
-import laxstats.api.teamSeasons.EventRevisedEvent;
 import laxstats.api.teamSeasons.EventScheduleConflictException;
-import laxstats.api.teamSeasons.EventScheduledEvent;
-import laxstats.api.teamSeasons.PlayerDroppedEvent;
-import laxstats.api.teamSeasons.PlayerEditedEvent;
-import laxstats.api.teamSeasons.PlayerRegisteredEvent;
-import laxstats.api.teamSeasons.TeamSeasonCreatedEvent;
+import laxstats.api.teamSeasons.GameRevised;
+import laxstats.api.teamSeasons.GameScheduled;
+import laxstats.api.teamSeasons.PlayerDropped;
+import laxstats.api.teamSeasons.PlayerEdited;
+import laxstats.api.teamSeasons.PlayerRegistered;
+import laxstats.api.teamSeasons.TeamSeasonCreated;
 import laxstats.api.teamSeasons.TeamSeasonDTO;
-import laxstats.api.teamSeasons.TeamSeasonDeletedEvent;
+import laxstats.api.teamSeasons.TeamSeasonDeleted;
 import laxstats.api.teamSeasons.TeamSeasonId;
-import laxstats.api.teamSeasons.TeamSeasonUpdatedEvent;
+import laxstats.api.teamSeasons.TeamSeasonUpdated;
 import laxstats.api.teamSeasons.TeamStatus;
 
 import org.axonframework.eventsourcing.annotation.AbstractAnnotatedAggregateRoot;
@@ -26,6 +26,10 @@ import org.axonframework.eventsourcing.annotation.AggregateIdentifier;
 import org.axonframework.eventsourcing.annotation.EventSourcingHandler;
 import org.joda.time.LocalDate;
 
+/**
+ * {@code TeamSeason} represents the domain object model of a season, including the roster, of a
+ * team.
+ */
 public class TeamSeason extends AbstractAnnotatedAggregateRoot<TeamSeasonId> {
    private static final long serialVersionUID = 687219884714746674L;
 
@@ -38,44 +42,94 @@ public class TeamSeason extends AbstractAnnotatedAggregateRoot<TeamSeasonId> {
    private LocalDate startsOn;
    private LocalDate endsOn;
    private final List<PlayerInfo> roster = new ArrayList<>();
-   private final List<EventInfo> events = new ArrayList<>();
+   private final List<GameInfo> events = new ArrayList<>();
 
+   /**
+    * Applies the given aggregate identifier and information to a newly created team season.
+    * 
+    * @param teamSeasonId
+    * @param teamSeasonDTO
+    */
    public TeamSeason(TeamSeasonId teamSeasonId, TeamSeasonDTO teamSeasonDTO) {
-      apply(new TeamSeasonCreatedEvent(teamSeasonId, teamSeasonDTO));
+      apply(new TeamSeasonCreated(teamSeasonId, teamSeasonDTO));
    }
 
+   /**
+    * Creates a {@code TeamSeason}. Internal user only.
+    */
    protected TeamSeason() {
    }
 
-   /*---------- Methods ----------*/
-
+   /**
+    * Instructs the framework to update and persist the state of this team season.
+    * 
+    * @param identifier
+    * @param dto
+    */
    public void update(TeamSeasonId identifier, TeamSeasonDTO dto) {
-      apply(new TeamSeasonUpdatedEvent(identifier, dto));
+      apply(new TeamSeasonUpdated(identifier, dto));
    }
 
-   public void delete(DeleteTeamSeasonCommand command) {
-      apply(new TeamSeasonDeletedEvent(command.getTeamSeasonId()));
+   /**
+    * Instructs the framework to mark this team season for deletion.
+    * 
+    * @param command
+    */
+   public void delete(DeleteTeamSeason command) {
+      apply(new TeamSeasonDeleted(command.getTeamSeasonId()));
    }
 
+   /**
+    * Instructs the framework to add the player with the given information to this team season
+    * roster.
+    * 
+    * @param dto
+    */
    public void registerPlayer(PlayerDTO dto) {
-      apply(new PlayerRegisteredEvent(id, dto));
+      apply(new PlayerRegistered(id, dto));
    }
 
+   /**
+    * Returns true if the player matching the given identifier can be added to this team season
+    * roster.
+    * 
+    * @param playerId
+    * @return
+    */
    public boolean canRegisterPlayer(String playerId) {
       return !isPlayerRegistered(playerId);
    }
 
+   /**
+    * Instructs the framework to update and persist the state of a player with the given
+    * information.
+    * 
+    * @param dto
+    */
    public void updatePlayer(PlayerDTO dto) {
-      apply(new PlayerEditedEvent(id, dto));
+      apply(new PlayerEdited(id, dto));
    }
 
+   /**
+    * Instructs the framework to drop the player matching the given aggregate identifier from this
+    * team season roster.
+    * 
+    * @param playerId
+    */
    public void dropPlayer(PlayerId playerId) {
       if (!isPlayerRegistered(playerId.toString())) {
          throw new IllegalArgumentException("player is not registered");
       }
-      apply(new PlayerDroppedEvent(id, playerId));
+      apply(new PlayerDropped(id, playerId));
    }
 
+   /**
+    * Returns true if the player matching the given aggregate identifier is registered on this team
+    * season roster, false otherwise.
+    * 
+    * @param playerId
+    * @return
+    */
    private boolean isPlayerRegistered(String playerId) {
       for (final PlayerInfo each : roster) {
          if (each.getId().equals(playerId)) {
@@ -85,6 +139,12 @@ public class TeamSeason extends AbstractAnnotatedAggregateRoot<TeamSeasonId> {
       return false;
    }
 
+   /**
+    * Instructs the framework to schedule this team season with the given game. An exception is
+    * thrown if the game is already scheduled or the team has a scheduling conflict.
+    *
+    * @param dto
+    */
    public void scheduleEvent(GameDTO dto) {
       if (alreadyScheduled(dto)) {
          throw new EventAlreadyScheduledException();
@@ -92,11 +152,17 @@ public class TeamSeason extends AbstractAnnotatedAggregateRoot<TeamSeasonId> {
       if (scheduleConflicts(dto)) {
          throw new EventScheduleConflictException();
       }
-      apply(new EventScheduledEvent(id, dto));
+      apply(new GameScheduled(id, dto));
    }
 
+   /**
+    * Returns true if this team season is already scheduled for the given game.
+    *
+    * @param dto
+    * @return
+    */
    public boolean alreadyScheduled(GameDTO dto) {
-      for (final EventInfo event : events) {
+      for (final GameInfo event : events) {
          if (event.getEventId().equals(dto.getId())) {
             return true;
          }
@@ -104,8 +170,14 @@ public class TeamSeason extends AbstractAnnotatedAggregateRoot<TeamSeasonId> {
       return false;
    }
 
+   /**
+    * Returns true if the given game conflicts with an already scheduled event, false otherwise.
+    *
+    * @param dto
+    * @return
+    */
    private boolean scheduleConflicts(GameDTO dto) {
-      for (final EventInfo event : events) {
+      for (final GameInfo event : events) {
          if (!event.getEventId().equals(dto.getId()) &&
             event.getStartsAt().equals(dto.getStartsAt())) {
             return true;
@@ -114,17 +186,26 @@ public class TeamSeason extends AbstractAnnotatedAggregateRoot<TeamSeasonId> {
       return false;
    }
 
+   /**
+    * Instructs the framework to update and persist the game associated with the team season with
+    * information contained in the given event.
+    *
+    * @param dto
+    */
    public void updateEvent(GameDTO dto) {
       if (scheduleConflicts(dto)) {
          throw new EventScheduleConflictException();
       }
-      apply(new EventRevisedEvent(id, dto));
+      apply(new GameRevised(id, dto));
    }
 
-   /*---------- Event handlers ----------*/
-
+   /**
+    * Stores and persists information for a newly created team season.
+    *
+    * @param event
+    */
    @EventSourcingHandler
-   protected void handle(TeamSeasonCreatedEvent event) {
+   protected void handle(TeamSeasonCreated event) {
       final TeamSeasonDTO dto = event.getTeamSeasonDTO();
       id = dto.getTeamSeasonId();
       teamId = dto.getTeam().getId();
@@ -134,8 +215,14 @@ public class TeamSeason extends AbstractAnnotatedAggregateRoot<TeamSeasonId> {
       endsOn = dto.getEndsOn();
    }
 
+   /**
+    * Updates and persists the state of this team season with information contained in the given
+    * event.
+    *
+    * @param event
+    */
    @EventSourcingHandler
-   protected void handle(TeamSeasonUpdatedEvent event) {
+   protected void handle(TeamSeasonUpdated event) {
       final TeamSeasonDTO dto = event.getTeamSeasonDTO();
       teamId = dto.getTeam().getId();
       seasonId = dto.getSeason().getId();
@@ -144,13 +231,24 @@ public class TeamSeason extends AbstractAnnotatedAggregateRoot<TeamSeasonId> {
       endsOn = dto.getEndsOn();
    }
 
+   /**
+    * Marks this team season for deletion.
+    *
+    * @param event
+    */
    @EventSourcingHandler
-   protected void handle(TeamSeasonDeletedEvent event) {
+   protected void handle(TeamSeasonDeleted event) {
       markDeleted();
    }
 
+   /**
+    * Creates and persists a value object representing a player newly added to this team season
+    * roster.
+    *
+    * @param event
+    */
    @EventSourcingHandler
-   protected void handle(PlayerRegisteredEvent event) {
+   protected void handle(PlayerRegistered event) {
       final PlayerDTO dto = event.getPlayerDTO();
       final String playerId = dto.getId().toString();
       final String personId = dto.getPerson().getId();
@@ -161,8 +259,14 @@ public class TeamSeason extends AbstractAnnotatedAggregateRoot<TeamSeasonId> {
       roster.add(player);
    }
 
+   /**
+    * Updates and persists the value object representing an existing player on this team season
+    * roster.
+    *
+    * @param event
+    */
    @EventSourcingHandler
-   protected void handle(PlayerEditedEvent event) {
+   protected void handle(PlayerEdited event) {
       final PlayerDTO dto = event.getPlayerDTO();
       final String playerId = dto.getId().toString();
       final String personId = dto.getPerson().getId();
@@ -173,14 +277,25 @@ public class TeamSeason extends AbstractAnnotatedAggregateRoot<TeamSeasonId> {
       roster.add(player);
    }
 
+   /**
+    * Removes the value object representing a player with an aggregate identifier matching
+    * information contained in the given event from this team season roster.
+    *
+    * @param event
+    */
    @EventSourcingHandler
-   protected void handle(PlayerDroppedEvent event) {
+   protected void handle(PlayerDropped event) {
       final String playerId = event.getPlayerId().toString();
       roster.remove(playerId);
    }
 
+   /**
+    * Creates and persists a value object representing a newly scheduled game for this team season.
+    *
+    * @param event
+    */
    @EventSourcingHandler
-   protected void handle(EventScheduledEvent event) {
+   protected void handle(GameScheduled event) {
       final GameDTO dto = event.getEvent();
       String siteId = null;
       String teamOneId = null;
@@ -195,11 +310,18 @@ public class TeamSeason extends AbstractAnnotatedAggregateRoot<TeamSeasonId> {
       if (dto.getTeamTwo() != null) {
          teamTwoId = dto.getTeamTwo().getId();
       }
-      events.add(new EventInfo(dto.getId(), siteId, teamOneId, teamTwoId, dto.getStartsAt()));
+      events.add(new GameInfo(dto.getId(), siteId, teamOneId, teamTwoId, dto.getStartsAt()));
    }
 
+   /**
+    * Updates and persists the value object that represents an existing game with information
+    * contained in the given event. If the game is not yet associated with the team season, it is
+    * added.
+    *
+    * @param event
+    */
    @EventSourcingHandler
-   protected void handle(EventRevisedEvent event) {
+   protected void handle(GameRevised event) {
       final GameDTO dto = event.getEventDTO();
       String siteId = null;
       String teamOneId = null;
@@ -215,11 +337,11 @@ public class TeamSeason extends AbstractAnnotatedAggregateRoot<TeamSeasonId> {
          teamTwoId = dto.getTeamTwo().getId();
       }
 
-      final EventInfo vo =
-         new EventInfo(dto.getId(), siteId, teamOneId, teamTwoId, dto.getStartsAt());
+      final GameInfo vo =
+         new GameInfo(dto.getId(), siteId, teamOneId, teamTwoId, dto.getStartsAt());
 
       boolean found = false;
-      for (EventInfo each : events) {
+      for (GameInfo each : events) {
          if (each.getEventId().equals(dto.getId())) {
             each = vo;
             found = true;
@@ -230,38 +352,74 @@ public class TeamSeason extends AbstractAnnotatedAggregateRoot<TeamSeasonId> {
       }
    }
 
-   /*---------- Getters ----------*/
-
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public TeamSeasonId getIdentifier() {
       return id;
    }
 
+   /**
+    * Returns the aggregate identifier of the parent {@code Team}
+    *
+    * @return
+    */
    public String getTeamId() {
       return teamId;
    }
 
+   /**
+    * Returns the aggregate identifier of the associated {@code Season}
+    *
+    * @return
+    */
    public String getSeasonId() {
       return seasonId;
    }
 
+   /**
+    * Returns the team status this season.
+    *
+    * @return
+    */
    public TeamStatus getStatus() {
       return status;
    }
 
+   /**
+    * Returns the season start date for thsi team.
+    *
+    * @return
+    */
    public LocalDate getStartsOn() {
       return startsOn;
    }
 
+   /**
+    * Returns the season ending date for this team.
+    *
+    * @return
+    */
    public LocalDate getEndsOn() {
       return endsOn;
    }
 
+   /**
+    * Returns the roster, or collection of players associated with this team for this season.
+    *
+    * @return
+    */
    public List<PlayerInfo> getRoster() {
       return roster;
    }
 
-   public List<EventInfo> getEvents() {
+   /**
+    * Returns the collection of games in which the team has played or is scheduled this season.
+    *
+    * @return
+    */
+   public List<GameInfo> getEvents() {
       return events;
    }
 }

@@ -4,9 +4,9 @@ import javax.validation.Valid;
 
 import laxstats.api.players.PlayerDTO;
 import laxstats.api.players.PlayerId;
-import laxstats.api.teamSeasons.DropPlayerCommand;
-import laxstats.api.teamSeasons.EditPlayerCommand;
-import laxstats.api.teamSeasons.RegisterPlayerCommand;
+import laxstats.api.teamSeasons.DropPlayer;
+import laxstats.api.teamSeasons.EditPlayer;
+import laxstats.api.teamSeasons.RegisterPlayer;
 import laxstats.api.teamSeasons.TeamSeasonId;
 import laxstats.query.people.PersonEntry;
 import laxstats.query.people.PersonQueryRepository;
@@ -57,7 +57,7 @@ public class PlayerController extends ApplicationController {
                   form.getStatus(), form.getJerseyNumber(), form.getPosition(), form.isCaptain(),
                   form.getDepth(), form.getHeight(), form.getWeight(), now, user, now, user);
 
-      final RegisterPlayerCommand payload = new RegisterPlayerCommand(identifier, dto);
+      final RegisterPlayer payload = new RegisterPlayer(identifier, dto);
       try {
          commandBus.dispatch(new GenericCommandMessage<>(payload));
       }
@@ -88,7 +88,7 @@ public class PlayerController extends ApplicationController {
                   form.getStatus(), form.getJerseyNumber(), form.getPosition(), form.isCaptain(),
                   form.getDepth(), form.getHeight(), form.getWeight(), now, user);
 
-      final EditPlayerCommand payload = new EditPlayerCommand(identifier, dto);
+      final EditPlayer payload = new EditPlayer(identifier, dto);
       try {
          commandBus.dispatch(new GenericCommandMessage<>(payload));
       }
@@ -107,7 +107,7 @@ public class PlayerController extends ApplicationController {
    {
       final TeamSeasonId identifier = new TeamSeasonId(teamSeason.getId());
       final PlayerId playerIdentifier = new PlayerId(playerId);
-      final DropPlayerCommand payload = new DropPlayerCommand(identifier, playerIdentifier);
+      final DropPlayer payload = new DropPlayer(identifier, playerIdentifier);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
       return "redirect:/admin/teams/" + teamSeason.getTeam().getId() + "/seasons/" +
       teamSeason.getId();

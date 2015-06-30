@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import laxstats.api.teamSeasons.DeleteTeamSeasonCommand;
+import laxstats.api.teamSeasons.DeleteTeamSeason;
 import laxstats.api.teamSeasons.TeamSeasonDTO;
 import laxstats.api.teamSeasons.TeamSeasonId;
 import laxstats.api.teamSeasons.TeamStatus;
@@ -137,7 +137,7 @@ public class TeamSeasonController extends ApplicationController {
 	public String deleteTeamSeason(@PathVariable String teamId,
 			@PathVariable String teamSeasonId) {
 		final TeamSeasonId identifier = new TeamSeasonId(teamSeasonId);
-		final DeleteTeamSeasonCommand payload = new DeleteTeamSeasonCommand(
+		final DeleteTeamSeason payload = new DeleteTeamSeason(
 				identifier);
 		commandBus.dispatch(new GenericCommandMessage<>(payload));
 		return "redirect:/admin/teams/" + teamId + "/seasons";
