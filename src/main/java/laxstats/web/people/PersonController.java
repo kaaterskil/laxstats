@@ -8,17 +8,17 @@ import javax.validation.Valid;
 
 import laxstats.api.people.AddressDTO;
 import laxstats.api.people.ContactDTO;
-import laxstats.api.people.CreatePersonCommand;
-import laxstats.api.people.DeleteAddressCommand;
-import laxstats.api.people.DeleteContactCommand;
-import laxstats.api.people.DeletePersonCommand;
+import laxstats.api.people.CreatePerson;
+import laxstats.api.people.DeleteAddress;
+import laxstats.api.people.DeleteContact;
+import laxstats.api.people.DeletePerson;
 import laxstats.api.people.PersonDTO;
 import laxstats.api.people.PersonId;
-import laxstats.api.people.RegisterAddressCommand;
-import laxstats.api.people.RegisterContactCommand;
-import laxstats.api.people.UpdateAddressCommand;
-import laxstats.api.people.UpdateContactCommand;
-import laxstats.api.people.UpdatePersonCommand;
+import laxstats.api.people.RegisterAddress;
+import laxstats.api.people.RegisterContact;
+import laxstats.api.people.UpdateAddress;
+import laxstats.api.people.UpdateContact;
+import laxstats.api.people.UpdatePerson;
 import laxstats.query.people.AddressEntry;
 import laxstats.query.people.ContactEntry;
 import laxstats.query.people.PersonEntry;
@@ -118,7 +118,7 @@ public class PersonController extends ApplicationController {
       logger.debug(proc + "30");
 
       try {
-         final CreatePersonCommand command = new CreatePersonCommand(identifier, dto);
+         final CreatePerson command = new CreatePerson(identifier, dto);
          commandBus.dispatch(new GenericCommandMessage<>(command));
       } catch (final Exception e) {
          logger.debug(proc + "40");
@@ -160,7 +160,7 @@ public class PersonController extends ApplicationController {
       logger.debug(proc + "30");
 
       try {
-         final UpdatePersonCommand payload = new UpdatePersonCommand(identifier, dto);
+         final UpdatePerson payload = new UpdatePerson(identifier, dto);
          commandBus.dispatch(new GenericCommandMessage<>(payload));
       } catch (final Exception e) {
          logger.debug(proc + "40");
@@ -174,7 +174,7 @@ public class PersonController extends ApplicationController {
    @RequestMapping(value = "/admin/people/{personId}", method = RequestMethod.DELETE)
    public String deletePerson(@PathVariable String personId) {
       final PersonId identifier = new PersonId(personId);
-      final DeletePersonCommand payload = new DeletePersonCommand(identifier);
+      final DeletePerson payload = new DeletePerson(identifier);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
       return "redirect:/admin/people";
    }
@@ -238,7 +238,7 @@ public class PersonController extends ApplicationController {
       logger.debug(proc + "30");
 
       try {
-         final RegisterAddressCommand payload = new RegisterAddressCommand(identifier, dto);
+         final RegisterAddress payload = new RegisterAddress(identifier, dto);
          commandBus.dispatch(new GenericCommandMessage<>(payload));
       } catch (final Exception e) {
          logger.debug(proc + "40");
@@ -272,7 +272,7 @@ public class PersonController extends ApplicationController {
       logger.debug(proc + "30");
 
       try {
-         final UpdateAddressCommand payload = new UpdateAddressCommand(identifier, dto);
+         final UpdateAddress payload = new UpdateAddress(identifier, dto);
          commandBus.dispatch(new GenericCommandMessage<>(payload));
       } catch (final Exception e) {
          logger.debug(proc + "40");
@@ -287,7 +287,7 @@ public class PersonController extends ApplicationController {
       method = RequestMethod.DELETE)
    public String deleteAddress(@PathVariable String personId, @PathVariable String addressId) {
       final PersonId identifier = new PersonId(personId);
-      final DeleteAddressCommand payload = new DeleteAddressCommand(identifier, addressId);
+      final DeleteAddress payload = new DeleteAddress(identifier, addressId);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
       return "redirect:/admin/people/" + personId;
    }
@@ -348,7 +348,7 @@ public class PersonController extends ApplicationController {
       logger.debug(proc + "30");
 
       try {
-         final RegisterContactCommand payload = new RegisterContactCommand(identifier, dto);
+         final RegisterContact payload = new RegisterContact(identifier, dto);
          commandBus.dispatch(new GenericCommandMessage<>(payload));
       } catch (final Exception e) {
          logger.debug(proc + "40");
@@ -381,7 +381,7 @@ public class PersonController extends ApplicationController {
       logger.debug(proc + "30");
 
       try {
-         final UpdateContactCommand payload = new UpdateContactCommand(identifier, dto);
+         final UpdateContact payload = new UpdateContact(identifier, dto);
          commandBus.dispatch(new GenericCommandMessage<>(payload));
       } catch (final Exception e) {
          logger.debug(proc + "40");
@@ -396,7 +396,7 @@ public class PersonController extends ApplicationController {
       method = RequestMethod.DELETE)
    public String deleteContact(@PathVariable String personId, @PathVariable String contactId) {
       final PersonId identifier = new PersonId(personId);
-      final DeleteContactCommand payload = new DeleteContactCommand(identifier, contactId);
+      final DeleteContact payload = new DeleteContact(identifier, contactId);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
       return "redirect:/admin/people/" + personId;
    }

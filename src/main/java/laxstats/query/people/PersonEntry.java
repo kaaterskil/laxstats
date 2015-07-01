@@ -23,6 +23,7 @@ import laxstats.api.people.Contactable;
 import laxstats.api.people.DominantHand;
 import laxstats.api.people.Gender;
 import laxstats.api.relationships.RelationshipType;
+import laxstats.api.utils.Constants;
 import laxstats.query.players.PlayerEntry;
 import laxstats.query.relationships.RelationshipEntry;
 import laxstats.query.users.UserEntry;
@@ -31,6 +32,9 @@ import org.hibernate.annotations.Type;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
+/**
+ * {@code PersonEntry} is a query object model of a person.
+ */
 @Entity
 @Table(name = "people", indexes = { @Index(name = "people_idx1", columnList = "lastName"),
    @Index(name = "people_idx2", columnList = "isParentReleased"),
@@ -41,8 +45,8 @@ public class PersonEntry implements Serializable {
    private static final long serialVersionUID = 7491763841222491421L;
 
    /**
-    * Returns the given person's full name.
-    * 
+    * Returns a concatenated string of the given person's full name.
+    *
     * @param person
     * @return
     */
@@ -81,25 +85,25 @@ public class PersonEntry implements Serializable {
    }
 
    @Id
-   @Column(length = 36)
+   @Column(length = Constants.MAX_LENGTH_DATABASE_KEY)
    private String id;
 
-   @Column(length = 10)
+   @Column(length = Constants.MAX_LENGTH_NAME_PREFIX_OR_SUFFIX)
    private String prefix;
 
-   @Column(length = 20)
+   @Column(length = Constants.MAX_LENGTH_FIRST_OR_MIDDLE_NAME)
    private String firstName;
 
-   @Column(length = 20)
+   @Column(length = Constants.MAX_LENGTH_FIRST_OR_MIDDLE_NAME)
    private String middleName;
 
-   @Column(length = 30, nullable = false)
+   @Column(length = Constants.MAX_LENGTH_LAST_NAME, nullable = false)
    private String lastName;
 
-   @Column(length = 10)
+   @Column(length = Constants.MAX_LENGTH_NAME_PREFIX_OR_SUFFIX)
    private String suffix;
 
-   @Column(length = 20)
+   @Column(length = Constants.MAX_LENGTH_FIRST_OR_MIDDLE_NAME)
    private String nickname;
 
    @Column(length = 100)
@@ -115,25 +119,25 @@ public class PersonEntry implements Serializable {
 
    private boolean isParentReleased = false;
 
-   @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
+   @Type(type = Constants.LOCAL_DATE_DATABASE_TYPE)
    private LocalDate parentReleaseSentOn;
 
-   @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
+   @Type(type = Constants.LOCAL_DATE_DATABASE_TYPE)
    private LocalDate parentReleaseReceivedOn;
 
-   @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
+   @Type(type = Constants.LOCAL_DATE_DATABASE_TYPE)
    private LocalDate birthdate;
 
    @Column(length = 100)
    private String college;
 
-   @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+   @Type(type = Constants.LOCAL_DATETIME_DATABASE_TYPE)
    private LocalDateTime createdAt;
 
    @ManyToOne
    private UserEntry createdBy;
 
-   @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+   @Type(type = Constants.LOCAL_DATETIME_DATABASE_TYPE)
    private LocalDateTime modifiedAt;
 
    @ManyToOne
@@ -157,8 +161,15 @@ public class PersonEntry implements Serializable {
    @JoinColumn(name = "person")
    private final Set<PlayerEntry> playedSeasons = new HashSet<>();
 
-   /*---------- Methods ----------*/
-
+   /**
+    * Returns true if the given person and relation type already exist in the person's set of parent
+    * relationships, false otherwise. This test is recursive and can prevent a cycle from being
+    * created when adding a new parental relationship..
+    *
+    * @param sample
+    * @param type
+    * @return
+    */
    public boolean ancestorsInclude(PersonEntry sample, RelationshipType type) {
       final Iterator<PersonEntry> iter = getParents(type).iterator();
       while (iter.hasNext()) {
@@ -173,6 +184,12 @@ public class PersonEntry implements Serializable {
       return false;
    }
 
+   /**
+    * Returns a set of child relationships for the given relationship type.
+    *
+    * @param type
+    * @return
+    */
    public Set<PersonEntry> getChildren(RelationshipType type) {
       final Set<PersonEntry> result = new HashSet<>();
       for (final RelationshipEntry each : childRelationships) {
@@ -183,6 +200,12 @@ public class PersonEntry implements Serializable {
       return result;
    }
 
+   /**
+    * Returns a set of parent relationships for the given relationship type.
+    *
+    * @param type
+    * @return
+    */
    public Set<PersonEntry> getParents(RelationshipType type) {
       final Set<PersonEntry> result = new HashSet<>();
       for (final RelationshipEntry each : parentRelationships) {
@@ -193,16 +216,32 @@ public class PersonEntry implements Serializable {
       return result;
    }
 
+   /**
+    * Adds the given child relationship.
+    *
+    * @param relationship
+    */
    public void addChildRelationship(RelationshipEntry relationship) {
       relationship.setParent(this);
       childRelationships.add(relationship);
    }
 
+   /**
+    * Adds the given parent relationship.
+    *
+    * @param relationship
+    */
    public void addParentRelationship(RelationshipEntry relationship) {
       relationship.setChild(this);
       parentRelationships.add(relationship);
    }
 
+   /**
+    * Returns the address matching the given identifier, or null if no matching address is found.
+    *
+    * @param id
+    * @return
+    */
    public AddressEntry getAddress(String id) {
       for (final AddressEntry each : addresses) {
          if (each.getId().equals(id)) {
@@ -212,6 +251,12 @@ public class PersonEntry implements Serializable {
       return null;
    }
 
+   /**
+    * Returns the contact matching the given identifier, or null if no matching is found.
+    *
+    * @param id
+    * @return
+    */
    public ContactEntry getContact(String id) {
       for (final ContactEntry each : contacts) {
          if (each.getId().equals(id)) {
@@ -234,7 +279,7 @@ public class PersonEntry implements Serializable {
 
    /**
     * Returns the person's primary contact. If there is no primary contact, the method returns the
-    * first contact in the collection or <code>null</code> if the collection is empty.
+    * first contact in the collection or null if the collection is empty.
     *
     * @return The person's primary contact.
     */
@@ -259,84 +304,181 @@ public class PersonEntry implements Serializable {
       return primary != null ? primary : first;
    }
 
-   /*---------- Getter/Setters ----------*/
-
+   /**
+    * Adds the given contact to the person's set.
+    *
+    * @param address
+    */
    public void addAddress(AddressEntry address) {
       address.setPerson(this);
       addresses.add(address);
    }
 
+   /**
+    * Removes the given address from the person's set. This will create an orphan address suitable
+    * for deletion in the unit of work.
+    *
+    * @param address
+    */
    public void removeAddress(AddressEntry address) {
       address.setPerson(null);
       addresses.remove(address);
    }
 
+   /**
+    * Adds the given contact to the person's set.
+    *
+    * @param contact
+    */
    public void addContact(ContactEntry contact) {
       contact.setPerson(this);
       contacts.add(contact);
    }
 
+   /**
+    * Removes the given contact from the person's set. This will create an orphan contact suitable
+    * for deletion in the unit of work.
+    *
+    * @param contact
+    */
    public void removeContact(ContactEntry contact) {
       contact.setPerson(null);
       contacts.remove(contact);
    }
 
+   /**
+    * Returns the primary key.
+    *
+    * @return
+    */
    public String getId() {
       return id;
    }
 
+   /**
+    * Sets the primary key.
+    *
+    * @param id
+    */
    public void setId(String id) {
       this.id = id;
    }
 
+   /**
+    * Returns the person's name prefix, or null if not used or known.
+    *
+    * @return
+    */
    public String getPrefix() {
       return prefix;
    }
 
+   /**
+    * Sets the person's name prefix. Use null if not used or known.
+    *
+    * @param prefix
+    */
    public void setPrefix(String prefix) {
       this.prefix = prefix;
    }
 
+   /**
+    * Returns the person's first name, or null if not known.
+    *
+    * @return
+    */
    public String getFirstName() {
       return firstName;
    }
 
+   /**
+    * Sets the person's first name, Use null if not known.
+    *
+    * @param firstName
+    */
    public void setFirstName(String firstName) {
       this.firstName = firstName;
    }
 
+   /**
+    * Returns the person's middle name, or null if not known.
+    *
+    * @return
+    */
    public String getMiddleName() {
       return middleName;
    }
 
+   /**
+    * Returns the person's middle name. Use null if not known or used.
+    *
+    * @param middleName
+    */
    public void setMiddleName(String middleName) {
       this.middleName = middleName;
    }
 
+   /**
+    * Returns the person's last name. Never null.
+    *
+    * @return
+    */
    public String getLastName() {
       return lastName;
    }
 
+   /**
+    * Sets the person's last name. Must not be null.
+    *
+    * @param lastName
+    */
    public void setLastName(String lastName) {
+      assert lastName != null;
       this.lastName = lastName;
    }
 
+   /**
+    * Returns the persons's name suffix, or null if not used.
+    *
+    * @return
+    */
    public String getSuffix() {
       return suffix;
    }
 
+   /**
+    * Sets the person's name suffix. Use null if not used.
+    *
+    * @param suffix
+    */
    public void setSuffix(String suffix) {
       this.suffix = suffix;
    }
 
+   /**
+    * Returns the person's nickname, or null if not known.
+    *
+    * @return
+    */
    public String getNickname() {
       return nickname;
    }
 
+   /**
+    * Sets the person's nickname. Use null if not known.
+    *
+    * @param nickname
+    */
    public void setNickname(String nickname) {
       this.nickname = nickname;
    }
 
+   /**
+    * Returns this person's full name. A concatenated full name will be computed and returned if not
+    * previously set.
+    *
+    * @return
+    */
    public String getFullName() {
       if (fullName == null) {
          setFullName(PersonEntry.computeFullName(this));
@@ -344,115 +486,255 @@ public class PersonEntry implements Serializable {
       return fullName;
    }
 
+   /**
+    * Sets this person's full name.
+    *
+    * @param fullName
+    */
    public void setFullName(String fullName) {
       this.fullName = fullName;
    }
 
+   /**
+    * Returns this persons gender, or null if not known.
+    *
+    * @return
+    */
    public Gender getGender() {
       return gender;
    }
 
+   /**
+    * Sets this person's gender.
+    *
+    * @param gender
+    */
    public void setGender(Gender gender) {
       this.gender = gender;
    }
 
+   /**
+    * Returns this person's dominant hand, or null if not known.
+    *
+    * @return
+    */
    public DominantHand getDominantHand() {
       return dominantHand;
    }
 
+   /**
+    * Sets this person's dominant hand. Use null if not known.
+    *
+    * @param dominantHand
+    */
    public void setDominantHand(DominantHand dominantHand) {
       this.dominantHand = dominantHand;
    }
 
+   /**
+    * Returns true if this person has a parental release, false otherwise.
+    *
+    * @return
+    */
    public boolean isParentReleased() {
       return isParentReleased;
    }
 
+   /**
+    * Sets a flag to determine if the person has a parental release.
+    *
+    * @param isParentReleased
+    */
    public void setParentReleased(boolean isParentReleased) {
       this.isParentReleased = isParentReleased;
    }
 
+   /**
+    * Returns the date this person's parental release request was sent, or null.
+    *
+    * @return
+    */
    public LocalDate getParentReleaseSentOn() {
       return parentReleaseSentOn;
    }
 
+   /**
+    * Sets the date this person's parental release request was sent. Use null if not used or known.
+    *
+    * @param parentReleaseSentOn
+    */
    public void setParentReleaseSentOn(LocalDate parentReleaseSentOn) {
       this.parentReleaseSentOn = parentReleaseSentOn;
    }
 
+   /**
+    * Returns the date this person's parental release was received, or null.
+    *
+    * @return
+    */
    public LocalDate getParentReleaseReceivedOn() {
       return parentReleaseReceivedOn;
    }
 
+   /**
+    * Sets the date this person's parental release was received. Use null if not used or known.
+    *
+    * @param parentReleaseReceivedOn
+    */
    public void setParentReleaseReceivedOn(LocalDate parentReleaseReceivedOn) {
       this.parentReleaseReceivedOn = parentReleaseReceivedOn;
    }
 
+   /**
+    * Returns this person's birth date, or null if not known.
+    *
+    * @return
+    */
    public LocalDate getBirthdate() {
       return birthdate;
    }
 
+   /**
+    * Sets this person's birth date. Use null if not knoen.
+    *
+    * @param birthdate
+    */
    public void setBirthdate(LocalDate birthdate) {
       this.birthdate = birthdate;
    }
 
+   /**
+    * Returns the name of this person's college, or null if not known.
+    *
+    * @return
+    */
    public String getCollege() {
       return college;
    }
 
+   /**
+    * Sets the name of this person's college. Use null if not known.
+    *
+    * @param college
+    */
    public void setCollege(String college) {
       this.college = college;
    }
 
-   public LocalDateTime getCreatedAt() {
-      return createdAt;
-   }
-
-   public void setCreatedAt(LocalDateTime createdAt) {
-      this.createdAt = createdAt;
-   }
-
-   public UserEntry getCreatedBy() {
-      return createdBy;
-   }
-
-   public void setCreatedBy(UserEntry createdBy) {
-      this.createdBy = createdBy;
-   }
-
-   public LocalDateTime getModifiedAt() {
-      return modifiedAt;
-   }
-
-   public void setModifiedAt(LocalDateTime modifiedAt) {
-      this.modifiedAt = modifiedAt;
-   }
-
-   public UserEntry getModifiedBy() {
-      return modifiedBy;
-   }
-
-   public void setModifiedBy(UserEntry modifiedBy) {
-      this.modifiedBy = modifiedBy;
-   }
-
+   /**
+    * Returns the list of addresses.
+    *
+    * @return
+    */
    public List<AddressEntry> getAddresses() {
       return addresses;
    }
 
+   /**
+    * Returns the list of contacts.
+    *
+    * @return
+    */
    public List<ContactEntry> getContacts() {
       return contacts;
    }
 
+   /**
+    * Returns the set of child relationships.
+    *
+    * @return
+    */
    public Set<RelationshipEntry> getChildRelationships() {
       return childRelationships;
    }
 
+   /**
+    * Returns the set of parent relationships.
+    *
+    * @return
+    */
    public Set<RelationshipEntry> getParentRelationships() {
       return parentRelationships;
    }
 
+   /**
+    * Returns the set of played seasons for this person.
+    *
+    * @return
+    */
    public Set<PlayerEntry> getPlayedSeasons() {
       return playedSeasons;
+   }
+
+   /**
+    * Returns the date and time this persos was first persisted.
+    *
+    * @return
+    */
+   public LocalDateTime getCreatedAt() {
+      return createdAt;
+   }
+
+   /**
+    * Sets the date and time this person was first persisted.
+    *
+    * @param createdAt
+    */
+   public void setCreatedAt(LocalDateTime createdAt) {
+      this.createdAt = createdAt;
+   }
+
+   /**
+    * Returns the user who first persisted this person.
+    *
+    * @return
+    */
+   public UserEntry getCreatedBy() {
+      return createdBy;
+   }
+
+   /**
+    * Sets the user who first persisted this person.
+    *
+    * @param createdBy
+    */
+   public void setCreatedBy(UserEntry createdBy) {
+      this.createdBy = createdBy;
+   }
+
+   /**
+    * Returns the date and time this person was last modified.
+    *
+    * @return
+    */
+   public LocalDateTime getModifiedAt() {
+      return modifiedAt;
+   }
+
+   /**
+    * Sets the date and time this person was last modified.
+    *
+    * @param modifiedAt
+    */
+   public void setModifiedAt(LocalDateTime modifiedAt) {
+      this.modifiedAt = modifiedAt;
+   }
+
+   /**
+    * Returns the user who last modified this person.
+    *
+    * @return
+    */
+   public UserEntry getModifiedBy() {
+      return modifiedBy;
+   }
+
+   /**
+    * Sets the user who last modified this person.
+    *
+    * @param modifiedBy
+    */
+   public void setModifiedBy(UserEntry modifiedBy) {
+      this.modifiedBy = modifiedBy;
    }
 }

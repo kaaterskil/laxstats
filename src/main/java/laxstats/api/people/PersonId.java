@@ -3,7 +3,7 @@ package laxstats.api.people;
 import laxstats.api.AggregateId;
 
 /**
- * {@code PerdonId} represents the AggregateIdentifier of a person.
+ * {@code PerdonId} represents the aggregate identifier of a person.
  */
 public class PersonId extends AggregateId {
    private static final long serialVersionUID = 3188225379496683390L;

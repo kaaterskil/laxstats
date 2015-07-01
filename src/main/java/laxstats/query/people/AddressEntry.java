@@ -14,31 +14,33 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import org.hibernate.annotations.Type;
-import org.joda.time.LocalDateTime;
-
 import laxstats.api.Region;
 import laxstats.api.people.AddressType;
 import laxstats.api.people.Contactable;
+import laxstats.api.utils.Constants;
 import laxstats.query.sites.SiteEntry;
 import laxstats.query.users.UserEntry;
 
+import org.hibernate.annotations.Type;
+import org.joda.time.LocalDateTime;
+
 /**
- * {@code Address} represents a postal address.
+ * {@code AddressEntry} represents a query object model of a postal address.
  */
 @Entity
 @Table(name = "addresses",
-   indexes = { @Index(name = "address_idx1", columnList = "city"),
-      @Index(name = "address_idx2", columnList = "isPrimary"),
-      @Index(name = "address_idx3", columnList = "doNotUse"),
-      @Index(name = "address_idx4", columnList = "addressType") },
-   uniqueConstraints = {
-      @UniqueConstraint(name = "address_uk1", columnNames = { "person_id", "isPrimary" }) })
+         indexes = { @Index(name = "address_idx1", columnList = "city"),
+            @Index(name = "address_idx2", columnList = "isPrimary"),
+            @Index(name = "address_idx3", columnList = "doNotUse"),
+            @Index(name = "address_idx4", columnList = "addressType") },
+         uniqueConstraints = { @UniqueConstraint(name = "address_uk1", columnNames = { "person_id",
+            "isPrimary" }) })
 public class AddressEntry implements Contactable, Serializable {
+
    private static final long serialVersionUID = 2873674846553569444L;
 
    @Id
-   @Column(length = 36)
+   @Column(length = Constants.MAX_LENGTH_DATABASE_KEY)
    private String id;
 
    @ManyToOne
@@ -53,13 +55,13 @@ public class AddressEntry implements Contactable, Serializable {
    @Column(length = 20, nullable = false)
    private AddressType addressType;
 
-   @Column(length = 34)
+   @Column(length = Constants.MAX_LENGTH_ADDRESS)
    private String address1;
 
-   @Column(length = 34)
+   @Column(length = Constants.MAX_LENGTH_ADDRESS)
    private String address2;
 
-   @Column(length = 30, nullable = false)
+   @Column(length = Constants.MAX_LENGTH_CITY, nullable = false)
    private String city;
 
    @Enumerated(EnumType.STRING)
@@ -73,19 +75,17 @@ public class AddressEntry implements Contactable, Serializable {
 
    private boolean doNotUse = false;
 
-   @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+   @Type(type = Constants.LOCAL_DATETIME_DATABASE_TYPE)
    private LocalDateTime createdAt;
 
    @ManyToOne
    private UserEntry createdBy;
 
-   @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+   @Type(type = Constants.LOCAL_DATETIME_DATABASE_TYPE)
    private LocalDateTime modifiedAt;
 
    @ManyToOne
    private UserEntry modifiedBy;
-
-   /*---------- Methods ----------*/
 
    /**
     * Returns a concatenated, comma-separated string of the full address.
@@ -151,10 +151,8 @@ public class AddressEntry implements Contactable, Serializable {
       return sb.toString();
    }
 
-   /*---------- Getter/Setters ----------*/
-
    /**
-    * Returns the primary key of this {@code Address}.
+    * Returns the primary key of this address.
     *
     * @return
     */
@@ -163,7 +161,7 @@ public class AddressEntry implements Contactable, Serializable {
    }
 
    /**
-    * Sets the primary key of this {@code Address}
+    * Sets the primary key of this address
     *
     * @param id
     */
@@ -208,7 +206,7 @@ public class AddressEntry implements Contactable, Serializable {
    }
 
    /**
-    * Returns the type of {@code Address}. Never null.
+    * Returns the address type. Never null.
     *
     * @return
     */
@@ -217,11 +215,12 @@ public class AddressEntry implements Contactable, Serializable {
    }
 
    /**
-    * Sets the type of {@code Address}.
+    * Sets the address type.
     *
     * @param addressType
     */
    public void setAddressType(AddressType addressType) {
+      assert addressType != null;
       this.addressType = addressType;
    }
 
@@ -235,49 +234,89 @@ public class AddressEntry implements Contactable, Serializable {
    }
 
    /**
-    * Sets the name of the site.
+    * Sets the name of the city.
     *
     * @param city
     */
    public void setCity(String city) {
+      assert city != null;
       this.city = city;
    }
 
+   /**
+    * Returns the date and time this address was first persisted.
+    *
+    * @return
+    */
    public LocalDateTime getCreatedAt() {
       return createdAt;
    }
 
+   /**
+    * Sets the date and time this address was first persisted.
+    *
+    * @param createdAt
+    */
    public void setCreatedAt(LocalDateTime createdAt) {
       this.createdAt = createdAt;
    }
 
+   /**
+    * Returns the user who first persisted this address.
+    *
+    * @return
+    */
    public UserEntry getCreatedBy() {
       return createdBy;
    }
 
+   /**
+    * Sets the user who first persisted this address.
+    *
+    * @param createdBy
+    */
    public void setCreatedBy(UserEntry createdBy) {
       this.createdBy = createdBy;
    }
 
+   /**
+    * Returns the date and time this address was last modified.
+    *
+    * @return
+    */
    public LocalDateTime getModifiedAt() {
       return modifiedAt;
    }
 
+   /**
+    * Sets the date and time this address was last modified.
+    *
+    * @param modifiedAt
+    */
    public void setModifiedAt(LocalDateTime modifiedAt) {
       this.modifiedAt = modifiedAt;
    }
 
+   /**
+    * Returns the user who last modified this address.
+    *
+    * @return
+    */
    public UserEntry getModifiedBy() {
       return modifiedBy;
    }
 
+   /**
+    * Sets the user who last modified this address.
+    *
+    * @param modifiedBy
+    */
    public void setModifiedBy(UserEntry modifiedBy) {
       this.modifiedBy = modifiedBy;
    }
 
    /**
-    * Returns the associated {@code Person}, or null if the {@code Address} is associated with a
-    * {@code Site}.
+    * Returns the associated person, or null if the address is associated with a playing field.
     *
     * @return
     */
@@ -286,8 +325,7 @@ public class AddressEntry implements Contactable, Serializable {
    }
 
    /**
-    * Sets the association {@code Person}. Use null if the {@code Address} is associated with a
-    * {@code Site}.
+    * Sets the associated person. Use null if the address is associated with a playing field.
     *
     * @param person
     */
@@ -314,7 +352,7 @@ public class AddressEntry implements Contactable, Serializable {
    }
 
    /**
-    * Returns the state or region, or null if none.
+    * Returns the state or region. Never null.
     *
     * @return
     */
@@ -323,17 +361,17 @@ public class AddressEntry implements Contactable, Serializable {
    }
 
    /**
-    * Sets the state or region. USe null if none.
+    * Sets the state or region.
     *
     * @param region
     */
    public void setRegion(Region region) {
+      assert region != null;
       this.region = region;
    }
 
    /**
-    * Returns the parent {@code Site}, or null if this {@code Address} is associated with a
-    * {@code Person}.
+    * Returns the associated playing field, or null if this address is associated with a person.
     *
     * @return
     */
@@ -342,8 +380,7 @@ public class AddressEntry implements Contactable, Serializable {
    }
 
    /**
-    * Sets the associated parent {@code Site}. Use null if this {@code Address} is associated with a
-    * {@code Person}.
+    * Sets the associated playing field. Use null if this address is associated with a person.
     *
     * @param site
     */

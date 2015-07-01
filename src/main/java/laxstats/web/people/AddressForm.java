@@ -1,5 +1,6 @@
 package laxstats.web.people;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
@@ -9,130 +10,241 @@ import javax.validation.constraints.Size;
 
 import laxstats.api.Region;
 import laxstats.api.people.AddressType;
+import laxstats.api.utils.Constants;
 
-public class AddressForm {
+/**
+ * {@code AddressForm} contains user-defined information with which to create and update a postal
+ * address.
+ */
+public class AddressForm implements Serializable {
+   private static final long serialVersionUID = -3473572483235250762L;
 
-	private String id;
-	private String personId;
+   private String id;
 
-	@NotNull
-	private AddressType type;
+   @NotNull
+   private String personId;
 
-	@Size(max = 34)
-	private String address1;
+   @NotNull
+   private AddressType type;
 
-	@Size(max = 34)
-	private String address2;
+   @Size(max = Constants.MAX_LENGTH_ADDRESS)
+   private String address1;
 
-	@NotNull
-	@Size(min = 3, max = 30)
-	private String city;
+   @Size(max = Constants.MAX_LENGTH_ADDRESS)
+   private String address2;
 
-	private Region region;
+   @NotNull
+   @Size(min = 3, max = Constants.MAX_LENGTH_CITY)
+   private String city;
 
-	@Size(max = 10)
-	@Pattern(regexp = "^[0-9]{5}([\\s\\-][0-9]{4})?$")
-	private String postalCode;
+   private Region region;
 
-	private boolean primary;
-	private boolean doNotUse;
-	private List<AddressType> addressTypes;
-	private List<Region> regions;
+   @Size(max = Constants.MAX_LENGTH_LONG_POSTAL_CODE)
+   @Pattern(regexp = Constants.PATTERN_LONG_ZIP_CODE)
+   private String postalCode;
 
-	/*---------- Getter/Setters ----------*/
+   private boolean primary = false;
 
-	public String getId() {
-		return id;
-	}
+   private boolean doNotUse = false;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+   private List<AddressType> addressTypes;
+   private List<Region> regions;
 
-	public String getPersonId() {
-		return personId;
-	}
+   /**
+    * Returns the unique identifier for this address, or null if a new address.
+    *
+    * @return
+    */
+   public String getId() {
+      return id;
+   }
 
-	public void setPersonId(String personId) {
-		this.personId = personId;
-	}
+   /**
+    * Sets the unique identifier for this address. Use null for a new address.
+    *
+    * @param id
+    */
+   public void setId(String id) {
+      this.id = id;
+   }
 
-	public AddressType getType() {
-		return type;
-	}
+   /**
+    * Returns the identifier for the associated person. Never null.
+    *
+    * @return
+    */
+   public String getPersonId() {
+      return personId;
+   }
 
-	public void setType(AddressType type) {
-		this.type = type;
-	}
+   /**
+    * Sets the identifier for the associated person. Must not be null.
+    *
+    * @param personId
+    */
+   public void setPersonId(String personId) {
+      assert personId != null;
+      this.personId = personId;
+   }
 
-	public String getAddress1() {
-		return address1;
-	}
+   /**
+    * Returns the address type. Never null.
+    *
+    * @return
+    */
+   public AddressType getType() {
+      return type;
+   }
 
-	public void setAddress1(String address1) {
-		this.address1 = address1;
-	}
+   /**
+    * Sets the address type. Must not be null.
+    *
+    * @param type
+    */
+   public void setType(AddressType type) {
+      assert type != null;
+      this.type = type;
+   }
 
-	public String getAddress2() {
-		return address2;
-	}
+   /**
+    * Returns the first line of the street address, or null.
+    *
+    * @return
+    */
+   public String getAddress1() {
+      return address1;
+   }
 
-	public void setAddress2(String address2) {
-		this.address2 = address2;
-	}
+   /**
+    * Sets the first line of the street address. Use null for none.
+    *
+    * @param address1
+    */
+   public void setAddress1(String address1) {
+      this.address1 = address1;
+   }
 
-	public String getCity() {
-		return city;
-	}
+   /**
+    * Returns the second line of the street address, or null.
+    *
+    * @return
+    */
+   public String getAddress2() {
+      return address2;
+   }
 
-	public void setCity(String city) {
-		this.city = city;
-	}
+   /**
+    * Sets the second line of the street address. Use null for none.
+    *
+    * @param address2
+    */
+   public void setAddress2(String address2) {
+      this.address2 = address2;
+   }
 
-	public Region getRegion() {
-		return region;
-	}
+   /**
+    * Returns the name of the city. Never null.
+    *
+    * @return
+    */
+   public String getCity() {
+      return city;
+   }
 
-	public void setRegion(Region region) {
-		this.region = region;
-	}
+   /**
+    * Sets the name of the city. Must not be null.
+    *
+    * @param city
+    */
+   public void setCity(String city) {
+      assert city != null;
+      this.city = city;
+   }
 
-	public String getPostalCode() {
-		return postalCode;
-	}
+   /**
+    * Returns the state or region, nor null.
+    *
+    * @return
+    */
+   public Region getRegion() {
+      return region;
+   }
 
-	public void setPostalCode(String postalCode) {
-		this.postalCode = postalCode;
-	}
+   /**
+    * Sets the state or region. Use null for none or unknown.
+    *
+    * @param region
+    */
+   public void setRegion(Region region) {
+      this.region = region;
+   }
 
-	public boolean isPrimary() {
-		return primary;
-	}
+   /**
+    * Returns the postal code, or null.
+    *
+    * @return
+    */
+   public String getPostalCode() {
+      return postalCode;
+   }
 
-	public void setPrimary(boolean primary) {
-		this.primary = primary;
-	}
+   /**
+    * Sets the postal code. Use null for none or unknown.
+    *
+    * @param postalCode
+    */
+   public void setPostalCode(String postalCode) {
+      this.postalCode = postalCode;
+   }
 
-	public boolean isDoNotUse() {
-		return doNotUse;
-	}
+   /**
+    * Returns true if this address is the person's primary address, false otherwise.
+    *
+    * @return
+    */
+   public boolean isPrimary() {
+      return primary;
+   }
 
-	public void setDoNotUse(boolean doNotUse) {
-		this.doNotUse = doNotUse;
-	}
+   /**
+    * Sets whether this address is the person's primary address. Defaults to false.
+    *
+    * @param primary
+    */
+   public void setPrimary(boolean primary) {
+      this.primary = primary;
+   }
 
-	public List<AddressType> getAddressTypes() {
-		if (addressTypes == null) {
-			addressTypes = Arrays.asList(AddressType.values());
-		}
-		return addressTypes;
-	}
+   /**
+    * Returns true if this address is obsolete, false otherwise.
+    *
+    * @return
+    */
+   public boolean isDoNotUse() {
+      return doNotUse;
+   }
 
-	public List<Region> getRegions() {
-		if (regions == null) {
-			regions = Arrays.asList(Region.values());
-		}
-		return regions;
-	}
+   /**
+    * Sets whether this address is obsolete. Defaults to false.
+    *
+    * @param doNotUse
+    */
+   public void setDoNotUse(boolean doNotUse) {
+      this.doNotUse = doNotUse;
+   }
+
+   public List<AddressType> getAddressTypes() {
+      if (addressTypes == null) {
+         addressTypes = Arrays.asList(AddressType.values());
+      }
+      return addressTypes;
+   }
+
+   public List<Region> getRegions() {
+      if (regions == null) {
+         regions = Arrays.asList(Region.values());
+      }
+      return regions;
+   }
 
 }

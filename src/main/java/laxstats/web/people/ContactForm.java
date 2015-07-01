@@ -1,5 +1,6 @@
 package laxstats.web.people;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
@@ -7,75 +8,148 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import laxstats.api.people.ContactMethod;
+import laxstats.api.utils.Constants;
 
-public class ContactForm {
-	private String id;
-	private String personId;
+/**
+ * {@code ContactForm} contains user-defined information with which to create or update a contact.
+ */
+public class ContactForm implements Serializable {
+   private static final long serialVersionUID = 5552593715712624548L;
 
-	@NotNull
-	private ContactMethod method;
+   private String id;
 
-	@NotNull
-	@Size(min = 3)
-	private String value;
+   @NotNull
+   private String personId;
 
-	private boolean isPrimary;
-	private boolean doNotUse;
-	private List<ContactMethod> contactMethods;
+   @NotNull
+   private ContactMethod method;
 
-	public String getId() {
-		return id;
-	}
+   @NotNull
+   @Size(min = 3, max = Constants.MAX_LENGTH_CONTACT_VALUE)
+   private String value;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+   private boolean isPrimary = false;
 
-	public String getPersonId() {
-		return personId;
-	}
+   private boolean doNotUse = false;
 
-	public void setPersonId(String personId) {
-		this.personId = personId;
-	}
+   private List<ContactMethod> contactMethods;
 
-	public boolean isDoNotUse() {
-		return doNotUse;
-	}
+   /**
+    * Returns the unique identifier of this contact, or null if the contact has not been persisted.
+    *
+    * @return
+    */
+   public String getId() {
+      return id;
+   }
 
-	public void setDoNotUse(boolean doNotUse) {
-		this.doNotUse = doNotUse;
-	}
+   /**
+    * Sets the unique identifier of this contact. Use null if this is a new contact.
+    *
+    * @param id
+    */
+   public void setId(String id) {
+      this.id = id;
+   }
 
-	public boolean isPrimary() {
-		return isPrimary;
-	}
+   /**
+    * Returns the identifier of the associated person. Never null.
+    *
+    * @return
+    */
+   public String getPersonId() {
+      return personId;
+   }
 
-	public void setPrimary(boolean isPrimary) {
-		this.isPrimary = isPrimary;
-	}
+   /**
+    * Sets the identifier of the associated person. Must not be null.
+    *
+    * @param personId
+    */
+   public void setPersonId(String personId) {
+      assert personId != null;
+      this.personId = personId;
+   }
 
-	public ContactMethod getMethod() {
-		return method;
-	}
+   /**
+    * Returns true if this contact is obsolete, false otherwise.
+    *
+    * @return
+    */
+   public boolean isDoNotUse() {
+      return doNotUse;
+   }
 
-	public void setMethod(ContactMethod method) {
-		this.method = method;
-	}
+   /**
+    * Sets whether this contact is obsolete. Defaults to false.
+    *
+    * @param doNotUse
+    */
+   public void setDoNotUse(boolean doNotUse) {
+      this.doNotUse = doNotUse;
+   }
 
-	public String getValue() {
-		return value;
-	}
+   /**
+    * Returns true if this is the peron's primary contact, false otherwise.
+    *
+    * @return
+    */
+   public boolean isPrimary() {
+      return isPrimary;
+   }
 
-	public void setValue(String value) {
-		this.value = value;
-	}
+   /**
+    * Sets whether this is the person's primary contact. Defaults to false.
+    *
+    * @param isPrimary
+    */
+   public void setPrimary(boolean isPrimary) {
+      this.isPrimary = isPrimary;
+   }
 
-	public List<ContactMethod> getContactMethods() {
-		if (contactMethods == null) {
-			contactMethods = Arrays.asList(ContactMethod.values());
-		}
-		return contactMethods;
-	}
+   /**
+    * Returns the contact method. Never null.
+    *
+    * @return
+    */
+   public ContactMethod getMethod() {
+      return method;
+   }
+
+   /**
+    * Sets the contact method. Mustnot be null.
+    *
+    * @param method
+    */
+   public void setMethod(ContactMethod method) {
+      assert method != null;
+      this.method = method;
+   }
+
+   /**
+    * Returns the contact value. Never null.
+    *
+    * @return
+    */
+   public String getValue() {
+      return value;
+   }
+
+   /**
+    * ets he value of the contact. Must not be null.
+    *
+    * @param value
+    */
+   public void setValue(String value) {
+      assert value != null;
+      this.value = value;
+   }
+
+   public List<ContactMethod> getContactMethods() {
+      if (contactMethods == null) {
+         contactMethods = Arrays.asList(ContactMethod.values());
+      }
+      return contactMethods;
+   }
 
 }
