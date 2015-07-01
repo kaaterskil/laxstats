@@ -16,7 +16,7 @@
 		})
 		.fail(function(xhr, status, error) {
 			console.log(status);
-		});;
+		});
 	}
 	
 	$('#season').on('change', function() {

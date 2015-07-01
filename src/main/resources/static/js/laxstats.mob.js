@@ -4,7 +4,7 @@
     var slideOptions = {
         sl : [ 'slin', 'slout' ],
         sr : [ 'srin', 'srout' ]
-    }
+    };
 
     function slide($in, $out, slideType) {
 

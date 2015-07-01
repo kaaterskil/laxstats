@@ -50,7 +50,7 @@
 				currPeriod: currPeriod, 
 				secsElapsed: elapsed,
 				secsRemaining: remaining
-			}
+			};
 		}
 
 		function advancePeriod() {
@@ -90,7 +90,7 @@
 			initialize: advancePeriod,
 			start: startTimer,
 			stop: stopTimer
-		}
+		};
 	}
 	
 	var $timerBtn = $('#play-timer'), 

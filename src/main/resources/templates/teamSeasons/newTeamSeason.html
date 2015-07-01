@@ -99,7 +99,7 @@
 		(function() {
 			$('#season').change(function() {
 				var val = $(this).val();
-				if (val != '') {
+				if (val !== '') {
 					$.get('/api/seasons/' + val)
 						.done(function(data) {
 							$('#starts-on').val(data.startsOn);

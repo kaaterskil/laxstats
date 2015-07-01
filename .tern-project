@@ -1,1 +1,1 @@
-{"ide":{"scriptPaths":[{"type":"FOLDER","path":"src/main/resources/static/js"}]},"plugins":{"guess-types":{},"jshint":{"config":{"maxerr":50}},"node":{},"jasmine":{},"angular":{},"grunt":{}},"libs":["ecma5","browser"]}
+{"ide":{"scriptPaths":[{"type":"FOLDER","path":"src/main/resources/static/js"}]},"plugins":{"guess-types":{},"node":{},"jasmine":{},"angular":{},"grunt":{}},"libs":["ecma5","browser"]}

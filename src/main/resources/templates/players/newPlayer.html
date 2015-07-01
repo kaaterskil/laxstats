@@ -164,7 +164,7 @@
 				
 				function setSelectListener() {
 					$('#found-people').on('change', function(){
-						if($(this).val() != '') {
+						if($(this).val() !== '') {
 							$personId.val($(this).val());
 							$personName.text($(this).find('option:selected').text());
 						} else {
@@ -199,14 +199,13 @@
 					});
 					
 					df.fail(function(jqXHR, status, error){
-						var msg = 'Error (' 
-								+ jqXHR.status + '): ' + jqXHR.responseText;
+						var msg = 'Error (' + jqXHR.status + '): ' + jqXHR.responseText;
 						$('#search-results').text(msg);
 					});
 				}
 				
 				function checkPerson() {
-					if($personId.val() == '') {
+					if($personId.val() ==='') {
 						$personName.text('A person must be selected.');
 						return false;
 					}
