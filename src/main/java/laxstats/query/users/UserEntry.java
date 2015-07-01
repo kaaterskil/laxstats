@@ -110,7 +110,7 @@ public class UserEntry implements UserDetails {
    private String ipAddress;
 
    @Enumerated(EnumType.STRING)
-   @Column(length = 20)
+   @Column(length = Constants.MAX_LENGTH_ENUM_STRING)
    private UserRole role;
 
    @Type(type = Constants.LOCAL_DATETIME_DATABASE_TYPE)

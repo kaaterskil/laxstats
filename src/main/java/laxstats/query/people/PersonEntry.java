@@ -110,11 +110,11 @@ public class PersonEntry implements Serializable {
    private String fullName;
 
    @Enumerated(EnumType.STRING)
-   @Column(length = 20)
+   @Column(length = Constants.MAX_LENGTH_ENUM_STRING)
    private Gender gender;
 
    @Enumerated(EnumType.STRING)
-   @Column(length = 20)
+   @Column(length = Constants.MAX_LENGTH_ENUM_STRING)
    private DominantHand dominantHand;
 
    private boolean isParentReleased = false;

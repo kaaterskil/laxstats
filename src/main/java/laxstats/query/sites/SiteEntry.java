@@ -41,11 +41,11 @@ public class SiteEntry implements Serializable {
    private String name;
 
    @Enumerated(EnumType.STRING)
-   @Column(length = 20)
+   @Column(length = Constants.MAX_LENGTH_ENUM_STRING)
    private SiteStyle style;
 
    @Enumerated(EnumType.STRING)
-   @Column(length = 20)
+   @Column(length = Constants.MAX_LENGTH_ENUM_STRING)
    private Surface surface;
 
    @OneToOne(mappedBy = "site", cascade = CascadeType.ALL)

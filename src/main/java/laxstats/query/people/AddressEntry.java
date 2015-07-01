@@ -52,7 +52,7 @@ public class AddressEntry implements Contactable, Serializable {
    private SiteEntry site;
 
    @Enumerated(EnumType.STRING)
-   @Column(length = 20, nullable = false)
+   @Column(length = Constants.MAX_LENGTH_ENUM_STRING, nullable = false)
    private AddressType addressType;
 
    @Column(length = Constants.MAX_LENGTH_ADDRESS)
@@ -65,7 +65,7 @@ public class AddressEntry implements Contactable, Serializable {
    private String city;
 
    @Enumerated(EnumType.STRING)
-   @Column(length = 20, nullable = false)
+   @Column(length = Constants.MAX_LENGTH_ENUM_STRING, nullable = false)
    private Region region;
 
    @Column(length = 10)

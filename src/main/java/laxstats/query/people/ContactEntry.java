@@ -43,7 +43,7 @@ public class ContactEntry implements Contactable, Serializable {
    private PersonEntry person;
 
    @Enumerated(EnumType.STRING)
-   @Column(length = 20, nullable = false)
+   @Column(length = Constants.MAX_LENGTH_ENUM_STRING, nullable = false)
    private ContactMethod method;
 
    @Column(length = Constants.MAX_LENGTH_CONTACT_VALUE, nullable = false)

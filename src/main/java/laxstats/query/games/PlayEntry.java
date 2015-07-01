@@ -26,6 +26,7 @@ import laxstats.api.games.PlayResult;
 import laxstats.api.games.PlayRole;
 import laxstats.api.games.ScoreAttemptType;
 import laxstats.api.games.Strength;
+import laxstats.api.utils.Constants;
 import laxstats.query.teamSeasons.TeamSeasonEntry;
 import laxstats.query.users.UserEntry;
 import laxstats.query.violations.ViolationEntry;
@@ -37,16 +38,17 @@ import org.joda.time.Period;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "play_type", length = 20, discriminatorType = DiscriminatorType.STRING)
-@Table(name = "plays", indexes = { @Index(name = "play_idx1", columnList = "play_type"),
-   @Index(name = "play_idx2", columnList = "game_id, play_type"),
-   @Index(name = "play_idx3", columnList = "period"),
-   @Index(name = "play_idx4", columnList = "strength"),
-   @Index(name = "play_idx5", columnList = "playKey"),
-   @Index(name = "play_idx6", columnList = "result"),
-   @Index(name = "play_idx7", columnList = "playKey, result"),
-   @Index(name = "play_idx8", columnList = "period, elapsedTime") },
-   uniqueConstraints = { @UniqueConstraint(name = "play_uk1", columnNames = { "game_id",
-      "sequenceNumber" }) })
+@Table(name = "plays",
+         indexes = { @Index(name = "play_idx1", columnList = "play_type"),
+            @Index(name = "play_idx2", columnList = "game_id, play_type"),
+            @Index(name = "play_idx3", columnList = "period"),
+            @Index(name = "play_idx4", columnList = "strength"),
+            @Index(name = "play_idx5", columnList = "playKey"),
+            @Index(name = "play_idx6", columnList = "result"),
+            @Index(name = "play_idx7", columnList = "playKey, result"),
+            @Index(name = "play_idx8", columnList = "period, elapsedTime") },
+         uniqueConstraints = { @UniqueConstraint(name = "play_uk1", columnNames = { "game_id",
+            "sequenceNumber" }) })
 abstract public class PlayEntry implements Serializable {
    private static final long serialVersionUID = -9074132185978497348L;
 
@@ -73,15 +75,15 @@ abstract public class PlayEntry implements Serializable {
    protected Period elapsedTime;
 
    @Enumerated(EnumType.STRING)
-   @Column(length = 20, nullable = false)
+   @Column(length = Constants.MAX_LENGTH_ENUM_STRING, nullable = false)
    protected PlayKey playKey;
 
    @Enumerated(EnumType.STRING)
-   @Column(length = 20)
+   @Column(length = Constants.MAX_LENGTH_ENUM_STRING)
    protected ScoreAttemptType scoreAttemptType;
 
    @Enumerated(EnumType.STRING)
-   @Column(length = 20)
+   @Column(length = Constants.MAX_LENGTH_ENUM_STRING)
    protected PlayResult result;
 
    @Column(columnDefinition = "text")
@@ -94,7 +96,7 @@ abstract public class PlayEntry implements Serializable {
    protected int opponentScore;
 
    @Enumerated(EnumType.STRING)
-   @Column(length = 20)
+   @Column(length = Constants.MAX_LENGTH_ENUM_STRING)
    protected Strength strength;
 
    protected int manUpAdvantage;
@@ -136,17 +138,23 @@ abstract public class PlayEntry implements Serializable {
 
       if (this instanceof ClearEntry) {
          result = "clears";
-      } else if (this instanceof FaceOffEntry) {
+      }
+      else if (this instanceof FaceOffEntry) {
          result = "faceOffs";
-      } else if (this instanceof GoalEntry) {
+      }
+      else if (this instanceof GoalEntry) {
          result = "goals";
-      } else if (this instanceof GroundBallEntry) {
+      }
+      else if (this instanceof GroundBallEntry) {
          result = "groundBalls";
-      } else if (this instanceof PenaltyEntry) {
+      }
+      else if (this instanceof PenaltyEntry) {
          result = "penalties";
-      } else if (this instanceof ShotEntry) {
+      }
+      else if (this instanceof ShotEntry) {
          result = "shots";
-      } else {
+      }
+      else {
          throw new IllegalStateException("no playType defined");
       }
       return result;

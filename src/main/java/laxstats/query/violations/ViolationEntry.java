@@ -42,11 +42,11 @@ public class ViolationEntry implements Serializable {
    private String description;
 
    @Enumerated(EnumType.STRING)
-   @Column(length = 20, nullable = false)
+   @Column(length = Constants.MAX_LENGTH_ENUM_STRING, nullable = false)
    private PenaltyCategory category;
 
    @Enumerated(EnumType.STRING)
-   @Column(length = 20)
+   @Column(length = Constants.MAX_LENGTH_ENUM_STRING)
    private PenaltyLength penaltyLength;
 
    private boolean releasable;
@@ -65,7 +65,7 @@ public class ViolationEntry implements Serializable {
 
    /**
     * Returns the primary key of this violation.
-    * 
+    *
     * @return
     */
    public String getId() {
@@ -74,7 +74,7 @@ public class ViolationEntry implements Serializable {
 
    /**
     * Sets the primary key for this violation.
-    * 
+    *
     * @param id
     */
    public void setId(String id) {
@@ -83,7 +83,7 @@ public class ViolationEntry implements Serializable {
 
    /**
     * Returns the name of this violation. Never null.
-    * 
+    *
     * @return
     */
    public String getName() {
@@ -92,7 +92,7 @@ public class ViolationEntry implements Serializable {
 
    /**
     * Sets a name for this violation. Never null.
-    * 
+    *
     * @param name
     */
    public void setName(String name) {
@@ -102,7 +102,7 @@ public class ViolationEntry implements Serializable {
 
    /**
     * Returns a description for this violation.
-    * 
+    *
     * @return
     */
    public String getDescription() {
@@ -111,7 +111,7 @@ public class ViolationEntry implements Serializable {
 
    /**
     * Sets a description for this violation.
-    * 
+    *
     * @param description
     */
    public void setDescription(String description) {
@@ -120,7 +120,7 @@ public class ViolationEntry implements Serializable {
 
    /**
     * Returns this violation category. Never null.
-    * 
+    *
     * @return
     */
    public PenaltyCategory getCategory() {
@@ -129,7 +129,7 @@ public class ViolationEntry implements Serializable {
 
    /**
     * Sets this violation category.
-    * 
+    *
     * @param category
     */
    public void setCategory(PenaltyCategory category) {
@@ -139,7 +139,7 @@ public class ViolationEntry implements Serializable {
 
    /**
     * Returns the lnegth of the penalty for this violation.
-    * 
+    *
     * @return
     */
    public PenaltyLength getPenaltyLength() {
@@ -148,7 +148,7 @@ public class ViolationEntry implements Serializable {
 
    /**
     * Sets the length of the penalty for thsi violation.
-    * 
+    *
     * @param penaltyLength
     */
    public void setPenaltyLength(PenaltyLength penaltyLength) {
@@ -157,7 +157,7 @@ public class ViolationEntry implements Serializable {
 
    /**
     * Returns true if the plaeyer who committed this violation can be released from their penalty.
-    * 
+    *
     * @return
     */
    public boolean isReleasable() {
@@ -167,7 +167,7 @@ public class ViolationEntry implements Serializable {
    /**
     * Sets the flag to determine if the player who committed this violation can be released from
     * their penalty.
-    * 
+    *
     * @param releasable
     */
    public void setReleasable(boolean releasable) {
@@ -176,7 +176,7 @@ public class ViolationEntry implements Serializable {
 
    /**
     * Returns the date and time this violation was first persisted.
-    * 
+    *
     * @return
     */
    public LocalDateTime getCreatedAt() {
@@ -185,7 +185,7 @@ public class ViolationEntry implements Serializable {
 
    /**
     * Sets the date and time this violation was first persisted.
-    * 
+    *
     * @param createdAt
     */
    public void setCreatedAt(LocalDateTime createdAt) {
@@ -194,7 +194,7 @@ public class ViolationEntry implements Serializable {
 
    /**
     * Returns the user who first persisted this violation.
-    * 
+    *
     * @return
     */
    public UserEntry getCreatedBy() {

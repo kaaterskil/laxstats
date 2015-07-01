@@ -27,6 +27,7 @@ import laxstats.api.games.PlayUtils;
 import laxstats.api.games.Schedule;
 import laxstats.api.games.Status;
 import laxstats.api.sites.SiteAlignment;
+import laxstats.api.utils.Constants;
 import laxstats.query.sites.SiteEntry;
 import laxstats.query.teamSeasons.TeamSeasonEntry;
 import laxstats.query.users.UserEntry;
@@ -53,22 +54,22 @@ public class GameEntry implements Serializable {
    private SiteEntry site;
 
    @Enumerated(EnumType.STRING)
-   @Column(length = 20)
+   @Column(length = Constants.MAX_LENGTH_ENUM_STRING)
    private SiteAlignment alignment;
 
    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
    private LocalDateTime startsAt;
 
    @Enumerated(EnumType.STRING)
-   @Column(length = 20, nullable = false)
+   @Column(length = Constants.MAX_LENGTH_ENUM_STRING, nullable = false)
    private Schedule schedule;
 
    @Enumerated(EnumType.STRING)
-   @Column(length = 20, nullable = false)
+   @Column(length = Constants.MAX_LENGTH_ENUM_STRING, nullable = false)
    private Status status;
 
    @Enumerated(EnumType.STRING)
-   @Column(length = 20)
+   @Column(length = Constants.MAX_LENGTH_ENUM_STRING)
    private Conditions conditions;
 
    @Column(nullable = false)

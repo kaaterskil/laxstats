@@ -79,7 +79,7 @@ public class TeamSeasonEntry implements Serializable {
    private String name;
 
    @Enumerated(EnumType.STRING)
-   @Column(length = 20, nullable = false)
+   @Column(length = Constants.MAX_LENGTH_ENUM_STRING, nullable = false)
    private TeamStatus status;
 
    @Type(type = Constants.LOCAL_DATETIME_DATABASE_TYPE)

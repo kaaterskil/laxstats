@@ -8,6 +8,11 @@ public class Constants {
    public static final int MAX_LENGTH_DATABASE_KEY = 36;
 
    /**
+    * The maximum length of an enum string in the database.
+    */
+   public static final int MAX_LENGTH_ENUM_STRING = 20;
+
+   /**
     * The Hibernate datatype used by persistent LocalDate fields.
     */
    public static final String LOCAL_DATE_DATABASE_TYPE =

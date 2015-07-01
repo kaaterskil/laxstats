@@ -14,6 +14,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 import laxstats.api.games.PlayRole;
+import laxstats.api.utils.Constants;
 import laxstats.query.teamSeasons.TeamSeasonEntry;
 import laxstats.query.users.UserEntry;
 
@@ -21,12 +22,12 @@ import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 
 @Entity
-@Table(name = "play_participants", indexes = {
-   @Index(name = "play_participants_idx1", columnList = "role"),
-   @Index(name = "play_participants_idx2", columnList = "pointCredit"),
-   @Index(name = "play_participants_idx3", columnList = "team_season_id") },
-   uniqueConstraints = { @UniqueConstraint(name = "play_participants_uk1", columnNames = {
-      "id", "play_id", "attendee_id" }) })
+@Table(name = "play_participants",
+         indexes = { @Index(name = "play_participants_idx1", columnList = "role"),
+            @Index(name = "play_participants_idx2", columnList = "pointCredit"),
+            @Index(name = "play_participants_idx3", columnList = "team_season_id") },
+         uniqueConstraints = { @UniqueConstraint(name = "play_participants_uk1", columnNames = {
+            "id", "play_id", "attendee_id" }) })
 public class PlayParticipantEntry implements Serializable {
    private static final long serialVersionUID = -6213837582683090644L;
 
@@ -47,7 +48,7 @@ public class PlayParticipantEntry implements Serializable {
    private TeamSeasonEntry teamSeason;
 
    @Enumerated(EnumType.STRING)
-   @Column(length = 20, nullable = false)
+   @Column(length = Constants.MAX_LENGTH_ENUM_STRING, nullable = false)
    private PlayRole role;
 
    private boolean pointCredit = false;
