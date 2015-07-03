@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beansProjectDescription>
 	<version>1</version>
-	<pluginVersion><![CDATA[3.6.4.201503051146-RELEASE]]></pluginVersion>
+	<pluginVersion><![CDATA[3.7.0.201506291921-CI-B281]]></pluginVersion>
 	<configSuffixes>
 		<configSuffix><![CDATA[xml]]></configSuffix>
 	</configSuffixes>
@@ -11,6 +11,7 @@
 		<config>java:laxstats.AxonConfiguration</config>
 		<config>java:laxstats.HttpHeadFilter</config>
 		<config>java:laxstats.HttpSecurityConfiguration</config>
+		<config>java:laxstats.domain.games.GameCommandHandler</config>
 	</configs>
 	<autoconfigs>
 		<config>java:laxstats.Application</config>
@@ -30,6 +31,8 @@
 		<config>java:laxstats.query.teamSeasons.TeamSeasonListener</config>
 		<config>java:laxstats.domain.violations.ViolationCommandHandler</config>
 		<config>java:laxstats.query.players.PlayerListener</config>
+		<config>java:laxstats.query.games.PlayListener</config>
+		<config>java:laxstats.query.games.GameListener</config>
 		<config>java:laxstats.domain.teams.TeamCommandHandler</config>
 		<config>java:laxstats.query.sites.SiteListener</config>
 		<config>java:laxstats.query.users.UserListener</config>

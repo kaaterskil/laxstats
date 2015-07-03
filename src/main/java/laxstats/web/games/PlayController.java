@@ -10,12 +10,12 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import laxstats.api.games.DeleteClearCommand;
-import laxstats.api.games.DeleteFaceOffCommand;
-import laxstats.api.games.DeleteGoalCommand;
-import laxstats.api.games.DeleteGroundBallCommand;
-import laxstats.api.games.DeletePenaltyCommand;
-import laxstats.api.games.DeleteShotCommand;
+import laxstats.api.games.DeleteClear;
+import laxstats.api.games.DeleteFaceOff;
+import laxstats.api.games.DeleteGoal;
+import laxstats.api.games.DeleteGroundBall;
+import laxstats.api.games.DeletePenalty;
+import laxstats.api.games.DeleteShot;
 import laxstats.api.games.GameId;
 import laxstats.api.games.PlayDTO;
 import laxstats.api.games.PlayKey;
@@ -23,19 +23,19 @@ import laxstats.api.games.PlayParticipantDTO;
 import laxstats.api.games.PlayResult;
 import laxstats.api.games.PlayRole;
 import laxstats.api.games.PlayType;
-import laxstats.api.games.RecordClearCommand;
-import laxstats.api.games.RecordFaceoffCommand;
-import laxstats.api.games.RecordGoalCommand;
-import laxstats.api.games.RecordGroundBallCommand;
-import laxstats.api.games.RecordPenaltyCommand;
-import laxstats.api.games.RecordShotCommand;
+import laxstats.api.games.RecordClear;
+import laxstats.api.games.RecordFaceoff;
+import laxstats.api.games.RecordGoal;
+import laxstats.api.games.RecordGroundBall;
+import laxstats.api.games.RecordPenalty;
+import laxstats.api.games.RecordShot;
 import laxstats.api.games.ScoreAttemptType;
-import laxstats.api.games.UpdateClearCommand;
-import laxstats.api.games.UpdateFaceOffCommand;
-import laxstats.api.games.UpdateGoalCommand;
-import laxstats.api.games.UpdateGroundBallCommand;
-import laxstats.api.games.UpdatePenaltyCommand;
-import laxstats.api.games.UpdateShotCommand;
+import laxstats.api.games.UpdateClear;
+import laxstats.api.games.UpdateFaceOff;
+import laxstats.api.games.UpdateGoal;
+import laxstats.api.games.UpdateGroundBall;
+import laxstats.api.games.UpdatePenalty;
+import laxstats.api.games.UpdateShot;
 import laxstats.api.violations.PenaltyCategory;
 import laxstats.query.games.AttendeeEntry;
 import laxstats.query.games.FaceOffEntry;
@@ -175,8 +175,8 @@ public class PlayController extends ApplicationController {
             clearForm.getPeriod(), null, null, clearForm.getResult(), null, null,
             clearForm.getComment(), sequence, now, user, now, user, participants);
 
-      final RecordClearCommand payload =
-         new RecordClearCommand(new GameId(aggregate.getId()), playId, dto);
+      final RecordClear payload =
+         new RecordClear(new GameId(aggregate.getId()), playId, dto);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
 
       final GameEntry refreshedAggregate = eventRepository.findOne(eventId);
@@ -188,7 +188,7 @@ public class PlayController extends ApplicationController {
    public String deleteClear(@PathVariable("gameId") String eventId,
       @PathVariable("playId") String playId, Model model) {
       final GameId identifier = new GameId(eventId);
-      final DeleteClearCommand payload = new DeleteClearCommand(identifier, playId);
+      final DeleteClear payload = new DeleteClear(identifier, playId);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
 
       final GameEntry refreshedAggregate = eventRepository.findOne(eventId);
@@ -216,7 +216,7 @@ public class PlayController extends ApplicationController {
             clearForm.getPeriod(), null, null, clearForm.getResult(), null, null,
             clearForm.getComment(), sequence, now, user, participants);
 
-      final UpdateClearCommand payload = new UpdateClearCommand(new GameId(eventId), playId, dto);
+      final UpdateClear payload = new UpdateClear(new GameId(eventId), playId, dto);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
 
       final GameEntry refreshedAggregate = eventRepository.findOne(eventId);
@@ -313,8 +313,8 @@ public class PlayController extends ApplicationController {
             form.getPeriod(), null, null, null, null, null, form.getComment(), sequence, now, user,
             now, user, participants);
 
-      final RecordFaceoffCommand payload =
-         new RecordFaceoffCommand(new GameId(eventId), playId, dto);
+      final RecordFaceoff payload =
+         new RecordFaceoff(new GameId(eventId), playId, dto);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
 
       final GameEntry refreshedAggregate = eventRepository.findOne(eventId);
@@ -327,7 +327,7 @@ public class PlayController extends ApplicationController {
    public String deleteFaceOff(@PathVariable("gameId") String eventId,
       @PathVariable("gameId") String playId, Model model) {
       final GameId identifier = new GameId(eventId);
-      final DeleteFaceOffCommand payload = new DeleteFaceOffCommand(identifier, playId);
+      final DeleteFaceOff payload = new DeleteFaceOff(identifier, playId);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
 
       final GameEntry refreshedAggregate = eventRepository.findOne(eventId);
@@ -376,8 +376,8 @@ public class PlayController extends ApplicationController {
          new PlayDTO(playId, PlayType.FACEOFF, PlayKey.PLAY, event, teamSeason, form.getPeriod(),
             null, null, null, null, null, form.getComment(), sequence, now, user, participants);
 
-      final UpdateFaceOffCommand payload =
-         new UpdateFaceOffCommand(new GameId(eventId), playId, dto);
+      final UpdateFaceOff payload =
+         new UpdateFaceOff(new GameId(eventId), playId, dto);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
       return "redirect:/admin/events/" + eventId + "/faceOffs";
    }
@@ -476,7 +476,7 @@ public class PlayController extends ApplicationController {
             form.getElapsedTime(), form.getAttemptType(), PlayResult.GOAL, null, null,
             form.getComment(), sequence, now, user, now, user, participants);
 
-      final RecordGoalCommand payload = new RecordGoalCommand(new GameId(eventId), playId, dto);
+      final RecordGoal payload = new RecordGoal(new GameId(eventId), playId, dto);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
 
       final GameEntry refreshedAggregate = eventRepository.findOne(eventId);
@@ -488,7 +488,7 @@ public class PlayController extends ApplicationController {
    public String deleteGoal(@PathVariable("gameId") String eventId,
       @PathVariable("playId") String playId, Model model) {
       final GameId identifier = new GameId(eventId);
-      final DeleteGoalCommand payload = new DeleteGoalCommand(identifier, playId);
+      final DeleteGoal payload = new DeleteGoal(identifier, playId);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
 
       final GameEntry refreshedAggregate = eventRepository.findOne(eventId);
@@ -563,7 +563,7 @@ public class PlayController extends ApplicationController {
             form.getElapsedTime(), form.getAttemptType(), PlayResult.GOAL, null, null,
             form.getComment(), sequence, now, user, participants);
 
-      final UpdateGoalCommand payload = new UpdateGoalCommand(new GameId(eventId), playId, dto);
+      final UpdateGoal payload = new UpdateGoal(new GameId(eventId), playId, dto);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
       return "redirect:/admin/events/" + eventId + "/goals";
    }
@@ -648,8 +648,8 @@ public class PlayController extends ApplicationController {
             form.getPeriod(), null, null, null, null, null, form.getComment(), sequence, now, user,
             now, user, participants);
 
-      final RecordGroundBallCommand payload =
-         new RecordGroundBallCommand(new GameId(eventId), playId, dto);
+      final RecordGroundBall payload =
+         new RecordGroundBall(new GameId(eventId), playId, dto);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
 
       final GameEntry refreshedAggregate = eventRepository.findOne(eventId);
@@ -662,7 +662,7 @@ public class PlayController extends ApplicationController {
    public String deleteGroundBall(@PathVariable("gameId") String eventId,
       @PathVariable("playId") String playId, Model model) {
       final GameId identifier = new GameId(eventId);
-      final DeleteGroundBallCommand payload = new DeleteGroundBallCommand(identifier, playId);
+      final DeleteGroundBall payload = new DeleteGroundBall(identifier, playId);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
 
       final GameEntry refreshedAggregate = eventRepository.findOne(eventId);
@@ -703,8 +703,8 @@ public class PlayController extends ApplicationController {
             form.getPeriod(), null, null, null, null, null, form.getComment(), sequence, now, user,
             participants);
 
-      final UpdateGroundBallCommand payload =
-         new UpdateGroundBallCommand(new GameId(eventId), playId, dto);
+      final UpdateGroundBall payload =
+         new UpdateGroundBall(new GameId(eventId), playId, dto);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
       return "redirect:/admin/events/" + eventId + "/groundBalls";
    }
@@ -807,8 +807,8 @@ public class PlayController extends ApplicationController {
             form.getElapsedTime(), null, null, violation, form.getDuration(), form.getComment(),
             sequence, now, user, now, user, participants);
 
-      final RecordPenaltyCommand payload =
-         new RecordPenaltyCommand(new GameId(eventId), playId, dto);
+      final RecordPenalty payload =
+         new RecordPenalty(new GameId(eventId), playId, dto);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
 
       final GameEntry refreshedAggregate = eventRepository.findOne(eventId);
@@ -880,8 +880,8 @@ public class PlayController extends ApplicationController {
             form.getElapsedTime(), null, null, violation, form.getDuration(), form.getComment(),
             sequence, now, user, participants);
 
-      final UpdatePenaltyCommand payload =
-         new UpdatePenaltyCommand(new GameId(eventId), playId, dto);
+      final UpdatePenalty payload =
+         new UpdatePenalty(new GameId(eventId), playId, dto);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
       return "redirect:/admin/events/" + eventId + "/penalties";
    }
@@ -891,7 +891,7 @@ public class PlayController extends ApplicationController {
    public String deletePenalty(@PathVariable("gameId") String eventId,
       @PathVariable("playId") String playId, Model model) {
       final GameId identifier = new GameId(eventId);
-      final DeletePenaltyCommand payload = new DeletePenaltyCommand(identifier, playId);
+      final DeletePenalty payload = new DeletePenalty(identifier, playId);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
 
       final GameEntry refreshedAggregate = eventRepository.findOne(eventId);
@@ -983,7 +983,7 @@ public class PlayController extends ApplicationController {
             null, form.getAttemptType(), form.getResult(), null, null, form.getComment(), sequence,
             now, user, now, user, participants);
 
-      final RecordShotCommand payload = new RecordShotCommand(new GameId(eventId), playId, dto);
+      final RecordShot payload = new RecordShot(new GameId(eventId), playId, dto);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
 
       final GameEntry refreshedAggregate = eventRepository.findOne(eventId);
@@ -1023,7 +1023,7 @@ public class PlayController extends ApplicationController {
             form.getAttemptType(), form.getResult(), null, null, form.getComment(), sequence, now,
             user, participants);
 
-      final UpdateShotCommand payload = new UpdateShotCommand(new GameId(eventId), playId, dto);
+      final UpdateShot payload = new UpdateShot(new GameId(eventId), playId, dto);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
       return "redirect:/admin/events/" + eventId + "/shots";
    }
@@ -1032,7 +1032,7 @@ public class PlayController extends ApplicationController {
    public String deleteShot(@PathVariable("gameId") String eventId,
       @PathVariable("playId") String playId, Model model) {
       final GameId identifier = new GameId(eventId);
-      final DeleteShotCommand payload = new DeleteShotCommand(identifier, playId);
+      final DeleteShot payload = new DeleteShot(identifier, playId);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
 
       final GameEntry refreshedAggregate = eventRepository.findOne(eventId);

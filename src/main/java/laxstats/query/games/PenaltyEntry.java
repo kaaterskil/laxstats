@@ -10,37 +10,60 @@ import laxstats.api.games.PlayUtils;
 
 import org.joda.time.Interval;
 
+/**
+ * {@code PenaltyEntry} represents the query object model of a penalty, or the side-lining of a
+ * player caused by the commission of a violation of playing rules.
+ */
 @Entity
 @DiscriminatorValue(PlayType.PENALTY)
 public class PenaltyEntry extends PlayEntry {
-	private static final long serialVersionUID = -8712295107965966601L;
+   private static final long serialVersionUID = -8712295107965966601L;
 
-	public PenaltyEntry() {
-		playKey = PlayKey.PLAY;
-	}
+   /**
+    * Creates a {@code PenaltyEntry}.
+    */
+   public PenaltyEntry() {
+      playKey = PlayKey.PLAY;
+   }
 
-	public Interval getInterval() {
-		return PlayUtils.getPenaltyInterval(event.getStartsAt(), period,
-				elapsedTime, duration);
-	}
+   /**
+    * Returns the time interval that a player may be sidelined due to the imposition of the penalty
+    * with the given duration. The time interval represents a period of time between two instants
+    * and, as such, is independent of and can overlap more than one play period.
+    *
+    * @return
+    */
+   public Interval getInterval() {
+      return PlayUtils.getPenaltyInterval(event.getStartsAt(), period, elapsedTime, duration);
+   }
 
-	public PlayParticipantEntry getCommittedBy() {
-		PlayParticipantEntry result = null;
-		for (final PlayParticipantEntry player : participants) {
-			if (player.getRole().equals(PlayRole.PENALTY_COMMITTED_BY)) {
-				result = player;
-			}
-		}
-		return result;
-	}
+   /**
+    * Returns the play participant who committed the violation.
+    *
+    * @return
+    */
+   public PlayParticipantEntry getCommittedBy() {
+      PlayParticipantEntry result = null;
+      for (final PlayParticipantEntry player : participants) {
+         if (player.getRole().equals(PlayRole.PENALTY_COMMITTED_BY)) {
+            result = player;
+         }
+      }
+      return result;
+   }
 
-	public PlayParticipantEntry getCommittedAgainst() {
-		PlayParticipantEntry result = null;
-		for (final PlayParticipantEntry player : participants) {
-			if (player.getRole().equals(PlayRole.PENALTY_COMMITTED_AGAINST)) {
-				result = player;
-			}
-		}
-		return result;
-	}
+   /**
+    * Returns the play participant against whom the violation was committed, or null.
+    *
+    * @return
+    */
+   public PlayParticipantEntry getCommittedAgainst() {
+      PlayParticipantEntry result = null;
+      for (final PlayParticipantEntry player : participants) {
+         if (player.getRole().equals(PlayRole.PENALTY_COMMITTED_AGAINST)) {
+            result = player;
+         }
+      }
+      return result;
+   }
 }

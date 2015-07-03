@@ -1,10 +1,10 @@
 package laxstats.web.games;
 
 import laxstats.api.games.PlayRole;
-import laxstats.api.games.PlayUtils;
 import laxstats.api.games.ScoreAttemptType;
 import laxstats.api.players.PlayerStatus;
 import laxstats.api.players.Role;
+import laxstats.api.utils.Constants;
 import laxstats.query.games.AttendeeEntry;
 import laxstats.query.games.GameEntry;
 import laxstats.query.games.GameQueryRepository;
@@ -21,13 +21,9 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 @Service
-public class GoalFormValidator extends AbstractPlayValidator implements
-   Validator
-{
-   private static final Logger logger = LoggerFactory
-      .getLogger(GoalFormValidator.class);
-   private static final String PACKAGE_NAME = GoalFormValidator.class
-      .getPackage().getName();
+public class GoalFormValidator extends AbstractPlayValidator implements Validator {
+   private static final Logger logger = LoggerFactory.getLogger(GoalFormValidator.class);
+   private static final String PACKAGE_NAME = GoalFormValidator.class.getPackage().getName();
 
    @Autowired
    GameQueryRepository gameRepository;
@@ -84,20 +80,16 @@ public class GoalFormValidator extends AbstractPlayValidator implements
 
       logger.debug("Entering: " + proc + "10");
 
-      ValidationUtils.rejectIfEmpty(errors, "teamSeasonId",
-         "play.teamSeasonId.required");
+      ValidationUtils.rejectIfEmpty(errors, "teamSeasonId", "play.teamSeasonId.required");
       logger.debug(proc + "20");
 
-      ValidationUtils.rejectIfEmpty(errors, "scorerId",
-         "goal.scorerId.required");
+      ValidationUtils.rejectIfEmpty(errors, "scorerId", "goal.scorerId.required");
       logger.debug(proc + "30");
 
-      ValidationUtils.rejectIfEmptyOrWhitespace(errors, "elapsedTime",
-         "goal.elapsedTime.required");
+      ValidationUtils.rejectIfEmptyOrWhitespace(errors, "elapsedTime", "goal.elapsedTime.required");
       logger.debug(proc + "40");
 
-      ValidationUtils.rejectIfEmpty(errors, "attemptType",
-         "goal.attemptType.required");
+      ValidationUtils.rejectIfEmpty(errors, "attemptType", "goal.attemptType.required");
       logger.debug("Leaving: " + proc + "50");
    }
 
@@ -122,8 +114,7 @@ public class GoalFormValidator extends AbstractPlayValidator implements
 
       if (isUpdating) {
          logger.debug(proc + "30");
-         final GoalEntry play = (GoalEntry)getPlayRepository().findOne(
-            playId);
+         final GoalEntry play = (GoalEntry)getPlayRepository().findOne(playId);
          if (!play.getElapsedTime().equals(elapsedTime)) {
             logger.debug(proc + "40");
             doValidation = true;
@@ -135,8 +126,7 @@ public class GoalFormValidator extends AbstractPlayValidator implements
       }
 
       if (doValidation) {
-         final int elapsedSeconds = elapsedTime.toStandardSeconds()
-            .getSeconds();
+         final int elapsedSeconds = elapsedTime.toStandardSeconds().getSeconds();
          if (elapsedSeconds < 0) {
             errors.rejectValue("elapsedTime", "play.elapsedTime.invalid");
          }
@@ -144,20 +134,18 @@ public class GoalFormValidator extends AbstractPlayValidator implements
 
          if (period <= 4) {
             logger.debug(proc + "80");
-            final int secondsInPeriod = PlayUtils.REGULAR_PERIOD_MINUTES
-               .toStandardSeconds().getSeconds();
+            final int secondsInPeriod =
+               Constants.REGULAR_PERIOD_MINUTES.toStandardSeconds().getSeconds();
             if (elapsedSeconds > secondsInPeriod) {
-               errors.rejectValue("elapsedTime",
-                  "play.elapsedTime.invalid");
+               errors.rejectValue("elapsedTime", "play.elapsedTime.invalid");
             }
          }
          else {
             logger.debug(proc + "90");
-            final int secondsInOvertime = PlayUtils.OVERTIME_PERIOD_MINUTES
-               .toStandardSeconds().getSeconds();
+            final int secondsInOvertime =
+               Constants.OVERTIME_PERIOD_MINUTES.toStandardSeconds().getSeconds();
             if (elapsedSeconds > secondsInOvertime) {
-               errors.rejectValue("elapsedTime",
-                  "play.elapsedTime.invalid");
+               errors.rejectValue("elapsedTime", "play.elapsedTime.invalid");
             }
          }
 
@@ -191,8 +179,7 @@ public class GoalFormValidator extends AbstractPlayValidator implements
       if (isUpdating) {
          logger.debug(proc + "30");
 
-         final GoalEntry play = (GoalEntry)getPlayRepository().findOne(
-            playId);
+         final GoalEntry play = (GoalEntry)getPlayRepository().findOne(playId);
          PlayParticipantEntry oldAttendee = null;
          for (final PlayParticipantEntry each : play.getParticipants()) {
             if (each.getRole().equals(PlayRole.SCORER)) {
@@ -267,8 +254,7 @@ public class GoalFormValidator extends AbstractPlayValidator implements
          if (isUpdating) {
             logger.debug(proc + "40");
 
-            final GoalEntry play = (GoalEntry)getPlayRepository().findOne(
-               playId);
+            final GoalEntry play = (GoalEntry)getPlayRepository().findOne(playId);
             PlayParticipantEntry oldAttendee = null;
             for (final PlayParticipantEntry each : play.getParticipants()) {
                if (each.getRole().equals(PlayRole.ASSIST)) {
@@ -278,9 +264,7 @@ public class GoalFormValidator extends AbstractPlayValidator implements
             }
             logger.debug(proc + "50");
 
-            if (oldAttendee == null
-               || !oldAttendee.getId().equals(attendeeId))
-            {
+            if (oldAttendee == null || !oldAttendee.getId().equals(attendeeId)) {
                doValidation = true;
             }
          }
@@ -304,16 +288,12 @@ public class GoalFormValidator extends AbstractPlayValidator implements
             }
             logger.debug(proc + "90");
 
-            if (attendee.getPlayer().getStatus()
-               .equals(PlayerStatus.INACTIVE))
-            {
+            if (attendee.getPlayer().getStatus().equals(PlayerStatus.INACTIVE)) {
                errors.rejectValue("assistId", "goal.assist.inactivePlayer");
             }
             logger.debug(proc + "100");
 
-            if (attendee.getPlayer().getStatus()
-               .equals(PlayerStatus.INJURED))
-            {
+            if (attendee.getPlayer().getStatus().equals(PlayerStatus.INJURED)) {
                errors.rejectValue("assistId", "goal.assist.injuredPlayer");
             }
          }
@@ -345,8 +325,7 @@ public class GoalFormValidator extends AbstractPlayValidator implements
       if (isUpdating) {
          logger.debug(proc + "30");
 
-         final GoalEntry play = (GoalEntry)getPlayRepository().findOne(
-            playId);
+         final GoalEntry play = (GoalEntry)getPlayRepository().findOne(playId);
          if (!play.getScoreAttemptType().equals(type)) {
             logger.debug(proc + "40");
             doValidation = true;
@@ -358,12 +337,9 @@ public class GoalFormValidator extends AbstractPlayValidator implements
       }
 
       if (doValidation) {
-         if (type == null
-            || (!type.equals(ScoreAttemptType.EMPTY_NET)
-               && !type.equals(ScoreAttemptType.OWN_GOAL)
-               && !type.equals(ScoreAttemptType.PENALTY_SHOT) && !type
-                  .equals(ScoreAttemptType.REGULAR)))
-         {
+         if (type == null ||
+            (!type.equals(ScoreAttemptType.EMPTY_NET) && !type.equals(ScoreAttemptType.OWN_GOAL) &&
+               !type.equals(ScoreAttemptType.PENALTY_SHOT) && !type.equals(ScoreAttemptType.REGULAR))) {
             errors.rejectValue("attemptType", "goal.attemptType.invalid");
          }
       }

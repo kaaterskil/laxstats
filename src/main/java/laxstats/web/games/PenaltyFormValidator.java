@@ -1,5 +1,17 @@
 package laxstats.web.games;
 
+import laxstats.api.games.PlayRole;
+import laxstats.api.players.PlayerStatus;
+import laxstats.api.players.Role;
+import laxstats.api.utils.Common;
+import laxstats.api.utils.Constants;
+import laxstats.query.games.AttendeeEntry;
+import laxstats.query.games.GameEntry;
+import laxstats.query.games.GameQueryRepository;
+import laxstats.query.games.PenaltyEntry;
+import laxstats.query.games.PlayParticipantEntry;
+import laxstats.query.violations.ViolationQueryRepository;
+
 import org.joda.time.Period;
 import org.joda.time.Seconds;
 import org.slf4j.Logger;
@@ -9,18 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
-
-import laxstats.api.games.PlayRole;
-import laxstats.api.games.PlayUtils;
-import laxstats.api.players.PlayerStatus;
-import laxstats.api.players.Role;
-import laxstats.api.utils.Common;
-import laxstats.query.games.AttendeeEntry;
-import laxstats.query.games.GameEntry;
-import laxstats.query.games.GameQueryRepository;
-import laxstats.query.games.PenaltyEntry;
-import laxstats.query.games.PlayParticipantEntry;
-import laxstats.query.violations.ViolationQueryRepository;
 
 @Service
 public class PenaltyFormValidator extends AbstractPlayValidator implements Validator {
@@ -151,7 +151,7 @@ public class PenaltyFormValidator extends AbstractPlayValidator implements Valid
          if (period <= 4) {
             logger.debug(proc + "80");
             final int secondsInPeriod =
-                     PlayUtils.REGULAR_PERIOD_MINUTES.toStandardSeconds().getSeconds();
+               Constants.REGULAR_PERIOD_MINUTES.toStandardSeconds().getSeconds();
             if (elapsedSeconds > secondsInPeriod) {
                errors.rejectValue("elapsedTime", "play.elapsedTime.invalid");
             }
@@ -159,7 +159,7 @@ public class PenaltyFormValidator extends AbstractPlayValidator implements Valid
          else {
             logger.debug(proc + "90");
             final int secondsInOvertime =
-                     PlayUtils.OVERTIME_PERIOD_MINUTES.toStandardSeconds().getSeconds();
+               Constants.OVERTIME_PERIOD_MINUTES.toStandardSeconds().getSeconds();
             if (elapsedSeconds > secondsInOvertime) {
                errors.rejectValue("elapsedTime", "play.elapsedTime.invalid");
             }

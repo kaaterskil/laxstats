@@ -1,5 +1,7 @@
 package laxstats.api.utils;
 
+import org.joda.time.Minutes;
+
 public class Constants {
 
    /**
@@ -23,6 +25,12 @@ public class Constants {
     */
    public static final String LOCAL_DATETIME_DATABASE_TYPE =
       "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime";
+
+   /**
+    * The Hibernate datatype used by persistent Period fields.
+    */
+   public static final String TIME_PERIOD_DATABASE_TYPE =
+      "org.jadira.usertype.dateandtime.joda.PersistentPeriodAsString";
 
    /**
     * the maximum length of a person's name prefix or suffix.
@@ -67,5 +75,25 @@ public class Constants {
    /**
     * Pattern string to convert to DateTime format.
     */
+   public static final String PATTERN_START_DATETIME_FORMAT = "yyyy-MM-dd hh:mm a";
+
+   /**
+    * Pattern string to convert to DateTime format.
+    */
    public static final String PATTERN_DATE_TIME_FORMAT = "yyyy-MM-dd";
+
+   /**
+    * Pattern string to convert to Period format.
+    */
+   public static final String PATTERN_ELAPSED_TIME_FORMAT = "mm:ss";
+
+   /**
+    * The number of minutes in a regular play period.
+    */
+   public static final Minutes REGULAR_PERIOD_MINUTES = Minutes.minutes(12);
+
+   /**
+    * The number of minutes in an overtime period.
+    */
+   public static final Minutes OVERTIME_PERIOD_MINUTES = Minutes.minutes(5);
 }

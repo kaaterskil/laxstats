@@ -12,15 +12,15 @@ import laxstats.api.Region;
 import laxstats.api.games.Alignment;
 import laxstats.api.games.AthleteStatus;
 import laxstats.api.games.AttendeeDTO;
-import laxstats.api.games.CreateEventCommand;
-import laxstats.api.games.DeleteAttendeeCommand;
-import laxstats.api.games.DeleteEventCommand;
+import laxstats.api.games.CreateGame;
+import laxstats.api.games.DeleteAttendee;
+import laxstats.api.games.DeleteGame;
 import laxstats.api.games.GameDTO;
 import laxstats.api.games.GameId;
-import laxstats.api.games.RegisterAttendeeCommand;
+import laxstats.api.games.RegisterAttendee;
 import laxstats.api.games.Status;
-import laxstats.api.games.UpdateAttendeeCommand;
-import laxstats.api.games.UpdateEventCommand;
+import laxstats.api.games.UpdateAttendee;
+import laxstats.api.games.UpdateGame;
 import laxstats.api.players.Role;
 import laxstats.api.sites.SiteAlignment;
 import laxstats.query.games.AttendeeEntry;
@@ -168,7 +168,7 @@ public class GameController extends ApplicationController {
       logger.debug(proc + "70");
 
       try {
-         final CreateEventCommand payload = new CreateEventCommand(identifier, dto);
+         final CreateGame payload = new CreateGame(identifier, dto);
          commandBus.dispatch(new GenericCommandMessage<>(payload));
       }
       catch (final Exception e) {
@@ -229,7 +229,7 @@ public class GameController extends ApplicationController {
       logger.debug(proc + "30");
 
       try {
-         final UpdateEventCommand payload = new UpdateEventCommand(identifier, dto);
+         final UpdateGame payload = new UpdateGame(identifier, dto);
          commandBus.dispatch(new GenericCommandMessage<>(payload));
       }
       catch (final Exception e) {
@@ -245,7 +245,7 @@ public class GameController extends ApplicationController {
    public String deleteEvent(@PathVariable String eventId) {
       final GameId identifier = new GameId(eventId);
 
-      final DeleteEventCommand payload = new DeleteEventCommand(identifier);
+      final DeleteGame payload = new DeleteGame(identifier);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
       return "redirect:/admin/events";
    }
@@ -334,8 +334,8 @@ public class GameController extends ApplicationController {
          new AttendeeDTO(attendeeId, aggregate, player, teamSeason, form.getRole(),
             form.getStatus(), player.getFullName(), player.getJerseyNumber(), now, user, now, user);
 
-      final RegisterAttendeeCommand payload =
-         new RegisterAttendeeCommand(new GameId(aggregate.getId()), dto);
+      final RegisterAttendee payload =
+         new RegisterAttendee(new GameId(aggregate.getId()), dto);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
       return "redirect:/admin/events/" + aggregate.getId() + "/teamSeasons/" + teamSeason.getId();
    }
@@ -358,8 +358,8 @@ public class GameController extends ApplicationController {
          new AttendeeDTO(attendeeId, event, player, teamSeason, form.getRole(), form.getStatus(),
             player.getFullName(), player.getJerseyNumber(), now, user);
 
-      final UpdateAttendeeCommand payload =
-         new UpdateAttendeeCommand(new GameId(event.getId()), dto);
+      final UpdateAttendee payload =
+         new UpdateAttendee(new GameId(event.getId()), dto);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
       return "redirect:/admin/events/" + event.getId() + "/teamSeasons/" + teamSeason.getId();
    }
@@ -371,7 +371,7 @@ public class GameController extends ApplicationController {
       @PathVariable String attendeeId)
    {
       final GameId identifier = new GameId(eventId);
-      final DeleteAttendeeCommand payload = new DeleteAttendeeCommand(identifier, attendeeId);
+      final DeleteAttendee payload = new DeleteAttendee(identifier, attendeeId);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
       return "redirect:/admin/events/" + eventId + "/teamSeasons/" + teamSeasonId;
    }

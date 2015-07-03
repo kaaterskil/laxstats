@@ -3,20 +3,23 @@ package laxstats.query.games;
 import java.util.List;
 
 import laxstats.api.games.AttendeeDTO;
-import laxstats.api.games.AttendeeDeletedEvent;
-import laxstats.api.games.AttendeeRegisteredEvent;
-import laxstats.api.games.AttendeeUpdatedEvent;
-import laxstats.api.games.GameCreatedEvent;
+import laxstats.api.games.AttendeeDeleted;
+import laxstats.api.games.AttendeeRegistered;
+import laxstats.api.games.AttendeeUpdated;
+import laxstats.api.games.GameCreated;
 import laxstats.api.games.GameDTO;
-import laxstats.api.games.GameDeletedEvent;
+import laxstats.api.games.GameDeleted;
 import laxstats.api.games.GameId;
-import laxstats.api.games.GameUpdatedEvent;
+import laxstats.api.games.GameUpdated;
 
 import org.axonframework.domain.IdentifierFactory;
 import org.axonframework.eventhandling.annotation.EventHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+/**
+ * {@code GameListener} manages events that write to the query database.
+ */
 @Component
 public class GameListener {
    private GameQueryRepository repository;
@@ -26,8 +29,13 @@ public class GameListener {
       this.repository = repository;
    }
 
+   /**
+    * Creates and persists a new game from information contained in the given event.
+    *
+    * @param event
+    */
    @EventHandler
-   protected void handle(GameCreatedEvent event) {
+   protected void handle(GameCreated event) {
       final GameId gameId = event.getEventId();
       final GameDTO dto = event.getEventDTO();
 
@@ -64,8 +72,14 @@ public class GameListener {
       repository.save(entity);
    }
 
+   /**
+    * Updates and persists changes in the state of an existing game with information contained in
+    * the given event.
+    *
+    * @param event
+    */
    @EventHandler
-   protected void handle(GameUpdatedEvent event) {
+   protected void handle(GameUpdated event) {
       final GameId gameId = event.getEventId();
       final GameDTO dto = event.getEventDTO();
 
@@ -80,6 +94,7 @@ public class GameListener {
       entity.setModifiedAt(dto.getModifiedAt());
       entity.setModifiedBy(dto.getModifiedBy());
 
+      // Create or update team one.
       final List<TeamEvent> teams = entity.getTeams();
       TeamEvent teamOne = null;
       if (teams.size() == 0) {
@@ -96,6 +111,7 @@ public class GameListener {
       teamOne.setModifiedAt(dto.getModifiedAt());
       teamOne.setModifiedBy(dto.getModifiedBy());
 
+      // Create or update team two.
       TeamEvent teamTwo = null;
       if (teams.size() < 2) {
          final String teamTwoId = IdentifierFactory.getInstance().generateIdentifier();
@@ -114,17 +130,25 @@ public class GameListener {
       repository.save(entity);
    }
 
+   /**
+    * Deletes the game matching the aggregate identifier contained in the given event.
+    *
+    * @param event
+    */
    @EventHandler
-   protected void handle(GameDeletedEvent event) {
+   protected void handle(GameDeleted event) {
       final GameId gameId = event.getEventId();
       final GameEntry entity = repository.findOne(gameId.toString());
       repository.delete(entity);
    }
 
-   /* ---------- Game Attendees ---------- */
-
+   /**
+    * Creates and persists a new game attendee from information contained in the given event.
+    *
+    * @param event
+    */
    @EventHandler
-   protected void handle(AttendeeRegisteredEvent event) {
+   protected void handle(AttendeeRegistered event) {
       final GameId identifier = event.getEventId();
       final GameEntry aggregate = repository.findOne(identifier.toString());
 
@@ -146,8 +170,14 @@ public class GameListener {
       repository.save(aggregate);
    }
 
+   /**
+    * Updates and persists changes to the state of an existing game attendee with information
+    * contained in the given event.
+    *
+    * @param event
+    */
    @EventHandler
-   protected void handle(AttendeeUpdatedEvent event) {
+   protected void handle(AttendeeUpdated event) {
       final GameId identifier = event.getEventId();
       final GameEntry aggregate = repository.findOne(identifier.toString());
 
@@ -162,8 +192,13 @@ public class GameListener {
       repository.save(aggregate);
    }
 
+   /**
+    * Deletes the game attendee matching the identifier contained in the given event.
+    *
+    * @param event
+    */
    @EventHandler
-   protected void handle(AttendeeDeletedEvent event) {
+   protected void handle(AttendeeDeleted event) {
       final GameId identifier = event.getEventId();
       final GameEntry aggregate = repository.findOne(identifier.toString());
       aggregate.getEventAttendees().remove(event.getAttendeeId());
