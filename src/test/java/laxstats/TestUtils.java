@@ -32,6 +32,7 @@ import laxstats.web.games.GameForm;
 import laxstats.web.people.AddressForm;
 import laxstats.web.people.AddressResource;
 import laxstats.web.people.ContactForm;
+import laxstats.web.people.ContactResource;
 import laxstats.web.people.PersonForm;
 import laxstats.web.players.PlayerForm;
 import laxstats.web.players.PlayerResource;
@@ -94,6 +95,20 @@ public class TestUtils {
       resource.setPrimary(true);
       resource.setRegion(Region.MA);
       resource.setType(AddressType.HOME);
+      return resource;
+   }
+
+   /**
+    * Returns a completed {@code ContactResource} for a new contact with ContactMethod.TELEPHONE.
+    *
+    * @return
+    */
+   public static ContactResource newContactResource() {
+      final ContactResource resource = new ContactResource();
+      resource.setMethod(ContactMethod.TELEPHONE);
+      resource.setValue("888-555-1212");
+      resource.setPrimary(true);
+      resource.setDoNotUse(false);
       return resource;
    }
 

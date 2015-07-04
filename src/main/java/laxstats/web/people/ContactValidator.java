@@ -16,9 +16,9 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 @Service
-public class ContactFormValidator implements Validator {
-   private static final Logger logger = LoggerFactory.getLogger(ContactFormValidator.class);
-   private static final String PACKAGE_NAME = ContactFormValidator.class.getPackage().getName();
+public class ContactValidator implements Validator {
+   private static final Logger logger = LoggerFactory.getLogger(ContactValidator.class);
+   private static final String PACKAGE_NAME = ContactValidator.class.getPackage().getName();
 
    PersonQueryRepository personQueryRepository;
 
@@ -29,30 +29,29 @@ public class ContactFormValidator implements Validator {
 
    @Override
    public boolean supports(Class<?> clazz) {
-      return ContactForm.class.equals(clazz);
+      return ContactResource.class.equals(clazz) || ContactForm.class.equals(clazz);
    }
 
    @Override
    public void validate(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".validate.";
-      final ContactForm form = (ContactForm)target;
 
       logger.debug("Entering: " + proc + "10");
 
       // Validate mandatory arguments
-      checkMandatoryArgs(form, errors);
+      checkMandatoryArgs(target, errors);
       logger.debug(proc + "20");
 
       // Validate method/value combination
-      checkDuplicate(form, errors);
+      checkDuplicate(target, errors);
       logger.debug(proc + "30");
 
       // Validate primary designation
-      checkPrimary(form, errors);
+      checkPrimary(target, errors);
       logger.debug(proc + "40");
 
       // Validate value
-      checkValue(form, errors);
+      checkValue(target, errors);
       logger.debug("Leaving: " + proc + "50");
    }
 
@@ -62,17 +61,30 @@ public class ContactFormValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkMandatoryArgs(ContactForm form, Errors errors) {
+   private void checkMandatoryArgs(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkMandatoryArgs.";
+      ContactMethod method = null;
+      String value = null;
+
+      if (target instanceof ContactResource) {
+         final ContactResource resource = (ContactResource)target;
+         method = resource.getMethod();
+         value = resource.getValue();
+      }
+      else if (target instanceof ContactForm) {
+         final ContactForm form = (ContactForm)target;
+         method = form.getMethod();
+         value = form.getValue();
+      }
 
       logger.debug("Entering: " + proc + "10");
 
-      if (form.getMethod() == null) {
+      if (method == null) {
          errors.rejectValue("method", "contact.method.required");
       }
       logger.debug(proc + "20");
 
-      if (TestUtils.isEmptyOrWhitespace(form.getValue())) {
+      if (TestUtils.isEmptyOrWhitespace(value)) {
          errors.rejectValue("value", "contact.value.required");
       }
       logger.debug("Leaving: " + proc + "30");
@@ -84,13 +96,28 @@ public class ContactFormValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkDuplicate(ContactForm form, Errors errors) {
+   private void checkDuplicate(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkDuplicate.";
-      final String contactId = form.getId();
-      final ContactMethod method = form.getMethod();
-      final String value = form.getValue();
-      final String personId = form.getPersonId();
+      String contactId = null;
+      ContactMethod method = null;
+      String value = null;
+      String personId = null;
       int found = 0;
+
+      if (target instanceof ContactResource) {
+         final ContactResource resource = (ContactResource)target;
+         contactId = resource.getId();
+         personId = resource.getPersonId();
+         method = resource.getMethod();
+         value = resource.getValue();
+      }
+      else if (target instanceof ContactForm) {
+         final ContactForm form = (ContactForm)target;
+         contactId = form.getId();
+         personId = form.getPersonId();
+         method = form.getMethod();
+         value = form.getValue();
+      }
 
       logger.debug("Entering: " + proc + "10");
 
@@ -133,11 +160,24 @@ public class ContactFormValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkPrimary(ContactForm form, Errors errors) {
+   private void checkPrimary(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkPrimary.";
-      final String addressId = form.getId();
-      final String personId = form.getPersonId();
-      final boolean isPrimary = form.isPrimary();
+      String contactId = null;
+      String personId = null;
+      boolean isPrimary = false;
+
+      if (target instanceof ContactResource) {
+         final ContactResource resource = (ContactResource)target;
+         contactId = resource.getId();
+         personId = resource.getPersonId();
+         isPrimary = resource.isPrimary();
+      }
+      else if (target instanceof ContactForm) {
+         final ContactForm form = (ContactForm)target;
+         contactId = form.getId();
+         personId = form.getPersonId();
+         isPrimary = form.isPrimary();
+      }
 
       logger.debug("Entering: " + proc + "10");
 
@@ -149,7 +189,7 @@ public class ContactFormValidator implements Validator {
          logger.debug(proc + "30");
 
          if (oldPrimaryContact != null) {
-            final boolean isUpdating = apiUpdating(addressId);
+            final boolean isUpdating = apiUpdating(contactId);
             logger.debug(proc + "40");
 
             // Only proceed with validation if the record is new or if the
@@ -157,7 +197,7 @@ public class ContactFormValidator implements Validator {
 
             if (isUpdating) {
                logger.debug(proc + "50");
-               if (oldPrimaryContact.isPrimary() && !oldPrimaryContact.getId().equals(addressId)) {
+               if (oldPrimaryContact.isPrimary() && !oldPrimaryContact.getId().equals(contactId)) {
                   errors.rejectValue("primary", "contact.primary.multiplePrimary");
                }
             }
@@ -179,13 +219,28 @@ public class ContactFormValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkValue(ContactForm form, Errors errors) {
+   private void checkValue(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkValue.";
-      final String contactId = form.getId();
-      final ContactMethod method = form.getMethod();
-      final String value = form.getValue();
-      final String personId = form.getPersonId();
+      String contactId = null;
+      ContactMethod method = null;
+      String value = null;
+      String personId = null;
       boolean doValidation = false;
+
+      if (target instanceof ContactResource) {
+         final ContactResource resource = (ContactResource)target;
+         contactId = resource.getId();
+         personId = resource.getPersonId();
+         method = resource.getMethod();
+         value = resource.getValue();
+      }
+      else if (target instanceof ContactForm) {
+         final ContactForm form = (ContactForm)target;
+         contactId = form.getId();
+         personId = form.getPersonId();
+         method = form.getMethod();
+         value = form.getValue();
+      }
 
       logger.debug("Entering: " + proc + "10");
 
@@ -223,7 +278,7 @@ public class ContactFormValidator implements Validator {
             logger.debug(proc + "70");
 
             final laxstats.web.validators.Validator telephoneValidator =
-                     TelephoneValidator.getInstance();
+               TelephoneValidator.getInstance();
             if (!telephoneValidator.isValid(value)) {
                errors.rejectValue("value", "contact.value.invalidTelephone");
             }
@@ -233,7 +288,7 @@ public class ContactFormValidator implements Validator {
    }
 
    /**
-    * Returns true if the record with the given primary key i being updated, false otherwise.
+    * Returns true if the record with the given primary key is being updated, false otherwise.
     *
     * @param contactId
     * @return
