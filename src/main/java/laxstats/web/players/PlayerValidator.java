@@ -1,6 +1,9 @@
 package laxstats.web.players;
 
 import laxstats.TestUtils;
+import laxstats.api.players.PlayerStatus;
+import laxstats.api.players.Position;
+import laxstats.api.players.Role;
 import laxstats.api.teamSeasons.TeamStatus;
 import laxstats.query.players.PlayerEntry;
 import laxstats.query.players.PlayerQueryRepository;
@@ -13,9 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-public class PlayerFormValidator implements Validator {
-   private static Logger logger = LoggerFactory.getLogger(PlayerFormValidator.class);
-   private static String PACKAGE_NAME = PlayerFormValidator.class.getPackage().getName();
+public class PlayerValidator implements Validator {
+   private static Logger logger = LoggerFactory.getLogger(PlayerValidator.class);
+   private static String PACKAGE_NAME = PlayerValidator.class.getPackage().getName();
 
    @Autowired
    TeamSeasonQueryRepository teamSeasonQueryRepository;
@@ -24,22 +27,21 @@ public class PlayerFormValidator implements Validator {
 
    @Override
    public boolean supports(Class<?> clazz) {
-      return PlayerForm.class.equals(clazz);
+      return PlayerResource.class.equals(clazz) || PlayerForm.class.equals(clazz);
    }
 
    @Override
    public void validate(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".validate.";
-      final PlayerForm form = (PlayerForm)target;
 
       logger.debug("Entering: " + proc + "10");
 
       // Validate mandatory arguments
-      checkMandatoryArgs(form, errors);
+      checkMandatoryArgs(target, errors);
       logger.debug(proc + "20");
 
       // Validates that the team is not inactive
-      checkTeamStatus(form, errors);
+      checkTeamStatus(target, errors);
 
       logger.debug("Leaving: " + proc + "30");
    }
@@ -50,32 +52,54 @@ public class PlayerFormValidator implements Validator {
     * @param form
     * @param errors0
     */
-   private void checkMandatoryArgs(PlayerForm form, Errors errors) {
+   private void checkMandatoryArgs(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkMandatoryArgs.";
+      String personId = null;
+      String teamSeasonId = null;
+      Role role = null;
+      PlayerStatus status = null;
+      Position position = null;
+
+      if (target instanceof PlayerResource) {
+         final PlayerResource resource = (PlayerResource)target;
+         personId = resource.getPerson();
+         teamSeasonId = resource.getTeamSeason();
+         role = resource.getRole();
+         status = resource.getStatus();
+         position = resource.getPosition();
+      }
+      else if (target instanceof PlayerForm) {
+         final PlayerForm form = (PlayerForm)target;
+         personId = form.getPerson();
+         teamSeasonId = form.getTeamSeason();
+         role = form.getRole();
+         status = form.getStatus();
+         position = form.getPosition();
+      }
 
       logger.debug("Entering: " + proc + "10");
 
-      if (TestUtils.isEmptyOrWhitespace(form.getPerson())) {
+      if (TestUtils.isEmptyOrWhitespace(personId)) {
          errors.rejectValue("person", "player.person.required");
       }
       logger.debug(proc + "20");
 
-      if (TestUtils.isEmptyOrWhitespace(form.getTeamSeason())) {
+      if (TestUtils.isEmptyOrWhitespace(teamSeasonId)) {
          errors.rejectValue("teamSeason", "player.teamSeason.required");
       }
       logger.debug(proc + "30");
 
-      if (form.getRole() == null) {
+      if (role == null) {
          errors.rejectValue("role", "player.role.required");
       }
       logger.debug(proc + "40");
 
-      if (form.getStatus() == null) {
+      if (status == null) {
          errors.rejectValue("status", "player.status.required");
       }
       logger.debug(proc + "50");
 
-      if (form.getPosition() == null) {
+      if (position == null) {
          errors.rejectValue("position", "player.position.required");
       }
 
@@ -84,15 +108,27 @@ public class PlayerFormValidator implements Validator {
 
    /**
     * Validates that the given player's assigned team is not inactive.
-    * 
+    *
     * @param form
     * @param errors
     */
-   private void checkTeamStatus(PlayerForm form, Errors errors) {
+   private void checkTeamStatus(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkTeamStatus.";
-      final String playerId = form.getId();
-      final TeamSeasonEntry teamSeason = teamSeasonQueryRepository.findOne(form.getTeamSeason());
+      String playerId = null;
+      String teamSeasonId = null;
       boolean doValidation = false;
+
+      if (target instanceof PlayerResource) {
+         final PlayerResource resource = (PlayerResource)target;
+         playerId = resource.getId();
+         teamSeasonId = resource.getTeamSeason();
+      }
+      else if (target instanceof PlayerForm) {
+         final PlayerForm form = (PlayerForm)target;
+         playerId = form.getId();
+         teamSeasonId = form.getTeamSeason();
+      }
+      final TeamSeasonEntry teamSeason = teamSeasonQueryRepository.findOne(teamSeasonId);
 
       logger.debug("Entering: " + proc + "10");
 
@@ -104,7 +140,7 @@ public class PlayerFormValidator implements Validator {
          logger.debug(proc + "30");
 
          final PlayerEntry player = playerQueryRepository.findOne(playerId);
-         if (!form.getTeamSeason().equals(player.getTeamSeason().getId())) {
+         if (!teamSeasonId.equals(player.getTeamSeason().getId())) {
             doValidation = true;
          }
       }

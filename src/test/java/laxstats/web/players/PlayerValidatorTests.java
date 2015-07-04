@@ -20,7 +20,7 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.ValidationUtils;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PlayerFormValidatorTests {
+public class PlayerValidatorTests {
 
    @Mock
    TeamSeasonQueryRepository teamSeasonQueryRepository;
@@ -28,12 +28,27 @@ public class PlayerFormValidatorTests {
    PlayerQueryRepository playerQueryRepository;
 
    @InjectMocks
-   PlayerFormValidator validator = new PlayerFormValidator();
+   PlayerValidator validator = new PlayerValidator();
 
    @Test
    public void supports() {
+      assertTrue(validator.supports(PlayerResource.class));
       assertTrue(validator.supports(PlayerForm.class));
       assertFalse(validator.supports(Object.class));
+   }
+
+   @Test
+   public void playerResourceMissingPerson() {
+      final TeamSeasonEntry teamSeason = TestUtils.getExistingTeamSeason();
+      final PlayerResource resource = TestUtils.newPlayerResource();
+      resource.setTeamSeason(teamSeason.getId());
+
+      Mockito.when(teamSeasonQueryRepository.findOne(resource.getTeamSeason())).thenReturn(
+         teamSeason);
+
+      final BindException errors = new BindException(resource, "playerResource");
+      ValidationUtils.invokeValidator(validator, resource, errors);
+      assertTrue(errors.hasErrors());
    }
 
    @Test
@@ -52,11 +67,37 @@ public class PlayerFormValidatorTests {
    @Test
    public void playerMissingTeamSeason() {
       final PersonEntry person = TestUtils.getPersonWithPrimaryContact();
+
       final PlayerForm form = TestUtils.newPlayerForm();
       form.setPerson(person.getId());
 
-      final BindException errors = new BindException(form, "playerForm");
+      final PlayerResource resource = TestUtils.newPlayerResource();
+      resource.setPerson(person.getId());
+
+      BindException errors = new BindException(form, "playerForm");
       ValidationUtils.invokeValidator(validator, form, errors);
+      assertTrue(errors.hasErrors());
+
+      errors = new BindException(resource, "playerResource");
+      ValidationUtils.invokeValidator(validator, resource, errors);
+      assertTrue(errors.hasErrors());
+   }
+
+   @Test
+   public void playerResourceMissingRole() {
+      final PersonEntry person = TestUtils.getPersonWithPrimaryContact();
+      final TeamSeasonEntry teamSeason = TestUtils.getExistingTeamSeason();
+
+      final PlayerResource resource = TestUtils.newPlayerResource();
+      resource.setPerson(person.getId());
+      resource.setTeamSeason(teamSeason.getId());
+      resource.setRole(null);
+
+      Mockito.when(teamSeasonQueryRepository.findOne(resource.getTeamSeason())).thenReturn(
+         teamSeason);
+
+      final BindException errors = new BindException(resource, "playerResource");
+      ValidationUtils.invokeValidator(validator, resource, errors);
       assertTrue(errors.hasErrors());
    }
 
@@ -77,6 +118,24 @@ public class PlayerFormValidatorTests {
    }
 
    @Test
+   public void playerResourceMissingStatus() {
+      final PersonEntry person = TestUtils.getPersonWithPrimaryContact();
+      final TeamSeasonEntry teamSeason = TestUtils.getExistingTeamSeason();
+
+      final PlayerResource resource = TestUtils.newPlayerResource();
+      resource.setPerson(person.getId());
+      resource.setTeamSeason(teamSeason.getId());
+      resource.setStatus(null);
+
+      Mockito.when(teamSeasonQueryRepository.findOne(resource.getTeamSeason())).thenReturn(
+         teamSeason);
+
+      final BindException errors = new BindException(resource, "playerResource");
+      ValidationUtils.invokeValidator(validator, resource, errors);
+      assertTrue(errors.hasErrors());
+   }
+
+   @Test
    public void playerMissingStatus() {
       final PersonEntry person = TestUtils.getPersonWithPrimaryContact();
       final TeamSeasonEntry teamSeason = TestUtils.getExistingTeamSeason();
@@ -89,6 +148,24 @@ public class PlayerFormValidatorTests {
 
       final BindException errors = new BindException(form, "playerForm");
       ValidationUtils.invokeValidator(validator, form, errors);
+      assertTrue(errors.hasErrors());
+   }
+
+   @Test
+   public void playerResourceMissingPosition() {
+      final PersonEntry person = TestUtils.getPersonWithPrimaryContact();
+      final TeamSeasonEntry teamSeason = TestUtils.getExistingTeamSeason();
+
+      final PlayerResource resource = TestUtils.newPlayerResource();
+      resource.setPerson(person.getId());
+      resource.setTeamSeason(teamSeason.getId());
+      resource.setPosition(null);
+
+      Mockito.when(teamSeasonQueryRepository.findOne(resource.getTeamSeason())).thenReturn(
+         teamSeason);
+
+      final BindException errors = new BindException(resource, "playerResource");
+      ValidationUtils.invokeValidator(validator, resource, errors);
       assertTrue(errors.hasErrors());
    }
 
@@ -111,6 +188,23 @@ public class PlayerFormValidatorTests {
    /*---------- New Player Form Validation Tests ----------*/
 
    @Test
+   public void newPlayerResourceIsValid() {
+      final PersonEntry person = TestUtils.getPersonWithPrimaryContact();
+      final TeamSeasonEntry teamSeason = TestUtils.getExistingTeamSeason();
+
+      final PlayerResource resource = TestUtils.newPlayerResource();
+      resource.setPerson(person.getId());
+      resource.setTeamSeason(teamSeason.getId());
+
+      Mockito.when(teamSeasonQueryRepository.findOne(resource.getTeamSeason())).thenReturn(
+         teamSeason);
+
+      final BindException errors = new BindException(resource, "playerResource");
+      ValidationUtils.invokeValidator(validator, resource, errors);
+      assertFalse(errors.hasErrors());
+   }
+
+   @Test
    public void newPlayerIsValid() {
       final PersonEntry person = TestUtils.getPersonWithPrimaryContact();
       final TeamSeasonEntry teamSeason = TestUtils.getExistingTeamSeason();
@@ -123,6 +217,24 @@ public class PlayerFormValidatorTests {
       final BindException errors = new BindException(form, "playerForm");
       ValidationUtils.invokeValidator(validator, form, errors);
       assertFalse(errors.hasErrors());
+   }
+
+   @Test
+   public void newPlayerResourceAssignedToInactiveTeamSeason() {
+      final PersonEntry person = TestUtils.getPersonWithPrimaryContact();
+      final TeamSeasonEntry teamSeason = TestUtils.getExistingTeamSeason();
+      teamSeason.setStatus(TeamStatus.INACTIVE);
+
+      final PlayerResource resource = TestUtils.newPlayerResource();
+      resource.setPerson(person.getId());
+      resource.setTeamSeason(teamSeason.getId());
+
+      Mockito.when(teamSeasonQueryRepository.findOne(resource.getTeamSeason())).thenReturn(
+         teamSeason);
+
+      final BindException errors = new BindException(resource, "playerResource");
+      ValidationUtils.invokeValidator(validator, resource, errors);
+      assertTrue(errors.hasErrors());
    }
 
    @Test
@@ -143,6 +255,28 @@ public class PlayerFormValidatorTests {
    }
 
    /*---------- Existing Player Form Validation Tests ----------*/
+
+   @Test
+   public void updatedPlayerResourceAssignedToInactiveTeamSeason() {
+      final PlayerEntry player = TestUtils.getExistingPlayer();
+
+      final TeamSeasonEntry newTeamSeason = TestUtils.getExistingTeamSeason();
+      newTeamSeason.setStatus(TeamStatus.INACTIVE);
+
+      final PlayerResource resource = TestUtils.newPlayerResource();
+      resource.setId(player.getId());
+      resource.setPerson(player.getPerson().getId());
+      resource.setTeamSeason(newTeamSeason.getId());
+
+      Mockito.when(playerQueryRepository.exists(resource.getId())).thenReturn(true);
+      Mockito.when(playerQueryRepository.findOne(resource.getId())).thenReturn(player);
+      Mockito.when(teamSeasonQueryRepository.findOne(resource.getTeamSeason())).thenReturn(
+         newTeamSeason);
+
+      final BindException errors = new BindException(resource, "playerResource");
+      ValidationUtils.invokeValidator(validator, resource, errors);
+      assertTrue(errors.hasErrors());
+   }
 
    @Test
    public void updatedPlayerAssignedToInactiveTeamSeason() {

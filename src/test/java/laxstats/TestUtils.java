@@ -33,7 +33,9 @@ import laxstats.web.people.AddressForm;
 import laxstats.web.people.ContactForm;
 import laxstats.web.people.PersonForm;
 import laxstats.web.players.PlayerForm;
+import laxstats.web.players.PlayerResource;
 import laxstats.web.seasons.SeasonForm;
+import laxstats.web.seasons.SeasonResource;
 import laxstats.web.sites.SiteForm;
 import laxstats.web.sites.SiteResource;
 import laxstats.web.teamSeasons.TeamSeasonForm;
@@ -146,6 +148,20 @@ public class TestUtils {
    }
 
    /**
+    * Returns a complete {@code PlayerResource} for a new player. NOTE: The person and the team
+    * season must be applied.
+    *
+    * @return
+    */
+   public static PlayerResource newPlayerResource() {
+      final PlayerResource resource = new PlayerResource();
+      resource.setCaptain(false);
+      resource.setJerseyNumber("18");
+      resource.setPosition(Position.ATTACK);
+      return resource;
+   }
+
+   /**
     * Returns a complete {@code PlayerForm} for a new player. NOTE: The person and the team season
     * must be applied.
     *
@@ -157,6 +173,19 @@ public class TestUtils {
       form.setJerseyNumber("18");
       form.setPosition(Position.ATTACK);
       return form;
+   }
+
+   /**
+    * Returns a completed {@code SeasonResource} for a new season.
+    *
+    * @return
+    */
+   public static SeasonResource newSeasonResource() {
+      final SeasonResource resource = new SeasonResource();
+      resource.setDescription("2014-2015 Season");
+      resource.setStartsOn("2014-07-01");
+      resource.setEndsOn("2015-06-30");
+      return resource;
    }
 
    /**
