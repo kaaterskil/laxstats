@@ -22,7 +22,7 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.ValidationUtils;
 
 @RunWith(MockitoJUnitRunner.class)
-public class AddressFormValidatorTests {
+public class AddressValidatorTests {
 
    @Mock
    PersonQueryRepository personQueryRepository;
@@ -32,7 +32,7 @@ public class AddressFormValidatorTests {
    @InjectMocks
    PostalCodeValidator postalCodeValidator;
    @InjectMocks
-   AddressFormValidator validator = new AddressFormValidator();
+   AddressValidator validator = new AddressValidator();
 
    @Before
    public void setUp() {
@@ -41,8 +41,24 @@ public class AddressFormValidatorTests {
 
    @Test
    public void supports() {
+      assertTrue(validator.supports(AddressResource.class));
       assertTrue(validator.supports(AddressForm.class));
       assertFalse(validator.supports(Object.class));
+   }
+
+   @Test
+   public void addressResourceHasNoType() {
+      final String personId = IdentifierFactory.getInstance().generateIdentifier();
+      Mockito.when(zipCodeQueryRepository.exists("01776")).thenReturn(true);
+      Mockito.when(personQueryRepository.findOne(personId)).thenReturn(TestUtils.getPerson());
+
+      final AddressResource resource = TestUtils.newAddressResource();
+      resource.setType(null);
+      resource.setPersonId(personId);
+
+      final BindException errors = new BindException(resource, "addressResource");
+      ValidationUtils.invokeValidator(validator, resource, errors);
+      assertTrue(errors.hasErrors());
    }
 
    @Test
@@ -57,6 +73,21 @@ public class AddressFormValidatorTests {
 
       final BindException errors = new BindException(form, "addressForm");
       ValidationUtils.invokeValidator(validator, form, errors);
+      assertTrue(errors.hasErrors());
+   }
+
+   @Test
+   public void addressResourceHasNoCity() {
+      final String personId = IdentifierFactory.getInstance().generateIdentifier();
+      Mockito.when(zipCodeQueryRepository.exists("01776")).thenReturn(true);
+      Mockito.when(personQueryRepository.findOne(personId)).thenReturn(TestUtils.getPerson());
+
+      final AddressResource resource = TestUtils.newAddressResource();
+      resource.setCity(null);
+      resource.setPersonId(personId);
+
+      final BindException errors = new BindException(resource, "addressResource");
+      ValidationUtils.invokeValidator(validator, resource, errors);
       assertTrue(errors.hasErrors());
    }
 
@@ -78,6 +109,20 @@ public class AddressFormValidatorTests {
    /*---------- New Address Tests ----------*/
 
    @Test
+   public void newAddressResourceIsValid() {
+      final String personId = IdentifierFactory.getInstance().generateIdentifier();
+      Mockito.when(zipCodeQueryRepository.exists("01776")).thenReturn(true);
+      Mockito.when(personQueryRepository.findOne(personId)).thenReturn(TestUtils.getPerson());
+
+      final AddressResource resource = TestUtils.newAddressResource();
+      resource.setPersonId(personId);
+
+      final BindException errors = new BindException(resource, "addressResource");
+      ValidationUtils.invokeValidator(validator, resource, errors);
+      assertFalse(errors.hasErrors());
+   }
+
+   @Test
    public void newAddressIsValid() {
       final String personId = IdentifierFactory.getInstance().generateIdentifier();
       Mockito.when(zipCodeQueryRepository.exists("01776")).thenReturn(true);
@@ -89,6 +134,24 @@ public class AddressFormValidatorTests {
       final BindException errors = new BindException(form, "addressForm");
       ValidationUtils.invokeValidator(validator, form, errors);
       assertFalse(errors.hasErrors());
+   }
+
+   @Test
+   public void newResourceDuplicateAddress() {
+      final String personId = IdentifierFactory.getInstance().generateIdentifier();
+      final AddressResource resource = TestUtils.newAddressResource();
+      resource.setPersonId(personId);
+
+      Mockito.when(zipCodeQueryRepository.exists("01776")).thenReturn(true);
+      Mockito.when(personQueryRepository.findOne(personId)).thenReturn(TestUtils.getPerson());
+      Mockito.when(
+         personQueryRepository.uniqueAddress(resource.getType(), resource.getAddress1(), resource
+            .getCity(), resource.getRegion(), resource.getPersonId())).thenReturn(1);
+      Mockito.when(postalCodeValidator.isValid(resource.getPostalCode())).thenReturn(true);
+
+      final BindException errors = new BindException(resource, "addressResource");
+      ValidationUtils.invokeValidator(validator, resource, errors);
+      assertTrue(errors.hasErrors());
    }
 
    @Test
@@ -110,21 +173,35 @@ public class AddressFormValidatorTests {
    }
 
    @Test
-   public void newAddressButPrimaryAlreadyAssigned() {
+   public void newAddressResourceButPrimaryAlreadyAssigned() {
       final String personId = IdentifierFactory.getInstance().generateIdentifier();
-      final AddressForm form = TestUtils.newAddressForm();
-      form.setAddress1("123 Main Street");
-      form.setPersonId(personId);
+      final AddressResource resource = TestUtils.newAddressResource();
+      resource.setAddress1("123 Main Street");
+      resource.setPersonId(personId);
 
       Mockito.when(zipCodeQueryRepository.exists("01776")).thenReturn(true);
       Mockito.when(personQueryRepository.findOne(personId)).thenReturn(
          TestUtils.getPersonWithPrimaryAddress());
       Mockito.when(
-         personQueryRepository.uniqueAddress(form.getType(), form.getAddress1(), form.getCity(),
-            form.getRegion(), form.getPersonId())).thenReturn(0);
+         personQueryRepository.uniqueAddress(resource.getType(), resource.getAddress1(), resource
+            .getCity(), resource.getRegion(), resource.getPersonId())).thenReturn(0);
 
-      final BindException errors = new BindException(form, "addressForm");
-      ValidationUtils.invokeValidator(validator, form, errors);
+      final BindException errors = new BindException(resource, "addressResource");
+      ValidationUtils.invokeValidator(validator, resource, errors);
+      assertTrue(errors.hasErrors());
+   }
+
+   @Test
+   public void newAddressResourceHasInvalidPostalCode() {
+      final String personId = IdentifierFactory.getInstance().generateIdentifier();
+      Mockito.when(personQueryRepository.findOne(personId)).thenReturn(TestUtils.getPerson());
+
+      final AddressResource resource = TestUtils.newAddressResource();
+      resource.setPersonId(personId);
+      resource.setPostalCode("0000");
+
+      final BindException errors = new BindException(resource, "addressResource");
+      ValidationUtils.invokeValidator(validator, resource, errors);
       assertTrue(errors.hasErrors());
    }
 
@@ -135,6 +212,7 @@ public class AddressFormValidatorTests {
 
       final AddressForm form = TestUtils.newAddressForm();
       form.setPersonId(personId);
+      form.setPostalCode("0000");
 
       final BindException errors = new BindException(form, "addressForm");
       ValidationUtils.invokeValidator(validator, form, errors);
@@ -142,6 +220,30 @@ public class AddressFormValidatorTests {
    }
 
    /*---------- Existing Address Tests ----------*/
+
+   @Test
+   public void updateAddressResourceWithDuplicate() {
+      final PersonEntry person = TestUtils.getPersonWithPrimaryAddress();
+      final String addressId = person.getAddresses().get(0).getId();
+
+      final AddressResource resource = TestUtils.newAddressResource();
+      resource.setId(addressId);
+      resource.setAddress1("This is a duplicate address");
+      resource.setPrimary(false);
+      resource.setPersonId(person.getId());
+
+      Mockito.when(personQueryRepository.checkAddressExists(addressId)).thenReturn(true);
+      Mockito.when(personQueryRepository.findOne(person.getId())).thenReturn(person);
+      Mockito.when(
+         personQueryRepository.updateAddress(resource.getType(), resource.getAddress1(), resource
+            .getCity(), resource.getRegion(), resource.getPersonId(), resource.getId())).thenReturn(
+         1);
+      Mockito.when(postalCodeValidator.isValid(resource.getPostalCode())).thenReturn(true);
+
+      final BindException errors = new BindException(resource, "addressResource");
+      ValidationUtils.invokeValidator(validator, resource, errors);
+      assertTrue(errors.hasErrors());
+   }
 
    @Test
    public void updateAddressWithDuplicate() {
@@ -163,6 +265,36 @@ public class AddressFormValidatorTests {
 
       final BindException errors = new BindException(form, "addressForm");
       ValidationUtils.invokeValidator(validator, form, errors);
+      assertTrue(errors.hasErrors());
+   }
+
+   @Test
+   public void updateAddressResourceButPrimaryAlreadyAssigned() {
+      final PersonEntry person = TestUtils.getPersonWithPrimaryAddress();
+
+      final String addressId = IdentifierFactory.getInstance().generateIdentifier();
+      final AddressEntry secondAddress = TestUtils.getHomeAddress();
+      secondAddress.setId(addressId);
+      secondAddress.setPrimary(false);
+      secondAddress.setAddressType(AddressType.VACATION);
+      person.addAddress(secondAddress);
+
+      final AddressResource resource = TestUtils.newAddressResource();
+      resource.setId(addressId);
+      resource.setPrimary(true);
+      resource.setType(AddressType.VACATION);
+      resource.setPersonId(person.getId());
+
+      Mockito.when(personQueryRepository.checkAddressExists(addressId)).thenReturn(true);
+      Mockito.when(personQueryRepository.findOne(person.getId())).thenReturn(person);
+      Mockito.when(
+         personQueryRepository.updateAddress(resource.getType(), resource.getAddress1(), resource
+            .getCity(), resource.getRegion(), resource.getPersonId(), resource.getId())).thenReturn(
+         0);
+      Mockito.when(postalCodeValidator.isValid(resource.getPostalCode())).thenReturn(true);
+
+      final BindException errors = new BindException(resource, "addressResource");
+      ValidationUtils.invokeValidator(validator, resource, errors);
       assertTrue(errors.hasErrors());
    }
 
@@ -192,6 +324,29 @@ public class AddressFormValidatorTests {
 
       final BindException errors = new BindException(form, "addressForm");
       ValidationUtils.invokeValidator(validator, form, errors);
+      assertTrue(errors.hasErrors());
+   }
+
+   @Test
+   public void updateAddressResourceWithInvalidPostalCode() {
+      final PersonEntry person = TestUtils.getPersonWithPrimaryAddress();
+      final String addressId = person.getAddresses().get(0).getId();
+
+      final AddressResource resource = TestUtils.newAddressResource();
+      resource.setId(addressId);
+      resource.setPrimary(false);
+      resource.setPersonId(person.getId());
+
+      Mockito.when(personQueryRepository.checkAddressExists(addressId)).thenReturn(true);
+      Mockito.when(personQueryRepository.findOne(person.getId())).thenReturn(person);
+      Mockito.when(
+         personQueryRepository.updateAddress(resource.getType(), resource.getAddress1(), resource
+            .getCity(), resource.getRegion(), resource.getPersonId(), resource.getId())).thenReturn(
+         0);
+      Mockito.when(postalCodeValidator.isValid(resource.getPostalCode())).thenReturn(false);
+
+      final BindException errors = new BindException(resource, "addressResource");
+      ValidationUtils.invokeValidator(validator, resource, errors);
       assertTrue(errors.hasErrors());
    }
 

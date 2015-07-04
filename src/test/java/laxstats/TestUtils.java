@@ -30,6 +30,7 @@ import laxstats.query.teams.TeamEntry;
 import laxstats.query.violations.ViolationEntry;
 import laxstats.web.games.GameForm;
 import laxstats.web.people.AddressForm;
+import laxstats.web.people.AddressResource;
 import laxstats.web.people.ContactForm;
 import laxstats.web.people.PersonForm;
 import laxstats.web.players.PlayerForm;
@@ -74,6 +75,135 @@ public class TestUtils {
          }
       }
       return hasOnlyWhitespace;
+   }
+
+   /*---------- Resources ----------*/
+
+   /**
+    * Returns a completed {@code AddressResource} for a new address.
+    *
+    * @return
+    */
+   public static AddressResource newAddressResource() {
+      final AddressResource resource = new AddressResource();
+      resource.setAddress1("340 Tall Pine Drive");
+      resource.setAddress2("Unit 32");
+      resource.setCity("Sudbury");
+      resource.setPersonId("person");
+      resource.setPostalCode("01776-4616");
+      resource.setPrimary(true);
+      resource.setRegion(Region.MA);
+      resource.setType(AddressType.HOME);
+      return resource;
+   }
+
+   /**
+    * Returns a complete {@code PlayerResource} for a new player. NOTE: The person and the team
+    * season must be applied.
+    *
+    * @return
+    */
+   public static PlayerResource newPlayerResource() {
+      final PlayerResource resource = new PlayerResource();
+      resource.setCaptain(false);
+      resource.setJerseyNumber("18");
+      resource.setPosition(Position.ATTACK);
+      return resource;
+   }
+
+   /**
+    * Returns a completed {@code SeasonResource} for a new season.
+    *
+    * @return
+    */
+   public static SeasonResource newSeasonResource() {
+      final SeasonResource resource = new SeasonResource();
+      resource.setDescription("2014-2015 Season");
+      resource.setStartsOn("2014-07-01");
+      resource.setEndsOn("2015-06-30");
+      return resource;
+   }
+
+   /**
+    * Returns a completed {@code SiteResource} for a new site.
+    *
+    * @return
+    */
+   public static SiteResource newSiteResource() {
+      final SiteResource resource = new SiteResource();
+      resource.setAddress1("40 Rice Street");
+      resource.setCity("Wellesley");
+      resource.setName("Wellesley High School");
+      resource.setPostalCode("02482");
+      resource.setRegion(Region.MA);
+      resource.setStyle(SiteStyle.COMPETITION);
+      resource.setSurface(Surface.GRASS);
+      return resource;
+   }
+
+   /**
+    * Returns a completed {@code TeamResource} for a new team. NOTE: The home site is null.
+    *
+    * @return
+    */
+   public static TeamResource newTeamResource() {
+      final TeamResource resource = new TeamResource();
+      resource.setAbbreviation("WHS");
+      resource.setGender(TeamGender.BOYS);
+      resource.setLetter(Letter.VARSITY);
+      resource.setName("Wellesley Raiders");
+      resource.setRegion(Region.MA);
+      resource.setSponsor("Wellesley High School");
+      return resource;
+   }
+
+   /**
+    * Returns a completed {@code TeamSeasonResurce} for a new team season.
+    *
+    * @return
+    */
+   public static TeamSeasonResource newTeamSeasonResource() {
+      final TeamEntry team = getExistingTeam();
+      final SeasonEntry season = getExistingSeason();
+
+      final TeamSeasonResource resource = new TeamSeasonResource();
+      resource.setEndsOn("2014-06-30");
+      resource.setName("Wellesley Raiders");
+      resource.setSeason(season.getId());
+      resource.setStartsOn("2013-07-01");
+      resource.setStatus(TeamStatus.ACTIVE);
+      resource.setTeam(team.getId());
+      return resource;
+   }
+
+   /**
+    * Returns a completed {@code UserResource} for a new user.
+    *
+    * @return
+    */
+   public static UserResource newUserResource() {
+      final UserResource resource = new UserResource();
+      resource.setEmail("john@example.com");
+      resource.setEnabled(true);
+      resource.setFirstName("John");
+      resource.setLastName("Doe");
+      resource.setPassword("user");
+      return resource;
+   }
+
+   /**
+    * Returns a completed {@code ViolationResource} for a new violation.
+    *
+    * @return
+    */
+   public static ViolationResource newViolationResource() {
+      final ViolationResource resource = new ViolationResource();
+      resource.setCategory(PenaltyCategory.PERSONAL_FOUL);
+      resource.setDescription("This is a slash");
+      resource.setName("Slash");
+      resource.setPenaltyLength(PenaltyLength.ONE_MINUTE);
+      resource.setReleasable(true);
+      return resource;
    }
 
    /*---------- Forms ----------*/
@@ -148,20 +278,6 @@ public class TestUtils {
    }
 
    /**
-    * Returns a complete {@code PlayerResource} for a new player. NOTE: The person and the team
-    * season must be applied.
-    *
-    * @return
-    */
-   public static PlayerResource newPlayerResource() {
-      final PlayerResource resource = new PlayerResource();
-      resource.setCaptain(false);
-      resource.setJerseyNumber("18");
-      resource.setPosition(Position.ATTACK);
-      return resource;
-   }
-
-   /**
     * Returns a complete {@code PlayerForm} for a new player. NOTE: The person and the team season
     * must be applied.
     *
@@ -176,19 +292,6 @@ public class TestUtils {
    }
 
    /**
-    * Returns a completed {@code SeasonResource} for a new season.
-    *
-    * @return
-    */
-   public static SeasonResource newSeasonResource() {
-      final SeasonResource resource = new SeasonResource();
-      resource.setDescription("2014-2015 Season");
-      resource.setStartsOn("2014-07-01");
-      resource.setEndsOn("2015-06-30");
-      return resource;
-   }
-
-   /**
     * Returns a completed {@code SeasonForm} for a new season.
     *
     * @return
@@ -199,23 +302,6 @@ public class TestUtils {
       form.setStartsOn(LocalDate.parse("2014-07-01"));
       form.setEndsOn(LocalDate.parse("2015-06-30"));
       return form;
-   }
-
-   /**
-    * Returns a completed {@code SiteResource} for a new site.
-    *
-    * @return
-    */
-   public static SiteResource newSiteResource() {
-      final SiteResource resource = new SiteResource();
-      resource.setAddress1("40 Rice Street");
-      resource.setCity("Wellesley");
-      resource.setName("Wellesley High School");
-      resource.setPostalCode("02482");
-      resource.setRegion(Region.MA);
-      resource.setStyle(SiteStyle.COMPETITION);
-      resource.setSurface(Surface.GRASS);
-      return resource;
    }
 
    /**
@@ -236,22 +322,6 @@ public class TestUtils {
    }
 
    /**
-    * Returns a completed {@code TeamResource} for a new team. NOTE: The home site is null.
-    *
-    * @return
-    */
-   public static TeamResource newTeamResource() {
-      final TeamResource resource = new TeamResource();
-      resource.setAbbreviation("WHS");
-      resource.setGender(TeamGender.BOYS);
-      resource.setLetter(Letter.VARSITY);
-      resource.setName("Wellesley Raiders");
-      resource.setRegion(Region.MA);
-      resource.setSponsor("Wellesley High School");
-      return resource;
-   }
-
-   /**
     * Returns a completed {@code TeamForm} for a new team. NOTE: The home site is null.
     *
     * @return
@@ -265,25 +335,6 @@ public class TestUtils {
       form.setRegion(Region.MA);
       form.setSponsor("Wellesley High School");
       return form;
-   }
-
-   /**
-    * Returns a completed {@code TeamSeasonResurce} for a new team season.
-    *
-    * @return
-    */
-   public static TeamSeasonResource newTeamSeasonResource() {
-      final TeamEntry team = getExistingTeam();
-      final SeasonEntry season = getExistingSeason();
-
-      final TeamSeasonResource resource = new TeamSeasonResource();
-      resource.setEndsOn("2014-06-30");
-      resource.setName("Wellesley Raiders");
-      resource.setSeason(season.getId());
-      resource.setStartsOn("2013-07-01");
-      resource.setStatus(TeamStatus.ACTIVE);
-      resource.setTeam(team.getId());
-      return resource;
    }
 
    /**
@@ -321,21 +372,6 @@ public class TestUtils {
    }
 
    /**
-    * Returns a completed {@code UserResource} for a new user.
-    *
-    * @return
-    */
-   public static UserResource newUserResource() {
-      final UserResource resource = new UserResource();
-      resource.setEmail("john@example.com");
-      resource.setEnabled(true);
-      resource.setFirstName("John");
-      resource.setLastName("Doe");
-      resource.setPassword("user");
-      return resource;
-   }
-
-   /**
     * Returns a completed {@code ViolationForm} for a new violation.
     *
     * @return
@@ -348,21 +384,6 @@ public class TestUtils {
       form.setPenaltyLength(PenaltyLength.ONE_MINUTE);
       form.setReleasable(true);
       return form;
-   }
-
-   /**
-    * Returns a completed {@code ViolationResource} for a new violation.
-    *
-    * @return
-    */
-   public static ViolationResource newViolationResource() {
-      final ViolationResource resource = new ViolationResource();
-      resource.setCategory(PenaltyCategory.PERSONAL_FOUL);
-      resource.setDescription("This is a slash");
-      resource.setName("Slash");
-      resource.setPenaltyLength(PenaltyLength.ONE_MINUTE);
-      resource.setReleasable(true);
-      return resource;
    }
 
    /*---------- Entities ----------*/

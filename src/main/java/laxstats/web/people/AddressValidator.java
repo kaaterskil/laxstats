@@ -17,9 +17,9 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 @Service
-public class AddressFormValidator implements Validator {
-   private static final Logger logger = LoggerFactory.getLogger(AddressFormValidator.class);
-   private static final String PACKAGE_NAME = AddressFormValidator.class.getPackage().getName();
+public class AddressValidator implements Validator {
+   private static final Logger logger = LoggerFactory.getLogger(AddressValidator.class);
+   private static final String PACKAGE_NAME = AddressValidator.class.getPackage().getName();
 
    @Autowired
    private PersonQueryRepository personRepository;
@@ -33,30 +33,29 @@ public class AddressFormValidator implements Validator {
 
    @Override
    public boolean supports(Class<?> clazz) {
-      return AddressForm.class.equals(clazz);
+      return AddressResource.class.equals(clazz) || AddressForm.class.equals(clazz);
    }
 
    @Override
    public void validate(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".validate.";
-      final AddressForm form = (AddressForm)target;
 
       logger.debug("Entering: " + proc + "10");
 
       // Validate mandatory arguments
-      checkMandatoryArgs(form, errors);
+      checkMandatoryArgs(target, errors);
       logger.debug(proc + "20");
 
       // Validate type/street/city/region combination
-      checkDuplicate(form, errors);
+      checkDuplicate(target, errors);
       logger.debug(proc + "30");
 
       // Validate primary designation
-      checkPrimary(form, errors);
+      checkPrimary(target, errors);
       logger.debug(proc + "40");
 
       // Validate postal code
-      checkZipCode(form, errors);
+      checkZipCode(target, errors);
       logger.debug("Leaving: " + proc + "50");
    }
 
@@ -66,17 +65,30 @@ public class AddressFormValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkMandatoryArgs(AddressForm form, Errors errors) {
+   private void checkMandatoryArgs(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkMandatoryArgs.";
+      AddressType type = null;
+      String city = null;
+
+      if (target instanceof AddressResource) {
+         final AddressResource resource = (AddressResource)target;
+         type = resource.getType();
+         city = resource.getCity();
+      }
+      else if (target instanceof AddressForm) {
+         final AddressForm form = (AddressForm)target;
+         type = form.getType();
+         city = form.getCity();
+      }
 
       logger.debug("Entering: " + proc + "10");
 
-      if (form.getType() == null) {
+      if (type == null) {
          errors.rejectValue("type", "address.type.required");
       }
       logger.debug(proc + "20");
 
-      if (TestUtils.isEmptyOrWhitespace(form.getCity())) {
+      if (TestUtils.isEmptyOrWhitespace(city)) {
          errors.rejectValue("city", "address.city.required");
       }
       logger.debug("Leaving: " + proc + "30");
@@ -89,15 +101,34 @@ public class AddressFormValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkDuplicate(AddressForm form, Errors errors) {
+   private void checkDuplicate(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkDuplicate.";
-      final String addressId = form.getId();
-      final AddressType type = form.getType();
-      final String address1 = form.getAddress1();
-      final String city = form.getCity();
-      final Region region = form.getRegion();
-      final String personId = form.getPersonId();
+      String addressId = null;
+      AddressType type = null;
+      String address1 = null;
+      String city = null;
+      Region region = null;
+      String personId = null;
       int found = 0;
+
+      if (target instanceof AddressResource) {
+         final AddressResource resource = (AddressResource)target;
+         addressId = resource.getId();
+         personId = resource.getPersonId();
+         type = resource.getType();
+         address1 = resource.getAddress1();
+         city = resource.getCity();
+         region = resource.getRegion();
+      }
+      else if (target instanceof AddressForm) {
+         final AddressForm form = (AddressForm)target;
+         addressId = form.getId();
+         personId = form.getPersonId();
+         type = form.getType();
+         address1 = form.getAddress1();
+         city = form.getCity();
+         region = form.getRegion();
+      }
 
       logger.debug("Entering: " + proc + "10");
 
@@ -142,11 +173,24 @@ public class AddressFormValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkPrimary(AddressForm form, Errors errors) {
+   private void checkPrimary(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkPrimary.";
-      final String addressId = form.getId();
-      final String personId = form.getPersonId();
-      final boolean isPrimary = form.isPrimary();
+      String addressId = null;
+      String personId = null;
+      boolean isPrimary = false;
+
+      if (target instanceof AddressResource) {
+         final AddressResource resource = (AddressResource)target;
+         addressId = resource.getId();
+         personId = resource.getPersonId();
+         isPrimary = resource.isPrimary();
+      }
+      else if (target instanceof AddressForm) {
+         final AddressForm form = (AddressForm)target;
+         addressId = form.getId();
+         personId = form.getPersonId();
+         isPrimary = form.isPrimary();
+      }
 
       logger.debug("Entering: " + proc + "10");
 
@@ -191,11 +235,24 @@ public class AddressFormValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkZipCode(AddressForm form, Errors errors) {
+   private void checkZipCode(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkZipCode.";
-      final String addressId = form.getId();
-      final String personId = form.getPersonId();
-      final String postalCode = form.getPostalCode();
+      String addressId = null;
+      String personId = null;
+      String postalCode = null;
+
+      if (target instanceof AddressResource) {
+         final AddressResource resource = (AddressResource)target;
+         addressId = resource.getId();
+         personId = resource.getPersonId();
+         postalCode = resource.getPostalCode();
+      }
+      else if (target instanceof AddressForm) {
+         final AddressForm form = (AddressForm)target;
+         addressId = form.getId();
+         personId = form.getPersonId();
+         postalCode = form.getPostalCode();
+      }
 
       logger.debug("Entering: " + proc + "10");
 
