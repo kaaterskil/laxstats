@@ -17,9 +17,9 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 @Service
-public class TeamFormValidator implements Validator {
-   private static final Logger logger = LoggerFactory.getLogger(TeamFormValidator.class);
-   private static final String PACKAGE_NAME = TeamFormValidator.class.getPackage().getName();
+public class TeamValidator implements Validator {
+   private static final Logger logger = LoggerFactory.getLogger(TeamValidator.class);
+   private static final String PACKAGE_NAME = TeamValidator.class.getPackage().getName();
 
    @Autowired
    private TeamQueryRepository teamRepository;
@@ -29,26 +29,25 @@ public class TeamFormValidator implements Validator {
 
    @Override
    public boolean supports(Class<?> clazz) {
-      return TeamForm.class.equals(clazz);
+      return TeamResource.class.equals(clazz) || TeamForm.class.equals(clazz);
    }
 
    @Override
    public void validate(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".validate.";
-      final TeamForm form = (TeamForm)target;
 
       logger.debug("Entering: " + proc + "10");
 
       // Validate mandatory arguments
-      checkMandatoryArgs(form, errors);
+      checkMandatoryArgs(target, errors);
       logger.debug(proc + "20");
 
       // Validate team/sponsor/gender/letter combination
-      checkTeam(form, errors);
+      checkTeam(target, errors);
       logger.debug(proc + "30");
 
       // Validate home site
-      checkHomeSite(form, errors);
+      checkHomeSite(target, errors);
 
       logger.debug("Leaving: " + proc + "40");
    }
@@ -59,32 +58,54 @@ public class TeamFormValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkMandatoryArgs(TeamForm form, Errors errors) {
+   private void checkMandatoryArgs(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkMandatoryArgs.";
+      String sponsor = null;
+      String name = null;
+      TeamGender gender = null;
+      Letter letter = null;
+      Region region = null;
+
+      if (target instanceof TeamResource) {
+         final TeamResource resource = (TeamResource)target;
+         sponsor = resource.getSponsor();
+         name = resource.getName();
+         gender = resource.getGender();
+         letter = resource.getLetter();
+         region = resource.getRegion();
+      }
+      else if (target instanceof TeamForm) {
+         final TeamForm form = (TeamForm)target;
+         sponsor = form.getSponsor();
+         name = form.getName();
+         gender = form.getGender();
+         letter = form.getLetter();
+         region = form.getRegion();
+      }
 
       logger.debug("Entering: " + proc + "10");
 
-      if (TestUtils.isEmptyOrWhitespace(form.getSponsor())) {
+      if (TestUtils.isEmptyOrWhitespace(sponsor)) {
          errors.rejectValue("sponsor", "team.sponsor.required");
       }
       logger.debug(proc + "20");
 
-      if (TestUtils.isEmptyOrWhitespace(form.getName())) {
+      if (TestUtils.isEmptyOrWhitespace(name)) {
          errors.rejectValue("name", "team.name.required");
       }
       logger.debug(proc + "30");
 
-      if (form.getGender() == null) {
+      if (gender == null) {
          errors.rejectValue("gender", "team.gender.required");
       }
       logger.debug(proc + "40");
 
-      if (form.getLetter() == null) {
+      if (letter == null) {
          errors.rejectValue("letter", "team.letter.required");
       }
       logger.debug(proc + "50");
 
-      if (form.getRegion() == null) {
+      if (region == null) {
          errors.rejectValue("region", "team.region.required");
       }
 
@@ -97,14 +118,31 @@ public class TeamFormValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkTeam(TeamForm form, Errors errors) {
+   private void checkTeam(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkTeam.";
-      final String teamId = form.getId();
-      final String sponsor = form.getSponsor();
-      final String name = form.getName();
-      final TeamGender gender = form.getGender();
-      final Letter letter = form.getLetter();
+      String teamId = null;
+      String sponsor = null;
+      String name = null;
+      TeamGender gender = null;
+      Letter letter = null;
       int found = 0;
+
+      if (target instanceof TeamResource) {
+         final TeamResource resource = (TeamResource)target;
+         teamId = resource.getId();
+         sponsor = resource.getSponsor();
+         name = resource.getName();
+         gender = resource.getGender();
+         letter = resource.getLetter();
+      }
+      else if (target instanceof TeamForm) {
+         final TeamForm form = (TeamForm)target;
+         teamId = form.getId();
+         sponsor = form.getSponsor();
+         name = form.getName();
+         gender = form.getGender();
+         letter = form.getLetter();
+      }
 
       logger.debug("Entering: " + proc + "10");
 
@@ -116,7 +154,7 @@ public class TeamFormValidator implements Validator {
          logger.debug(proc + "30");
 
          if (!team.getSponsor().equals(sponsor) || !team.getName().equals(name) ||
-                  !team.getGender().equals(gender) || !team.getLetter().equals(letter)) {
+            !team.getGender().equals(gender) || !team.getLetter().equals(letter)) {
             logger.debug(proc + "40");
 
             found = teamRepository.updateTeam(sponsor, name, gender, letter, teamId);
@@ -141,11 +179,24 @@ public class TeamFormValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkHomeSite(TeamForm form, Errors errors) {
+   private void checkHomeSite(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkHomeSite.";
-      final String teamId = form.getId();
-      final Region region = form.getRegion();
-      final String siteId = form.getHomeSite();
+      String teamId = null;
+      Region region = null;
+      String siteId = null;
+
+      if (target instanceof TeamResource) {
+         final TeamResource resource = (TeamResource)target;
+         teamId = resource.getId();
+         region = resource.getRegion();
+         siteId = resource.getHomeSite();
+      }
+      else if (target instanceof TeamForm) {
+         final TeamForm form = (TeamForm)target;
+         teamId = form.getId();
+         region = form.getRegion();
+         siteId = form.getHomeSite();
+      }
 
       logger.debug("Entering: " + proc + "10");
 
@@ -165,7 +216,7 @@ public class TeamFormValidator implements Validator {
 
                final TeamEntry team = teamRepository.findOne(teamId);
                if ((team.getHomeSite() == null || !team.getHomeSite().equals(site)) &&
-                        !region.equals(siteRegion)) {
+                  !region.equals(siteRegion)) {
                   errors.rejectValue("homeSite", "team.homeSite.invalid");
                }
             }

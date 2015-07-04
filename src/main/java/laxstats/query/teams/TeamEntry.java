@@ -49,10 +49,10 @@ public class TeamEntry implements Serializable {
    @Column(length = Constants.MAX_LENGTH_DATABASE_KEY)
    private String id;
 
-   @Column(length = 100, nullable = false)
+   @Column(length = Constants.MAX_LENGTH_TITLE, nullable = false)
    private String sponsor;
 
-   @Column(length = 100, nullable = false)
+   @Column(length = Constants.MAX_LENGTH_TITLE, nullable = false)
    private String name;
 
    @Column(length = 5)

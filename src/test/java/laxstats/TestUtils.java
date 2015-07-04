@@ -38,6 +38,7 @@ import laxstats.web.sites.SiteForm;
 import laxstats.web.teamSeasons.TeamSeasonForm;
 import laxstats.web.teamSeasons.TeamSeasonResource;
 import laxstats.web.teams.TeamForm;
+import laxstats.web.teams.TeamResource;
 import laxstats.web.users.UserForm;
 import laxstats.web.users.UserResource;
 import laxstats.web.violations.ViolationForm;
@@ -185,6 +186,22 @@ public class TestUtils {
       form.setStyle(SiteStyle.COMPETITION);
       form.setSurface(Surface.GRASS);
       return form;
+   }
+
+   /**
+    * Returns a completed {@code TeamResource} for a new team. NOTE: The home site is null.
+    *
+    * @return
+    */
+   public static TeamResource newTeamResource() {
+      final TeamResource resource = new TeamResource();
+      resource.setAbbreviation("WHS");
+      resource.setGender(TeamGender.BOYS);
+      resource.setLetter(Letter.VARSITY);
+      resource.setName("Wellesley Raiders");
+      resource.setRegion(Region.MA);
+      resource.setSponsor("Wellesley High School");
+      return resource;
    }
 
    /**

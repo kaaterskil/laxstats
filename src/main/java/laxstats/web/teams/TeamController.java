@@ -42,7 +42,7 @@ public class TeamController extends ApplicationController {
 	private final TeamQueryRepository teamRepository;
 	private final SiteQueryRepository siteRepository;
 	private final LeagueQueryRepository leagueRepository;
-	private TeamFormValidator teamValidator;
+	private TeamValidator teamValidator;
 
 	@InitBinder("TeamForm")
 	protected void initBinder(WebDataBinder binder) {
@@ -61,7 +61,7 @@ public class TeamController extends ApplicationController {
 	}
 
 	@Autowired
-	public void setTeamValidator(TeamFormValidator teamValidator) {
+	public void setTeamValidator(TeamValidator teamValidator) {
 		this.teamValidator = teamValidator;
 	}
 
