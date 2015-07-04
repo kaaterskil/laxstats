@@ -22,18 +22,18 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.ValidationUtils;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SeasonFormValidatorTests {
+public class SeasonValidatorTests {
 
    @Mock
    SeasonQueryRepository seasonQueryRepository;
 
    @InjectMocks
-   private final SeasonFormValidator validator = new SeasonFormValidator();
+   private final SeasonValidator validator = new SeasonValidator();
 
    @Test
    public void supports() {
       assertTrue(validator.supports(SeasonForm.class));
-      assertTrue(validator.supports(SeasonInfo.class));
+      assertTrue(validator.supports(SeasonResource.class));
       assertFalse(validator.supports(Object.class));
    }
 
@@ -53,14 +53,11 @@ public class SeasonFormValidatorTests {
    }
 
    @Test
-   public void newRESTSeasonIsValid() {
-      final SeasonInfo dto = new SeasonInfo();
-      dto.setDescription("2003-2004 Season");
-      dto.setStartsOn("2003-07-01");
-      dto.setEndsOn("2004-06-30");
+   public void newSeasonResourceIsValid() {
+      final SeasonResource resource = TestUtils.newSeasonResource();
 
-      final BindException errors = new BindException(dto, "seasonInfo");
-      ValidationUtils.invokeValidator(validator, dto, errors);
+      final BindException errors = new BindException(resource, "seasonResource");
+      ValidationUtils.invokeValidator(validator, resource, errors);
       assertFalse(errors.hasErrors());
    }
 
@@ -69,8 +66,15 @@ public class SeasonFormValidatorTests {
       final SeasonForm form = TestUtils.newSeasonForm();
       form.setDescription(null);
 
-      final BindException errors = new BindException(form, "seasonForm");
+      final SeasonResource resource = TestUtils.newSeasonResource();
+      resource.setDescription(null);
+
+      BindException errors = new BindException(form, "seasonForm");
       ValidationUtils.invokeValidator(validator, form, errors);
+      assertTrue(errors.hasErrors());
+
+      errors = new BindException(resource, "seasonrResource");
+      ValidationUtils.invokeValidator(validator, resource, errors);
       assertTrue(errors.hasErrors());
    }
 
@@ -79,8 +83,15 @@ public class SeasonFormValidatorTests {
       final SeasonForm form = TestUtils.newSeasonForm();
       form.setStartsOn(null);
 
-      final BindException errors = new BindException(form, "seasonForm");
+      final SeasonResource resource = TestUtils.newSeasonResource();
+      resource.setStartsOn(null);
+
+      BindException errors = new BindException(form, "seasonForm");
       ValidationUtils.invokeValidator(validator, form, errors);
+      assertTrue(errors.hasErrors());
+
+      errors = new BindException(resource, "seasonResource");
+      ValidationUtils.invokeValidator(validator, resource, errors);
       assertTrue(errors.hasErrors());
    }
 
@@ -89,8 +100,15 @@ public class SeasonFormValidatorTests {
       final SeasonForm form = TestUtils.newSeasonForm();
       form.setEndsOn(null);
 
-      final BindException errors = new BindException(form, "seasonForm");
+      final SeasonResource resource = TestUtils.newSeasonResource();
+      resource.setEndsOn(null);
+
+      BindException errors = new BindException(form, "seasonForm");
       ValidationUtils.invokeValidator(validator, form, errors);
+      assertFalse(errors.hasErrors());
+
+      errors = new BindException(resource, "seasonResource");
+      ValidationUtils.invokeValidator(validator, resource, errors);
       assertFalse(errors.hasErrors());
    }
 
@@ -99,8 +117,29 @@ public class SeasonFormValidatorTests {
       final SeasonForm form = TestUtils.newSeasonForm();
       form.setEndsOn(LocalDate.parse("2014-07-01"));
 
-      final BindException errors = new BindException(form, "seasonForm");
+      final SeasonResource resource = TestUtils.newSeasonResource();
+      resource.setEndsOn("2014-07-01");
+
+      BindException errors = new BindException(form, "seasonForm");
       ValidationUtils.invokeValidator(validator, form, errors);
+      assertTrue(errors.hasErrors());
+
+      errors = new BindException(resource, "seasonResource");
+      ValidationUtils.invokeValidator(validator, resource, errors);
+      assertTrue(errors.hasErrors());
+   }
+
+   @Test
+   public void newSeasonResourceInvalidDates() {
+      final List<SeasonEntry> list = new ArrayList<SeasonEntry>();
+      list.add(TestUtils.getExistingSeason());
+      Mockito.when(seasonQueryRepository.findAll()).thenReturn(list);
+
+      final SeasonResource resource = TestUtils.newSeasonResource();
+      resource.setStartsOn("2014-06-01");
+
+      final BindException errors = new BindException(resource, "seasonResource");
+      ValidationUtils.invokeValidator(validator, resource, errors);
       assertTrue(errors.hasErrors());
    }
 
@@ -121,6 +160,24 @@ public class SeasonFormValidatorTests {
    /*---------- Existing Season Tests ----------*/
 
    @Test
+   public void existingSeasonResourceIsValid() {
+      final String id = IdentifierFactory.getInstance().generateIdentifier();
+
+      final SeasonResource resource = TestUtils.newSeasonResource();
+      resource.setDescription("2014-2015 Updated Season");
+      resource.setId(id);
+
+      Mockito.when(seasonQueryRepository.exists(id)).thenReturn(true);
+      Mockito.when(seasonQueryRepository.updateDescription(resource.getDescription(), id))
+         .thenReturn(0);
+      Mockito.when(seasonQueryRepository.findOne(id)).thenReturn(TestUtils.getSeason());
+
+      final BindException errors = new BindException(resource, "seasonResource");
+      ValidationUtils.invokeValidator(validator, resource, errors);
+      assertFalse(errors.hasErrors());
+   }
+
+   @Test
    public void existingSeasonIsValid() {
       final String id = IdentifierFactory.getInstance().generateIdentifier();
 
@@ -138,6 +195,24 @@ public class SeasonFormValidatorTests {
    }
 
    @Test
+   public void existingSeasonResourceMissingDescription() {
+      final String id = IdentifierFactory.getInstance().generateIdentifier();
+
+      final SeasonResource resource = TestUtils.newSeasonResource();
+      resource.setDescription(null);
+      resource.setId(id);
+
+      Mockito.when(seasonQueryRepository.exists(id)).thenReturn(true);
+      Mockito.when(seasonQueryRepository.updateDescription(resource.getDescription(), id))
+         .thenReturn(0);
+      Mockito.when(seasonQueryRepository.findOne(id)).thenReturn(TestUtils.getSeason());
+
+      final BindException errors = new BindException(resource, "seasonResource");
+      ValidationUtils.invokeValidator(validator, resource, errors);
+      assertTrue(errors.hasErrors());
+   }
+
+   @Test
    public void existingSeasonMissingDescription() {
       final String id = IdentifierFactory.getInstance().generateIdentifier();
 
@@ -151,6 +226,24 @@ public class SeasonFormValidatorTests {
 
       final BindException errors = new BindException(form, "seasonForm");
       ValidationUtils.invokeValidator(validator, form, errors);
+      assertTrue(errors.hasErrors());
+   }
+
+   @Test
+   public void existingSeasonResourceMissingStartingDate() {
+      final String id = IdentifierFactory.getInstance().generateIdentifier();
+
+      final SeasonResource resource = TestUtils.newSeasonResource();
+      resource.setStartsOn(null);
+      resource.setId(id);
+
+      Mockito.when(seasonQueryRepository.exists(id)).thenReturn(true);
+      Mockito.when(seasonQueryRepository.updateDescription(resource.getDescription(), id))
+         .thenReturn(0);
+      Mockito.when(seasonQueryRepository.findOne(id)).thenReturn(TestUtils.getSeason());
+
+      final BindException errors = new BindException(resource, "seasonResource");
+      ValidationUtils.invokeValidator(validator, resource, errors);
       assertTrue(errors.hasErrors());
    }
 
@@ -172,6 +265,24 @@ public class SeasonFormValidatorTests {
    }
 
    @Test
+   public void existingSeasonResourceDuplicateDescription() {
+      final String id = IdentifierFactory.getInstance().generateIdentifier();
+
+      final SeasonResource resource = TestUtils.newSeasonResource();
+      resource.setDescription("This is a duplicate description");
+      resource.setId(id);
+
+      Mockito.when(seasonQueryRepository.exists(id)).thenReturn(true);
+      Mockito.when(seasonQueryRepository.updateDescription(resource.getDescription(), id))
+         .thenReturn(1);
+      Mockito.when(seasonQueryRepository.findOne(id)).thenReturn(TestUtils.getSeason());
+
+      final BindException errors = new BindException(resource, "seasonResource");
+      ValidationUtils.invokeValidator(validator, resource, errors);
+      assertTrue(errors.hasErrors());
+   }
+
+   @Test
    public void existingSeasonDuplicateDescription() {
       final String id = IdentifierFactory.getInstance().generateIdentifier();
 
@@ -185,6 +296,24 @@ public class SeasonFormValidatorTests {
 
       final BindException errors = new BindException(form, "seasonForm");
       ValidationUtils.invokeValidator(validator, form, errors);
+      assertTrue(errors.hasErrors());
+   }
+
+   @Test
+   public void existingSeasonResourceInvalidEndDate() {
+      final String id = IdentifierFactory.getInstance().generateIdentifier();
+
+      final SeasonResource resource = TestUtils.newSeasonResource();
+      resource.setEndsOn("2014-07-01");
+      resource.setId(id);
+
+      Mockito.when(seasonQueryRepository.exists(id)).thenReturn(true);
+      Mockito.when(seasonQueryRepository.updateDescription(resource.getDescription(), id))
+         .thenReturn(0);
+      Mockito.when(seasonQueryRepository.findOne(id)).thenReturn(TestUtils.getSeason());
+
+      final BindException errors = new BindException(resource, "seasonResource");
+      ValidationUtils.invokeValidator(validator, resource, errors);
       assertTrue(errors.hasErrors());
    }
 

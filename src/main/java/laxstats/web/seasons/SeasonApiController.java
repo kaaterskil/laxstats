@@ -5,6 +5,18 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import laxstats.api.seasons.CreateSeason;
+import laxstats.api.seasons.DeleteSeason;
+import laxstats.api.seasons.SeasonDTO;
+import laxstats.api.seasons.SeasonId;
+import laxstats.api.seasons.UpdateSeason;
+import laxstats.api.utils.Common;
+import laxstats.query.seasons.SeasonEntry;
+import laxstats.query.seasons.SeasonQueryRepository;
+import laxstats.query.users.UserEntry;
+import laxstats.query.users.UserQueryRepository;
+import laxstats.web.ApplicationController;
+
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.commandhandling.GenericCommandMessage;
 import org.joda.time.LocalDate;
@@ -21,18 +33,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import laxstats.api.seasons.CreateSeason;
-import laxstats.api.seasons.DeleteSeason;
-import laxstats.api.seasons.SeasonDTO;
-import laxstats.api.seasons.SeasonId;
-import laxstats.api.seasons.UpdateSeason;
-import laxstats.api.utils.Common;
-import laxstats.query.seasons.SeasonEntry;
-import laxstats.query.seasons.SeasonQueryRepository;
-import laxstats.query.users.UserEntry;
-import laxstats.query.users.UserQueryRepository;
-import laxstats.web.ApplicationController;
-
 /**
  * Controller for API calls
  */
@@ -40,9 +40,10 @@ import laxstats.web.ApplicationController;
 @RequestMapping(value = "/admin/api/seasons")
 public class SeasonApiController extends ApplicationController {
    private final SeasonQueryRepository seasonRepository;
+   private final Sort seasonSort = new Sort(Direction.DESC, "startsOn");
 
    @Autowired
-   private SeasonFormValidator seasonValidator;
+   private SeasonValidator seasonValidator;
 
    @Autowired
    public SeasonApiController(SeasonQueryRepository seasonRepository,
@@ -51,7 +52,7 @@ public class SeasonApiController extends ApplicationController {
       this.seasonRepository = seasonRepository;
    }
 
-   @InitBinder(value = "SeasonInfo")
+   @InitBinder(value = "SeasonResource")
    protected void initBinder(WebDataBinder binder) {
       binder.setValidator(seasonValidator);
    }
@@ -59,36 +60,34 @@ public class SeasonApiController extends ApplicationController {
    /*---------- Action methods ----------*/
 
    /**
-    * GET Returns a collection of {@code SeasonInfo} objects sorted by starting date in descending
-    * order.
+    * GET Returns a collection of seasons sorted by starting date in descending order.
     *
     * @return
     */
    @RequestMapping(method = RequestMethod.GET)
-   public List<SeasonInfo> seasonIndex() {
-      final Iterable<SeasonEntry> seasons =
-         seasonRepository.findAll(new Sort(Direction.DESC, "startsOn"));
+   public List<SeasonResource> seasonIndex() {
+      final Iterable<SeasonEntry> seasons = seasonRepository.findAll(seasonSort);
 
-      final List<SeasonInfo> list = new ArrayList<SeasonInfo>();
+      final List<SeasonResource> list = new ArrayList<SeasonResource>();
       for (final SeasonEntry each : seasons) {
-         final SeasonInfo resource = new SeasonInfo(each.getId(), each.getDescription(),
-            each.getStartsOn().toString(), each.getEndsOn().toString());
+         final SeasonResource resource =
+            new SeasonResource(each.getId(), each.getDescription(), each.getStartsOn().toString(),
+               each.getEndsOn().toString());
          list.add(resource);
       }
       return list;
    }
 
    /**
-    * GET Returns a {@code SeasonInfo} representing a {@code SeasonEntry} corresponding to the given
-    * primary key.
+    * GET Returns a {@code SeasonResource} matching the given primary key.
     *
     * @param season
     * @return
     */
    @RequestMapping(value = "/{seasonId}", method = RequestMethod.GET)
-   public SeasonInfo showSeason(@PathVariable("seasonId") SeasonEntry season) {
-      return new SeasonInfo(season.getId(), season.getDescription(), season.getStartsOn().toString(),
-         season.getEndsOn().toString());
+   public SeasonResource showSeason(@PathVariable("seasonId") SeasonEntry season) {
+      return new SeasonResource(season.getId(), season.getDescription(), season.getStartsOn()
+         .toString(), season.getEndsOn().toString());
    }
 
    /**
@@ -99,7 +98,7 @@ public class SeasonApiController extends ApplicationController {
     * @return
     */
    @RequestMapping(method = RequestMethod.POST)
-   public SeasonInfo createSeason(@Valid @RequestBody SeasonInfo resource,
+   public SeasonResource createSeason(@Valid @RequestBody SeasonResource resource,
       BindingResult bindingResult)
    {
       if (bindingResult.hasErrors()) {
@@ -111,13 +110,15 @@ public class SeasonApiController extends ApplicationController {
       final SeasonId identifier = new SeasonId();
 
       // Truncate the date values to YYY-MM-DD strings
-      final LocalDate startsOn = resource.getStartsOn() != null
-         ? LocalDate.parse(resource.getStartsOn().substring(0, 10)) : null;
-      final LocalDate endsOn = resource.getEndsOn() != null
-         ? LocalDate.parse(resource.getEndsOn().substring(0, 10)) : null;
+      final LocalDate startsOn =
+         resource.getStartsOn() != null ? LocalDate.parse(resource.getStartsOn().substring(0, 10))
+            : null;
+      final LocalDate endsOn =
+         resource.getEndsOn() != null ? LocalDate.parse(resource.getEndsOn().substring(0, 10))
+            : null;
 
-      final SeasonDTO dto = new SeasonDTO(identifier, resource.getDescription(), startsOn, endsOn,
-         now, user, now, user);
+      final SeasonDTO dto =
+         new SeasonDTO(identifier, resource.getDescription(), startsOn, endsOn, now, user, now, user);
 
       final CreateSeason payload = new CreateSeason(identifier, dto);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
@@ -136,8 +137,8 @@ public class SeasonApiController extends ApplicationController {
     * @return
     */
    @RequestMapping(value = "/{seasonId}", method = RequestMethod.PUT)
-   public SeasonInfo updateSeason(@PathVariable String seasonId,
-      @Valid @RequestBody SeasonInfo resource, BindingResult bindingResult)
+   public SeasonResource updateSeason(@PathVariable String seasonId,
+      @Valid @RequestBody SeasonResource resource, BindingResult bindingResult)
    {
       if (bindingResult.hasErrors()) {
          return resource;
@@ -148,10 +149,12 @@ public class SeasonApiController extends ApplicationController {
       final SeasonId identifier = new SeasonId(seasonId);
 
       // Truncate the date values to YYYY-MM-DD strings
-      final LocalDate startsOn = resource.getStartsOn() != null
-         ? LocalDate.parse(resource.getStartsOn().substring(0, 10)) : null;
-      final LocalDate endsOn = resource.getEndsOn() != null
-         ? LocalDate.parse(resource.getEndsOn().substring(0, 10)) : null;
+      final LocalDate startsOn =
+         resource.getStartsOn() != null ? LocalDate.parse(resource.getStartsOn().substring(0, 10))
+            : null;
+      final LocalDate endsOn =
+         resource.getEndsOn() != null ? LocalDate.parse(resource.getEndsOn().substring(0, 10))
+            : null;
 
       final SeasonDTO dto =
          new SeasonDTO(identifier, resource.getDescription(), startsOn, endsOn, now, user);
@@ -183,8 +186,9 @@ public class SeasonApiController extends ApplicationController {
 
       final SeasonEntry season = seasonRepository.findOne(seasonId);
       final LocalDateTime startsAt = season.getStartsOn().toDateTimeAtStartOfDay().toLocalDateTime();
-      final LocalDateTime endsAt = season.getEndsOn() == null ? Common.EOT
-         : season.getEndsOn().toDateTimeAtStartOfDay().toLocalDateTime();
+      final LocalDateTime endsAt =
+         season.getEndsOn() == null ? Common.EOT : season.getEndsOn().toDateTimeAtStartOfDay()
+            .toLocalDateTime();
       final int foundGames = seasonRepository.countGames(startsAt, endsAt);
       if (foundGames > 0) {
          throw new IllegalArgumentException("Cannot delete season with associated games.");

@@ -42,7 +42,7 @@ public class SeasonController extends ApplicationController {
    private final SeasonQueryRepository seasonRepository;
 
    @Autowired
-   private SeasonFormValidator seasonValidator;
+   private SeasonValidator seasonValidator;
 
    @Autowired
    public SeasonController(SeasonQueryRepository seasonRepository,
@@ -189,8 +189,8 @@ public class SeasonController extends ApplicationController {
    }
 
    @RequestMapping(value = "/api/seasons/{seasonId}", method = RequestMethod.GET)
-   public @ResponseBody SeasonInfo getSeason(@PathVariable("seasonId") SeasonEntry season) {
-      return new SeasonInfo(season.getId(), season.getDescription(),
+   public @ResponseBody SeasonResource getSeason(@PathVariable("seasonId") SeasonEntry season) {
+      return new SeasonResource(season.getId(), season.getDescription(),
          season.getStartsOn().toString("yyyy-MM-dd"), season.getEndsOn().toString("yyyy-MM-dd"));
    }
 

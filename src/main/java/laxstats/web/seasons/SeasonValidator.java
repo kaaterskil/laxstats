@@ -16,9 +16,9 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 @Service
-public class SeasonFormValidator implements Validator {
-   private static final Logger logger = LoggerFactory.getLogger(SeasonFormValidator.class);
-   private static final String PACKAGE_NAME = SeasonFormValidator.class.getPackage().getName();
+public class SeasonValidator implements Validator {
+   private static final Logger logger = LoggerFactory.getLogger(SeasonValidator.class);
+   private static final String PACKAGE_NAME = SeasonValidator.class.getPackage().getName();
 
    private SeasonQueryRepository seasonQueryRepository;
 
@@ -29,7 +29,7 @@ public class SeasonFormValidator implements Validator {
 
    @Override
    public boolean supports(Class<?> clazz) {
-      return SeasonForm.class.equals(clazz) || SeasonInfo.class.equals(clazz);
+      return SeasonForm.class.equals(clazz) || SeasonResource.class.equals(clazz);
    }
 
    @Override
@@ -72,10 +72,10 @@ public class SeasonFormValidator implements Validator {
          description = seasonForm.getDescription();
          startsOn = seasonForm.getStartsOn();
       }
-      else if (target instanceof SeasonInfo) {
-         final SeasonInfo seasonInfo = (SeasonInfo)target;
-         description = seasonInfo.getDescription();
-         startsOn = LocalDate.parse(seasonInfo.getStartsOn());
+      else if (target instanceof SeasonResource) {
+         final SeasonResource seasonResource = (SeasonResource)target;
+         description = seasonResource.getDescription();
+         startsOn = LocalDate.parse(seasonResource.getStartsOn());
       }
 
       logger.debug("Entering: " + proc + "10");
@@ -108,10 +108,10 @@ public class SeasonFormValidator implements Validator {
          seasonId = seasonForm.getId();
          description = seasonForm.getDescription();
       }
-      else if (target instanceof SeasonInfo) {
-         final SeasonInfo seasonInfo = (SeasonInfo)target;
-         seasonId = seasonInfo.getId();
-         description = seasonInfo.getDescription();
+      else if (target instanceof SeasonResource) {
+         final SeasonResource seasonResource = (SeasonResource)target;
+         seasonId = seasonResource.getId();
+         description = seasonResource.getDescription();
       }
 
       logger.debug("Entering: " + proc + "10");
@@ -164,11 +164,11 @@ public class SeasonFormValidator implements Validator {
          startsOn = seasonForm.getStartsOn();
          endsOn = seasonForm.getEndsOn();
       }
-      else if (target instanceof SeasonInfo) {
-         final SeasonInfo seasonInfo = (SeasonInfo)target;
-         seasonId = seasonInfo.getId();
-         startsOn = LocalDate.parse(seasonInfo.getStartsOn());
-         endsOn = LocalDate.parse(seasonInfo.getEndsOn());
+      else if (target instanceof SeasonResource) {
+         final SeasonResource seasonResource = (SeasonResource)target;
+         seasonId = seasonResource.getId();
+         startsOn = LocalDate.parse(seasonResource.getStartsOn());
+         endsOn = LocalDate.parse(seasonResource.getEndsOn());
       }
 
       logger.debug("Entering: " + proc + "10");
@@ -219,11 +219,11 @@ public class SeasonFormValidator implements Validator {
          startsOn = seasonForm.getStartsOn();
          endsOn = Common.nvl(seasonForm.getEndsOn(), Common.EOT.toLocalDate());
       }
-      else if (target instanceof SeasonInfo) {
-         final SeasonInfo seasonInfo = (SeasonInfo)target;
-         seasonId = seasonInfo.getId();
-         startsOn = LocalDate.parse(seasonInfo.getStartsOn());
-         endsOn = Common.nvl(LocalDate.parse(seasonInfo.getEndsOn()), Common.EOT.toLocalDate());
+      else if (target instanceof SeasonResource) {
+         final SeasonResource seasonResource = (SeasonResource)target;
+         seasonId = seasonResource.getId();
+         startsOn = LocalDate.parse(seasonResource.getStartsOn());
+         endsOn = Common.nvl(LocalDate.parse(seasonResource.getEndsOn()), Common.EOT.toLocalDate());
       }
 
       logger.debug("Entering: " + proc + "10");
