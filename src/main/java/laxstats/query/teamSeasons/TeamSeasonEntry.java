@@ -75,7 +75,7 @@ public class TeamSeasonEntry implements Serializable {
    @Type(type = Constants.LOCAL_DATE_DATABASE_TYPE)
    private LocalDate endsOn;
 
-   @Column(length = 100)
+   @Column(length = Constants.MAX_LENGTH_TITLE)
    private String name;
 
    @Enumerated(EnumType.STRING)

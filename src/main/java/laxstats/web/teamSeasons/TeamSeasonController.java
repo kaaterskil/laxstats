@@ -41,7 +41,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class TeamSeasonController extends ApplicationController {
 	private final TeamQueryRepository teamRepository;
 	private final SeasonQueryRepository seasonRepository;
-	private TeamSeasonFormValidator teamSeasonValidator;
+	private TeamSeasonValidator teamSeasonValidator;
 
 	@InitBinder("TeamSeasonForm")
 	protected void initBinder(WebDataBinder binder) {
@@ -59,7 +59,7 @@ public class TeamSeasonController extends ApplicationController {
 
 	@Autowired
 	public void setTeamSeasonValidator(
-			TeamSeasonFormValidator teamSeasonValidator) {
+			TeamSeasonValidator teamSeasonValidator) {
 		this.teamSeasonValidator = teamSeasonValidator;
 	}
 

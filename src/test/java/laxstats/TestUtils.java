@@ -36,9 +36,12 @@ import laxstats.web.players.PlayerForm;
 import laxstats.web.seasons.SeasonForm;
 import laxstats.web.sites.SiteForm;
 import laxstats.web.teamSeasons.TeamSeasonForm;
+import laxstats.web.teamSeasons.TeamSeasonResource;
 import laxstats.web.teams.TeamForm;
 import laxstats.web.users.UserForm;
+import laxstats.web.users.UserResource;
 import laxstats.web.violations.ViolationForm;
+import laxstats.web.violations.ViolationResource;
 
 import org.axonframework.domain.IdentifierFactory;
 import org.joda.time.LocalDate;
@@ -201,6 +204,25 @@ public class TestUtils {
    }
 
    /**
+    * Returns a completed {@code TeamSeasonResurce} for a new team season.
+    *
+    * @return
+    */
+   public static TeamSeasonResource newTeamSeasonResource() {
+      final TeamEntry team = getExistingTeam();
+      final SeasonEntry season = getExistingSeason();
+
+      final TeamSeasonResource resource = new TeamSeasonResource();
+      resource.setEndsOn("2014-06-30");
+      resource.setName("Wellesley Raiders");
+      resource.setSeason(season.getId());
+      resource.setStartsOn("2013-07-01");
+      resource.setStatus(TeamStatus.ACTIVE);
+      resource.setTeam(team.getId());
+      return resource;
+   }
+
+   /**
     * Returns a completed {@code TeamSeasonForm} for a new team season.
     *
     * @return
@@ -235,6 +257,21 @@ public class TestUtils {
    }
 
    /**
+    * Returns a completed {@code UserResource} for a new user.
+    *
+    * @return
+    */
+   public static UserResource newUserResource() {
+      final UserResource resource = new UserResource();
+      resource.setEmail("john@example.com");
+      resource.setEnabled(true);
+      resource.setFirstName("John");
+      resource.setLastName("Doe");
+      resource.setPassword("user");
+      return resource;
+   }
+
+   /**
     * Returns a completed {@code ViolationForm} for a new violation.
     *
     * @return
@@ -249,11 +286,26 @@ public class TestUtils {
       return form;
    }
 
+   /**
+    * Returns a completed {@code ViolationResource} for a new violation.
+    *
+    * @return
+    */
+   public static ViolationResource newViolationResource() {
+      final ViolationResource resource = new ViolationResource();
+      resource.setCategory(PenaltyCategory.PERSONAL_FOUL);
+      resource.setDescription("This is a slash");
+      resource.setName("Slash");
+      resource.setPenaltyLength(PenaltyLength.ONE_MINUTE);
+      resource.setReleasable(true);
+      return resource;
+   }
+
    /*---------- Entities ----------*/
 
    /**
     * Returns a {@code GameEntry} with a primary key, but no assigned teams or site.
-    * 
+    *
     * @return
     */
    public static GameEntry getUnassignedGame() {
