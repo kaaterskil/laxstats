@@ -36,7 +36,7 @@ import laxstats.web.ApplicationController;
 @Controller
 public class SiteController extends ApplicationController {
    private final SiteQueryRepository siteRepository;
-   private SiteFormValidator siteValidator;
+   private SiteValidator siteValidator;
 
    @InitBinder("SiteForm")
    protected void initBinder(WebDataBinder binder) {
@@ -51,7 +51,7 @@ public class SiteController extends ApplicationController {
    }
 
    @Autowired
-   public void setSiteValidator(SiteFormValidator siteValidator) {
+   public void setSiteValidator(SiteValidator siteValidator) {
       this.siteValidator = siteValidator;
    }
 

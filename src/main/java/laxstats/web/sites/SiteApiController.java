@@ -37,7 +37,7 @@ import laxstats.web.ApplicationController;
 public class SiteApiController extends ApplicationController {
 
    private final SiteQueryRepository siteRepository;
-   private SiteFormValidator siteValidator;
+   private SiteValidator siteValidator;
 
    @Autowired
    public SiteApiController(SiteQueryRepository siteRepository, UserQueryRepository userRepository,
@@ -47,7 +47,7 @@ public class SiteApiController extends ApplicationController {
    }
 
    @Autowired
-   public void setSiteValidator(SiteFormValidator siteValidator) {
+   public void setSiteValidator(SiteValidator siteValidator) {
       this.siteValidator = siteValidator;
    }
 
@@ -64,12 +64,12 @@ public class SiteApiController extends ApplicationController {
     * @return
     */
    @RequestMapping(method = RequestMethod.GET)
-   public List<SiteInfo> siteIndex() {
+   public List<SiteResource> siteIndex() {
       final Iterable<SiteEntry> sites = siteRepository.findAll();
 
-      final List<SiteInfo> list = new ArrayList<>();
+      final List<SiteResource> list = new ArrayList<>();
       for (final SiteEntry each : sites) {
-         final SiteInfo resource = new SiteInfo(each.getId(), each.getName(), each.getStyle(),
+         final SiteResource resource = new SiteResource(each.getId(), each.getName(), each.getStyle(),
             each.getSurface(), each.getDirections());
          list.add(resource);
       }
@@ -83,11 +83,11 @@ public class SiteApiController extends ApplicationController {
     * @return
     */
    @RequestMapping(value = "/{siteId}", method = RequestMethod.GET)
-   public SiteInfo showSite(@PathVariable("siteId") SiteEntry site) {
+   public SiteResource showSite(@PathVariable("siteId") SiteEntry site) {
       if (site == null) {
          throw new IllegalArgumentException("Site not found");
       }
-      return new SiteInfo(site.getId(), site.getName(), site.getStyle(), site.getSurface(),
+      return new SiteResource(site.getId(), site.getName(), site.getStyle(), site.getSurface(),
          site.getDirections());
    }
 
@@ -97,8 +97,8 @@ public class SiteApiController extends ApplicationController {
     * @return
     */
    @RequestMapping(value = "/new", method = RequestMethod.GET)
-   public SiteInfo newSite() {
-      return new SiteInfo();
+   public SiteResource newSite() {
+      return new SiteResource();
    }
 
    /**
@@ -109,7 +109,7 @@ public class SiteApiController extends ApplicationController {
     * @return
     */
    @RequestMapping(method = RequestMethod.POST)
-   public SiteInfo createSite(@Valid @RequestBody SiteInfo resource, BindingResult bindingResult) {
+   public SiteResource createSite(@Valid @RequestBody SiteResource resource, BindingResult bindingResult) {
       if (bindingResult.hasErrors()) {
          return resource;
       }
@@ -142,8 +142,8 @@ public class SiteApiController extends ApplicationController {
     * @return
     */
    @RequestMapping(value = "/{siteId}", method = RequestMethod.PUT)
-   public SiteInfo updateSite(@PathVariable("siteId") SiteEntry site,
-      @Valid @RequestBody SiteInfo resource, BindingResult bindingResult)
+   public SiteResource updateSite(@PathVariable("siteId") SiteEntry site,
+      @Valid @RequestBody SiteResource resource, BindingResult bindingResult)
    {
       if (site == null) {
          throw new IllegalArgumentException("Site not found");

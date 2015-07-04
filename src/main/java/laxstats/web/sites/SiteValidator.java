@@ -15,9 +15,9 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 @Service
-public class SiteFormValidator implements Validator {
-   private static final Logger logger = LoggerFactory.getLogger(SiteFormValidator.class);
-   private static String PACKAGE_NAME = SiteFormValidator.class.getPackage().getName();
+public class SiteValidator implements Validator {
+   private static final Logger logger = LoggerFactory.getLogger(SiteValidator.class);
+   private static String PACKAGE_NAME = SiteValidator.class.getPackage().getName();
 
    @Autowired
    private SiteQueryRepository siteRepository;
@@ -31,26 +31,25 @@ public class SiteFormValidator implements Validator {
 
    @Override
    public boolean supports(Class<?> clazz) {
-      return SiteForm.class.equals(clazz);
+      return SiteResource.class.equals(clazz) || SiteForm.class.equals(clazz);
    }
 
    @Override
    public void validate(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".validate.";
-      final SiteForm form = (SiteForm)target;
 
       logger.debug("Entering: " + proc + "10");
 
       // Validate mandatory arguments
-      checkMandatoryArgs(form, errors);
+      checkMandatoryArgs(target, errors);
       logger.debug(proc + "20");
 
       // Validate name/city/region combination
-      checkDuplicate(form, errors);
+      checkDuplicate(target, errors);
       logger.debug(proc + "30");
 
       // Validate postal code
-      checkPostalCode(form, errors);
+      checkPostalCode(target, errors);
       logger.debug("Leaving: " + proc + "40");
    }
 
@@ -60,22 +59,38 @@ public class SiteFormValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkMandatoryArgs(SiteForm form, Errors errors) {
+   private void checkMandatoryArgs(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkMandatoryArgs.";
+      String name = null;
+      String city = null;
+      Region region = null;
+
+      if (target instanceof SiteResource) {
+         final SiteResource resource = (SiteResource)target;
+         name = resource.getName();
+         city = resource.getCity();
+         region = resource.getRegion();
+      }
+      else if (target instanceof SiteForm) {
+         final SiteForm form = (SiteForm)target;
+         name = form.getName();
+         city = form.getCity();
+         region = form.getRegion();
+      }
 
       logger.debug("Entering: " + proc + "10");
 
-      if (TestUtils.isEmptyOrWhitespace(form.getName())) {
+      if (TestUtils.isEmptyOrWhitespace(name)) {
          errors.reject("name", "site.name.required");
       }
       logger.debug(proc + "20");
 
-      if (TestUtils.isEmptyOrWhitespace(form.getCity())) {
+      if (TestUtils.isEmptyOrWhitespace(city)) {
          errors.rejectValue("city", "site.city.required");
       }
       logger.debug(proc + "30");
 
-      if (form.getRegion() == null) {
+      if (region == null) {
          errors.rejectValue("region", "site.region.required");
       }
 
@@ -88,13 +103,28 @@ public class SiteFormValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkDuplicate(SiteForm form, Errors errors) {
+   private void checkDuplicate(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkDuplicate.";
-      final String siteId = form.getId();
-      final String city = form.getCity();
-      final String name = form.getName();
-      final Region region = form.getRegion();
+      String siteId = null;
+      String city = null;
+      String name = null;
+      Region region = null;
       int found = 0;
+
+      if (target instanceof SiteResource) {
+         final SiteResource resource = (SiteResource)target;
+         siteId = resource.getId();
+         name = resource.getName();
+         city = resource.getCity();
+         region = resource.getRegion();
+      }
+      else if (target instanceof SiteForm) {
+         final SiteForm form = (SiteForm)target;
+         siteId = form.getId();
+         name = form.getName();
+         city = form.getCity();
+         region = form.getRegion();
+      }
 
       logger.debug("Entering: " + proc + "10");
 
@@ -110,7 +140,7 @@ public class SiteFormValidator implements Validator {
          final SiteEntry site = siteRepository.findOne(siteId);
          if (!site.getName().equals(name) ||
             (site.getAddress() != null && (!site.getAddress().getCity().equals(city) || !site
-                           .getAddress().getRegion().equals(region)))) {
+               .getAddress().getRegion().equals(region)))) {
             logger.debug(proc + "40");
 
             found = siteRepository.updateName(name, city, region, siteId);
@@ -137,10 +167,21 @@ public class SiteFormValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkPostalCode(SiteForm form, Errors errors) {
+   private void checkPostalCode(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkPostalCode.";
-      final String siteId = form.getId();
-      final String postalCode = form.getPostalCode();
+      String siteId = null;
+      String postalCode = null;
+
+      if (target instanceof SiteResource) {
+         final SiteResource resource = (SiteResource)target;
+         siteId = resource.getId();
+         postalCode = resource.getPostalCode();
+      }
+      else if (target instanceof SiteForm) {
+         final SiteForm form = (SiteForm)target;
+         siteId = form.getId();
+         postalCode = form.getPostalCode();
+      }
 
       logger.debug("Entering: " + proc + "10");
 

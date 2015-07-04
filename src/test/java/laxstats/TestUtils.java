@@ -35,6 +35,7 @@ import laxstats.web.people.PersonForm;
 import laxstats.web.players.PlayerForm;
 import laxstats.web.seasons.SeasonForm;
 import laxstats.web.sites.SiteForm;
+import laxstats.web.sites.SiteResource;
 import laxstats.web.teamSeasons.TeamSeasonForm;
 import laxstats.web.teamSeasons.TeamSeasonResource;
 import laxstats.web.teams.TeamForm;
@@ -169,6 +170,23 @@ public class TestUtils {
       form.setStartsOn(LocalDate.parse("2014-07-01"));
       form.setEndsOn(LocalDate.parse("2015-06-30"));
       return form;
+   }
+
+   /**
+    * Returns a completed {@code SiteResource} for a new site.
+    *
+    * @return
+    */
+   public static SiteResource newSiteResource() {
+      final SiteResource resource = new SiteResource();
+      resource.setAddress1("40 Rice Street");
+      resource.setCity("Wellesley");
+      resource.setName("Wellesley High School");
+      resource.setPostalCode("02482");
+      resource.setRegion(Region.MA);
+      resource.setStyle(SiteStyle.COMPETITION);
+      resource.setSurface(Surface.GRASS);
+      return resource;
    }
 
    /**
