@@ -15,16 +15,17 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.ValidationUtils;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UserFormValidatorTests {
+public class UserValidatorTests {
 
    @Mock
    UserQueryRepository userQueryRepository;
 
    @InjectMocks
-   UserFormValidator validator = new UserFormValidator();
+   UserValidator validator = new UserValidator();
 
    @Test
    public void supports() {
+      assertTrue(validator.supports(UserResource.class));
       assertTrue(validator.supports(UserForm.class));
       assertFalse(validator.supports(Object.class));
    }
@@ -34,8 +35,15 @@ public class UserFormValidatorTests {
       final UserForm form = TestUtils.newUserForm();
       form.setEmail("   ");
 
-      final BindException errors = new BindException(form, "userForm");
+      final UserResource resource = TestUtils.newUserResource();
+      resource.setEmail("   ");
+
+      BindException errors = new BindException(form, "userForm");
       ValidationUtils.invokeValidator(validator, form, errors);
+      assertTrue(errors.hasErrors());
+
+      errors = new BindException(resource, "userResource");
+      ValidationUtils.invokeValidator(validator, resource, errors);
       assertTrue(errors.hasErrors());
    }
 
@@ -44,8 +52,15 @@ public class UserFormValidatorTests {
       final UserForm form = TestUtils.newUserForm();
       form.setLastName("");
 
-      final BindException errors = new BindException(form, "userForm");
+      final UserResource resource = TestUtils.newUserResource();
+      resource.setLastName("");
+
+      BindException errors = new BindException(form, "userForm");
       ValidationUtils.invokeValidator(validator, form, errors);
+      assertTrue(errors.hasErrors());
+
+      errors = new BindException(resource, "userResource");
+      ValidationUtils.invokeValidator(validator, resource, errors);
       assertTrue(errors.hasErrors());
    }
 
@@ -54,9 +69,14 @@ public class UserFormValidatorTests {
    @Test
    public void newUserIsValid() {
       final UserForm form = TestUtils.newUserForm();
+      final UserResource resource = TestUtils.newUserResource();
 
-      final BindException errors = new BindException(form, "userForm");
+      BindException errors = new BindException(form, "userForm");
       ValidationUtils.invokeValidator(validator, form, errors);
+      assertFalse(errors.hasErrors());
+
+      errors = new BindException(resource, "userResource");
+      ValidationUtils.invokeValidator(validator, resource, errors);
       assertFalse(errors.hasErrors());
    }
 
@@ -72,6 +92,17 @@ public class UserFormValidatorTests {
    }
 
    @Test
+   public void newUserResourceEmailIsDuplicate() {
+      final UserResource resource = TestUtils.newUserResource();
+
+      Mockito.when(userQueryRepository.uniqueEmail(resource.getEmail())).thenReturn(1);
+
+      final BindException errors = new BindException(resource, "userResource");
+      ValidationUtils.invokeValidator(validator, resource, errors);
+      assertTrue(errors.hasErrors());
+   }
+
+   @Test
    public void newUserEmailIsInvalid() {
       final UserForm form = TestUtils.newUserForm();
       form.setEmail("john@john@example.com");
@@ -80,6 +111,18 @@ public class UserFormValidatorTests {
 
       final BindException errors = new BindException(form, "userForm");
       ValidationUtils.invokeValidator(validator, form, errors);
+      assertTrue(errors.hasErrors());
+   }
+
+   @Test
+   public void newUserResourceEmailIsInvalid() {
+      final UserResource resource = TestUtils.newUserResource();
+      resource.setEmail("john@john@example.com");
+
+      Mockito.when(userQueryRepository.uniqueEmail(resource.getEmail())).thenReturn(0);
+
+      final BindException errors = new BindException(resource, "userResource");
+      ValidationUtils.invokeValidator(validator, resource, errors);
       assertTrue(errors.hasErrors());
    }
 }

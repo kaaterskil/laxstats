@@ -40,7 +40,7 @@ public class UserController extends ApplicationController {
    private final TeamQueryRepository teamRepository;
 
    @Autowired
-   private UserFormValidator userValidator;
+   private UserValidator userValidator;
 
    @Autowired
    public UserController(UserQueryRepository userRepository, TeamQueryRepository teamRepository,

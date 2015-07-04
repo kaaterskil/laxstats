@@ -91,7 +91,7 @@ public class UserEntry implements UserDetails {
    @ManyToOne
    private TeamEntry team;
 
-   @Column(nullable = false)
+   @Column(length = Constants.MAX_LENGTH_CONTACT_VALUE, nullable = false)
    private String email;
 
    @Column(length = 100, nullable = false)
@@ -100,13 +100,13 @@ public class UserEntry implements UserDetails {
    @Column(nullable = false)
    private boolean enabled = false;
 
-   @Column(length = 20)
+   @Column(length = Constants.MAX_LENGTH_FIRST_OR_MIDDLE_NAME)
    private String firstName;
 
-   @Column(length = 30, nullable = false)
+   @Column(length = Constants.MAX_LENGTH_LAST_NAME, nullable = false)
    private String lastName;
 
-   @Column(length = 50)
+   @Column(length = 15)
    private String ipAddress;
 
    @Enumerated(EnumType.STRING)

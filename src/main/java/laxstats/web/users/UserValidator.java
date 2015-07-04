@@ -13,16 +13,16 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 @Service
-public class UserFormValidator implements Validator {
-   private static final Logger logger = LoggerFactory.getLogger(UserFormValidator.class);
-   private static final String PACKAGE_NAME = UserFormValidator.class.getPackage().getName();
+public class UserValidator implements Validator {
+   private static final Logger logger = LoggerFactory.getLogger(UserValidator.class);
+   private static final String PACKAGE_NAME = UserValidator.class.getPackage().getName();
 
    @Autowired
    private UserQueryRepository userRepository;
 
    @Override
    public boolean supports(Class<?> clazz) {
-      return UserForm.class.equals(clazz);
+      return UserResource.class.equals(clazz) || UserForm.class.equals(clazz);
    }
 
    @Override
@@ -33,11 +33,11 @@ public class UserFormValidator implements Validator {
       logger.debug("Entering: " + proc + "10");
 
       // Validate mandatory arguments
-      checkMandatoryArgs(form, errors);
+      checkMandatoryArgs(target, errors);
       logger.debug(proc + "20");
 
       // Validate email
-      checkEmail(form, errors);
+      checkEmail(target, errors);
 
       logger.debug("Leaving: " + proc + "30");
    }
@@ -48,17 +48,30 @@ public class UserFormValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkMandatoryArgs(UserForm form, Errors errors) {
+   private void checkMandatoryArgs(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkMandatoryArgs.";
+      String email = null;
+      String lastName = null;
+
+      if (target instanceof UserResource) {
+         final UserResource resource = (UserResource)target;
+         email = resource.getEmail();
+         lastName = resource.getLastName();
+      }
+      else if (target instanceof UserForm) {
+         final UserForm form = (UserForm)target;
+         email = form.getEmail();
+         lastName = form.getLastName();
+      }
 
       logger.debug("Entering: " + proc + "10");
 
-      if (TestUtils.isEmptyOrWhitespace(form.getEmail())) {
+      if (TestUtils.isEmptyOrWhitespace(email)) {
          errors.rejectValue("email", "user.email.required");
       }
       logger.debug(proc + "20");
 
-      if (TestUtils.isEmptyOrWhitespace(form.getLastName())) {
+      if (TestUtils.isEmptyOrWhitespace(lastName)) {
          errors.rejectValue("lastName", "userLastName.required");
       }
       logger.debug("Leaving: " + proc + "30");
@@ -70,12 +83,23 @@ public class UserFormValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkEmail(UserForm form, Errors errors) {
+   private void checkEmail(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkEmail.";
-      final String userId = form.getId();
-      final String email = form.getEmail();
+      String userId = null;
+      String email = null;
       int found = 0;
       boolean doValidation = false;
+
+      if (target instanceof UserResource) {
+         final UserResource resource = (UserResource)target;
+         userId = resource.getId();
+         email = resource.getEmail();
+      }
+      else if (target instanceof UserForm) {
+         final UserForm form = (UserForm)target;
+         userId = form.getId();
+         email = form.getEmail();
+      }
 
       logger.debug("Entering: " + proc + "10");
 
