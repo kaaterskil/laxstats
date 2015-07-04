@@ -31,7 +31,7 @@ public class ViolationController extends ApplicationController {
 	private final ViolationQueryRepository violationRepository;
 
 	@Autowired
-	private ViolationFormValidator violationFormValidator;
+	private ViolationValidator violationValidator;
 
 	@Autowired
 	public ViolationController(ViolationQueryRepository violationRepository,
@@ -42,7 +42,7 @@ public class ViolationController extends ApplicationController {
 
 	@InitBinder
 	protected void initBinder(WebDataBinder binder) {
-		binder.setValidator(violationFormValidator);
+		binder.setValidator(violationValidator);
 	}
 
 	/*---------- Action methods ----------*/

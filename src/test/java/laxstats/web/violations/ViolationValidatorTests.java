@@ -17,16 +17,17 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.ValidationUtils;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ViolationFormValidatorTests {
+public class ViolationValidatorTests {
 
    @Mock
    ViolationQueryRepository violationQueryRepository;
 
    @InjectMocks
-   ViolationFormValidator validator = new ViolationFormValidator();
+   ViolationValidator validator = new ViolationValidator();
 
    @Test
    public void supports() {
+      assertTrue(validator.supports(ViolationResource.class));
       assertTrue(validator.supports(ViolationForm.class));
       assertFalse(validator.supports(Object.class));
    }
@@ -36,8 +37,15 @@ public class ViolationFormValidatorTests {
       final ViolationForm form = TestUtils.newViolationForm();
       form.setName(null);
 
-      final BindException errors = new BindException(form, "violationForm");
+      final ViolationResource resource = TestUtils.newViolationResource();
+      resource.setName(null);
+
+      BindException errors = new BindException(form, "violationForm");
       ValidationUtils.invokeValidator(validator, form, errors);
+      assertTrue(errors.hasErrors());
+
+      errors = new BindException(resource, "violationResource");
+      ValidationUtils.invokeValidator(validator, resource, errors);
       assertTrue(errors.hasErrors());
    }
 
@@ -46,8 +54,15 @@ public class ViolationFormValidatorTests {
       final ViolationForm form = TestUtils.newViolationForm();
       form.setCategory(null);
 
-      final BindException errors = new BindException(form, "violationForm");
+      final ViolationResource resource = TestUtils.newViolationResource();
+      resource.setCategory(null);
+
+      BindException errors = new BindException(form, "violationForm");
       ValidationUtils.invokeValidator(validator, form, errors);
+      assertTrue(errors.hasErrors());
+
+      errors = new BindException(resource, "violationResource");
+      ValidationUtils.invokeValidator(validator, resource, errors);
       assertTrue(errors.hasErrors());
    }
 
@@ -56,9 +71,14 @@ public class ViolationFormValidatorTests {
    @Test
    public void newViolationIsValid() {
       final ViolationForm form = TestUtils.newViolationForm();
+      final ViolationResource resource = TestUtils.newViolationResource();
 
-      final BindException errors = new BindException(form, "violationForm");
+      BindException errors = new BindException(form, "violationForm");
       ValidationUtils.invokeValidator(validator, form, errors);
+      assertFalse(errors.hasErrors());
+
+      errors = new BindException(resource, "violationResource");
+      ValidationUtils.invokeValidator(validator, resource, errors);
       assertFalse(errors.hasErrors());
    }
 
@@ -70,6 +90,17 @@ public class ViolationFormValidatorTests {
 
       final BindException errors = new BindException(form, "violationForm");
       ValidationUtils.invokeValidator(validator, form, errors);
+      assertTrue(errors.hasErrors());
+   }
+
+   @Test
+   public void newViolationResourceDuplicateName() {
+      final ViolationResource resource = TestUtils.newViolationResource();
+
+      Mockito.when(violationQueryRepository.uniqueName(resource.getName())).thenReturn(1);
+
+      final BindException errors = new BindException(resource, "violationResource");
+      ValidationUtils.invokeValidator(validator, resource, errors);
       assertTrue(errors.hasErrors());
    }
 
@@ -91,6 +122,26 @@ public class ViolationFormValidatorTests {
 
       final BindException errors = new BindException(form, "violationForm");
       ValidationUtils.invokeValidator(validator, form, errors);
+      assertTrue(errors.hasErrors());
+   }
+
+   @Test
+   public void updatedViolationResourceHasDuplicateName() {
+      final String id = IdentifierFactory.getInstance().generateIdentifier();
+      final ViolationEntry violation = TestUtils.getViolation();
+      violation.setId(id);
+
+      final ViolationResource resource = TestUtils.newViolationResource();
+      resource.setName("This is a duplicate Name");
+      resource.setId(id);
+
+      Mockito.when(violationQueryRepository.exists(id)).thenReturn(true);
+      Mockito.when(violationQueryRepository.findOne(id)).thenReturn(violation);
+      Mockito.when(violationQueryRepository.updateName(resource.getName(), resource.getId()))
+         .thenReturn(1);
+
+      final BindException errors = new BindException(resource, "violationResource");
+      ValidationUtils.invokeValidator(validator, resource, errors);
       assertTrue(errors.hasErrors());
    }
 }
