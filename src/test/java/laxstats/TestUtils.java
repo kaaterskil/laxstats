@@ -34,6 +34,7 @@ import laxstats.web.people.AddressResource;
 import laxstats.web.people.ContactForm;
 import laxstats.web.people.ContactResource;
 import laxstats.web.people.PersonForm;
+import laxstats.web.people.PersonResource;
 import laxstats.web.players.PlayerForm;
 import laxstats.web.players.PlayerResource;
 import laxstats.web.seasons.SeasonForm;
@@ -109,6 +110,27 @@ public class TestUtils {
       resource.setValue("888-555-1212");
       resource.setPrimary(true);
       resource.setDoNotUse(false);
+      return resource;
+   }
+
+   /**
+    * Returns a complete {@code PersonResource} for a new person.
+    *
+    * @return
+    */
+   public static PersonResource newPersonResource() {
+      final PersonResource resource = new PersonResource();
+      resource.setBirthdate("1988-09-30");
+      resource.setCollege("Colgate University");
+      resource.setDominantHand(DominantHand.RIGHT);
+      resource.setFirstName("Stanley");
+      resource.setGender(Gender.MALE);
+      resource.setLastName("Caple");
+      resource.setMiddleName("NMI");
+      resource.setNickname("Stan");
+      resource.setParentReleaseReceivedOn("2014-10-12");
+      resource.setParentReleaseSentOn("2014-10-05");
+      resource.setReleased(true);
       return resource;
    }
 

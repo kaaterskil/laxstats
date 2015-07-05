@@ -19,43 +19,42 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 @Service
-public class PersonFormValidator implements Validator {
-   private static final Logger logger = LoggerFactory.getLogger(PersonFormValidator.class);
-   private static final String PACKAGE_NAME = PersonFormValidator.class.getPackage().getName();
+public class PersonValidator implements Validator {
+   private static final Logger logger = LoggerFactory.getLogger(PersonValidator.class);
+   private static final String PACKAGE_NAME = PersonValidator.class.getPackage().getName();
 
    @Autowired
    PersonQueryRepository personRepository;
 
    @Override
    public boolean supports(Class<?> clazz) {
-      return PersonForm.class.equals(clazz);
+      return PersonResource.class.equals(clazz) || PersonForm.class.equals(clazz);
    }
 
    @Override
    public void validate(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".validate.";
-      final PersonForm form = (PersonForm)target;
 
       logger.debug("Entering: " + proc + "10");
 
       // Validate mandatory args
-      checkMandatoryArgs(form, errors);
+      checkMandatoryArgs(target, errors);
       logger.debug(proc + "20");
 
       // Validate birth date
-      checkBirthDate(form, errors);
+      checkBirthDate(target, errors);
       logger.debug(proc + "30");
 
       // Check gender
-      checkGender(form, errors);
+      checkGender(target, errors);
       logger.debug(proc + "40");
 
       // Check parent release sent date
-      checkParentReleaseSentOn(form, errors);
+      checkParentReleaseSentOn(target, errors);
       logger.debug(proc + "50");
 
       // Check parent release received date
-      checkParentReleaseReceivedOn(form, errors);
+      checkParentReleaseReceivedOn(target, errors);
       logger.debug("Leaving: " + proc + "60");
    }
 
@@ -65,12 +64,20 @@ public class PersonFormValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkMandatoryArgs(PersonForm form, Errors errors) {
+   private void checkMandatoryArgs(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkMandatoryArgs.";
+      String lastName = null;
+
+      if (target instanceof PersonResource) {
+         lastName = ((PersonResource)target).getLastName();
+      }
+      else if (target instanceof PersonForm) {
+         lastName = ((PersonForm)target).getLastName();
+      }
 
       logger.debug("Entering: " + proc + "10");
 
-      if (TestUtils.isEmptyOrWhitespace(form.getLastName())) {
+      if (TestUtils.isEmptyOrWhitespace(lastName)) {
          errors.rejectValue("lastName", "person.lastName.required");
       }
       logger.debug("Leaving: " + proc + "20");
@@ -83,11 +90,22 @@ public class PersonFormValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkBirthDate(PersonForm form, Errors errors) {
+   private void checkBirthDate(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkBirthDate.";
-      final String personId = form.getId();
-      final LocalDate birthDate = form.getBirthdate();
+      String personId = null;
+      LocalDate birthDate = null;
       final LocalDate eot = Common.EOT.toLocalDate();
+
+      if (target instanceof PersonResource) {
+         final PersonResource r = (PersonResource)target;
+         personId = r.getId();
+         birthDate = r.getBirthdate() == null ? null : LocalDate.parse(r.getBirthdate());
+      }
+      else if (target instanceof PersonForm) {
+         final PersonForm form = (PersonForm)target;
+         personId = form.getId();
+         birthDate = form.getBirthdate();
+      }
 
       logger.debug("Entering: " + proc + "10");
 
@@ -136,11 +154,22 @@ public class PersonFormValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkGender(PersonForm form, Errors errors) {
+   private void checkGender(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkGender.";
-      final String personId = form.getId();
-      final Gender gender = form.getGender();
+      String personId = null;
+      Gender gender = null;
       Gender teamGender = null;
+
+      if (target instanceof PersonResource) {
+         final PersonResource resource = (PersonResource)target;
+         personId = resource.getId();
+         gender = resource.getGender();
+      }
+      else if (target instanceof PersonForm) {
+         final PersonForm form = (PersonForm)target;
+         personId = form.getId();
+         gender = form.getGender();
+      }
 
       logger.debug("Entering: " + proc + "10");
 
@@ -180,12 +209,28 @@ public class PersonFormValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkParentReleaseSentOn(PersonForm form, Errors errors) {
+   private void checkParentReleaseSentOn(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkParentReleaseSentOn.";
-      final String personId = form.getId();
-      final LocalDate sentOn = form.getParentReleaseSentOn();
-      final LocalDate receivedOn = form.getParentReleaseReceivedOn();
+      String personId = null;
+      LocalDate sentOn = null;
+      LocalDate receivedOn = null;
       final LocalDate eot = Common.EOT.toLocalDate();
+
+      if (target instanceof PersonResource) {
+         final PersonResource r = (PersonResource)target;
+         personId = r.getId();
+         sentOn =
+            r.getParentReleaseSentOn() == null ? null : LocalDate.parse(r.getParentReleaseSentOn());
+         receivedOn =
+            r.getParentReleaseReceivedOn() == null ? null : LocalDate.parse(r
+               .getParentReleaseReceivedOn());
+      }
+      else if (target instanceof PersonForm) {
+         final PersonForm form = (PersonForm)target;
+         personId = form.getId();
+         sentOn = form.getParentReleaseSentOn();
+         receivedOn = form.getParentReleaseReceivedOn();
+      }
 
       logger.debug("Entering: " + proc + "10");
 
@@ -220,12 +265,28 @@ public class PersonFormValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkParentReleaseReceivedOn(PersonForm form, Errors errors) {
+   private void checkParentReleaseReceivedOn(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkParentReleaseReceivedOn.";
-      final String personId = form.getId();
-      final LocalDate sentOn = form.getParentReleaseSentOn();
-      final LocalDate receivedOn = form.getParentReleaseReceivedOn();
+      String personId = null;
+      LocalDate sentOn = null;
+      LocalDate receivedOn = null;
       final LocalDate eot = Common.EOT.toLocalDate();
+
+      if (target instanceof PersonResource) {
+         final PersonResource r = (PersonResource)target;
+         personId = r.getId();
+         sentOn =
+            r.getParentReleaseSentOn() == null ? null : LocalDate.parse(r.getParentReleaseSentOn());
+         receivedOn =
+            r.getParentReleaseReceivedOn() == null ? null : LocalDate.parse(r
+               .getParentReleaseReceivedOn());
+      }
+      else if (target instanceof PersonForm) {
+         final PersonForm form = (PersonForm)target;
+         personId = form.getId();
+         sentOn = form.getParentReleaseSentOn();
+         receivedOn = form.getParentReleaseReceivedOn();
+      }
 
       logger.debug("Entering: " + proc + "10");
 
@@ -249,7 +310,7 @@ public class PersonFormValidator implements Validator {
 
                if (Common.nvl(receivedOn, eot).isBefore(Common.nvl(sentOn, eot))) {
                   errors.rejectValue("parentReleaseReceivedOn",
-                           "person.parentReleaseReceivedOn.invalid");
+                     "person.parentReleaseReceivedOn.invalid");
                }
             }
 
@@ -258,7 +319,7 @@ public class PersonFormValidator implements Validator {
             logger.debug(proc + "60");
             if (Common.nvl(receivedOn, eot).isBefore(Common.nvl(sentOn, eot))) {
                errors.rejectValue("parentReleaseReceivedOn",
-                        "person.parentReleaseReceivedOn.invalid");
+                  "person.parentReleaseReceivedOn.invalid");
             }
          }
       }

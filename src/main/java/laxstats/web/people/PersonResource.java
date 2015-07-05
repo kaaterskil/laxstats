@@ -1,9 +1,5 @@
 package laxstats.web.people;
 
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
-
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -11,14 +7,10 @@ import laxstats.api.people.DominantHand;
 import laxstats.api.people.Gender;
 import laxstats.api.utils.Constants;
 
-import org.joda.time.LocalDate;
-import org.springframework.format.annotation.DateTimeFormat;
-
 /**
- * {@code PersonForm} contains user-defined information with which to create and update a person.
+ * {@code PersonResource} represents a person resource for remote clients.
  */
-public class PersonForm implements Serializable {
-   private static final long serialVersionUID = 3610106010025451930L;
+public class PersonResource {
 
    /**
     * Returns a concatenated string of the given person's full name.
@@ -26,7 +18,7 @@ public class PersonForm implements Serializable {
     * @param form
     * @return
     */
-   public static String fullName(PersonForm form) {
+   public static String fullName(PersonResource form) {
       final StringBuilder sb = new StringBuilder();
       boolean needsSpace = false;
 
@@ -82,28 +74,62 @@ public class PersonForm implements Serializable {
    @Size(max = Constants.MAX_LENGTH_NAME_PREFIX_OR_SUFFIX)
    private String suffix;
 
-   @Size(max = 20)
+   @Size(max = Constants.MAX_LENGTH_FIRST_OR_MIDDLE_NAME)
    private String nickname;
 
    private Gender gender;
    private DominantHand dominantHand;
+   private String birthdate;
+   private boolean released = false;
+   private String parentReleaseSentOn;
+   private String parentReleaseReceivedOn;
 
-   @DateTimeFormat(pattern = Constants.PATTERN_DATE_FORMAT)
-   private LocalDate birthdate;
-
-   private boolean released;
-
-   @DateTimeFormat(pattern = Constants.PATTERN_DATE_FORMAT)
-   private LocalDate parentReleaseSentOn;
-
-   @DateTimeFormat(pattern = Constants.PATTERN_DATE_FORMAT)
-   private LocalDate parentReleaseReceivedOn;
-
-   @Size(max = 100)
+   @Size(max = Constants.MAX_LENGTH_TITLE)
    private String college;
 
-   List<Gender> genders;
-   List<DominantHand> dominantHands;
+   /**
+    * Creates a {@code PersonResource} with the given information.
+    *
+    * @param id
+    * @param prefix
+    * @param firstName
+    * @param middleName
+    * @param lastName
+    * @param suffix
+    * @param nickname
+    * @param gender
+    * @param dominantHand
+    * @param birthdate
+    * @param released
+    * @param parentReleaseSentOn
+    * @param parentReleaseReceivedOn
+    * @param college
+    */
+   public PersonResource(String id, String prefix, String firstName, String middleName,
+      String lastName, String suffix, String nickname, Gender gender, DominantHand dominantHand,
+      String birthdate, boolean released, String parentReleaseSentOn,
+      String parentReleaseReceivedOn, String college) {
+      this.id = id;
+      this.prefix = prefix;
+      this.firstName = firstName;
+      this.middleName = middleName;
+      this.lastName = lastName;
+      this.suffix = suffix;
+      this.nickname = nickname;
+      this.gender = gender;
+      this.dominantHand = dominantHand;
+      this.birthdate = birthdate;
+      this.released = released;
+      this.parentReleaseSentOn = parentReleaseSentOn;
+      this.parentReleaseReceivedOn = parentReleaseReceivedOn;
+      this.college = college;
+   }
+
+   /**
+    * Creates an empty {@code PersonResource} for internal use.
+    */
+   public PersonResource() {
+   }
 
    /**
     * Returns the person's unique identifier, or null if this is a newly created person.
@@ -133,7 +159,7 @@ public class PersonForm implements Serializable {
    }
 
    /**
-    * Sets the persons's name prefix. Use null if not used or unknown.
+    * Sets the persons's name prefix. Use null if none or unknown.
     *
     * @param prefix
     */
@@ -238,7 +264,7 @@ public class PersonForm implements Serializable {
     * @return
     */
    public String getFullName() {
-      return PersonForm.fullName(this);
+      return PersonResource.fullName(this);
    }
 
    /**
@@ -282,7 +308,7 @@ public class PersonForm implements Serializable {
     *
     * @return
     */
-   public LocalDate getBirthdate() {
+   public String getBirthdate() {
       return birthdate;
    }
 
@@ -291,7 +317,7 @@ public class PersonForm implements Serializable {
     *
     * @param birthdate
     */
-   public void setBirthdate(LocalDate birthdate) {
+   public void setBirthdate(String birthdate) {
       this.birthdate = birthdate;
    }
 
@@ -318,25 +344,25 @@ public class PersonForm implements Serializable {
     *
     * @return
     */
-   public LocalDate getParentReleaseSentOn() {
+   public String getParentReleaseSentOn() {
       return parentReleaseSentOn;
    }
 
    /**
-    * Sets the date the person's parenta release request was sent. Use null for none or unknown.
+    * Sets the date the person's parental release request was sent. Use null for none or unknown.
     *
     * @param parentReleaseSentOn
     */
-   public void setParentReleaseSentOn(LocalDate parentReleaseSentOn) {
+   public void setParentReleaseSentOn(String parentReleaseSentOn) {
       this.parentReleaseSentOn = parentReleaseSentOn;
    }
 
    /**
-    * Returns the date the ersons parental release was received, or null.
+    * Returns the date the person's parental release was received, or null.
     *
     * @return
     */
-   public LocalDate getParentReleaseReceivedOn() {
+   public String getParentReleaseReceivedOn() {
       return parentReleaseReceivedOn;
    }
 
@@ -345,7 +371,7 @@ public class PersonForm implements Serializable {
     *
     * @param parentReleaseReceivedOn
     */
-   public void setParentReleaseReceivedOn(LocalDate parentReleaseReceivedOn) {
+   public void setParentReleaseReceivedOn(String parentReleaseReceivedOn) {
       this.parentReleaseReceivedOn = parentReleaseReceivedOn;
    }
 
@@ -365,20 +391,6 @@ public class PersonForm implements Serializable {
     */
    public void setCollege(String college) {
       this.college = college;
-   }
-
-   public List<Gender> getGenders() {
-      if (genders == null) {
-         genders = Arrays.asList(Gender.values());
-      }
-      return genders;
-   }
-
-   public List<DominantHand> getDominantHands() {
-      if (dominantHands == null) {
-         dominantHands = Arrays.asList(DominantHand.values());
-      }
-      return dominantHands;
    }
 
 }

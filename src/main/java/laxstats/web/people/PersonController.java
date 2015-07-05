@@ -56,11 +56,11 @@ public class PersonController extends ApplicationController {
    private final PersonQueryRepository personRepository;
 
    @Autowired
-   private PersonFormValidator personValidator;
+   private PersonValidator personValidator;
    @Autowired
-   private AddressFormValidator addressValidator;
+   private AddressValidator addressValidator;
    @Autowired
-   private ContactFormValidator contactValidator;
+   private ContactValidator contactValidator;
 
    @Autowired
    public PersonController(PersonQueryRepository personRepository,
