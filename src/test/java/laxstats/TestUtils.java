@@ -29,6 +29,7 @@ import laxstats.query.teamSeasons.TeamSeasonEntry;
 import laxstats.query.teams.TeamEntry;
 import laxstats.query.violations.ViolationEntry;
 import laxstats.web.games.GameForm;
+import laxstats.web.games.GameResource;
 import laxstats.web.people.AddressForm;
 import laxstats.web.people.AddressResource;
 import laxstats.web.people.ContactForm;
@@ -110,6 +111,22 @@ public class TestUtils {
       resource.setValue("888-555-1212");
       resource.setPrimary(true);
       resource.setDoNotUse(false);
+      return resource;
+   }
+
+   /**
+    * Returns a complete {@code GameResource} for a new game. NOTE: the two teams and the site must
+    * be assigned.
+    *
+    * @return
+    */
+   public static GameResource newGameResource() {
+      final GameResource resource = new GameResource();
+      resource.setAlignment(SiteAlignment.HOME);
+      resource.setDescription("This is a description");
+      resource.setSchedule(Schedule.REGULAR);
+      resource.setStartsAt("2014-04-01T16:00:00");
+      resource.setStatus(Status.SCHEDULED);
       return resource;
    }
 

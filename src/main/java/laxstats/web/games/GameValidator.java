@@ -1,5 +1,7 @@
 package laxstats.web.games;
 
+import laxstats.api.games.Schedule;
+import laxstats.api.games.Status;
 import laxstats.api.sites.SiteAlignment;
 import laxstats.api.utils.Common;
 import laxstats.query.games.GameEntry;
@@ -17,9 +19,9 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 @Service
-public class GameFormValidator implements Validator {
-   private static final Logger logger = LoggerFactory.getLogger(GameFormValidator.class);
-   private static final String PACKAGE_NAME = GameFormValidator.class.getPackage().getName();
+public class GameValidator implements Validator {
+   private static final Logger logger = LoggerFactory.getLogger(GameValidator.class);
+   private static final String PACKAGE_NAME = GameValidator.class.getPackage().getName();
 
    @Autowired
    private GameQueryRepository gameRepository;
@@ -34,28 +36,27 @@ public class GameFormValidator implements Validator {
    @Override
    public void validate(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".validate.";
-      final GameForm form = (GameForm)target;
 
       logger.debug("Entering: " + proc + "10");
 
       // Validate mandatory args
-      checkMandatoryArgs(form, errors);
+      checkMandatoryArgs(target, errors);
       logger.debug(proc + "20");
 
       // Validate uniqueness
-      checkDuplicate(form, errors);
+      checkDuplicate(target, errors);
       logger.debug(proc + "30");
 
       // Validate team seasons
-      checkTeamSeason(form, errors);
+      checkTeamSeason(target, errors);
       logger.debug(proc + "40");
 
       // Validate same team
-      checkSameTeam(form, errors);
+      checkSameTeam(target, errors);
       logger.debug(proc + "50");
 
       // Validate home team
-      checkAlignment(form, errors);
+      checkAlignment(target, errors);
       logger.debug("Leaving: " + proc + "60");
    }
 
@@ -65,22 +66,39 @@ public class GameFormValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkMandatoryArgs(GameForm form, Errors errors) {
+   private void checkMandatoryArgs(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkMandatoryArgs.";
+      LocalDateTime startsAt = null;
+      Schedule schedule = null;
+      Status status = null;
+
+      if (target instanceof GameResource) {
+         final GameResource resource = (GameResource)target;
+         startsAt =
+            resource.getStartsAt() == null ? null : LocalDateTime.parse(resource.getStartsAt());
+         schedule = resource.getSchedule();
+         status = resource.getStatus();
+      }
+      else if (target instanceof GameForm) {
+         final GameForm form = (GameForm)target;
+         startsAt = form.getStartsAt();
+         schedule = form.getSchedule();
+         status = form.getStatus();
+      }
 
       logger.debug("Entering: " + proc + "10");
 
-      if (form.getStartsAt() == null) {
+      if (startsAt == null) {
          errors.rejectValue("startsAt", "game.startsAt.required");
       }
       logger.debug(proc + "20");
 
-      if (form.getSchedule() == null) {
+      if (schedule == null) {
          errors.rejectValue("schedule", "game.schedule.required");
       }
       logger.debug(proc + "30");
 
-      if (form.getStatus() == null) {
+      if (status == null) {
          errors.rejectValue("status", "game.status.required");
       }
       logger.debug("Leaving: " + proc + "40");
@@ -92,17 +110,31 @@ public class GameFormValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkDuplicate(GameForm form, Errors errors) {
+   private void checkDuplicate(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkDuplicate.";
-      final String gameId = form.getId();
-      final String siteId = form.getSite();
-      final String teamOneId = form.getTeamOne();
-      final String teamTwoId = form.getTeamTwo();
+      String gameId = null;
+      String siteId = null;
+      String teamOneId = null;
+      String teamTwoId = null;
       String startsAt = null;
       int found = 0;
 
-      if (form.getStartsAt() != null) {
-         startsAt = form.getStartsAt().toString("yyyy-MM-dd HH:mm:ss");
+      if (target instanceof GameResource) {
+         final GameResource resource = (GameResource)target;
+         gameId = resource.getId();
+         siteId = resource.getSite();
+         teamOneId = resource.getTeamOne();
+         teamTwoId = resource.getTeamTwo();
+         startsAt = resource.getStartsAt();
+      }
+      else if (target instanceof GameForm) {
+         final GameForm form = (GameForm)target;
+         gameId = form.getId();
+         siteId = form.getSite();
+         teamOneId = form.getTeamOne();
+         teamTwoId = form.getTeamTwo();
+         startsAt =
+            form.getStartsAt() == null ? null : form.getStartsAt().toString("yyyy-MM-dd HH:mm:ss");
       }
 
       logger.debug("Entering: " + proc + "10");
@@ -145,12 +177,25 @@ public class GameFormValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkSameTeam(GameForm form, Errors errors) {
+   private void checkSameTeam(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkSameTeam.";
-      final String gameId = form.getId();
-      final String teamOneId = form.getTeamOne();
-      final String teamTwoId = form.getTeamTwo();
+      String gameId = null;
+      String teamOneId = null;
+      String teamTwoId = null;
       boolean doValidation = false;
+
+      if (target instanceof GameResource) {
+         final GameResource resource = (GameResource)target;
+         gameId = resource.getId();
+         teamOneId = resource.getTeamOne();
+         teamTwoId = resource.getTeamTwo();
+      }
+      else if (target instanceof GameForm) {
+         final GameForm form = (GameForm)target;
+         gameId = form.getId();
+         teamOneId = form.getTeamOne();
+         teamTwoId = form.getTeamTwo();
+      }
 
       logger.debug("Entering: " + proc + "10");
 
@@ -195,15 +240,31 @@ public class GameFormValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkTeamSeason(GameForm form, Errors errors) {
+   private void checkTeamSeason(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkTeamSeason.";
-      final String gameId = form.getId();
-      final String teamOneId = form.getTeamOne();
-      final String teamTwoId = form.getTeamTwo();
-      final LocalDateTime startsAt = form.getStartsAt();
+      String gameId = null;
+      String teamOneId = null;
+      String teamTwoId = null;
+      LocalDateTime startsAt = null;
       String oldTeamOneId = null;
       String oldTeamTwoId = null;
       boolean doValidation = false;
+
+      if (target instanceof GameResource) {
+         final GameResource resource = (GameResource)target;
+         gameId = resource.getId();
+         teamOneId = resource.getTeamOne();
+         teamTwoId = resource.getTeamTwo();
+         startsAt =
+            resource.getStartsAt() == null ? null : LocalDateTime.parse(resource.getStartsAt());
+      }
+      else if (target instanceof GameForm) {
+         final GameForm form = (GameForm)target;
+         gameId = form.getId();
+         teamOneId = form.getTeamOne();
+         teamTwoId = form.getTeamTwo();
+         startsAt = form.getStartsAt();
+      }
 
       logger.debug("Entering: " + proc + "10");
 
@@ -268,15 +329,34 @@ public class GameFormValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkAlignment(GameForm form, Errors errors) {
+   private void checkAlignment(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkAlignment.";
-      final String gameId = form.getId();
-      final String teamOneId = form.getTeamOne();
-      final String teamTwoId = form.getTeamTwo();
-      final boolean isTeamOneHome = form.isTeamOneHome();
-      final boolean isTeamTwoHome = form.isTeamTwoHome();
-      final SiteAlignment alignment = form.getAlignment();
+      String gameId = null;
+      String teamOneId = null;
+      String teamTwoId = null;
+      boolean isTeamOneHome = false;
+      boolean isTeamTwoHome = false;
+      SiteAlignment alignment = null;
       boolean doValidation = false;
+
+      if (target instanceof GameResource) {
+         final GameResource resource = (GameResource)target;
+         gameId = resource.getId();
+         teamOneId = resource.getTeamOne();
+         teamTwoId = resource.getTeamTwo();
+         isTeamOneHome = resource.isTeamOneHome();
+         isTeamTwoHome = resource.isTeamTwoHome();
+         alignment = resource.getAlignment();
+      }
+      else if (target instanceof GameForm) {
+         final GameForm form = (GameForm)target;
+         gameId = form.getId();
+         teamOneId = form.getTeamOne();
+         teamTwoId = form.getTeamTwo();
+         isTeamOneHome = form.isTeamOneHome();
+         isTeamTwoHome = form.isTeamTwoHome();
+         alignment = form.getAlignment();
+      }
 
       logger.debug("Entering: " + proc + "10");
 

@@ -65,7 +65,7 @@ public class GameController extends ApplicationController {
    private final TeamQueryRepository teamRepository;
 
    @Autowired
-   private GameFormValidator gameFormValidator;
+   private GameValidator gameValidator;
 
    @Autowired
    private AttendeeFormValidator attendeeFormValidator;
@@ -82,7 +82,7 @@ public class GameController extends ApplicationController {
 
    @InitBinder(value = "eventForm")
    protected void initGameBinder(WebDataBinder binder) {
-      binder.setValidator(gameFormValidator);
+      binder.setValidator(gameValidator);
    }
 
    @InitBinder(value = "attendeeForm")
