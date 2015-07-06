@@ -81,17 +81,17 @@ public class PlayController extends ApplicationController {
    private Map<String, String> violations;
 
    @Autowired
-   private ClearFormValidator clearValidator;
+   private ClearValidator clearValidator;
    @Autowired
-   private FaceOffFormValidator faceOffValidator;
+   private FaceOffValidator faceOffValidator;
    @Autowired
-   private GoalFormValidator goalValidator;
+   private GoalValidator goalValidator;
    @Autowired
-   private GroundBallFormValidator groundBallValidator;
+   private GroundBallValidator groundBallValidator;
    @Autowired
-   private PenaltyFormValidator penaltyValidator;
+   private PenaltyValidator penaltyValidator;
    @Autowired
-   private ShotFormValidator shotValidator;
+   private ShotValidator shotValidator;
 
    @Autowired
    public PlayController(UserQueryRepository userRepository, CommandBus commandBus,
