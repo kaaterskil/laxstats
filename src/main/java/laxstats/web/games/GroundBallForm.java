@@ -9,7 +9,8 @@ import laxstats.api.games.PlayType;
  * {@code GroundBallForm} contains user-defined information with which to create and update a ground
  * ball play.
  */
-public class GroundBallForm extends AbstractPlayForm {
+public class GroundBallForm extends AbstractPlayForm implements GroundBallResource {
+
    @NotNull
    private String playerId;
 
@@ -21,19 +22,17 @@ public class GroundBallForm extends AbstractPlayForm {
    }
 
    /**
-    * Returns the identifier of the player making the play. Never null.
-    *
-    * @return
+    * {@inheritDoc}
     */
+   @Override
    public String getPlayerId() {
       return playerId;
    }
 
    /**
-    * Sets the identifier of the player making the play. Must not be null.
-    *
-    * @param playerId
+    * {@inheritDoc}
     */
+   @Override
    public void setPlayerId(String playerId) {
       this.playerId = playerId;
    }
