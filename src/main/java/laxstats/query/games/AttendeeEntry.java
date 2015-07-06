@@ -66,7 +66,7 @@ public class AttendeeEntry implements Serializable {
    @Column(length = Constants.MAX_LENGTH_ENUM_STRING)
    private AthleteStatus status;
 
-   @Column(length = 100)
+   @Column(length = Constants.MAX_LENGTH_TITLE)
    private String name;
 
    @Column(length = 4)

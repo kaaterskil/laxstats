@@ -1,17 +1,14 @@
 package laxstats.web.games;
 
-import java.util.Map;
-
 import javax.validation.constraints.NotNull;
 
 import laxstats.api.games.AthleteStatus;
 import laxstats.api.players.Role;
-import laxstats.query.players.PlayerEntry;
 
 /**
- * {@code AttendeeForm} contains information with which to create and update a game attendee.
+ * {@code AttendeeResource} represents a game attendee resource for remote clients.
  */
-public class AttendeeForm implements AttendeeResource {
+public class AttendeeResourceImpl implements AttendeeResource {
    private String id;
 
    @NotNull
@@ -25,7 +22,29 @@ public class AttendeeForm implements AttendeeResource {
 
    private AthleteStatus status;
 
-   private Map<String, PlayerEntry> roster;
+   /**
+    * Creates an {@code AttendeeResource} with the given information.
+    *
+    * @param id
+    * @param playerId
+    * @param gameId
+    * @param role
+    * @param status
+    */
+   public AttendeeResourceImpl(String id, String playerId, String gameId, Role role,
+      AthleteStatus status) {
+      this.id = id;
+      this.playerId = playerId;
+      this.gameId = gameId;
+      this.role = role;
+      this.status = status;
+   }
+
+   /**
+    * Creates an empty {@code AttendeeResource} for internal use.
+    */
+   public AttendeeResourceImpl() {
+   }
 
    /**
     * {@inheritDoc}
@@ -56,6 +75,7 @@ public class AttendeeForm implements AttendeeResource {
     */
    @Override
    public void setPlayerId(String playerId) {
+      assert playerId != null;
       this.playerId = playerId;
    }
 
@@ -72,6 +92,7 @@ public class AttendeeForm implements AttendeeResource {
     */
    @Override
    public void setGameId(String gameId) {
+      assert gameId != null;
       this.gameId = gameId;
    }
 
@@ -88,6 +109,7 @@ public class AttendeeForm implements AttendeeResource {
     */
    @Override
    public void setRole(Role role) {
+      assert role != null;
       this.role = role;
    }
 
@@ -105,15 +127,5 @@ public class AttendeeForm implements AttendeeResource {
    @Override
    public void setStatus(AthleteStatus status) {
       this.status = status;
-   }
-
-   /*---------- Drop-down menu methods ----------*/
-
-   public Map<String, PlayerEntry> getRoster() {
-      return roster;
-   }
-
-   public void setRoster(Map<String, PlayerEntry> roster) {
-      this.roster = roster;
    }
 }
