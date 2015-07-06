@@ -27,7 +27,7 @@ public class ViolationValidatorTests {
 
    @Test
    public void supports() {
-      assertTrue(validator.supports(ViolationResource.class));
+      assertTrue(validator.supports(ViolationResourceImpl.class));
       assertTrue(validator.supports(ViolationForm.class));
       assertFalse(validator.supports(Object.class));
    }
@@ -37,7 +37,7 @@ public class ViolationValidatorTests {
       final ViolationForm form = TestUtils.newViolationForm();
       form.setName(null);
 
-      final ViolationResource resource = TestUtils.newViolationResource();
+      final ViolationResourceImpl resource = TestUtils.newViolationResource();
       resource.setName(null);
 
       BindException errors = new BindException(form, "violationForm");
@@ -54,7 +54,7 @@ public class ViolationValidatorTests {
       final ViolationForm form = TestUtils.newViolationForm();
       form.setCategory(null);
 
-      final ViolationResource resource = TestUtils.newViolationResource();
+      final ViolationResourceImpl resource = TestUtils.newViolationResource();
       resource.setCategory(null);
 
       BindException errors = new BindException(form, "violationForm");
@@ -71,7 +71,7 @@ public class ViolationValidatorTests {
    @Test
    public void newViolationIsValid() {
       final ViolationForm form = TestUtils.newViolationForm();
-      final ViolationResource resource = TestUtils.newViolationResource();
+      final ViolationResourceImpl resource = TestUtils.newViolationResource();
 
       BindException errors = new BindException(form, "violationForm");
       ValidationUtils.invokeValidator(validator, form, errors);
@@ -95,7 +95,7 @@ public class ViolationValidatorTests {
 
    @Test
    public void newViolationResourceDuplicateName() {
-      final ViolationResource resource = TestUtils.newViolationResource();
+      final ViolationResourceImpl resource = TestUtils.newViolationResource();
 
       Mockito.when(violationQueryRepository.uniqueName(resource.getName())).thenReturn(1);
 
@@ -131,7 +131,7 @@ public class ViolationValidatorTests {
       final ViolationEntry violation = TestUtils.getViolation();
       violation.setId(id);
 
-      final ViolationResource resource = TestUtils.newViolationResource();
+      final ViolationResourceImpl resource = TestUtils.newViolationResource();
       resource.setName("This is a duplicate Name");
       resource.setId(id);
 

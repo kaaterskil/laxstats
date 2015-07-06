@@ -22,21 +22,22 @@ public class ViolationValidator implements Validator {
 
    @Override
    public boolean supports(Class<?> clazz) {
-      return ViolationResource.class.equals(clazz) || ViolationForm.class.equals(clazz);
+      return ViolationResource.class.isAssignableFrom(clazz);
    }
 
    @Override
    public void validate(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".validate.";
+      final ViolationResource resource = (ViolationResource)target;
 
       logger.debug("Entering: " + proc + "10");
 
       // Validate mandatory arguments
-      checkMandatoryArgs(target, errors);
+      checkMandatoryArgs(resource, errors);
       logger.debug(proc + "20");
 
       // Validate name
-      checkName(target, errors);
+      checkName(resource, errors);
 
       logger.debug("Leaving: " + proc + "30");
    }
@@ -47,21 +48,10 @@ public class ViolationValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkMandatoryArgs(Object target, Errors errors) {
+   private void checkMandatoryArgs(ViolationResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkMandatoryArgs.";
-      String name = null;
-      PenaltyCategory category = null;
-
-      if (target instanceof ViolationResource) {
-         final ViolationResource resource = (ViolationResource)target;
-         name = resource.getName();
-         category = resource.getCategory();
-      }
-      else if (target instanceof ViolationForm) {
-         final ViolationForm form = (ViolationForm)target;
-         name = form.getName();
-         category = form.getCategory();
-      }
+      final String name = target.getName();
+      final PenaltyCategory category = target.getCategory();
 
       logger.debug("Entering: " + proc + "10");
 
@@ -83,22 +73,11 @@ public class ViolationValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkName(Object target, Errors errors) {
+   private void checkName(ViolationResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkName.";
-      String violationId = null;
-      String name = null;
+      final String violationId = target.getId();
+      final String name = target.getName();
       int found = 0;
-
-      if (target instanceof ViolationResource) {
-         final ViolationResource resource = (ViolationResource)target;
-         violationId = resource.getId();
-         name = resource.getName();
-      }
-      else if (target instanceof ViolationForm) {
-         final ViolationForm form = (ViolationForm)target;
-         violationId = form.getId();
-         name = form.getName();
-      }
 
       logger.debug("Entering: " + proc + "10");
 

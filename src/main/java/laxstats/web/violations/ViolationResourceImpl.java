@@ -1,26 +1,22 @@
 package laxstats.web.violations;
 
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
-
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import laxstats.api.utils.Constants;
 import laxstats.api.violations.PenaltyCategory;
 import laxstats.api.violations.PenaltyLength;
 
 /**
- * {@code ViolationForm} contains user-defined information to create and update a violation.
+ * {@code ViolationResource} represents a violation resource for remote clients.
  */
-public class ViolationForm implements ViolationResource, Serializable {
-   private static final long serialVersionUID = -8383405468604959469L;
-
+public class ViolationResourceImpl implements ViolationResource {
    private String id;
 
    @NotNull
-   @Size(min = 3, max = 50)
+   @Size(min = Constants.MIN_LENGTH_STRING, max = 50)
    private String name;
+
    private String description;
 
    @NotNull
@@ -28,8 +24,32 @@ public class ViolationForm implements ViolationResource, Serializable {
 
    private PenaltyLength penaltyLength;
    private boolean releasable = true;
-   private List<PenaltyLength> penaltyLengths;
-   private List<PenaltyCategory> categories;
+
+   /**
+    * Creates a {@code ViooationResource} with the given information.
+    *
+    * @param id
+    * @param name
+    * @param description
+    * @param category
+    * @param penaltyLength
+    * @param releasable
+    */
+   public ViolationResourceImpl(String id, String name, String description,
+      PenaltyCategory category, PenaltyLength penaltyLength, boolean releasable) {
+      this.id = id;
+      this.name = name;
+      this.description = description;
+      this.category = category;
+      this.penaltyLength = penaltyLength;
+      this.releasable = releasable;
+   }
+
+   /**
+    * Creates an empty {@code SiteResource}.
+    */
+   public ViolationResourceImpl() {
+   }
 
    /**
     * {@inheritDoc}
@@ -60,6 +80,7 @@ public class ViolationForm implements ViolationResource, Serializable {
     */
    @Override
    public void setName(String name) {
+      assert name != null;
       this.name = name;
    }
 
@@ -92,6 +113,7 @@ public class ViolationForm implements ViolationResource, Serializable {
     */
    @Override
    public void setCategory(PenaltyCategory category) {
+      assert category != null;
       this.category = category;
    }
 
@@ -125,21 +147,5 @@ public class ViolationForm implements ViolationResource, Serializable {
    @Override
    public void setReleasable(boolean releasable) {
       this.releasable = releasable;
-   }
-
-   /*---------- Select element options ----------*/
-
-   public List<PenaltyLength> getPenaltyLengths() {
-      if (penaltyLengths == null) {
-         penaltyLengths = Arrays.asList(PenaltyLength.values());
-      }
-      return penaltyLengths;
-   }
-
-   public List<PenaltyCategory> getCategories() {
-      if (categories == null) {
-         categories = Arrays.asList(PenaltyCategory.values());
-      }
-      return categories;
    }
 }

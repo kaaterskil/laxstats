@@ -49,7 +49,7 @@ import laxstats.web.teams.TeamResource;
 import laxstats.web.users.UserForm;
 import laxstats.web.users.UserResource;
 import laxstats.web.violations.ViolationForm;
-import laxstats.web.violations.ViolationResource;
+import laxstats.web.violations.ViolationResourceImpl;
 
 import org.axonframework.domain.IdentifierFactory;
 import org.joda.time.LocalDate;
@@ -250,8 +250,8 @@ public class TestUtils {
     *
     * @return
     */
-   public static ViolationResource newViolationResource() {
-      final ViolationResource resource = new ViolationResource();
+   public static ViolationResourceImpl newViolationResource() {
+      final ViolationResourceImpl resource = new ViolationResourceImpl();
       resource.setCategory(PenaltyCategory.PERSONAL_FOUL);
       resource.setDescription("This is a slash");
       resource.setName("Slash");
