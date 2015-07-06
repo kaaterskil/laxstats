@@ -1,44 +1,65 @@
 package laxstats.web.games;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import javax.validation.constraints.NotNull;
 
 import laxstats.api.games.PlayKey;
-import laxstats.query.games.AttendeeEntry;
 
-public abstract class AbstractPlayForm implements PlayResource {
-   private String playId;
-   private final String playType;
-   private final PlayKey playKey;
+/**
+ * {@code AbstractPlayResource} is the base class for all play resources.
+ */
+public abstract class AbstractPlayResource implements PlayResource {
+
+   protected String playId;
+   protected final String playType;
+   protected final PlayKey playKey;
+
    @NotNull
-   private String gameId;
+   protected String gameId;
+
    @NotNull
-   private String teamSeasonId;
-   private int period = 0;
-   private String comment;
+   protected String teamSeasonId;
 
-   private String teamName;
-
-   private Map<String, String> teams = new HashMap<String, String>();
-   private Map<String, String> participants = new HashMap<String, String>();
-   private Map<String, List<AttendeeEntry>> attendees = new HashMap<>();
+   protected int period = 0;
+   protected String comment;
+   protected String teamName;
 
    /**
-    * Creates an {@code AbstractPlayForm} with the given class type and category.
+    * Creates an {@code AbstractPlayResource} with the given information.
+    *
+    * @param playId
+    * @param playType
+    * @param playKey
+    * @param gameId
+    * @param teamSeasonId
+    * @param period
+    * @param comment
+    * @param teamName
+    */
+   protected AbstractPlayResource(String playId, String playType, PlayKey playKey, String gameId,
+      String teamSeasonId, int period, String comment, String teamName) {
+      this.playId = playId;
+      this.playType = playType;
+      this.playKey = playKey;
+      this.gameId = gameId;
+      this.teamSeasonId = teamSeasonId;
+      this.period = period;
+      this.comment = comment;
+      this.teamName = teamName;
+   }
+
+   /**
+    * Creates an {@code AbstractPlayResource} with the given class type and category.
     *
     * @param playType
     * @param playKey
     */
-   protected AbstractPlayForm(String playType, PlayKey playKey) {
+   protected AbstractPlayResource(String playType, PlayKey playKey) {
       this.playType = playType;
       this.playKey = playKey;
    }
 
    /**
-    * Returns the play's unique identifier.
+    * Returns the play's unique identifier, or null if the play has not been persisted.
     *
     * @return
     */
@@ -48,7 +69,7 @@ public abstract class AbstractPlayForm implements PlayResource {
    }
 
    /**
-    * Sets the play's unique identifier.
+    * Sets the play's unique identifier. Use null if the play has not been persisted.
     *
     * @param playId
     */
@@ -68,7 +89,7 @@ public abstract class AbstractPlayForm implements PlayResource {
    }
 
    /**
-    * Returns the major ply category. Never null.
+    * Returns the major play category. Never null.
     *
     * @return
     */
@@ -94,6 +115,7 @@ public abstract class AbstractPlayForm implements PlayResource {
     */
    @Override
    public void setGameId(String gameId) {
+      assert gameId != null;
       this.gameId = gameId;
    }
 
@@ -114,6 +136,7 @@ public abstract class AbstractPlayForm implements PlayResource {
     */
    @Override
    public void setTeamSeasonId(String teamSeasonId) {
+      assert teamSeasonId != null;
       this.teamSeasonId = teamSeasonId;
    }
 
@@ -175,32 +198,6 @@ public abstract class AbstractPlayForm implements PlayResource {
    @Override
    public void setTeamName(String teamName) {
       this.teamName = teamName;
-   }
-
-   /*---------- Drop-down menu options ----------*/
-
-   public Map<String, String> getTeams() {
-      return teams;
-   }
-
-   public void setTeams(Map<String, String> teams) {
-      this.teams = teams;
-   }
-
-   public Map<String, String> getParticipants() {
-      return participants;
-   }
-
-   public void setParticipants(Map<String, String> participants) {
-      this.participants = participants;
-   }
-
-   public Map<String, List<AttendeeEntry>> getAttendees() {
-      return attendees;
-   }
-
-   public void setAttendees(Map<String, List<AttendeeEntry>> attendees) {
-      this.attendees = attendees;
    }
 
 }
