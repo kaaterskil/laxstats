@@ -30,33 +30,34 @@ public class GameValidator implements Validator {
 
    @Override
    public boolean supports(Class<?> clazz) {
-      return GameForm.class.equals(clazz);
+      return GameResource.class.isAssignableFrom(clazz);
    }
 
    @Override
    public void validate(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".validate.";
+      final GameResource resource = (GameResource)target;
 
       logger.debug("Entering: " + proc + "10");
 
       // Validate mandatory args
-      checkMandatoryArgs(target, errors);
+      checkMandatoryArgs(resource, errors);
       logger.debug(proc + "20");
 
       // Validate uniqueness
-      checkDuplicate(target, errors);
+      checkDuplicate(resource, errors);
       logger.debug(proc + "30");
 
       // Validate team seasons
-      checkTeamSeason(target, errors);
+      checkTeamSeason(resource, errors);
       logger.debug(proc + "40");
 
       // Validate same team
-      checkSameTeam(target, errors);
+      checkSameTeam(resource, errors);
       logger.debug(proc + "50");
 
       // Validate home team
-      checkAlignment(target, errors);
+      checkAlignment(resource, errors);
       logger.debug("Leaving: " + proc + "60");
    }
 
@@ -66,25 +67,11 @@ public class GameValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkMandatoryArgs(Object target, Errors errors) {
+   private void checkMandatoryArgs(GameResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkMandatoryArgs.";
-      LocalDateTime startsAt = null;
-      Schedule schedule = null;
-      Status status = null;
-
-      if (target instanceof GameResource) {
-         final GameResource resource = (GameResource)target;
-         startsAt =
-            resource.getStartsAt() == null ? null : LocalDateTime.parse(resource.getStartsAt());
-         schedule = resource.getSchedule();
-         status = resource.getStatus();
-      }
-      else if (target instanceof GameForm) {
-         final GameForm form = (GameForm)target;
-         startsAt = form.getStartsAt();
-         schedule = form.getSchedule();
-         status = form.getStatus();
-      }
+      final LocalDateTime startsAt = target.getStartsAtAsDateTime();
+      final Schedule schedule = target.getSchedule();
+      final Status status = target.getStatus();
 
       logger.debug("Entering: " + proc + "10");
 
@@ -110,32 +97,14 @@ public class GameValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkDuplicate(Object target, Errors errors) {
+   private void checkDuplicate(GameResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkDuplicate.";
-      String gameId = null;
-      String siteId = null;
-      String teamOneId = null;
-      String teamTwoId = null;
-      String startsAt = null;
+      final String gameId = target.getId();
+      final String siteId = target.getSite();
+      final String teamOneId = target.getTeamOne();
+      final String teamTwoId = target.getTeamTwo();
+      final String startsAt = target.getStartsAt();
       int found = 0;
-
-      if (target instanceof GameResource) {
-         final GameResource resource = (GameResource)target;
-         gameId = resource.getId();
-         siteId = resource.getSite();
-         teamOneId = resource.getTeamOne();
-         teamTwoId = resource.getTeamTwo();
-         startsAt = resource.getStartsAt();
-      }
-      else if (target instanceof GameForm) {
-         final GameForm form = (GameForm)target;
-         gameId = form.getId();
-         siteId = form.getSite();
-         teamOneId = form.getTeamOne();
-         teamTwoId = form.getTeamTwo();
-         startsAt =
-            form.getStartsAt() == null ? null : form.getStartsAt().toString("yyyy-MM-dd HH:mm:ss");
-      }
 
       logger.debug("Entering: " + proc + "10");
 
@@ -177,25 +146,12 @@ public class GameValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkSameTeam(Object target, Errors errors) {
+   private void checkSameTeam(GameResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkSameTeam.";
-      String gameId = null;
-      String teamOneId = null;
-      String teamTwoId = null;
+      final String gameId = target.getId();
+      final String teamOneId = target.getTeamOne();
+      final String teamTwoId = target.getTeamTwo();
       boolean doValidation = false;
-
-      if (target instanceof GameResource) {
-         final GameResource resource = (GameResource)target;
-         gameId = resource.getId();
-         teamOneId = resource.getTeamOne();
-         teamTwoId = resource.getTeamTwo();
-      }
-      else if (target instanceof GameForm) {
-         final GameForm form = (GameForm)target;
-         gameId = form.getId();
-         teamOneId = form.getTeamOne();
-         teamTwoId = form.getTeamTwo();
-      }
 
       logger.debug("Entering: " + proc + "10");
 
@@ -240,31 +196,15 @@ public class GameValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkTeamSeason(Object target, Errors errors) {
+   private void checkTeamSeason(GameResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkTeamSeason.";
-      String gameId = null;
-      String teamOneId = null;
-      String teamTwoId = null;
-      LocalDateTime startsAt = null;
+      final String gameId = target.getId();
+      final String teamOneId = target.getTeamOne();
+      final String teamTwoId = target.getTeamTwo();
+      final LocalDateTime startsAt = target.getStartsAtAsDateTime();
       String oldTeamOneId = null;
       String oldTeamTwoId = null;
       boolean doValidation = false;
-
-      if (target instanceof GameResource) {
-         final GameResource resource = (GameResource)target;
-         gameId = resource.getId();
-         teamOneId = resource.getTeamOne();
-         teamTwoId = resource.getTeamTwo();
-         startsAt =
-            resource.getStartsAt() == null ? null : LocalDateTime.parse(resource.getStartsAt());
-      }
-      else if (target instanceof GameForm) {
-         final GameForm form = (GameForm)target;
-         gameId = form.getId();
-         teamOneId = form.getTeamOne();
-         teamTwoId = form.getTeamTwo();
-         startsAt = form.getStartsAt();
-      }
 
       logger.debug("Entering: " + proc + "10");
 
@@ -329,34 +269,15 @@ public class GameValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkAlignment(Object target, Errors errors) {
+   private void checkAlignment(GameResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkAlignment.";
-      String gameId = null;
-      String teamOneId = null;
-      String teamTwoId = null;
-      boolean isTeamOneHome = false;
-      boolean isTeamTwoHome = false;
-      SiteAlignment alignment = null;
+      final String gameId = target.getId();
+      final String teamOneId = target.getTeamOne();
+      final String teamTwoId = target.getTeamTwo();
+      final boolean isTeamOneHome = target.isTeamOneHome();
+      final boolean isTeamTwoHome = target.isTeamTwoHome();
+      final SiteAlignment alignment = target.getAlignment();
       boolean doValidation = false;
-
-      if (target instanceof GameResource) {
-         final GameResource resource = (GameResource)target;
-         gameId = resource.getId();
-         teamOneId = resource.getTeamOne();
-         teamTwoId = resource.getTeamTwo();
-         isTeamOneHome = resource.isTeamOneHome();
-         isTeamTwoHome = resource.isTeamTwoHome();
-         alignment = resource.getAlignment();
-      }
-      else if (target instanceof GameForm) {
-         final GameForm form = (GameForm)target;
-         gameId = form.getId();
-         teamOneId = form.getTeamOne();
-         teamTwoId = form.getTeamTwo();
-         isTeamOneHome = form.isTeamOneHome();
-         isTeamTwoHome = form.isTeamTwoHome();
-         alignment = form.getAlignment();
-      }
 
       logger.debug("Entering: " + proc + "10");
 

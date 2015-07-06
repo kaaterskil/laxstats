@@ -1,229 +1,146 @@
 package laxstats.web.games;
 
-import javax.validation.constraints.NotNull;
-
 import laxstats.api.games.Conditions;
 import laxstats.api.games.Schedule;
 import laxstats.api.games.Status;
 import laxstats.api.sites.SiteAlignment;
 
-/**
- * {@code GameResource} represents a game resource for remote clients.
- */
-public class GameResource {
-   private String id;
+import org.joda.time.LocalDateTime;
 
-   @NotNull
-   private String startsAt;
-
-   @NotNull
-   private Schedule schedule = Schedule.REGULAR;
-
-   @NotNull
-   private Status status;
-
-   private String site;
-   private String teamOne;
-   private String teamTwo;
-   private boolean teamOneHome = false;
-   private boolean teamTwoHome = false;
-   private SiteAlignment alignment = SiteAlignment.HOME;
-   private String description;
-   private Conditions weather;
-
-   /**
-    * Creates a {@code GameResource} with the given information.
-    * 
-    * @param id
-    * @param startsAt
-    * @param schedule
-    * @param status
-    * @param site
-    * @param teamOne
-    * @param teamTwo
-    * @param teamOneHome
-    * @param teamTwoHome
-    * @param alignment
-    * @param description
-    * @param weather
-    */
-   public GameResource(String id, String startsAt, Schedule schedule, Status status, String site,
-      String teamOne, String teamTwo, boolean teamOneHome, boolean teamTwoHome,
-      SiteAlignment alignment, String description, Conditions weather) {
-      this.id = id;
-      this.startsAt = startsAt;
-      this.schedule = schedule;
-      this.status = status;
-      this.site = site;
-      this.teamOne = teamOne;
-      this.teamTwo = teamTwo;
-      this.teamOneHome = teamOneHome;
-      this.teamTwoHome = teamTwoHome;
-      this.alignment = alignment;
-      this.description = description;
-      this.weather = weather;
-   }
-
-   /**
-    * Creates an empty {@code GameResource} for internal use.
-    */
-   public GameResource() {
-   }
+public interface GameResource {
 
    /**
     * Returns the game's unique identifier, or null if the game has not been persisted.
     *
     * @return
     */
-   public String getId() {
-      return id;
-   }
+   public String getId();
 
    /**
     * Sets the game's unique identifier. Use null if the game has not been persisted.
     *
     * @param id
     */
-   public void setId(String id) {
-      this.id = id;
-   }
+   public void setId(String id);
 
    /**
     * Returns the scheduled date and time of the start of the game. Never null.
     *
     * @return
     */
-   public String getStartsAt() {
-      return startsAt;
-   }
+   public String getStartsAt();
 
    /**
     * Sets the scheduled date and time of the start of the game. Must not be null.
     *
     * @param startsAt
     */
-   public void setStartsAt(String startsAt) {
-      assert startsAt != null;
-      this.startsAt = startsAt;
-   }
+   public void setStartsAt(String startsAt);
+
+   /**
+    * Returns the scheduled date and time of the start of the game. Never null.
+    *
+    * @return
+    */
+   public LocalDateTime getStartsAtAsDateTime();
+
+   /**
+    * Sets the scheduled date and time of the start of the game. Must not be null.
+    *
+    * @param startsAt
+    */
+   public void setStartsAt(LocalDateTime startsAt);
 
    /**
     * Returns the game status. Never null.
     *
     * @return
     */
-   public Status getStatus() {
-      return status;
-   }
+   public Status getStatus();
 
    /**
     * Sets the game status. Must not be null.
     *
     * @param status
     */
-   public void setStatus(Status status) {
-      assert status != null;
-      this.status = status;
-   }
+   public void setStatus(Status status);
 
    /**
     * Returns the identifier of the associated playing field, or null.
     *
     * @return
     */
-   public String getSite() {
-      return site;
-   }
+   public String getSite();
 
    /**
     * Sets the identifier of the associated playing field. Use null if not known.
     *
     * @param site
     */
-   public void setSite(String site) {
-      this.site = site;
-   }
+   public void setSite(String site);
 
    /**
     * Returns the identifier of the associated Team One.
     *
     * @return
     */
-   public String getTeamOne() {
-      return teamOne;
-   }
+   public String getTeamOne();
 
    /**
     * Sets the identifier of the associated Team One.
     *
     * @param teamOne
     */
-   public void setTeamOne(String teamOne) {
-      this.teamOne = teamOne;
-   }
+   public void setTeamOne(String teamOne);
 
    /**
     * Returns the identifier of the associated Team Two.
     *
     * @return
     */
-   public String getTeamTwo() {
-      return teamTwo;
-   }
+   public String getTeamTwo();
 
    /**
     * Sets the identifier of the associated Team Two.
     *
     * @param teamTwo
     */
-   public void setTeamTwo(String teamTwo) {
-      this.teamTwo = teamTwo;
-   }
+   public void setTeamTwo(String teamTwo);
 
    /**
     * Returns true if Team One is playing as the home team, false otherwise.
     *
     * @return
     */
-   public boolean isTeamOneHome() {
-      return teamOneHome;
-   }
+   public boolean isTeamOneHome();
 
    /**
     * Sets a flag whether Team One is playing as the home team.
     *
     * @param teamOneHome
     */
-   public void setTeamOneHome(boolean teamOneHome) {
-      this.teamOneHome = teamOneHome;
-   }
+   public void setTeamOneHome(boolean teamOneHome);
 
    /**
     * Returns true if Team Two is playing as the home team, false otherwise.
     *
     * @return
     */
-   public boolean isTeamTwoHome() {
-      return teamTwoHome;
-   }
+   public boolean isTeamTwoHome();
 
    /**
     * Sets a flag whether Team Two is playing as the home team.
     *
     * @param teamTwoHome
     */
-   public void setTeamTwoHome(boolean teamTwoHome) {
-      this.teamTwoHome = teamTwoHome;
-   }
+   public void setTeamTwoHome(boolean teamTwoHome);
 
    /**
     * Returns the playing field alignment.
     *
     * @return
     */
-   public SiteAlignment getAlignment() {
-      return alignment;
-   }
+   public SiteAlignment getAlignment();
 
    /**
     * Sets the playing field alignment. Defaults to SiteAlignment.HOME as most regular season games
@@ -231,54 +148,42 @@ public class GameResource {
     *
     * @param alignment
     */
-   public void setAlignment(SiteAlignment alignment) {
-      this.alignment = alignment;
-   }
+   public void setAlignment(SiteAlignment alignment);
 
    /**
     * Returns a description of the game, or null.
     *
     * @return
     */
-   public String getDescription() {
-      return description;
-   }
+   public String getDescription();
 
    /**
     * Sets a description of the game. Use null for none.
     *
     * @param description
     */
-   public void setDescription(String description) {
-      this.description = description;
-   }
+   public void setDescription(String description);
 
    /**
     * Returns game time weather conditions, or null.
     *
     * @return
     */
-   public Conditions getWeather() {
-      return weather;
-   }
+   public Conditions getWeather();
 
    /**
     * Sets the game time weather conditions. Use null for unknown.
     *
     * @param weather
     */
-   public void setWeather(Conditions weather) {
-      this.weather = weather;
-   }
+   public void setWeather(Conditions weather);
 
    /**
     * Returns the game schedule. Never null.
     *
     * @return
     */
-   public Schedule getSchedule() {
-      return schedule;
-   }
+   public Schedule getSchedule();
 
    /**
     * Sets the game schedule. Must not be null. Defaults to Schedule.REGULAR for a regular season
@@ -286,9 +191,6 @@ public class GameResource {
     *
     * @param schedule
     */
-   public void setSchedule(Schedule schedule) {
-      assert schedule != null;
-      this.schedule = schedule;
-   }
+   public void setSchedule(Schedule schedule);
 
 }

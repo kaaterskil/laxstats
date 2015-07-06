@@ -31,7 +31,7 @@ public class GameValidatorTests {
 
    @Test
    public void supports() {
-      assertTrue(validator.supports(GameResource.class));
+      assertTrue(validator.supports(GameResourceImpl.class));
       assertTrue(validator.supports(GameForm.class));
       assertFalse(validator.supports(Object.class));
    }
@@ -42,7 +42,7 @@ public class GameValidatorTests {
       form.setTeamOneHome(true);
       form.setStartsAt(null);
 
-      final GameResource resource = TestUtils.newGameResource();
+      final GameResourceImpl resource = TestUtils.newGameResource();
       resource.setTeamOneHome(true);
       resource.setStartsAt(null);
 
@@ -61,7 +61,7 @@ public class GameValidatorTests {
       form.setTeamOneHome(true);
       form.setSchedule(null);
 
-      final GameResource resource = TestUtils.newGameResource();
+      final GameResourceImpl resource = TestUtils.newGameResource();
       resource.setTeamOneHome(true);
       resource.setSchedule(null);
 
@@ -80,7 +80,7 @@ public class GameValidatorTests {
       form.setTeamOneHome(true);
       form.setStatus(null);
 
-      final GameResource resource = TestUtils.newGameResource();
+      final GameResourceImpl resource = TestUtils.newGameResource();
       resource.setTeamOneHome(true);
       resource.setStatus(null);
 
@@ -100,7 +100,7 @@ public class GameValidatorTests {
       final GameForm form = TestUtils.newGameForm();
       form.setTeamOneHome(true);
 
-      final GameResource resource = TestUtils.newGameResource();
+      final GameResourceImpl resource = TestUtils.newGameResource();
       resource.setTeamOneHome(true);
 
       BindException errors = new BindException(form, "gameForm");
@@ -116,7 +116,7 @@ public class GameValidatorTests {
    public void newGameResourceWithOneTeamAndNoSiteIsValid() {
       final TeamSeasonEntry teamOne = TestUtils.getExistingTeamSeason();
 
-      final GameResource resource = TestUtils.newGameResource();
+      final GameResourceImpl resource = TestUtils.newGameResource();
       resource.setTeamOne(teamOne.getTeam().getId());
       resource.setTeamOneHome(true);
 
@@ -146,7 +146,7 @@ public class GameValidatorTests {
    public void newGameResourceWithOneInvalidTeamAndNoSite() {
       final TeamEntry teamOne = TestUtils.getExistingTeam();
 
-      final GameResource resource = TestUtils.newGameResource();
+      final GameResourceImpl resource = TestUtils.newGameResource();
       resource.setTeamOne(teamOne.getId());
       resource.setTeamOneHome(true);
 
@@ -177,7 +177,7 @@ public class GameValidatorTests {
       final TeamSeasonEntry teamOne = TestUtils.getExistingTeamSeason();
       final TeamSeasonEntry teamTwo = TestUtils.getExistingTeamSeason();
 
-      final GameResource resource = TestUtils.newGameResource();
+      final GameResourceImpl resource = TestUtils.newGameResource();
       resource.setTeamOne(teamOne.getTeam().getId());
       resource.setTeamOneHome(true);
       resource.setTeamTwo(teamTwo.getTeam().getId());
@@ -215,7 +215,7 @@ public class GameValidatorTests {
       final TeamSeasonEntry teamOne = TestUtils.getExistingTeamSeason();
       final TeamSeasonEntry teamTwo = TestUtils.getExistingTeamSeason();
 
-      final GameResource resource = TestUtils.newGameResource();
+      final GameResourceImpl resource = TestUtils.newGameResource();
       resource.setTeamOne(teamOne.getTeam().getId());
       resource.setTeamOneHome(true);
       resource.setTeamTwo(teamTwo.getTeam().getId());
@@ -254,7 +254,7 @@ public class GameValidatorTests {
    public void newGameResourceWithSameTeams() {
       final TeamSeasonEntry teamOne = TestUtils.getExistingTeamSeason();
 
-      final GameResource resource = TestUtils.newGameResource();
+      final GameResourceImpl resource = TestUtils.newGameResource();
       resource.setTeamOne(teamOne.getTeam().getId());
       resource.setTeamOneHome(true);
       resource.setTeamTwo(teamOne.getTeam().getId());
@@ -293,7 +293,7 @@ public class GameValidatorTests {
       final TeamSeasonEntry teamOne = TestUtils.getExistingTeamSeason();
       final TeamSeasonEntry teamTwo = TestUtils.getExistingTeamSeason();
 
-      final GameResource resource = TestUtils.newGameResource();
+      final GameResourceImpl resource = TestUtils.newGameResource();
       resource.setTeamOne(teamOne.getTeam().getId());
       resource.setTeamOneHome(true);
       resource.setTeamTwo(teamTwo.getTeam().getId());
@@ -333,7 +333,7 @@ public class GameValidatorTests {
       final TeamSeasonEntry teamOne = TestUtils.getExistingTeamSeason();
       final TeamSeasonEntry teamTwo = TestUtils.getExistingTeamSeason();
 
-      final GameResource resource = TestUtils.newGameResource();
+      final GameResourceImpl resource = TestUtils.newGameResource();
       resource.setTeamOne(teamOne.getTeam().getId());
       resource.setTeamOneHome(false);
       resource.setTeamTwo(teamTwo.getTeam().getId());
@@ -375,7 +375,7 @@ public class GameValidatorTests {
       final TeamSeasonEntry teamOne = TestUtils.getExistingTeamSeason();
       final GameEntry game = TestUtils.getUnassignedGame();
 
-      final GameResource resource = TestUtils.newGameResource();
+      final GameResourceImpl resource = TestUtils.newGameResource();
       resource.setId(game.getId());
       resource.setTeamOne(teamOne.getTeam().getId());
       resource.setTeamOneHome(true);

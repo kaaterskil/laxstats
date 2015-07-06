@@ -1,33 +1,22 @@
 package laxstats.web.games;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import javax.validation.constraints.NotNull;
 
-import laxstats.api.Region;
 import laxstats.api.games.Conditions;
 import laxstats.api.games.Schedule;
 import laxstats.api.games.Status;
 import laxstats.api.sites.SiteAlignment;
-import laxstats.api.utils.Constants;
-import laxstats.query.sites.SiteEntry;
-import laxstats.query.teams.TeamEntry;
 
 import org.joda.time.LocalDateTime;
-import org.springframework.format.annotation.DateTimeFormat;
 
 /**
- * {@code GameForm} contains user-defined information with which to create and update a game.
+ * {@code GameResource} represents a game resource for remote clients.
  */
-public class GameForm implements GameResource {
+public class GameResourceImpl implements GameResource {
    private String id;
 
    @NotNull
-   @DateTimeFormat(pattern = Constants.PATTERN_START_DATETIME_FORMAT)
-   private LocalDateTime startsAt;
+   private String startsAt;
 
    @NotNull
    private Schedule schedule = Schedule.REGULAR;
@@ -35,9 +24,7 @@ public class GameForm implements GameResource {
    @NotNull
    private Status status;
 
-   @NotNull
    private String site;
-
    private String teamOne;
    private String teamTwo;
    private boolean teamOneHome = false;
@@ -46,12 +33,44 @@ public class GameForm implements GameResource {
    private String description;
    private Conditions weather;
 
-   private Map<Region, List<SiteEntry>> sites = new HashMap<>();
-   private Map<Region, List<TeamEntry>> teams = new HashMap<>();
-   private List<Schedule> schedules;
-   private List<Status> statuses;
-   private List<SiteAlignment> siteAlignments;
-   private List<Conditions> conditions;
+   /**
+    * Creates a {@code GameResource} with the given information.
+    *
+    * @param id
+    * @param startsAt
+    * @param schedule
+    * @param status
+    * @param site
+    * @param teamOne
+    * @param teamTwo
+    * @param teamOneHome
+    * @param teamTwoHome
+    * @param alignment
+    * @param description
+    * @param weather
+    */
+   public GameResourceImpl(String id, String startsAt, Schedule schedule, Status status,
+      String site, String teamOne, String teamTwo, boolean teamOneHome, boolean teamTwoHome,
+      SiteAlignment alignment, String description, Conditions weather) {
+      this.id = id;
+      this.startsAt = startsAt;
+      this.schedule = schedule;
+      this.status = status;
+      this.site = site;
+      this.teamOne = teamOne;
+      this.teamTwo = teamTwo;
+      this.teamOneHome = teamOneHome;
+      this.teamTwoHome = teamTwoHome;
+      this.alignment = alignment;
+      this.description = description;
+      this.weather = weather;
+   }
+
+   /**
+    * Creates an empty {@code GameResource} for internal use.
+    */
+   public GameResourceImpl() {
+   }
 
    /**
     * {@inheritDoc}
@@ -74,22 +93,6 @@ public class GameForm implements GameResource {
     */
    @Override
    public String getStartsAt() {
-      return startsAt == null ? null : startsAt.toString();
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public void setStartsAt(String startsAt) {
-      this.startsAt = LocalDateTime.parse(startsAt);
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public LocalDateTime getStartsAtAsDateTime() {
       return startsAt;
    }
 
@@ -97,8 +100,26 @@ public class GameForm implements GameResource {
     * {@inheritDoc}
     */
    @Override
-   public void setStartsAt(LocalDateTime startsAt) {
+   public void setStartsAt(String startsAt) {
+      assert startsAt != null;
       this.startsAt = startsAt;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public LocalDateTime getStartsAtAsDateTime() {
+      return LocalDateTime.parse(startsAt);
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public void setStartsAt(LocalDateTime startsAt) {
+      assert startsAt != null;
+      this.startsAt = startsAt.toString();
    }
 
    /**
@@ -114,6 +135,7 @@ public class GameForm implements GameResource {
     */
    @Override
    public void setStatus(Status status) {
+      assert status != null;
       this.status = status;
    }
 
@@ -258,53 +280,8 @@ public class GameForm implements GameResource {
     */
    @Override
    public void setSchedule(Schedule schedule) {
+      assert schedule != null;
       this.schedule = schedule;
-   }
-
-   /*---------- Select element options ----------*/
-
-   public Map<Region, List<SiteEntry>> getSites() {
-      return sites;
-   }
-
-   public void setSites(Map<Region, List<SiteEntry>> sites) {
-      this.sites = sites;
-   }
-
-   public Map<Region, List<TeamEntry>> getTeams() {
-      return teams;
-   }
-
-   public void setTeams(Map<Region, List<TeamEntry>> teams) {
-      this.teams = teams;
-   }
-
-   public List<Schedule> getSchedules() {
-      if (schedules == null) {
-         schedules = Arrays.asList(Schedule.values());
-      }
-      return schedules;
-   }
-
-   public List<Status> getStatuses() {
-      if (statuses == null) {
-         statuses = Arrays.asList(Status.values());
-      }
-      return statuses;
-   }
-
-   public List<SiteAlignment> getSiteAlignments() {
-      if (siteAlignments == null) {
-         siteAlignments = Arrays.asList(SiteAlignment.values());
-      }
-      return siteAlignments;
-   }
-
-   public List<Conditions> getConditions() {
-      if (conditions == null) {
-         conditions = Arrays.asList(Conditions.values());
-      }
-      return conditions;
    }
 
 }

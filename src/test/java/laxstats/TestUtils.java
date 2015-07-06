@@ -29,7 +29,7 @@ import laxstats.query.teamSeasons.TeamSeasonEntry;
 import laxstats.query.teams.TeamEntry;
 import laxstats.query.violations.ViolationEntry;
 import laxstats.web.games.GameForm;
-import laxstats.web.games.GameResource;
+import laxstats.web.games.GameResourceImpl;
 import laxstats.web.people.AddressForm;
 import laxstats.web.people.AddressResource;
 import laxstats.web.people.ContactForm;
@@ -120,8 +120,8 @@ public class TestUtils {
     *
     * @return
     */
-   public static GameResource newGameResource() {
-      final GameResource resource = new GameResource();
+   public static GameResourceImpl newGameResource() {
+      final GameResourceImpl resource = new GameResourceImpl();
       resource.setAlignment(SiteAlignment.HOME);
       resource.setDescription("This is a description");
       resource.setSchedule(Schedule.REGULAR);
