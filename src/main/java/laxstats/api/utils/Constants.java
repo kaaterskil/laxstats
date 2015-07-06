@@ -33,7 +33,17 @@ public class Constants {
       "org.jadira.usertype.dateandtime.joda.PersistentPeriodAsString";
 
    /**
-    * the maximum length of a person's name prefix or suffix.
+    * The minimum length of a required string input.
+    */
+   public static final int MIN_LENGTH_STRING = 3;
+
+   /**
+    * The maximum length of a title or entity name.
+    */
+   public static final int MAX_LENGTH_TITLE = 100;
+
+   /**
+    * The maximum length of a person's name prefix or suffix.
     */
    public static final int MAX_LENGTH_NAME_PREFIX_OR_SUFFIX = 10;
 
@@ -80,7 +90,7 @@ public class Constants {
    /**
     * Pattern string to convert to DateTime format.
     */
-   public static final String PATTERN_DATE_TIME_FORMAT = "yyyy-MM-dd";
+   public static final String PATTERN_DATE_FORMAT = "yyyy-MM-dd";
 
    /**
     * Pattern string to convert to Period format.
