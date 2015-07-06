@@ -13,7 +13,7 @@ import laxstats.api.games.PlayType;
 /**
  * {@code ClearForm} contains user-defined information with which to create and update a clear play.
  */
-public class ClearForm extends AbstractPlayForm {
+public class ClearForm extends AbstractPlayForm implements ClearResource {
    @NotNull
    private PlayResult result;
 
@@ -27,19 +27,17 @@ public class ClearForm extends AbstractPlayForm {
    }
 
    /**
-    * Returns the play result. Never null.
-    * 
-    * @return
+    * {@inheritDoc}
     */
+   @Override
    public PlayResult getResult() {
       return result;
    }
 
    /**
-    * Sets the play result. Must not be null.
-    * 
-    * @param result
+    * {@inheritDoc}
     */
+   @Override
    public void setResult(PlayResult result) {
       this.result = result;
    }
