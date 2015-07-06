@@ -1,27 +1,19 @@
 package laxstats.web.games;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import javax.validation.constraints.NotNull;
 
 import laxstats.api.games.PlayKey;
 import laxstats.api.games.PlayType;
-import laxstats.api.utils.Constants;
-import laxstats.query.games.AttendeeEntry;
 
 import org.joda.time.Period;
-import org.springframework.format.annotation.DateTimeFormat;
 
 /**
- * {@code PenaltyForm} contains user-defined information with which to create and update penalty
+ * {@code PenaltyResource} contains user-defined information with which to create and update penalty
  * plays.
  */
-public class PenaltyForm extends AbstractPlayForm implements PenaltyResource {
+public class PenaltyResourceImpl extends AbstractPlayResource implements PenaltyResource {
    @NotNull
-   @DateTimeFormat(pattern = Constants.PATTERN_ELAPSED_TIME_FORMAT)
-   private Period elapsedTime;
+   private String elapsedTime;
 
    @NotNull
    private String committedById;
@@ -32,16 +24,38 @@ public class PenaltyForm extends AbstractPlayForm implements PenaltyResource {
    private String violationId;
 
    @NotNull
-   private Period duration;
-
-   private Map<String, String> violationData = new HashMap<>();
-   private Map<String, List<AttendeeEntry>> violators;
-   private Map<String, List<AttendeeEntry>> opponents;
+   private String duration;
 
    /**
-    * Creates a {@code PenaltyForm}.
+    * Creates a {@code PenaltyResource} from the given information.
+    *
+    * @param playId
+    * @param gameId
+    * @param teamSeasonId
+    * @param period
+    * @param comment
+    * @param teamName
+    * @param elapsedTime
+    * @param committedById
+    * @param committedAgainstId
+    * @param violationId
+    * @param duration
     */
-   public PenaltyForm() {
+   public PenaltyResourceImpl(String playId, String gameId, String teamSeasonId, int period,
+      String comment, String teamName, String elapsedTime, String committedById,
+      String committedAgainstId, String violationId, String duration) {
+      super(playId, PlayType.PENALTY, PlayKey.PLAY, gameId, teamSeasonId, period, comment, teamName);
+      this.elapsedTime = elapsedTime;
+      this.committedById = committedById;
+      this.committedAgainstId = committedAgainstId;
+      this.violationId = violationId;
+      this.duration = duration;
+   }
+
+   /**
+    * Creates an empty {@code PenaltyResource}.
+    */
+   public PenaltyResourceImpl() {
       super(PlayType.PENALTY, PlayKey.PLAY);
    }
 
@@ -50,22 +64,6 @@ public class PenaltyForm extends AbstractPlayForm implements PenaltyResource {
     */
    @Override
    public String getElapsedTime() {
-      return elapsedTime.toString();
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public void setElapsedTime(String elapsedTime) {
-      this.elapsedTime = Period.parse(elapsedTime);
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public Period getElapsedTimeAsPeriod() {
       return elapsedTime;
    }
 
@@ -73,8 +71,24 @@ public class PenaltyForm extends AbstractPlayForm implements PenaltyResource {
     * {@inheritDoc}
     */
    @Override
-   public void setElapsedTime(Period elapsedTime) {
+   public void setElapsedTime(String elapsedTime) {
       this.elapsedTime = elapsedTime;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public Period getElapsedTimeAsPeriod() {
+      return Period.parse(elapsedTime);
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public void setElapsedTime(Period elapsedTime) {
+      this.elapsedTime = elapsedTime.toString();
    }
 
    /**
@@ -129,7 +143,7 @@ public class PenaltyForm extends AbstractPlayForm implements PenaltyResource {
     * {@inheritDoc}
     */
    @Override
-   public Period getDurationAsPeriod() {
+   public String getDuration() {
       return duration;
    }
 
@@ -137,7 +151,7 @@ public class PenaltyForm extends AbstractPlayForm implements PenaltyResource {
     * {@inheritDoc}
     */
    @Override
-   public void setDuration(Period duration) {
+   public void setDuration(String duration) {
       this.duration = duration;
    }
 
@@ -145,39 +159,16 @@ public class PenaltyForm extends AbstractPlayForm implements PenaltyResource {
     * {@inheritDoc}
     */
    @Override
-   public String getDuration() {
-      return duration.toString();
+   public Period getDurationAsPeriod() {
+      return Period.parse(duration);
    }
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
-   public void setDuration(String duration) {
-      this.duration = Period.parse(duration);
-   }
-
-   /*---------- Drop down menu options ----------*/
-
-   public Map<String, String> getViolationData() {
-      return violationData;
-   }
-
-   public void setViolationData(Map<String, String> violationData) {
-      this.violationData = violationData;
-   }
-
-   public Map<String, List<AttendeeEntry>> getViolators() {
-      return violators;
-   }
-
-   public void setViolators(Map<String, List<AttendeeEntry>> violators) {
-      this.violators = violators;
-   }
-
-   public Map<String, List<AttendeeEntry>> getOpponents() {
-      return opponents;
-   }
-
-   public void setOpponents(Map<String, List<AttendeeEntry>> opponents) {
-      this.opponents = opponents;
+   public void setDuration(Period duration) {
+      this.duration = duration.toString();
    }
 
 }

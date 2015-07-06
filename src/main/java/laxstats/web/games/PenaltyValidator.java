@@ -19,13 +19,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 @Service
-public class PenaltyFormValidator extends AbstractPlayValidator implements Validator {
-   private static final Logger logger = LoggerFactory.getLogger(PenaltyFormValidator.class);
-   private static final String PACKAGE_NAME = PenaltyFormValidator.class.getPackage().getName();
+public class PenaltyValidator extends AbstractPlayValidator implements Validator {
+   private static final Logger logger = LoggerFactory.getLogger(PenaltyValidator.class);
+   private static final String PACKAGE_NAME = PenaltyValidator.class.getPackage().getName();
 
    @Autowired
    private GameQueryRepository gameRepository;
@@ -35,50 +34,50 @@ public class PenaltyFormValidator extends AbstractPlayValidator implements Valid
 
    @Override
    public boolean supports(Class<?> clazz) {
-      return PenaltyForm.class.equals(clazz);
+      return PenaltyResource.class.isAssignableFrom(clazz);
    }
 
    @Override
    public void validate(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".validate.";
-      final PenaltyForm form = (PenaltyForm)target;
+      final PenaltyResource resource = (PenaltyResource)target;
 
       logger.debug("Entering: " + proc + "10");
 
       // Validate mandatory args
-      checkMandatoryArgs(form, errors);
+      checkMandatoryArgs(resource, errors);
       logger.debug(proc + "20");
 
       // Validate non-updateable args
-      checkNonUpdateableArgs(form, errors);
+      checkNonUpdateableArgs(resource, errors);
       logger.debug(proc + "30");
 
       // Validate period
-      checkPeriod(form, errors);
+      checkPeriod(resource, errors);
       logger.debug(proc + "40");
 
       // Validate elapsed time
-      checkElapsedTime(form, errors);
+      checkElapsedTime(resource, errors);
       logger.debug(proc + "50");
 
       // Validate team
-      checkTeam(form, errors);
+      checkTeam(resource, errors);
       logger.debug(proc + "60");
 
       // Validate committed by player
-      checkCommittedBy(form, errors);
+      checkCommittedBy(resource, errors);
       logger.debug(proc + "70");
 
       // Validate committed against player
-      checkCommittedAgainst(form, errors);
+      checkCommittedAgainst(resource, errors);
       logger.debug(proc + "80");
 
       // Validate violation
-      checkViolation(form, errors);
+      checkViolation(resource, errors);
       logger.debug(proc + "90");
 
       // Validate penalty duration
-      checkDuration(form, errors);
+      checkDuration(resource, errors);
       logger.debug("Leaving " + proc + "90");
    }
 
@@ -88,24 +87,39 @@ public class PenaltyFormValidator extends AbstractPlayValidator implements Valid
     * @param form
     * @param errors
     */
-   private void checkMandatoryArgs(PenaltyForm form, Errors errors) {
+   private void checkMandatoryArgs(PenaltyResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkMandatoryArgs.";
+      final String teamSeasonId = target.getTeamSeasonId();
+      final String committedById = target.getCommittedById();
+      final String elapsedTime = target.getElapsedTime();
+      final String violationId = target.getViolationId();
+      final String duration = target.getDuration();
 
       logger.debug("Entering: " + proc + "10");
 
-      ValidationUtils.rejectIfEmpty(errors, "teamSeasonId", "play.teamSeasonId.required");
+      if (teamSeasonId == null) {
+         errors.rejectValue("teamSeasonId", "play.teamSeasonId.required");
+      }
       logger.debug(proc + "20");
 
-      ValidationUtils.rejectIfEmpty(errors, "committedById", "penalty.committedById.required");
+      if (committedById == null) {
+         errors.rejectValue("committedById", "penalty.committedById.required");
+      }
       logger.debug(proc + "30");
 
-      ValidationUtils.rejectIfEmpty(errors, "elapsedTime", "play.elapsedTime.required");
+      if (elapsedTime == null) {
+         errors.rejectValue("elapsedTime", "play.elapsedTime.required");
+      }
       logger.debug(proc + "40");
 
-      ValidationUtils.rejectIfEmpty(errors, "violationId", "penalty.violationId.required");
+      if (violationId == null) {
+         errors.rejectValue("violationId", "penalty.violationId.required");
+      }
       logger.debug(proc + "50");
 
-      ValidationUtils.rejectIfEmpty(errors, "duration", "penalty.duration.required");
+      if (duration == null) {
+         errors.rejectValue("duration", "penalty.duration.required");
+      }
       logger.debug("Leaving: " + proc + "60");
    }
 
@@ -116,11 +130,11 @@ public class PenaltyFormValidator extends AbstractPlayValidator implements Valid
     * @param form
     * @param errors
     */
-   private void checkElapsedTime(PenaltyForm form, Errors errors) {
+   private void checkElapsedTime(PenaltyResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkElapsedTime.";
-      final String playId = form.getPlayId();
-      final Period elapsedTime = form.getElapsedTime();
-      final int period = form.getPeriod();
+      final String playId = target.getPlayId();
+      final Period elapsedTime = target.getElapsedTimeAsPeriod();
+      final int period = target.getPeriod();
       boolean doValidation = false;
 
       logger.debug("Entering: " + proc + "10");
@@ -177,11 +191,11 @@ public class PenaltyFormValidator extends AbstractPlayValidator implements Valid
     * @param errors
     * @throws IllegalStateException if the player is not registered as a game attendee.
     */
-   private void checkCommittedBy(PenaltyForm form, Errors errors) {
+   private void checkCommittedBy(PenaltyResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkWinner.";
-      final String playId = form.getPlayId();
-      final String gameId = form.getGameId();
-      final String attendeeId = form.getCommittedById();
+      final String playId = target.getPlayId();
+      final String gameId = target.getGameId();
+      final String attendeeId = target.getCommittedById();
       boolean doValidation = false;
 
       logger.debug("Entering: " + proc + "10");
@@ -250,11 +264,11 @@ public class PenaltyFormValidator extends AbstractPlayValidator implements Valid
     * @param errors
     * @throws IllegalStateException if the player is not registered as a game attendee.
     */
-   private void checkCommittedAgainst(PenaltyForm form, Errors errors) {
+   private void checkCommittedAgainst(PenaltyResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkAssist.";
-      final String playId = form.getPlayId();
-      final String gameId = form.getGameId();
-      final String attendeeId = form.getCommittedAgainstId();
+      final String playId = target.getPlayId();
+      final String gameId = target.getGameId();
+      final String attendeeId = target.getCommittedAgainstId();
       boolean doValidation = false;
 
       logger.debug("Entering: " + proc + "10");
@@ -325,10 +339,10 @@ public class PenaltyFormValidator extends AbstractPlayValidator implements Valid
     * @param form
     * @param errors
     */
-   private void checkViolation(PenaltyForm form, Errors errors) {
+   private void checkViolation(PenaltyResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkAttemptType.";
-      final String playId = form.getPlayId();
-      final String violationId = form.getViolationId();
+      final String playId = target.getPlayId();
+      final String violationId = target.getViolationId();
       boolean doValidation = false;
 
       logger.debug("Entering: " + proc + "10");
@@ -373,10 +387,10 @@ public class PenaltyFormValidator extends AbstractPlayValidator implements Valid
     * @param form
     * @param errors
     */
-   private void checkDuration(PenaltyForm form, Errors errors) {
+   private void checkDuration(PenaltyResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkAttemptType.";
-      final String playId = form.getPlayId();
-      final Period duration = form.getDuration();
+      final String playId = target.getPlayId();
+      final Period duration = target.getDurationAsPeriod();
       boolean doValidation = false;
       final Period maxTime = Period.seconds(Seconds.MAX_VALUE.getSeconds());
 
