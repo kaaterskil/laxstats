@@ -1,9 +1,5 @@
 package laxstats.web.games;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import javax.validation.constraints.NotNull;
 
 import laxstats.api.games.PlayKey;
@@ -12,24 +8,45 @@ import laxstats.api.games.PlayType;
 import laxstats.api.games.ScoreAttemptType;
 
 /**
- * {@code ShotForm} contains user-defined information with which to create and update shot plays.
+ * {@code ShotResource} represents a shot resource for remote clients.
  */
-public class ShotForm extends AbstractPlayForm implements ShotResource {
+public class ShotResourceImpl extends AbstractPlayResource implements ShotResource {
 
    @NotNull
    private String playerId;
+
    @NotNull
    private ScoreAttemptType attemptType = ScoreAttemptType.REGULAR;
+
    @NotNull
    private PlayResult result;
 
-   private List<ScoreAttemptType> attemptTypes;
-   private List<PlayResult> results;
+   /**
+    * Creates a {@code ShotResource} from the given information.
+    *
+    * @param playId
+    * @param gameId
+    * @param teamSeasonId
+    * @param period
+    * @param comment
+    * @param teamName
+    * @param playerId
+    * @param attemptType
+    * @param result
+    */
+   public ShotResourceImpl(String playId, String gameId, String teamSeasonId, int period,
+      String comment, String teamName, String playerId, ScoreAttemptType attemptType,
+      PlayResult result) {
+      super(playId, PlayType.SHOT, PlayKey.PLAY, gameId, teamSeasonId, period, comment, teamName);
+      this.playerId = playerId;
+      this.attemptType = attemptType;
+      this.result = result;
+   }
 
    /**
-    * Creates a {@code ShotForm}.
+    * Creates an empty {@code ShotResource}.
     */
-   public ShotForm() {
+   public ShotResourceImpl() {
       super(PlayType.SHOT, PlayKey.PLAY);
    }
 
@@ -50,6 +67,7 @@ public class ShotForm extends AbstractPlayForm implements ShotResource {
     */
    @Override
    public void setPlayerId(String playerId) {
+      assert playerId != null;
       this.playerId = playerId;
    }
 
@@ -70,6 +88,7 @@ public class ShotForm extends AbstractPlayForm implements ShotResource {
     */
    @Override
    public void setAttemptType(ScoreAttemptType attemptType) {
+      assert attemptType != null;
       this.attemptType = attemptType;
    }
 
@@ -90,27 +109,7 @@ public class ShotForm extends AbstractPlayForm implements ShotResource {
     */
    @Override
    public void setResult(PlayResult result) {
+      assert result != null;
       this.result = result;
-   }
-
-   /*---------- Drop down menu options ----------*/
-
-   public List<ScoreAttemptType> getAttemptTypes() {
-      if (attemptTypes == null) {
-         attemptTypes = Arrays.asList(ScoreAttemptType.values());
-      }
-      return attemptTypes;
-   }
-
-   public List<PlayResult> getResults() {
-      if (results == null) {
-         results = new ArrayList<PlayResult>();
-         for (final PlayResult each : Arrays.asList(PlayResult.values())) {
-            if (each.getPlayKey().equals(PlayKey.PLAY)) {
-               results.add(each);
-            }
-         }
-      }
-      return results;
    }
 }
