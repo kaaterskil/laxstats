@@ -16,51 +16,50 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 @Service
-public class FaceOffFormValidator extends AbstractPlayValidator implements Validator {
-   private static final Logger logger = LoggerFactory.getLogger(FaceOffFormValidator.class);
-   private static final String PACKAGE_NAME = FaceOffFormValidator.class.getPackage().getName();
+public class FaceOffValidator extends AbstractPlayValidator implements Validator {
+   private static final Logger logger = LoggerFactory.getLogger(FaceOffValidator.class);
+   private static final String PACKAGE_NAME = FaceOffValidator.class.getPackage().getName();
 
    @Autowired
    GameQueryRepository gameRepository;
 
    @Override
    public boolean supports(Class<?> clazz) {
-      return FaceOffForm.class.equals(clazz);
+      return FaceOffResource.class.isAssignableFrom(clazz);
    }
 
    @Override
    public void validate(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".validate.";
-      final FaceOffForm form = (FaceOffForm)target;
+      final FaceOffResource resource = (FaceOffResource)target;
 
       logger.debug("Entering: " + proc + "10");
 
       // Validate mandatory args
-      checkMandatoryArgs(form, errors);
+      checkMandatoryArgs(resource, errors);
       logger.debug(proc + "20");
 
       // Validate non-updateable args
-      checkNonUpdateableArgs(form, errors);
+      checkNonUpdateableArgs(resource, errors);
       logger.debug(proc + "30");
 
       // Validate period
-      checkPeriod(form, errors);
+      checkPeriod(resource, errors);
       logger.debug(proc + "40");
 
       // Validate elapsed time
-      checkElapsedTime(form, errors);
+      checkElapsedTime(resource, errors);
       logger.debug(proc + "50");
 
       // Validate faceoff winner
-      checkWinner(form, errors);
+      checkWinner(resource, errors);
       logger.debug(proc + "60");
 
       // Validate faceoff loser
-      checkLoser(form, errors);
+      checkLoser(resource, errors);
       logger.debug("Leaving: " + proc + "70");
    }
 
@@ -70,21 +69,33 @@ public class FaceOffFormValidator extends AbstractPlayValidator implements Valid
     * @param form
     * @param errors
     */
-   private void checkMandatoryArgs(FaceOffForm form, Errors errors) {
+   private void checkMandatoryArgs(FaceOffResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkMandatoryArgs.";
+      final String teamSeasonId = target.getTeamSeasonId();
+      final String winnerId = target.getWinnerId();
+      final String loserId = target.getLoserId();
+      final String elapsedTime = target.getElapsedTime();
 
       logger.debug("Entering: " + proc + "10");
 
-      ValidationUtils.rejectIfEmpty(errors, "teamSeasonId", "play.teamSeasonId.required");
+      if (teamSeasonId == null) {
+         errors.rejectValue("teamSeasonId", "play.teamSeasonId.required");
+      }
       logger.debug(proc + "20");
 
-      ValidationUtils.rejectIfEmpty(errors, "winnerId", "faceoff.winnerId.required");
+      if (winnerId == null) {
+         errors.rejectValue("winnerId", "faceoff.winnerId.required");
+      }
       logger.debug(proc + "30");
 
-      ValidationUtils.rejectIfEmpty(errors, "loserId", "faceoff.loserId.required");
+      if (loserId == null) {
+         errors.rejectValue("loserId", "faceoff.loserId.required");
+      }
       logger.debug(proc + "40");
 
-      ValidationUtils.rejectIfEmpty(errors, "elapsedTime", "play.elapsedTime.required");
+      if (elapsedTime == null) {
+         errors.rejectValue("elapsedTime", "play.elapsedTime.required");
+      }
       logger.debug("Leaving: " + proc + "50");
    }
 
@@ -95,11 +106,11 @@ public class FaceOffFormValidator extends AbstractPlayValidator implements Valid
     * @param form
     * @param errors
     */
-   private void checkElapsedTime(FaceOffForm form, Errors errors) {
+   private void checkElapsedTime(FaceOffResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkElapsedTime.";
-      final String playId = form.getPlayId();
-      final Period elapsedTime = form.getElapsedTime();
-      final int period = form.getPeriod();
+      final String playId = target.getPlayId();
+      final Period elapsedTime = target.getElapsedTimeAsPeriod();
+      final int period = target.getPeriod();
       boolean doValidation = false;
 
       logger.debug("Entering: " + proc + "10");
@@ -156,11 +167,11 @@ public class FaceOffFormValidator extends AbstractPlayValidator implements Valid
     * @param errors
     * @throws IllegalStateException if the player is not registered as a game attendee.
     */
-   private void checkWinner(FaceOffForm form, Errors errors) {
+   private void checkWinner(FaceOffResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkWinner.";
-      final String playId = form.getPlayId();
-      final String gameId = form.getGameId();
-      final String attendeeId = form.getWinnerId();
+      final String playId = target.getPlayId();
+      final String gameId = target.getGameId();
+      final String attendeeId = target.getWinnerId();
       boolean doValidation = false;
 
       logger.debug("Entering: " + proc + "10");
@@ -228,11 +239,11 @@ public class FaceOffFormValidator extends AbstractPlayValidator implements Valid
     * @param errors
     * @throws IllegalStateException if the player is not registered as a game attendee.
     */
-   private void checkLoser(FaceOffForm form, Errors errors) {
+   private void checkLoser(FaceOffResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkWinner.";
-      final String playId = form.getPlayId();
-      final String gameId = form.getGameId();
-      final String attendeeId = form.getLoserId();
+      final String playId = target.getPlayId();
+      final String gameId = target.getGameId();
+      final String attendeeId = target.getLoserId();
       boolean doValidation = false;
 
       logger.debug("Entering: " + proc + "10");

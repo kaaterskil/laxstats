@@ -17,7 +17,7 @@ import org.springframework.format.annotation.DateTimeFormat;
  * {@code FaceOffForm} contains user-defined information with which to create and update a face-off
  * play.
  */
-public class FaceOffForm extends AbstractPlayForm {
+public class FaceOffForm extends AbstractPlayForm implements FaceOffResource {
    @NotNull
    @DateTimeFormat(pattern = Constants.PATTERN_ELAPSED_TIME_FORMAT)
    private Period elapsedTime;
@@ -39,57 +39,65 @@ public class FaceOffForm extends AbstractPlayForm {
    }
 
    /**
-    * Returns the period of time between the face-off and he beginning of the play period, in
-    * minutes and seconds. Never null.
-    *
-    * @return
+    * {@inheritDoc}
     */
-   public Period getElapsedTime() {
+   @Override
+   public String getElapsedTime() {
+      return elapsedTime.toString();
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public void setElapsedTime(String elapsedTime) {
+      this.elapsedTime = Period.parse(elapsedTime);
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public Period getElapsedTimeAsPeriod() {
       return elapsedTime;
    }
 
    /**
-    * Sets the period of time between the face-off and the beginning of the play period, in minutes
-    * and seconds. Must not be null.
-    *
-    * @param elapsedTime
+    * {@inheritDoc}
     */
+   @Override
    public void setElapsedTime(Period elapsedTime) {
       this.elapsedTime = elapsedTime;
    }
 
    /**
-    * Returns the identifier of the player who won the play. Never null.
-    *
-    * @return
+    * {@inheritDoc}
     */
+   @Override
    public String getWinnerId() {
       return winnerId;
    }
 
    /**
-    * Sets the identifier of the player who won the play. Must not be null.
-    *
-    * @param winnerId
+    * {@inheritDoc}
     */
+   @Override
    public void setWinnerId(String winnerId) {
       this.winnerId = winnerId;
    }
 
    /**
-    * Returns the identifier of the player who lost the play. Never null.
-    *
-    * @return
+    * {@inheritDoc}
     */
+   @Override
    public String getLoserId() {
       return loserId;
    }
 
    /**
-    * Sets the identifier of the player who lost the play. Must not be null.
-    *
-    * @param loserId
+    * {@inheritDoc}
     */
+   @Override
    public void setLoserId(String loserId) {
       this.loserId = loserId;
    }
