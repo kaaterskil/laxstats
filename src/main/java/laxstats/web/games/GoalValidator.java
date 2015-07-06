@@ -17,55 +17,54 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 @Service
-public class GoalFormValidator extends AbstractPlayValidator implements Validator {
-   private static final Logger logger = LoggerFactory.getLogger(GoalFormValidator.class);
-   private static final String PACKAGE_NAME = GoalFormValidator.class.getPackage().getName();
+public class GoalValidator extends AbstractPlayValidator implements Validator {
+   private static final Logger logger = LoggerFactory.getLogger(GoalValidator.class);
+   private static final String PACKAGE_NAME = GoalValidator.class.getPackage().getName();
 
    @Autowired
    GameQueryRepository gameRepository;
 
    @Override
    public boolean supports(Class<?> clazz) {
-      return GoalForm.class.equals(clazz);
+      return GoalResource.class.isAssignableFrom(clazz);
    }
 
    @Override
    public void validate(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".validate.";
-      final GoalForm form = (GoalForm)target;
+      final GoalResource resource = (GoalResource)target;
 
       logger.debug("Entering: " + proc + "10");
 
       // Validate mandatory args
-      checkMandatoryArgs(form, errors);
+      checkMandatoryArgs(resource, errors);
       logger.debug(proc + "20");
 
       // Validate non-updateable args
-      checkNonUpdateableArgs(form, errors);
+      checkNonUpdateableArgs(resource, errors);
       logger.debug(proc + "30");
 
       // Validate period
-      checkPeriod(form, errors);
+      checkPeriod(resource, errors);
       logger.debug(proc + "40");
 
       // Validate elapsed time
-      checkElapsedTime(form, errors);
+      checkElapsedTime(resource, errors);
       logger.debug(proc + "50");
 
       // Validate scorer
-      checkScorer(form, errors);
+      checkScorer(resource, errors);
       logger.debug(proc + "60");
 
       // Validate assist
-      checkAssist(form, errors);
+      checkAssist(resource, errors);
       logger.debug(proc + "60");
 
       // Validate attempt type
-      checkAttemptType(form, errors);
+      checkAttemptType(resource, errors);
       logger.debug("Leaving: " + proc + "80");
    }
 
@@ -75,21 +74,33 @@ public class GoalFormValidator extends AbstractPlayValidator implements Validato
     * @param form
     * @param errors
     */
-   private void checkMandatoryArgs(GoalForm form, Errors errors) {
+   private void checkMandatoryArgs(GoalResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkMandatoryArgs.";
+      final String teamSeasonId = target.getTeamSeasonId();
+      final String scorerId = target.getScorerId();
+      final String elapsedTime = target.getElapsedTime();
+      final ScoreAttemptType type = target.getAttemptType();
 
       logger.debug("Entering: " + proc + "10");
 
-      ValidationUtils.rejectIfEmpty(errors, "teamSeasonId", "play.teamSeasonId.required");
+      if (teamSeasonId == null) {
+         errors.rejectValue("teamSeasonId", "play.teamSeasonId.required");
+      }
       logger.debug(proc + "20");
 
-      ValidationUtils.rejectIfEmpty(errors, "scorerId", "goal.scorerId.required");
+      if (scorerId == null) {
+         errors.rejectValue("scorerId", "goal.scorerId.required");
+      }
       logger.debug(proc + "30");
 
-      ValidationUtils.rejectIfEmptyOrWhitespace(errors, "elapsedTime", "goal.elapsedTime.required");
+      if (elapsedTime == null) {
+         errors.rejectValue("elapsedTime", "goal.elapsedTime.required");
+      }
       logger.debug(proc + "40");
 
-      ValidationUtils.rejectIfEmpty(errors, "attemptType", "goal.attemptType.required");
+      if (type == null) {
+         errors.rejectValue("attemptType", "goal.attemptType.required");
+      }
       logger.debug("Leaving: " + proc + "50");
    }
 
@@ -100,11 +111,11 @@ public class GoalFormValidator extends AbstractPlayValidator implements Validato
     * @param form
     * @param errors
     */
-   private void checkElapsedTime(GoalForm form, Errors errors) {
+   private void checkElapsedTime(GoalResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkElapsedTime.";
-      final String playId = form.getPlayId();
-      final Period elapsedTime = form.getElapsedTime();
-      final int period = form.getPeriod();
+      final String playId = target.getPlayId();
+      final Period elapsedTime = target.getElapsedTimeAsPeriod();
+      final int period = target.getPeriod();
       boolean doValidation = false;
 
       logger.debug("Entering: " + proc + "10");
@@ -161,11 +172,11 @@ public class GoalFormValidator extends AbstractPlayValidator implements Validato
     * @param errors
     * @throws IllegalStateException if the player is not registered as a game attendee.
     */
-   private void checkScorer(GoalForm form, Errors errors) {
+   private void checkScorer(GoalResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkScorer.";
-      final String playId = form.getPlayId();
-      final String gameId = form.getGameId();
-      final String attendeeId = form.getScorerId();
+      final String playId = target.getPlayId();
+      final String gameId = target.getGameId();
+      final String attendeeId = target.getScorerId();
       boolean doValidation = false;
 
       logger.debug("Entering: " + proc + "10");
@@ -233,11 +244,11 @@ public class GoalFormValidator extends AbstractPlayValidator implements Validato
     * @param errors
     * @throws IllegalStateException if the player is not registered as a game attendee.
     */
-   private void checkAssist(GoalForm form, Errors errors) {
+   private void checkAssist(GoalResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkAssist.";
-      final String playId = form.getPlayId();
-      final String gameId = form.getGameId();
-      final String attendeeId = form.getAssistId();
+      final String playId = target.getPlayId();
+      final String gameId = target.getGameId();
+      final String attendeeId = target.getAssistId();
       boolean doValidation = false;
 
       logger.debug("Entering: " + proc + "10");
@@ -308,10 +319,10 @@ public class GoalFormValidator extends AbstractPlayValidator implements Validato
     * @param form
     * @param errors
     */
-   private void checkAttemptType(GoalForm form, Errors errors) {
+   private void checkAttemptType(GoalResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkAttemptType.";
-      final String playId = form.getPlayId();
-      final ScoreAttemptType type = form.getAttemptType();
+      final String playId = target.getPlayId();
+      final ScoreAttemptType type = target.getAttemptType();
       boolean doValidation = false;
 
       logger.debug("Entering: " + proc + "10");

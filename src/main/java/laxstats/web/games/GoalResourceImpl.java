@@ -1,22 +1,17 @@
 package laxstats.web.games;
 
-import java.util.Arrays;
-import java.util.List;
-
 import javax.validation.constraints.NotNull;
 
 import laxstats.api.games.PlayKey;
 import laxstats.api.games.PlayType;
 import laxstats.api.games.ScoreAttemptType;
-import laxstats.api.utils.Constants;
 
-import org.joda.time.Period;
-import org.springframework.format.annotation.DateTimeFormat;
-
-public class GoalForm extends AbstractPlayForm implements GoalResource {
+/**
+ * {@code GoalResource} represents a goal resource for remote clients.
+ */
+public class GoalResourceImpl extends AbstractPlayResource implements GoalResource {
    @NotNull
-   @DateTimeFormat(pattern = Constants.PATTERN_ELAPSED_TIME_FORMAT)
-   private Period elapsedTime;
+   private String elapsedTime;
 
    @NotNull
    private String scorerId;
@@ -28,12 +23,36 @@ public class GoalForm extends AbstractPlayForm implements GoalResource {
 
    private String comments;
 
-   private List<ScoreAttemptType> attemptTypes;
+   /**
+    * Creates a {@code GoalResource} from the given information.
+    *
+    * @param playId
+    * @param gameId
+    * @param teamSeasonId
+    * @param period
+    * @param comment
+    * @param teamName
+    * @param elapsedTime
+    * @param scorerId
+    * @param assistId
+    * @param attemptType
+    * @param comments
+    */
+   public GoalResourceImpl(String playId, String gameId, String teamSeasonId, int period,
+      String comment, String teamName, String elapsedTime, String scorerId, String assistId,
+      ScoreAttemptType attemptType, String comments) {
+      super(playId, PlayType.GOAL, PlayKey.GOAL, gameId, teamSeasonId, period, comment, teamName);
+      this.elapsedTime = elapsedTime;
+      this.scorerId = scorerId;
+      this.assistId = assistId;
+      this.attemptType = attemptType;
+      this.comments = comments;
+   }
 
    /**
-    * Creates a {@code GoalForm}.
+    * Creates an empty {@code GoalResource}.
     */
-   public GoalForm() {
+   public GoalResourceImpl() {
       super(PlayType.GOAL, PlayKey.GOAL);
    }
 
@@ -42,22 +61,6 @@ public class GoalForm extends AbstractPlayForm implements GoalResource {
     */
    @Override
    public String getElapsedTime() {
-      return elapsedTime.toString();
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public void setElapsedTime(String elapsedTime) {
-      this.elapsedTime = Period.parse(elapsedTime);
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public Period getElapsedTimeAsPeriod() {
       return elapsedTime;
    }
 
@@ -65,7 +68,7 @@ public class GoalForm extends AbstractPlayForm implements GoalResource {
     * {@inheritDoc}
     */
    @Override
-   public void setElapsedTime(Period elapsedTime) {
+   public void setElapsedTime(String elapsedTime) {
       this.elapsedTime = elapsedTime;
    }
 
@@ -134,14 +137,5 @@ public class GoalForm extends AbstractPlayForm implements GoalResource {
    @Override
    public void setComments(String comments) {
       this.comments = comments;
-   }
-
-   /*---------- Drop-down Menus ----------*/
-
-   public List<ScoreAttemptType> getAttemptTypes() {
-      if (attemptTypes == null) {
-         attemptTypes = Arrays.asList(ScoreAttemptType.values());
-      }
-      return attemptTypes;
    }
 }
