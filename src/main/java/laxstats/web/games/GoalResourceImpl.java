@@ -6,6 +6,8 @@ import laxstats.api.games.PlayKey;
 import laxstats.api.games.PlayType;
 import laxstats.api.games.ScoreAttemptType;
 
+import org.joda.time.Period;
+
 /**
  * {@code GoalResource} represents a goal resource for remote clients.
  */
@@ -70,6 +72,22 @@ public class GoalResourceImpl extends AbstractPlayResource implements GoalResour
    @Override
    public void setElapsedTime(String elapsedTime) {
       this.elapsedTime = elapsedTime;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public Period getElapsedTimeAsPeriod() {
+      return Period.parse(elapsedTime);
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public void setElapsedTime(Period elapsedTime) {
+      this.elapsedTime = elapsedTime.toString();
    }
 
    /**
