@@ -39,7 +39,7 @@ import laxstats.web.people.PersonResource;
 import laxstats.web.players.PlayerForm;
 import laxstats.web.players.PlayerResource;
 import laxstats.web.seasons.SeasonForm;
-import laxstats.web.seasons.SeasonResource;
+import laxstats.web.seasons.SeasonResourceImpl;
 import laxstats.web.sites.SiteForm;
 import laxstats.web.sites.SiteResource;
 import laxstats.web.teamSeasons.TeamSeasonForm;
@@ -170,8 +170,8 @@ public class TestUtils {
     *
     * @return
     */
-   public static SeasonResource newSeasonResource() {
-      final SeasonResource resource = new SeasonResource();
+   public static SeasonResourceImpl newSeasonResource() {
+      final SeasonResourceImpl resource = new SeasonResourceImpl();
       resource.setDescription("2014-2015 Season");
       resource.setStartsOn("2014-07-01");
       resource.setEndsOn("2015-06-30");
@@ -305,7 +305,7 @@ public class TestUtils {
       form.setAlignment(SiteAlignment.HOME);
       form.setDescription("This is a description");
       form.setSchedule(Schedule.REGULAR);
-      form.setStartsAt(LocalDateTime.parse("2014-04-01T16:00:00"));
+      form.setStartsAtAsDateTime(LocalDateTime.parse("2014-04-01T16:00:00"));
       form.setStatus(Status.SCHEDULED);
       return form;
    }
@@ -353,8 +353,8 @@ public class TestUtils {
    public static SeasonForm newSeasonForm() {
       final SeasonForm form = new SeasonForm();
       form.setDescription("2014-2015 Season");
-      form.setStartsOn(LocalDate.parse("2014-07-01"));
-      form.setEndsOn(LocalDate.parse("2015-06-30"));
+      form.setStartsOn("2014-07-01");
+      form.setEndsOn("2015-06-30");
       return form;
    }
 
