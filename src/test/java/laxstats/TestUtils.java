@@ -1,5 +1,7 @@
 package laxstats;
 
+import java.io.IOException;
+
 import laxstats.api.Region;
 import laxstats.api.games.Schedule;
 import laxstats.api.games.Status;
@@ -47,13 +49,18 @@ import laxstats.web.teamSeasons.TeamSeasonResource;
 import laxstats.web.teams.TeamForm;
 import laxstats.web.teams.TeamResource;
 import laxstats.web.users.UserForm;
+import laxstats.web.users.UserResource;
 import laxstats.web.users.UserResourceImpl;
 import laxstats.web.violations.ViolationForm;
+import laxstats.web.violations.ViolationResource;
 import laxstats.web.violations.ViolationResourceImpl;
 
 import org.axonframework.domain.IdentifierFactory;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class TestUtils {
 
@@ -78,6 +85,19 @@ public class TestUtils {
          }
       }
       return hasOnlyWhitespace;
+   }
+
+   /**
+    * Converts the given object into a JSON document and returns the content as a byte array.
+    * 
+    * @param obj
+    * @return
+    * @throws IOException
+    */
+   public static byte[] convertObjectToJson(Object obj) throws IOException {
+      final ObjectMapper mapper = new ObjectMapper();
+      mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+      return mapper.writeValueAsBytes(obj);
    }
 
    /*---------- Resources ----------*/
@@ -235,7 +255,7 @@ public class TestUtils {
     *
     * @return
     */
-   public static UserResourceImpl newUserResource() {
+   public static UserResource newUserResource() {
       final UserResourceImpl resource = new UserResourceImpl();
       resource.setEmail("john@example.com");
       resource.setEnabled(true);
@@ -250,7 +270,7 @@ public class TestUtils {
     *
     * @return
     */
-   public static ViolationResourceImpl newViolationResource() {
+   public static ViolationResource newViolationResource() {
       final ViolationResourceImpl resource = new ViolationResourceImpl();
       resource.setCategory(PenaltyCategory.PERSONAL_FOUL);
       resource.setDescription("This is a slash");
@@ -415,7 +435,7 @@ public class TestUtils {
     *
     * @return
     */
-   public static UserForm newUserForm() {
+   public static UserResource newUserForm() {
       final UserForm form = new UserForm();
       form.setEmail("john@example.com");
       form.setEnabled(true);
@@ -430,7 +450,7 @@ public class TestUtils {
     *
     * @return
     */
-   public static ViolationForm newViolationForm() {
+   public static ViolationResource newViolationForm() {
       final ViolationForm form = new ViolationForm();
       form.setCategory(PenaltyCategory.PERSONAL_FOUL);
       form.setDescription("This is a slash");
