@@ -40,7 +40,7 @@ public class GameValidatorTests {
    public void gameMissingStartsAt() {
       final GameForm form = TestUtils.newGameForm();
       form.setTeamOneHome(true);
-      form.setStartsAt(null);
+      form.setStartsAtAsDateTime(null);
 
       final GameResourceImpl resource = TestUtils.newGameResource();
       resource.setTeamOneHome(true);
@@ -109,7 +109,7 @@ public class GameValidatorTests {
 
       errors = new BindException(resource, "gameResource");
       ValidationUtils.invokeValidator(validator, resource, errors);
-      assertTrue(errors.hasErrors());
+      assertFalse(errors.hasErrors());
    }
 
    @Test

@@ -110,16 +110,15 @@ public class GameResourceImpl implements GameResource {
     */
    @Override
    public LocalDateTime getStartsAtAsDateTime() {
-      return LocalDateTime.parse(startsAt);
+      return startsAt == null ? null : LocalDateTime.parse(startsAt);
    }
 
    /**
     * {@inheritDoc}
     */
    @Override
-   public void setStartsAt(LocalDateTime startsAt) {
-      assert startsAt != null;
-      this.startsAt = startsAt.toString();
+   public void setStartsAtAsDateTime(LocalDateTime startsAt) {
+      this.startsAt = startsAt == null ? null : startsAt.toString();
    }
 
    /**

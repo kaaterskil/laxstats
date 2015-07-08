@@ -82,7 +82,7 @@ public class GameForm implements GameResource {
     */
    @Override
    public void setStartsAt(String startsAt) {
-      this.startsAt = LocalDateTime.parse(startsAt);
+      this.startsAt = startsAt == null ? null : LocalDateTime.parse(startsAt);
    }
 
    /**
@@ -97,7 +97,7 @@ public class GameForm implements GameResource {
     * {@inheritDoc}
     */
    @Override
-   public void setStartsAt(LocalDateTime startsAt) {
+   public void setStartsAtAsDateTime(LocalDateTime startsAt) {
       this.startsAt = startsAt;
    }
 

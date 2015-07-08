@@ -49,7 +49,7 @@ public interface GameResource {
     *
     * @param startsAt
     */
-   public void setStartsAt(LocalDateTime startsAt);
+   public void setStartsAtAsDateTime(LocalDateTime startsAt);
 
    /**
     * Returns the game status. Never null.
