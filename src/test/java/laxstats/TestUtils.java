@@ -47,7 +47,7 @@ import laxstats.web.teamSeasons.TeamSeasonResource;
 import laxstats.web.teams.TeamForm;
 import laxstats.web.teams.TeamResource;
 import laxstats.web.users.UserForm;
-import laxstats.web.users.UserResource;
+import laxstats.web.users.UserResourceImpl;
 import laxstats.web.violations.ViolationForm;
 import laxstats.web.violations.ViolationResourceImpl;
 
@@ -235,8 +235,8 @@ public class TestUtils {
     *
     * @return
     */
-   public static UserResource newUserResource() {
-      final UserResource resource = new UserResource();
+   public static UserResourceImpl newUserResource() {
+      final UserResourceImpl resource = new UserResourceImpl();
       resource.setEmail("john@example.com");
       resource.setEnabled(true);
       resource.setFirstName("John");
