@@ -34,10 +34,10 @@ public class ViolationValidatorTests {
 
    @Test
    public void violationMissingName() {
-      final ViolationForm form = TestUtils.newViolationForm();
+      final ViolationResource form = TestUtils.newViolationForm();
       form.setName(null);
 
-      final ViolationResourceImpl resource = TestUtils.newViolationResource();
+      final ViolationResource resource = TestUtils.newViolationResource();
       resource.setName(null);
 
       BindException errors = new BindException(form, "violationForm");
@@ -51,10 +51,10 @@ public class ViolationValidatorTests {
 
    @Test
    public void violationMissingCategory() {
-      final ViolationForm form = TestUtils.newViolationForm();
+      final ViolationResource form = TestUtils.newViolationForm();
       form.setCategory(null);
 
-      final ViolationResourceImpl resource = TestUtils.newViolationResource();
+      final ViolationResource resource = TestUtils.newViolationResource();
       resource.setCategory(null);
 
       BindException errors = new BindException(form, "violationForm");
@@ -70,8 +70,8 @@ public class ViolationValidatorTests {
 
    @Test
    public void newViolationIsValid() {
-      final ViolationForm form = TestUtils.newViolationForm();
-      final ViolationResourceImpl resource = TestUtils.newViolationResource();
+      final ViolationResource form = TestUtils.newViolationForm();
+      final ViolationResource resource = TestUtils.newViolationResource();
 
       BindException errors = new BindException(form, "violationForm");
       ValidationUtils.invokeValidator(validator, form, errors);
@@ -84,7 +84,7 @@ public class ViolationValidatorTests {
 
    @Test
    public void newViolationDuplicateName() {
-      final ViolationForm form = TestUtils.newViolationForm();
+      final ViolationResource form = TestUtils.newViolationForm();
 
       Mockito.when(violationQueryRepository.uniqueName(form.getName())).thenReturn(1);
 
@@ -95,7 +95,7 @@ public class ViolationValidatorTests {
 
    @Test
    public void newViolationResourceDuplicateName() {
-      final ViolationResourceImpl resource = TestUtils.newViolationResource();
+      final ViolationResource resource = TestUtils.newViolationResource();
 
       Mockito.when(violationQueryRepository.uniqueName(resource.getName())).thenReturn(1);
 
@@ -112,7 +112,7 @@ public class ViolationValidatorTests {
       final ViolationEntry violation = TestUtils.getViolation();
       violation.setId(id);
 
-      final ViolationForm form = TestUtils.newViolationForm();
+      final ViolationResource form = TestUtils.newViolationForm();
       form.setName("This is a duplicate Name");
       form.setId(id);
 
@@ -131,14 +131,14 @@ public class ViolationValidatorTests {
       final ViolationEntry violation = TestUtils.getViolation();
       violation.setId(id);
 
-      final ViolationResourceImpl resource = TestUtils.newViolationResource();
+      final ViolationResource resource = TestUtils.newViolationResource();
       resource.setName("This is a duplicate Name");
       resource.setId(id);
 
       Mockito.when(violationQueryRepository.exists(id)).thenReturn(true);
       Mockito.when(violationQueryRepository.findOne(id)).thenReturn(violation);
       Mockito.when(violationQueryRepository.updateName(resource.getName(), resource.getId()))
-         .thenReturn(1);
+               .thenReturn(1);
 
       final BindException errors = new BindException(resource, "violationResource");
       ValidationUtils.invokeValidator(validator, resource, errors);

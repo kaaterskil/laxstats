@@ -32,10 +32,10 @@ public class UserValidatorTests {
 
    @Test
    public void userMissingEmail() {
-      final UserForm form = TestUtils.newUserForm();
+      final UserResource form = TestUtils.newUserForm();
       form.setEmail("   ");
 
-      final UserResourceImpl resource = TestUtils.newUserResource();
+      final UserResource resource = TestUtils.newUserResource();
       resource.setEmail("   ");
 
       BindException errors = new BindException(form, "userForm");
@@ -49,10 +49,10 @@ public class UserValidatorTests {
 
    @Test
    public void userMissingLastName() {
-      final UserForm form = TestUtils.newUserForm();
+      final UserResource form = TestUtils.newUserForm();
       form.setLastName("");
 
-      final UserResourceImpl resource = TestUtils.newUserResource();
+      final UserResource resource = TestUtils.newUserResource();
       resource.setLastName("");
 
       BindException errors = new BindException(form, "userForm");
@@ -68,8 +68,8 @@ public class UserValidatorTests {
 
    @Test
    public void newUserIsValid() {
-      final UserForm form = TestUtils.newUserForm();
-      final UserResourceImpl resource = TestUtils.newUserResource();
+      final UserResource form = TestUtils.newUserForm();
+      final UserResource resource = TestUtils.newUserResource();
 
       BindException errors = new BindException(form, "userForm");
       ValidationUtils.invokeValidator(validator, form, errors);
@@ -82,7 +82,7 @@ public class UserValidatorTests {
 
    @Test
    public void newUserEmailIsDuplicate() {
-      final UserForm form = TestUtils.newUserForm();
+      final UserResource form = TestUtils.newUserForm();
 
       Mockito.when(userQueryRepository.uniqueEmail(form.getEmail())).thenReturn(1);
 
@@ -93,7 +93,7 @@ public class UserValidatorTests {
 
    @Test
    public void newUserResourceEmailIsDuplicate() {
-      final UserResourceImpl resource = TestUtils.newUserResource();
+      final UserResource resource = TestUtils.newUserResource();
 
       Mockito.when(userQueryRepository.uniqueEmail(resource.getEmail())).thenReturn(1);
 
@@ -104,7 +104,7 @@ public class UserValidatorTests {
 
    @Test
    public void newUserEmailIsInvalid() {
-      final UserForm form = TestUtils.newUserForm();
+      final UserResource form = TestUtils.newUserForm();
       form.setEmail("john@john@example.com");
 
       Mockito.when(userQueryRepository.uniqueEmail(form.getEmail())).thenReturn(0);
@@ -116,7 +116,7 @@ public class UserValidatorTests {
 
    @Test
    public void newUserResourceEmailIsInvalid() {
-      final UserResourceImpl resource = TestUtils.newUserResource();
+      final UserResource resource = TestUtils.newUserResource();
       resource.setEmail("john@john@example.com");
 
       Mockito.when(userQueryRepository.uniqueEmail(resource.getEmail())).thenReturn(0);
