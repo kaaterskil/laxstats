@@ -11,7 +11,6 @@ import laxstats.query.seasons.SeasonEntry;
 import laxstats.query.seasons.SeasonQueryRepository;
 
 import org.axonframework.domain.IdentifierFactory;
-import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -33,7 +32,7 @@ public class SeasonValidatorTests {
    @Test
    public void supports() {
       assertTrue(validator.supports(SeasonForm.class));
-      assertTrue(validator.supports(SeasonResource.class));
+      assertTrue(validator.supports(SeasonResourceImpl.class));
       assertFalse(validator.supports(Object.class));
    }
 
@@ -54,7 +53,7 @@ public class SeasonValidatorTests {
 
    @Test
    public void newSeasonResourceIsValid() {
-      final SeasonResource resource = TestUtils.newSeasonResource();
+      final SeasonResourceImpl resource = TestUtils.newSeasonResource();
 
       final BindException errors = new BindException(resource, "seasonResource");
       ValidationUtils.invokeValidator(validator, resource, errors);
@@ -66,7 +65,7 @@ public class SeasonValidatorTests {
       final SeasonForm form = TestUtils.newSeasonForm();
       form.setDescription(null);
 
-      final SeasonResource resource = TestUtils.newSeasonResource();
+      final SeasonResourceImpl resource = TestUtils.newSeasonResource();
       resource.setDescription(null);
 
       BindException errors = new BindException(form, "seasonForm");
@@ -83,7 +82,7 @@ public class SeasonValidatorTests {
       final SeasonForm form = TestUtils.newSeasonForm();
       form.setStartsOn(null);
 
-      final SeasonResource resource = TestUtils.newSeasonResource();
+      final SeasonResourceImpl resource = TestUtils.newSeasonResource();
       resource.setStartsOn(null);
 
       BindException errors = new BindException(form, "seasonForm");
@@ -100,7 +99,7 @@ public class SeasonValidatorTests {
       final SeasonForm form = TestUtils.newSeasonForm();
       form.setEndsOn(null);
 
-      final SeasonResource resource = TestUtils.newSeasonResource();
+      final SeasonResourceImpl resource = TestUtils.newSeasonResource();
       resource.setEndsOn(null);
 
       BindException errors = new BindException(form, "seasonForm");
@@ -115,9 +114,9 @@ public class SeasonValidatorTests {
    @Test
    public void newSeasonInvalidEndDate() {
       final SeasonForm form = TestUtils.newSeasonForm();
-      form.setEndsOn(LocalDate.parse("2014-07-01"));
+      form.setEndsOn("2014-07-01");
 
-      final SeasonResource resource = TestUtils.newSeasonResource();
+      final SeasonResourceImpl resource = TestUtils.newSeasonResource();
       resource.setEndsOn("2014-07-01");
 
       BindException errors = new BindException(form, "seasonForm");
@@ -135,7 +134,7 @@ public class SeasonValidatorTests {
       list.add(TestUtils.getExistingSeason());
       Mockito.when(seasonQueryRepository.findAll()).thenReturn(list);
 
-      final SeasonResource resource = TestUtils.newSeasonResource();
+      final SeasonResourceImpl resource = TestUtils.newSeasonResource();
       resource.setStartsOn("2014-06-01");
 
       final BindException errors = new BindException(resource, "seasonResource");
@@ -150,7 +149,7 @@ public class SeasonValidatorTests {
       Mockito.when(seasonQueryRepository.findAll()).thenReturn(list);
 
       final SeasonForm form = TestUtils.newSeasonForm();
-      form.setStartsOn(LocalDate.parse("2014-06-01"));
+      form.setStartsOn("2014-06-01");
 
       final BindException errors = new BindException(form, "seasonForm");
       ValidationUtils.invokeValidator(validator, form, errors);
@@ -163,7 +162,7 @@ public class SeasonValidatorTests {
    public void existingSeasonResourceIsValid() {
       final String id = IdentifierFactory.getInstance().generateIdentifier();
 
-      final SeasonResource resource = TestUtils.newSeasonResource();
+      final SeasonResourceImpl resource = TestUtils.newSeasonResource();
       resource.setDescription("2014-2015 Updated Season");
       resource.setId(id);
 
@@ -198,7 +197,7 @@ public class SeasonValidatorTests {
    public void existingSeasonResourceMissingDescription() {
       final String id = IdentifierFactory.getInstance().generateIdentifier();
 
-      final SeasonResource resource = TestUtils.newSeasonResource();
+      final SeasonResourceImpl resource = TestUtils.newSeasonResource();
       resource.setDescription(null);
       resource.setId(id);
 
@@ -233,7 +232,7 @@ public class SeasonValidatorTests {
    public void existingSeasonResourceMissingStartingDate() {
       final String id = IdentifierFactory.getInstance().generateIdentifier();
 
-      final SeasonResource resource = TestUtils.newSeasonResource();
+      final SeasonResourceImpl resource = TestUtils.newSeasonResource();
       resource.setStartsOn(null);
       resource.setId(id);
 
@@ -268,7 +267,7 @@ public class SeasonValidatorTests {
    public void existingSeasonResourceDuplicateDescription() {
       final String id = IdentifierFactory.getInstance().generateIdentifier();
 
-      final SeasonResource resource = TestUtils.newSeasonResource();
+      final SeasonResourceImpl resource = TestUtils.newSeasonResource();
       resource.setDescription("This is a duplicate description");
       resource.setId(id);
 
@@ -303,7 +302,7 @@ public class SeasonValidatorTests {
    public void existingSeasonResourceInvalidEndDate() {
       final String id = IdentifierFactory.getInstance().generateIdentifier();
 
-      final SeasonResource resource = TestUtils.newSeasonResource();
+      final SeasonResourceImpl resource = TestUtils.newSeasonResource();
       resource.setEndsOn("2014-07-01");
       resource.setId(id);
 
@@ -322,7 +321,7 @@ public class SeasonValidatorTests {
       final String id = IdentifierFactory.getInstance().generateIdentifier();
 
       final SeasonForm form = TestUtils.newSeasonForm();
-      form.setEndsOn(LocalDate.parse("2014-07-01"));
+      form.setEndsOn("2014-07-01");
       form.setId(id);
 
       Mockito.when(seasonQueryRepository.exists(id)).thenReturn(true);

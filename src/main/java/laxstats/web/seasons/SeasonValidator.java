@@ -29,29 +29,30 @@ public class SeasonValidator implements Validator {
 
    @Override
    public boolean supports(Class<?> clazz) {
-      return SeasonForm.class.equals(clazz) || SeasonResource.class.equals(clazz);
+      return SeasonResource.class.isAssignableFrom(clazz);
    }
 
    @Override
    public void validate(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".validate.";
+      final SeasonResource resource = (SeasonResource)target;
 
       logger.debug("Entering: " + proc + "10");
 
       // Validate mandatory arguments
-      checkMandatoryArgs(target, errors);
+      checkMandatoryArgs(resource, errors);
       logger.debug(proc + "20");
 
       // Validate description
-      checkDescription(target, errors);
+      checkDescription(resource, errors);
       logger.debug(proc + "30");
 
       // Validate endsOn
-      checkEndDate(target, errors);
+      checkEndDate(resource, errors);
       logger.debug(proc + "40");
 
       // Validate date overlap with other seasons
-      checkDates(target, errors);
+      checkDates(resource, errors);
 
       logger.debug("Leaving: " + proc + "50");
    }
@@ -62,21 +63,10 @@ public class SeasonValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkMandatoryArgs(Object target, Errors errors) {
+   private void checkMandatoryArgs(SeasonResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkMandatoryArgs.";
-      String description = null;
-      LocalDate startsOn = null;
-
-      if (target instanceof SeasonForm) {
-         final SeasonForm seasonForm = (SeasonForm)target;
-         description = seasonForm.getDescription();
-         startsOn = seasonForm.getStartsOn();
-      }
-      else if (target instanceof SeasonResource) {
-         final SeasonResource seasonResource = (SeasonResource)target;
-         description = seasonResource.getDescription();
-         startsOn = LocalDate.parse(seasonResource.getStartsOn());
-      }
+      final String description = target.getDescription();
+      final LocalDate startsOn = target.getStartsOnAsLocalDate();
 
       logger.debug("Entering: " + proc + "10");
 
@@ -97,22 +87,11 @@ public class SeasonValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkDescription(Object target, Errors errors) {
+   private void checkDescription(SeasonResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkDescription.";
-      String seasonId = null;
-      String description = null;
+      final String seasonId = target.getId();
+      final String description = target.getDescription();
       int found = 0;
-
-      if (target instanceof SeasonForm) {
-         final SeasonForm seasonForm = (SeasonForm)target;
-         seasonId = seasonForm.getId();
-         description = seasonForm.getDescription();
-      }
-      else if (target instanceof SeasonResource) {
-         final SeasonResource seasonResource = (SeasonResource)target;
-         seasonId = seasonResource.getId();
-         description = seasonResource.getDescription();
-      }
 
       logger.debug("Entering: " + proc + "10");
 
@@ -151,25 +130,12 @@ public class SeasonValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkEndDate(Object target, Errors errors) {
+   private void checkEndDate(SeasonResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkEndDate.";
-      String seasonId = null;
-      LocalDate startsOn = null;
-      LocalDate endsOn = null;
+      final String seasonId = target.getId();
+      final LocalDate startsOn = target.getStartsOnAsLocalDate();
+      final LocalDate endsOn = target.getEndsOnAsLocalDate();
       final LocalDate eot = Common.EOT.toLocalDate();
-
-      if (target instanceof SeasonForm) {
-         final SeasonForm seasonForm = (SeasonForm)target;
-         seasonId = seasonForm.getId();
-         startsOn = seasonForm.getStartsOn();
-         endsOn = seasonForm.getEndsOn();
-      }
-      else if (target instanceof SeasonResource) {
-         final SeasonResource seasonResource = (SeasonResource)target;
-         seasonId = seasonResource.getId();
-         startsOn = LocalDate.parse(seasonResource.getStartsOn());
-         endsOn = LocalDate.parse(seasonResource.getEndsOn());
-      }
 
       logger.debug("Entering: " + proc + "10");
 
@@ -194,7 +160,7 @@ public class SeasonValidator implements Validator {
       }
 
       if (doValidation && startsOn != null &&
-               (startsOn.isAfter(Common.nvl(endsOn, eot)) || startsOn.isEqual(Common.nvl(endsOn, eot)))) {
+         (startsOn.isAfter(Common.nvl(endsOn, eot)) || startsOn.isEqual(Common.nvl(endsOn, eot)))) {
          errors.rejectValue("endsOn", "season.endsOn.beforeStart");
       }
       logger.debug("Leaving: " + proc + "60");
@@ -207,24 +173,11 @@ public class SeasonValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkDates(Object target, Errors errors) {
+   private void checkDates(SeasonResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkDates.";
-      String seasonId = null;
-      LocalDate startsOn = null;
-      LocalDate endsOn = null;
-
-      if (target instanceof SeasonForm) {
-         final SeasonForm seasonForm = (SeasonForm)target;
-         seasonId = seasonForm.getId();
-         startsOn = seasonForm.getStartsOn();
-         endsOn = Common.nvl(seasonForm.getEndsOn(), Common.EOT.toLocalDate());
-      }
-      else if (target instanceof SeasonResource) {
-         final SeasonResource seasonResource = (SeasonResource)target;
-         seasonId = seasonResource.getId();
-         startsOn = LocalDate.parse(seasonResource.getStartsOn());
-         endsOn = Common.nvl(LocalDate.parse(seasonResource.getEndsOn()), Common.EOT.toLocalDate());
-      }
+      final String seasonId = target.getId();
+      final LocalDate startsOn = target.getStartsOnAsLocalDate();
+      final LocalDate endsOn = target.getEndsOnAsLocalDate();
 
       logger.debug("Entering: " + proc + "10");
 

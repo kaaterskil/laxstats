@@ -65,13 +65,13 @@ public class SeasonApiController extends ApplicationController {
     * @return
     */
    @RequestMapping(method = RequestMethod.GET)
-   public List<SeasonResource> seasonIndex() {
+   public List<SeasonResourceImpl> seasonIndex() {
       final Iterable<SeasonEntry> seasons = seasonRepository.findAll(seasonSort);
 
-      final List<SeasonResource> list = new ArrayList<SeasonResource>();
+      final List<SeasonResourceImpl> list = new ArrayList<SeasonResourceImpl>();
       for (final SeasonEntry each : seasons) {
-         final SeasonResource resource =
-            new SeasonResource(each.getId(), each.getDescription(), each.getStartsOn().toString(),
+         final SeasonResourceImpl resource =
+            new SeasonResourceImpl(each.getId(), each.getDescription(), each.getStartsOn().toString(),
                each.getEndsOn().toString());
          list.add(resource);
       }
@@ -85,8 +85,8 @@ public class SeasonApiController extends ApplicationController {
     * @return
     */
    @RequestMapping(value = "/{seasonId}", method = RequestMethod.GET)
-   public SeasonResource showSeason(@PathVariable("seasonId") SeasonEntry season) {
-      return new SeasonResource(season.getId(), season.getDescription(), season.getStartsOn()
+   public SeasonResourceImpl showSeason(@PathVariable("seasonId") SeasonEntry season) {
+      return new SeasonResourceImpl(season.getId(), season.getDescription(), season.getStartsOn()
          .toString(), season.getEndsOn().toString());
    }
 
@@ -98,7 +98,7 @@ public class SeasonApiController extends ApplicationController {
     * @return
     */
    @RequestMapping(method = RequestMethod.POST)
-   public SeasonResource createSeason(@Valid @RequestBody SeasonResource resource,
+   public SeasonResourceImpl createSeason(@Valid @RequestBody SeasonResourceImpl resource,
       BindingResult bindingResult)
    {
       if (bindingResult.hasErrors()) {
@@ -137,8 +137,8 @@ public class SeasonApiController extends ApplicationController {
     * @return
     */
    @RequestMapping(value = "/{seasonId}", method = RequestMethod.PUT)
-   public SeasonResource updateSeason(@PathVariable String seasonId,
-      @Valid @RequestBody SeasonResource resource, BindingResult bindingResult)
+   public SeasonResourceImpl updateSeason(@PathVariable String seasonId,
+      @Valid @RequestBody SeasonResourceImpl resource, BindingResult bindingResult)
    {
       if (bindingResult.hasErrors()) {
          return resource;
