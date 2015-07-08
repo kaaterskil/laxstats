@@ -1,23 +1,17 @@
 package laxstats.web.users;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import laxstats.api.Region;
 import laxstats.api.users.UserRole;
-import laxstats.query.teams.TeamEntry;
+import laxstats.api.utils.Constants;
 
 import org.hibernate.validator.constraints.Email;
 
 /**
- * {@code UserForm} contains user-defined information to create and update a user.
+ * {@code UserResource} represents a user resource for remote clients.
  */
-public class UserForm implements UserResource {
+public class UserResourceImpl implements UserResource {
 
    private String id;
    private String teamId;
@@ -26,31 +20,50 @@ public class UserForm implements UserResource {
    @Email
    private String email;
 
+   @NotNull
    @Size(min = 6)
    private String password;
 
-   private boolean enabled;
+   private boolean enabled = true;
 
-   @Size(max = 20)
+   @Size(max = Constants.MAX_LENGTH_FIRST_OR_MIDDLE_NAME)
    private String firstName;
 
    @NotNull
-   @Size(min = 3, max = 30)
+   @Size(min = Constants.MIN_LENGTH_STRING, max = Constants.MAX_LENGTH_LAST_NAME)
    private String lastName;
 
    @NotNull
    private UserRole role;
 
-   private List<UserRole> roles;
-   private Map<Region, List<TeamEntry>> teams;
+   /**
+    * Creates a {@code UserResource} with the given information.
+    *
+    * @param id
+    * @param teamId
+    * @param email
+    * @param password
+    * @param enabled
+    * @param firstName
+    * @param lastName
+    * @param role
+    */
+   public UserResourceImpl(String id, String teamId, String email, String password, boolean enabled,
+      String firstName, String lastName, UserRole role) {
+      this.id = id;
+      this.teamId = teamId;
+      this.email = email;
+      this.password = password;
+      this.enabled = enabled;
+      this.firstName = firstName;
+      this.lastName = lastName;
+      this.role = role;
+   }
 
-   public List<UserRole> getUserRoles() {
-      final List<UserRole> list = new ArrayList<>();
-      list.add(UserRole.MEMBER);
-      list.add(UserRole.COACH);
-      list.add(UserRole.MANAGER);
-
-      return list;
+   /**
+    * Creates an empty {@code UserResource} for internal use.
+    */
+   public UserResourceImpl() {
    }
 
    /**
@@ -98,6 +111,7 @@ public class UserForm implements UserResource {
     */
    @Override
    public void setEmail(String email) {
+      assert email != null;
       this.email = email;
    }
 
@@ -114,6 +128,7 @@ public class UserForm implements UserResource {
     */
    @Override
    public void setPassword(String password) {
+      assert password != null;
       this.password = password;
    }
 
@@ -162,6 +177,7 @@ public class UserForm implements UserResource {
     */
    @Override
    public void setLastName(String lastName) {
+      assert lastName != null;
       this.lastName = lastName;
    }
 
@@ -178,23 +194,7 @@ public class UserForm implements UserResource {
     */
    @Override
    public void setRole(UserRole role) {
+      assert role != null;
       this.role = role;
-   }
-
-   /*---------- Select element options ----------*/
-
-   public List<UserRole> getRoles() {
-      if (roles == null) {
-         roles = Arrays.asList(UserRole.values());
-      }
-      return roles;
-   }
-
-   public Map<Region, List<TeamEntry>> getTeams() {
-      return teams;
-   }
-
-   public void setTeams(Map<Region, List<TeamEntry>> teams) {
-      this.teams = teams;
    }
 }

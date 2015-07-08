@@ -25,7 +25,7 @@ public class UserValidatorTests {
 
    @Test
    public void supports() {
-      assertTrue(validator.supports(UserResource.class));
+      assertTrue(validator.supports(UserResourceImpl.class));
       assertTrue(validator.supports(UserForm.class));
       assertFalse(validator.supports(Object.class));
    }
@@ -35,7 +35,7 @@ public class UserValidatorTests {
       final UserForm form = TestUtils.newUserForm();
       form.setEmail("   ");
 
-      final UserResource resource = TestUtils.newUserResource();
+      final UserResourceImpl resource = TestUtils.newUserResource();
       resource.setEmail("   ");
 
       BindException errors = new BindException(form, "userForm");
@@ -52,7 +52,7 @@ public class UserValidatorTests {
       final UserForm form = TestUtils.newUserForm();
       form.setLastName("");
 
-      final UserResource resource = TestUtils.newUserResource();
+      final UserResourceImpl resource = TestUtils.newUserResource();
       resource.setLastName("");
 
       BindException errors = new BindException(form, "userForm");
@@ -69,7 +69,7 @@ public class UserValidatorTests {
    @Test
    public void newUserIsValid() {
       final UserForm form = TestUtils.newUserForm();
-      final UserResource resource = TestUtils.newUserResource();
+      final UserResourceImpl resource = TestUtils.newUserResource();
 
       BindException errors = new BindException(form, "userForm");
       ValidationUtils.invokeValidator(validator, form, errors);
@@ -93,7 +93,7 @@ public class UserValidatorTests {
 
    @Test
    public void newUserResourceEmailIsDuplicate() {
-      final UserResource resource = TestUtils.newUserResource();
+      final UserResourceImpl resource = TestUtils.newUserResource();
 
       Mockito.when(userQueryRepository.uniqueEmail(resource.getEmail())).thenReturn(1);
 
@@ -116,7 +116,7 @@ public class UserValidatorTests {
 
    @Test
    public void newUserResourceEmailIsInvalid() {
-      final UserResource resource = TestUtils.newUserResource();
+      final UserResourceImpl resource = TestUtils.newUserResource();
       resource.setEmail("john@john@example.com");
 
       Mockito.when(userQueryRepository.uniqueEmail(resource.getEmail())).thenReturn(0);

@@ -22,22 +22,22 @@ public class UserValidator implements Validator {
 
    @Override
    public boolean supports(Class<?> clazz) {
-      return UserResource.class.equals(clazz) || UserForm.class.equals(clazz);
+      return UserResource.class.isAssignableFrom(clazz);
    }
 
    @Override
    public void validate(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".validate.";
-      final UserForm form = (UserForm)target;
+      final UserResource resource = (UserResource)target;
 
       logger.debug("Entering: " + proc + "10");
 
       // Validate mandatory arguments
-      checkMandatoryArgs(target, errors);
+      checkMandatoryArgs(resource, errors);
       logger.debug(proc + "20");
 
       // Validate email
-      checkEmail(target, errors);
+      checkEmail(resource, errors);
 
       logger.debug("Leaving: " + proc + "30");
    }
@@ -48,21 +48,10 @@ public class UserValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkMandatoryArgs(Object target, Errors errors) {
+   private void checkMandatoryArgs(UserResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkMandatoryArgs.";
-      String email = null;
-      String lastName = null;
-
-      if (target instanceof UserResource) {
-         final UserResource resource = (UserResource)target;
-         email = resource.getEmail();
-         lastName = resource.getLastName();
-      }
-      else if (target instanceof UserForm) {
-         final UserForm form = (UserForm)target;
-         email = form.getEmail();
-         lastName = form.getLastName();
-      }
+      final String email = target.getEmail();
+      final String lastName = target.getLastName();
 
       logger.debug("Entering: " + proc + "10");
 
@@ -83,23 +72,12 @@ public class UserValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkEmail(Object target, Errors errors) {
+   private void checkEmail(UserResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkEmail.";
-      String userId = null;
-      String email = null;
+      final String userId = target.getId();
+      final String email = target.getEmail();
       int found = 0;
       boolean doValidation = false;
-
-      if (target instanceof UserResource) {
-         final UserResource resource = (UserResource)target;
-         userId = resource.getId();
-         email = resource.getEmail();
-      }
-      else if (target instanceof UserForm) {
-         final UserForm form = (UserForm)target;
-         userId = form.getId();
-         email = form.getEmail();
-      }
 
       logger.debug("Entering: " + proc + "10");
 
