@@ -9,7 +9,6 @@ import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 
 import laxstats.api.relationships.RelationshipType;
 import laxstats.api.utils.Constants;
@@ -20,14 +19,12 @@ import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 
 @Entity
-@Table(name = "relationships",
-         indexes = { @Index(name = "relationships_idx1", columnList = "type"),
-            @Index(name = "relationships_idx2", columnList = "child") },
-         uniqueConstraints = { @UniqueConstraint(name = "relationships_uk1", columnNames = { "id",
-            "parent", "child" }) })
+@Table(name = "relationships", indexes = { @Index(name = "relationships_idx1", columnList = "type"),
+   @Index(name = "relationships_idx2", columnList = "parent"),
+   @Index(name = "relationships_idx3", columnList = "child") })
 public class RelationshipEntry {
    @Id
-   @Column(length = 36)
+   @Column(length = Constants.MAX_LENGTH_DATABASE_KEY)
    private String id;
 
    @ManyToOne
@@ -42,7 +39,7 @@ public class RelationshipEntry {
    @Column(length = Constants.MAX_LENGTH_ENUM_STRING)
    private RelationshipType type;
 
-   @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+   @Type(type = Constants.LOCAL_DATETIME_DATABASE_TYPE)
    private LocalDateTime createdAt;
 
    @ManyToOne
