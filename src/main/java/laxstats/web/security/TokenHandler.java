@@ -1,10 +1,10 @@
 package laxstats.web.security;
 
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 public class TokenHandler {
    private final String secret;
@@ -22,7 +22,9 @@ public class TokenHandler {
    }
 
    public String createTokenForUser(UserDetails user) {
-      return Jwts.builder().setSubject(user.getUsername()).signWith(SignatureAlgorithm.HS512, secret)
-         .compact();
+      return Jwts.builder()
+               .setSubject(user.getUsername())
+               .signWith(SignatureAlgorithm.HS512, secret)
+               .compact();
    }
 }

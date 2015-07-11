@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,8 +17,9 @@ public class TokenAuthenticationService {
    private final TokenHandler tokenHandler;
 
    @Autowired
-   public TokenAuthenticationService(UserDetailsService loginService) {
-      tokenHandler = new TokenHandler("laxstats", loginService);
+   public TokenAuthenticationService(@Value("${app.admin.token.secret}") String secret,
+      UserDetailsService loginService) {
+      tokenHandler = new TokenHandler(secret, loginService);
    }
 
    public void addAuthentication(HttpServletResponse response, UserAuthentication authentication) {
