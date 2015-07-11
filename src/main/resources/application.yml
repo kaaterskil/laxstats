@@ -1,7 +1,18 @@
+# Core
+
+# Sets the default active profile
 spring:
   profiles.active: development
   
+app:
+  admin:
+    superadmin.role: SUPERADMIN
+    token.secret: bGF4c3RhdHMgdG9rZW4gc2VjcmV0IGtleQ==
+
 ---
+
+# DEVELOPMENT PROFILE CONFIGURATION
+
 spring:
   profiles: development
   application:
@@ -10,20 +21,29 @@ spring:
 logging:
   level:
     org.springframework: INFO
-    org.hibernate: ERROR
-    laxstats: DEBUG
+    org.hibernate: INFO
+    laxstats: INFO
   file: C:/www/laxstats/log/laxstats.log
   
 log4j:
   rootCategory: INFO, stdout
+  
   appender:
     stdout: org.apache.log4j.ConsoleAppender
     stdout.layout: org.apache.log4j.PatternLayout
     stdout.layout.ConversionPattern: "%d{ABSOLUTE} %5p %t %c{2}:%L - %m%n"
+    
   category:
     org.springframework.beans.factory: DEBUG
+    org.springframework.boot.actuate.audit.listener: INFO
     laxstats: DEBUG
     
+  logger:
+    org.hibernate: INFO
+    org.hibernate.type: ALL
+    laxstats: DEBUG
+
+# Server settings  
 server:
   port: 8080
   address: localhost
@@ -43,7 +63,7 @@ spring.jpa:
   database: postgresql
   showSql: true
   hibernate:
-    ddlAuto: create
+    ddlAuto: update
     namingStrategy: org.hibernate.cfg.ImprovedNamingStrategy
     dialect: org.hibernate.dialect.PostgreSQL9Dialect
   properties:
@@ -90,26 +110,3 @@ management:
 security:
   basic:
     enabled: false
-    
----
-spring:
-  profiles: test
-
-# Data Source
-spring.datasource:
-  driverClassName: org.postgresql.Driver
-  url: jdbc:postgresql://localhost:5432/laxstats_test
-  username: root
-  password: 
-
-# JPA/Hibernate
-spring.jpa:
-  database: postgresql
-  showSql: true
-  hibernate:
-    ddlAuto: create-drop
-    namingStrategy: org.hibernate.cfg.ImprovedNamingStrategy
-    dialect: org.hibernate.dialect.PostgreSQL9Dialect
-  properties:
-    validation:
-      mode: none

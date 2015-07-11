@@ -1,0 +1,78 @@
+# TEST PROFILE CONFIGURATION
+
+# Profile settings
+spring:
+  profiles: test
+  
+  # The anme of the application
+  application.name: Laxstats Test
+  
+# Core Logging configuration
+logging:
+  # Sets the levels for each set of loggers
+  level:
+    org.springframework: INFO
+    org.springframework.boot.actuator.audit.listener: ERROR
+    org.hibernate: INFO
+    laxstats: DEBUG
+    
+  # Sets the logging file location
+  file: C:/www/laxstats/log/laxstats-test.log
+  
+log4j:
+  root-category: INFO, stdout
+  appender:
+    stdout: org.apache.log4j.ConsoleAppender
+    stdout.layout: org.apache.log4j.PatternLayout
+    stdout.layout.conversion-pattern: "%d{ABSOLUTE} %5p %t %c{2}:%L - %m%n"
+  category:
+    org.springframework.beans.factory: DEBUG
+    laxstats: DEBUG
+    
+# Server configuration
+server:
+  port: 0
+  address: localhost
+  session-timeout: 30
+  tomcat:
+    uri-encoding: UTF-8
+
+# Data Source settings
+spring.datasource:
+  driver-class-name: org.postgresql.Driver
+  url: jdbc:postgresql://localhost:5432/laxstats_test
+  username: root
+  password: 
+
+# JPA/Hibernate settings
+spring.jpa:
+  database: postgresql
+  show-sql: true
+  hibernate:
+    ddl-auto: update
+    naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+    dialect: org.hibernate.dialect.PostgreSQL9Dialect
+  properties:
+    validation:
+      mode: none
+
+# Spring Data settings 
+spring.data:
+  jpa:
+    repositories:
+      enabled: true
+
+# MVC settings
+spring.mvc:
+  locale: en_US
+  date-format: yyyy-MM-dd
+
+# ManagementServerProperties
+management:
+  security:
+    enabled: false
+
+# SecurityProperties
+security:
+  basic:
+    enabled: false
