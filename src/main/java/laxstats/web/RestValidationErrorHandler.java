@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  * Global exception handler to return validation errors to REST clients.
- * 
- * @see http
+ *
+ * @see http 
  *      ://www.javacodegeeks.com/2013/05/spring-from-the-trenches-adding-validation-to-a-rest-api
  *      .html
  */
