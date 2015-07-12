@@ -28,8 +28,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class ViolationTest extends AbstractIntegrationTest {
-   private static Logger logger = LoggerFactory.getLogger(ViolationTest.class);
+public class ViolationApiControllerIT extends AbstractIntegrationTest {
+   private static Logger logger = LoggerFactory.getLogger(ViolationApiControllerIT.class);
    private static String BASE_REQUEST_URL = AbstractIntegrationTest.BASE_URL + "/api/violations/";
 
    @Autowired

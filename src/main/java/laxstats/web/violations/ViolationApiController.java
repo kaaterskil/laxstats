@@ -134,7 +134,6 @@ public class ViolationApiController extends ApplicationController {
     * @return
     */
    @RequestMapping(value = "/api/violations/{id}", method = RequestMethod.PUT)
-   @ResponseStatus(value = HttpStatus.OK)
    public ResponseEntity<?> update(@PathVariable String id,
       @Valid @RequestBody ViolationResourceImpl resource)
    {
