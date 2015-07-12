@@ -3,13 +3,15 @@ package laxstats.web.violations;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import laxstats.TestUtils;
 import laxstats.api.violations.PenaltyCategory;
 import laxstats.api.violations.PenaltyLength;
 import laxstats.api.violations.ViolationId;
@@ -19,11 +21,13 @@ import laxstats.web.AbstractIntegrationTest;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class ViolationTest extends AbstractIntegrationTest {
-   private static String GET_URL = "http://localhost:0/api/violations/iuyt-8765-kjhg";
-   private static String GET_ALL_URL = "http://localhost:0/api/violations";
+   private static Logger logger = LoggerFactory.getLogger(ViolationTest.class);
+   private static String BASE_REQUEST_URL = AbstractIntegrationTest.BASE_URL + "/api/violations/";
 
    @Autowired
    private ViolationQueryRepository repository;
@@ -32,7 +36,7 @@ public class ViolationTest extends AbstractIntegrationTest {
 
    @Before
    public void setup() throws Exception {
-      mockMvc = webAppContextSetup(webApplicationContext).build();
+      createSecureContext();
 
       repository.deleteAll();
 
@@ -50,13 +54,62 @@ public class ViolationTest extends AbstractIntegrationTest {
 
    @Test
    public void violationNotFound() throws Exception {
-      mockMvc.perform(get(GET_URL)).andExpect(status().isNotFound());
+      final String id = new ViolationId().toString();
+      final String url = BASE_REQUEST_URL + "/" + id;
+
+      logger.info("Invalid id: " + id);
+      mockMvc.perform(get(url))
+         .andExpect(status().isNotFound());
+   }
+
+   @Test
+   public void readViolation() throws Exception {
+      final ViolationEntry violation = violationList.get(0);
+
+      logger.info("Read id: " + violation.getId());
+      mockMvc.perform(get(BASE_REQUEST_URL + violation.getId()))
+         .andExpect(status().isOk())
+         .andExpect(content().contentType(contentType))
+         .andExpect(jsonPath("$.id", is(violation.getId())))
+         .andExpect(jsonPath("$.name", is("Trip")))
+         .andExpect(jsonPath("$.category", is(PenaltyCategory.PERSONAL_FOUL.name())))
+         .andExpect(jsonPath("$.releasable", is(true)));
    }
 
    @Test
    public void readViolations() throws Exception {
-      mockMvc.perform(get(GET_ALL_URL)).andExpect(status().isOk()).andExpect(
-         jsonPath("$", hasSize(1))).andExpect(jsonPath("$[0].id", is(violationList.get(0).getId())))
+      mockMvc.perform(get(BASE_REQUEST_URL))
+         .andExpect(status().isOk())
+         .andExpect(jsonPath("$", hasSize(1)))
+         .andExpect(jsonPath("$[0].id", is(violationList.get(0)
+            .getId())))
          .andExpect(jsonPath("$[0].name", is("Trip")));
+   }
+
+   @Test
+   public void createViolation() throws Exception {
+      final ViolationResource resource = TestUtils.newViolationResource();
+
+      mockMvc.perform(post(BASE_REQUEST_URL).with(superadmin)
+         .contentType(contentType)
+         .header("X-AUTH-TOKEN", createTokenForUser())
+         .content(TestUtils.convertObjectToJson(resource)))
+         .andExpect(status().isCreated())
+         .andExpect(content().contentType(contentType))
+         .andExpect(jsonPath("$.name", is("Slash")));
+   }
+
+   @Test
+   public void createViolationWithNoName() throws Exception {
+      final ViolationResource resource = TestUtils.newViolationResource();
+      resource.setName(null);
+
+      mockMvc.perform(post(BASE_REQUEST_URL).with(superadmin)
+         .contentType(contentType)
+         .header("X-AUTH-TOKEN", createTokenForUser())
+         .content(TestUtils.convertObjectToJson(resource)))
+         .andExpect(status().isBadRequest())
+         .andExpect(content().contentType(contentType))
+         .andExpect(jsonPath("$.fieldErrors", hasSize(1)));
    }
 }
