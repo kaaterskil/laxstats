@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class TokenAuthenticationService {
-   private static String AUTH_HEADER_NAME = "X-AUTH-TOKEN";
+   public static String AUTH_HEADER_NAME = "X-AUTH-TOKEN";
 
    private final TokenHandler tokenHandler;
 

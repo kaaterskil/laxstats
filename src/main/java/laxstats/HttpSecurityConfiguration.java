@@ -1,6 +1,9 @@
 package laxstats;
 
+import laxstats.web.security.TokenAuthenticationService;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -14,12 +17,21 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import laxstats.web.security.TokenAuthenticationService;
-
 @Configuration
 @EnableWebMvcSecurity
 @Order(1)
 public class HttpSecurityConfiguration extends WebSecurityConfigurerAdapter {
+   // Spring Boot Actuator services
+   private static String ENDPOINT_AUTOCONFIG = "/autoconfig";
+   private static String ENDPOINT_BEANS = "/beans";
+   private static String ENDPOINT_CONFIGPROPS = "configprops";
+   private static String ENDPOINT_ENV = "/env";
+   private static String ENDPOINT_METRICS = "/metrics";
+   private static String ENDPOINT_MAPPINGS = "/mappings";
+   private static String ENDPOINT_SHUTDOWN = "/shutdown";
+
+   @Value(value = "${app.admin.superadmin.role}")
+   private String adminRole;
 
    @Autowired
    private UserDetailsService loginService;
@@ -33,33 +45,57 @@ public class HttpSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
    @Autowired
    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-      auth.userDetailsService(loginService).passwordEncoder(new BCryptPasswordEncoder());
-      auth.inMemoryAuthentication().withUser("sa").password("admin").roles("SUPERADMIN");
+      auth.userDetailsService(loginService)
+         .passwordEncoder(new BCryptPasswordEncoder());
+
+      auth.inMemoryAuthentication()
+         .withUser("sa")
+         .password("admin")
+         .roles("SUPERADMIN");
    }
 
    @Override
    protected void configure(HttpSecurity http) throws Exception {
-      http.exceptionHandling().and().anonymous().and().servletApi().and().headers().cacheControl()
-         .and().authorizeRequests()
+      http.exceptionHandling()
+         .and()
+         .anonymous()
+         .and()
+         .servletApi()
+         .and()
+         .headers()
+         .cacheControl()
+         .and()
+         .authorizeRequests()
 
-      // Allow anonymous resource requests
-         .antMatchers("/", "/favicon.ico", "**/*.html", "**/*.css", "**/*.js").permitAll()
+         // Allow anonymous resource requests
+         .antMatchers("/", "/favicon.ico", "**/*.html", "**/*.css", "**/*.js")
+         .permitAll()
 
-      // Allow anonymous logins
-         .antMatchers(HttpMethod.POST, "/api/login").permitAll()
+         // Allow anonymous logins
+         .antMatchers(HttpMethod.POST, "/api/login")
+         .permitAll()
 
-      // Allow anonymous GETs to API
-         .antMatchers(HttpMethod.GET, "/api/**").permitAll()
+         // Allow anonymous GETs to API
+         .antMatchers(HttpMethod.GET, "/api/**")
+         .permitAll()
 
-      // All other requests need to be authenticated
-         .anyRequest().authenticated().and()
+         // All other requests need to be authenticated
+         .anyRequest()
+         .authenticated()
 
-      // Custom JSON based authentication by POST of {"username": "<email>", "password":
-      // "<password>"} which sets the token upon authentication
-         .addFilterBefore(new StatelessLoginFilter("/api/login", tokenAuthenticationService,
-            loginService, authenticationManager()), UsernamePasswordAuthenticationFilter.class)
+         // Authorize requests of Spring-Actuator to only super-administrators
+         .antMatchers(actuatorEndpoints())
+         .hasRole(adminRole)
+         .and()
 
-      // Custom token based authentication based on the header previously given to the client
+         // Custom JSON based authentication by POST of {"username": "<email>", "password":
+         // "<password>"} which sets the token upon authentication
+         .addFilterBefore(
+            new StatelessLoginFilter("/api/login", tokenAuthenticationService, loginService,
+               authenticationManager()), UsernamePasswordAuthenticationFilter.class)
+
+         // Custom token based authentication based on the header previously given to the
+         // client
          .addFilterBefore(new StatelessAuthenticationFilter(tokenAuthenticationService),
             UsernamePasswordAuthenticationFilter.class);
    }
@@ -68,5 +104,10 @@ public class HttpSecurityConfiguration extends WebSecurityConfigurerAdapter {
    @Override
    public AuthenticationManager authenticationManagerBean() throws Exception {
       return super.authenticationManagerBean();
+   }
+
+   private String[] actuatorEndpoints() {
+      return new String[] { ENDPOINT_AUTOCONFIG, ENDPOINT_BEANS, ENDPOINT_CONFIGPROPS, ENDPOINT_ENV,
+         ENDPOINT_MAPPINGS, ENDPOINT_METRICS, ENDPOINT_SHUTDOWN };
    }
 }

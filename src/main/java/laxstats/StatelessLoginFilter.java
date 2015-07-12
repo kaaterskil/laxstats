@@ -7,6 +7,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import laxstats.web.security.Credentials;
+import laxstats.web.security.TokenAuthenticationService;
+import laxstats.web.security.UserAuthentication;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,10 +22,6 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import laxstats.web.security.Credentials;
-import laxstats.web.security.TokenAuthenticationService;
-import laxstats.web.security.UserAuthentication;
 
 public class StatelessLoginFilter extends AbstractAuthenticationProcessingFilter {
 
@@ -53,7 +53,7 @@ public class StatelessLoginFilter extends AbstractAuthenticationProcessingFilter
    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
       FilterChain chain, Authentication authResult) throws IOException, ServletException
    {
-      // Look up the complete User object from the database and create and Authentication for it.
+      // Look up the complete User object from the database and create an Authentication for it.
       final UserDetails authenticatedUser =
          userDetailsService.loadUserByUsername(authResult.getName());
       final UserAuthentication userAuthentication = new UserAuthentication(authenticatedUser);
