@@ -21,6 +21,7 @@ import org.axonframework.commandhandling.GenericCommandMessage;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -75,8 +76,8 @@ public class ViolationApiController extends ApplicationController {
       final List<ViolationResourceImpl> body = new ArrayList<ViolationResourceImpl>();
       for (final ViolationEntry each : list) {
          final ViolationResourceImpl e =
-            new ViolationResourceImpl(each.getId(), each.getName(), each.getDescription(), each
-               .getCategory(), each.getPenaltyLength(), each.isReleasable());
+            new ViolationResourceImpl(each.getId(), each.getName(), each.getDescription(),
+               each.getCategory(), each.getPenaltyLength(), each.isReleasable());
          body.add(e);
       }
       return body;
@@ -95,8 +96,8 @@ public class ViolationApiController extends ApplicationController {
          throw new ViolationNotFoundException(id);
       }
 
-      return new ViolationResourceImpl(entry.getId(), entry.getName(), entry.getDescription(), entry
-         .getCategory(), entry.getPenaltyLength(), entry.isReleasable());
+      return new ViolationResourceImpl(entry.getId(), entry.getName(), entry.getDescription(),
+         entry.getCategory(), entry.getPenaltyLength(), entry.isReleasable());
    }
 
    /*---------- Admin action methods ----------*/
@@ -108,8 +109,7 @@ public class ViolationApiController extends ApplicationController {
     * @return
     */
    @RequestMapping(value = "/api/violations", method = RequestMethod.POST)
-   @ResponseStatus(value = HttpStatus.CREATED)
-   public ViolationResource create(@Valid @RequestBody ViolationResourceImpl resource) {
+   public ResponseEntity<?> create(@Valid @RequestBody ViolationResourceImpl resource) {
       final LocalDateTime now = LocalDateTime.now();
       final UserEntry user = getCurrentUser();
       final ViolationId identifier = new ViolationId();
@@ -123,7 +123,7 @@ public class ViolationApiController extends ApplicationController {
       commandBus.dispatch(new GenericCommandMessage<>(command));
 
       resource.setId(identifier.toString());
-      return resource;
+      return new ResponseEntity<>(resource, HttpStatus.CREATED);
    }
 
    /**
@@ -135,7 +135,7 @@ public class ViolationApiController extends ApplicationController {
     */
    @RequestMapping(value = "/api/violations/{id}", method = RequestMethod.PUT)
    @ResponseStatus(value = HttpStatus.OK)
-   public ViolationResource update(@PathVariable String id,
+   public ResponseEntity<?> update(@PathVariable String id,
       @Valid @RequestBody ViolationResourceImpl resource)
    {
       final boolean exists = violationRepository.exists(id);
@@ -154,7 +154,7 @@ public class ViolationApiController extends ApplicationController {
       final UpdateViolation command = new UpdateViolation(identifier, dto);
       commandBus.dispatch(new GenericCommandMessage<>(command));
 
-      return resource;
+      return new ResponseEntity<>(resource, HttpStatus.OK);
    }
 
    /**
@@ -163,7 +163,7 @@ public class ViolationApiController extends ApplicationController {
     * @param id
     */
    @RequestMapping(value = "/api/violations/{id}", method = RequestMethod.DELETE)
-   @ResponseStatus(value = HttpStatus.NO_CONTENT)
+   @ResponseStatus(value = HttpStatus.OK)
    public void delete(@PathVariable String id) {
       final boolean exists = violationRepository.exists(id);
       if (!exists) {

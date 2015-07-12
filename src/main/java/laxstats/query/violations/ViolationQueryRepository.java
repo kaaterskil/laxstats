@@ -14,6 +14,6 @@ public interface ViolationQueryRepository extends CrudRepository<ViolationEntry,
    int uniqueName(String name);
 
    @Query("select count(*) from ViolationEntry ve "
-      + "where ?1 is not null and upper(ve.name) = upper(?1) " + "and ve.id <> ?2")
+      + "where ?1 is not null and upper(ve.name) = upper(cast(?1 as text)) " + "and ve.id <> ?2")
    int updateName(String name, String id);
 }

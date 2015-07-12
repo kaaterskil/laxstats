@@ -2,8 +2,10 @@ package laxstats.web.violations;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -19,6 +21,7 @@ import laxstats.query.violations.ViolationEntry;
 import laxstats.query.violations.ViolationQueryRepository;
 import laxstats.web.AbstractIntegrationTest;
 
+import org.axonframework.domain.IdentifierFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -100,7 +103,7 @@ public class ViolationTest extends AbstractIntegrationTest {
    }
 
    @Test
-   public void createViolationWithNoName() throws Exception {
+   public void createViolationWithValidationError() throws Exception {
       final ViolationResource resource = TestUtils.newViolationResource();
       resource.setName(null);
 
@@ -111,5 +114,83 @@ public class ViolationTest extends AbstractIntegrationTest {
          .andExpect(status().isBadRequest())
          .andExpect(content().contentType(contentType))
          .andExpect(jsonPath("$.fieldErrors", hasSize(1)));
+   }
+
+   @Test
+   public void updateViolation() throws Exception {
+      final ViolationEntry entity = violationList.get(0);
+      final String newDescription = "This is an updated description for the violation";
+
+      final ViolationResource resource =
+         new ViolationResourceImpl(entity.getId(), entity.getName(), entity.getDescription(),
+            entity.getCategory(), entity.getPenaltyLength(), entity.isReleasable());
+      resource.setDescription(newDescription);
+
+      mockMvc.perform(put(BASE_REQUEST_URL + entity.getId()).with(superadmin)
+         .contentType(contentType)
+         .header("X-AUTH-TOKEN", createTokenForUser())
+         .content(TestUtils.convertObjectToJson(resource)))
+         .andExpect(status().isOk())
+         .andExpect(content().contentType(contentType))
+         .andExpect(jsonPath("$.description", is(newDescription)));
+   }
+
+   @Test
+   public void updateViolationWhenIdIsNotFound() throws Exception {
+      final ViolationEntry entity = violationList.get(0);
+      final String id = IdentifierFactory.getInstance()
+         .generateIdentifier();
+
+      final ViolationResource resource =
+         new ViolationResourceImpl(id, entity.getName(), entity.getDescription(),
+            entity.getCategory(), entity.getPenaltyLength(), entity.isReleasable());
+      resource.setName(null);
+
+      mockMvc.perform(put(BASE_REQUEST_URL + id).with(superadmin)
+         .contentType(contentType)
+         .header("X-AUTH-TOKEN", createTokenForUser())
+         .content(TestUtils.convertObjectToJson(resource)))
+         .andExpect(status().isBadRequest())
+         .andExpect(jsonPath("$.message", is("Invalid primary key")));
+   }
+
+   @Test
+   public void updateViolationWithValidationError() throws Exception {
+      final ViolationEntry entity = violationList.get(0);
+
+      final ViolationResource resource =
+         new ViolationResourceImpl(entity.getId(), entity.getName(), entity.getDescription(),
+            entity.getCategory(), entity.getPenaltyLength(), entity.isReleasable());
+      resource.setName(null);
+
+      mockMvc.perform(put(BASE_REQUEST_URL + entity.getId()).with(superadmin)
+         .contentType(contentType)
+         .header("X-AUTH-TOKEN", createTokenForUser())
+         .content(TestUtils.convertObjectToJson(resource)))
+         .andExpect(status().isBadRequest())
+         .andExpect(content().contentType(contentType))
+         .andExpect(jsonPath("$.fieldErrors", hasSize(1)));
+   }
+
+   @Test
+   public void deleteViolation() throws Exception {
+      final ViolationEntry entity = violationList.get(0);
+      final String id = entity.getId();
+
+      mockMvc.perform(delete(BASE_REQUEST_URL + id).with(superadmin)
+         .contentType(contentType)
+         .header("X-AUTH-TOKEN", createTokenForUser()))
+         .andExpect(status().isOk());
+   }
+
+   @Test
+   public void deleteViolationWhenIdIsNotFound() throws Exception {
+      final String id = IdentifierFactory.getInstance()
+         .generateIdentifier();
+
+      mockMvc.perform(delete(BASE_REQUEST_URL + id).with(superadmin)
+         .contentType(contentType)
+         .header("X-AUTH-TOKEN", createTokenForUser()))
+         .andExpect(status().isNotFound());
    }
 }
