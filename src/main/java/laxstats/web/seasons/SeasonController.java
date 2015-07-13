@@ -31,13 +31,13 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class SeasonController extends ApplicationController {
    private static final Logger logger = LoggerFactory.getLogger(SeasonController.class);
-   private static final String PACKAGE_NAME = SeasonController.class.getPackage().getName();
+   private static final String PACKAGE_NAME = SeasonController.class.getPackage()
+      .getName();
 
    private final SeasonQueryRepository seasonRepository;
 
@@ -183,19 +183,6 @@ public class SeasonController extends ApplicationController {
       return "seasons/editSeason";
    }
 
-   /*---------- Ajax methods ----------*/
-
-   @RequestMapping(value = "/api/seasons", method = RequestMethod.GET)
-   public @ResponseBody Iterable<SeasonEntry> apiSeasons() {
-      return seasonRepository.findAll(new Sort(Direction.DESC, "startsOn"));
-   }
-
-   @RequestMapping(value = "/api/seasons/{seasonId}", method = RequestMethod.GET)
-   public @ResponseBody SeasonResourceImpl getSeason(@PathVariable("seasonId") SeasonEntry season) {
-      return new SeasonResourceImpl(season.getId(), season.getDescription(), season.getStartsOn()
-         .toString("yyyy-MM-dd"), season.getEndsOn().toString("yyyy-MM-dd"));
-   }
-
    /*---------- Utilities ----------*/
 
    private void checkDelete(String seasonId) {
@@ -214,10 +201,12 @@ public class SeasonController extends ApplicationController {
       final SeasonEntry season = seasonRepository.findOne(seasonId);
       logger.debug(proc + "30");
 
-      final LocalDateTime startsAt = season.getStartsOn().toDateTimeAtStartOfDay().toLocalDateTime();
-      final LocalDateTime endsAt =
-         season.getEndsOn() == null ? Common.EOT : season.getEndsOn().toDateTimeAtStartOfDay()
-            .toLocalDateTime();
+      final LocalDateTime startsAt = season.getStartsOn()
+         .toDateTimeAtStartOfDay()
+         .toLocalDateTime();
+      final LocalDateTime endsAt = season.getEndsOn() == null ? Common.EOT : season.getEndsOn()
+         .toDateTimeAtStartOfDay()
+         .toLocalDateTime();
       final int foundGames = seasonRepository.countGames(startsAt, endsAt);
       if (foundGames > 0) {
          throw new IllegalArgumentException("Cannot delete season with associated games.");

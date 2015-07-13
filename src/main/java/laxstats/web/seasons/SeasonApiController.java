@@ -3,6 +3,7 @@ package laxstats.web.seasons;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import laxstats.api.seasons.CreateSeason;
@@ -16,6 +17,7 @@ import laxstats.query.seasons.SeasonQueryRepository;
 import laxstats.query.users.UserEntry;
 import laxstats.query.users.UserQueryRepository;
 import laxstats.web.ApplicationController;
+import laxstats.web.ExceptionResource;
 
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.commandhandling.GenericCommandMessage;
@@ -24,27 +26,38 @@ import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.validation.BindingResult;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Controller for API calls
+ * {@code SeasonApiController} is a RESTful controller for remote clients accessing season
+ * resources. Security restrictions apply.
  */
 @RestController
-@RequestMapping(value = "/admin/api/seasons")
 public class SeasonApiController extends ApplicationController {
+
    private final SeasonQueryRepository seasonRepository;
    private final Sort seasonSort = new Sort(Direction.DESC, "startsOn");
 
    @Autowired
    private SeasonValidator seasonValidator;
 
+   /**
+    * Creates a {@code SeasonApiController} with the given arguments.
+    *
+    * @param seasonRepository
+    * @param userRepository
+    * @param commandBus
+    */
    @Autowired
    public SeasonApiController(SeasonQueryRepository seasonRepository,
       UserQueryRepository userRepository, CommandBus commandBus) {
@@ -52,70 +65,68 @@ public class SeasonApiController extends ApplicationController {
       this.seasonRepository = seasonRepository;
    }
 
-   @InitBinder(value = "SeasonResource")
+   @InitBinder
    protected void initBinder(WebDataBinder binder) {
       binder.setValidator(seasonValidator);
    }
 
-   /*---------- Action methods ----------*/
+   /*---------- Public action methods ----------*/
 
    /**
     * GET Returns a collection of seasons sorted by starting date in descending order.
     *
     * @return
     */
-   @RequestMapping(method = RequestMethod.GET)
-   public List<SeasonResourceImpl> seasonIndex() {
+   @RequestMapping(value = "/api/seasons", method = RequestMethod.GET)
+   public List<SeasonResource> index() {
       final Iterable<SeasonEntry> seasons = seasonRepository.findAll(seasonSort);
 
-      final List<SeasonResourceImpl> list = new ArrayList<SeasonResourceImpl>();
+      final List<SeasonResource> list = new ArrayList<>();
       for (final SeasonEntry each : seasons) {
          final SeasonResourceImpl resource =
-            new SeasonResourceImpl(each.getId(), each.getDescription(), each.getStartsOn().toString(),
-               each.getEndsOn().toString());
+            new SeasonResourceImpl(each.getId(), each.getDescription(), each.getStartsOn()
+               .toString(), each.getEndsOn()
+               .toString());
          list.add(resource);
       }
       return list;
    }
 
    /**
-    * GET Returns a {@code SeasonResource} matching the given primary key.
+    * GET Returns the season matching the given aggregate identifier.
     *
-    * @param season
+    * @param seasonId
     * @return
     */
-   @RequestMapping(value = "/{seasonId}", method = RequestMethod.GET)
-   public SeasonResourceImpl showSeason(@PathVariable("seasonId") SeasonEntry season) {
+   @RequestMapping(value = "/api/seasons/{seasonId}", method = RequestMethod.GET)
+   public SeasonResource show(@PathVariable String seasonId) {
+      final SeasonEntry season = seasonRepository.findOne(seasonId);
+      if (season == null) {
+         throw new SeasonNotFoundException(seasonId);
+      }
+
       return new SeasonResourceImpl(season.getId(), season.getDescription(), season.getStartsOn()
-         .toString(), season.getEndsOn().toString());
+         .toString(), season.getEndsOn()
+         .toString());
    }
+
+   /*---------- Admin action methods ----------*/
 
    /**
     * POST
     *
     * @param resource
-    * @param bindingResult
     * @return
     */
-   @RequestMapping(method = RequestMethod.POST)
-   public SeasonResourceImpl createSeason(@Valid @RequestBody SeasonResourceImpl resource,
-      BindingResult bindingResult)
-   {
-      if (bindingResult.hasErrors()) {
-         return resource;
-      }
-
+   @RequestMapping(value = "/api/seasons", method = RequestMethod.POST)
+   public ResponseEntity<?> create(@Valid @RequestBody SeasonResourceImpl resource) {
       final LocalDateTime now = LocalDateTime.now();
       final UserEntry user = getCurrentUser();
       final SeasonId identifier = new SeasonId();
 
-      // Truncate the date values to YYY-MM-DD strings
-      final LocalDate startsOn =
-         resource.getStartsOn() != null ? LocalDate.parse(resource.getStartsOn().substring(0, 10))
-            : null;
-      final LocalDate endsOn =
-         resource.getEndsOn() != null ? LocalDate.parse(resource.getEndsOn().substring(0, 10))
-            : null;
+      // Truncate the date values to YYYY-MM-DD strings
+      final LocalDate startsOn = resource.getStartsOnAsLocalDate();
+      final LocalDate endsOn = resource.getEndsOnAsLocalDate();
 
       final SeasonDTO dto =
          new SeasonDTO(identifier, resource.getDescription(), startsOn, endsOn, now, user, now, user);
@@ -124,7 +135,7 @@ public class SeasonApiController extends ApplicationController {
       commandBus.dispatch(new GenericCommandMessage<>(payload));
 
       resource.setId(identifier.toString());
-      return resource;
+      return new ResponseEntity<>(resource, HttpStatus.CREATED);
    }
 
 
@@ -133,15 +144,15 @@ public class SeasonApiController extends ApplicationController {
     *
     * @param seasonId
     * @param resource
-    * @param bindingResult
     * @return
     */
-   @RequestMapping(value = "/{seasonId}", method = RequestMethod.PUT)
-   public SeasonResourceImpl updateSeason(@PathVariable String seasonId,
-      @Valid @RequestBody SeasonResourceImpl resource, BindingResult bindingResult)
+   @RequestMapping(value = "/api/seasons/{seasonId}", method = RequestMethod.PUT)
+   public ResponseEntity<?> update(@PathVariable String seasonId,
+      @Valid @RequestBody SeasonResourceImpl resource)
    {
-      if (bindingResult.hasErrors()) {
-         return resource;
+      final boolean exists = seasonRepository.exists(seasonId);
+      if (!exists) {
+         throw new SeasonNotFoundException(seasonId);
       }
 
       final LocalDateTime now = LocalDateTime.now();
@@ -150,11 +161,10 @@ public class SeasonApiController extends ApplicationController {
 
       // Truncate the date values to YYYY-MM-DD strings
       final LocalDate startsOn =
-         resource.getStartsOn() != null ? LocalDate.parse(resource.getStartsOn().substring(0, 10))
-            : null;
-      final LocalDate endsOn =
-         resource.getEndsOn() != null ? LocalDate.parse(resource.getEndsOn().substring(0, 10))
-            : null;
+         resource.getStartsOn() != null ? LocalDate.parse(resource.getStartsOn()
+            .substring(0, 10)) : null;
+      final LocalDate endsOn = resource.getEndsOn() != null ? LocalDate.parse(resource.getEndsOn()
+         .substring(0, 10)) : null;
 
       final SeasonDTO dto =
          new SeasonDTO(identifier, resource.getDescription(), startsOn, endsOn, now, user);
@@ -162,7 +172,7 @@ public class SeasonApiController extends ApplicationController {
       final UpdateSeason payload = new UpdateSeason(identifier, dto);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
 
-      return resource;
+      return new ResponseEntity<>(resource, HttpStatus.OK);
    }
 
    /**
@@ -170,13 +180,21 @@ public class SeasonApiController extends ApplicationController {
     *
     * @param seasonId
     */
-   @RequestMapping(value = "/{seasonId}", method = RequestMethod.DELETE)
-   public void deleteSeason(@PathVariable String seasonId) {
+   @RequestMapping(value = "/api/seasons/{seasonId}", method = RequestMethod.DELETE)
+   @ResponseStatus(value = HttpStatus.OK)
+   public void delete(@PathVariable String seasonId) {
+      final boolean exists = seasonRepository.exists(seasonId);
+      if (!exists) {
+         throw new SeasonNotFoundException(seasonId);
+      }
+
       final SeasonId identifier = new SeasonId(seasonId);
       checkDelete(seasonId);
       final DeleteSeason payload = new DeleteSeason(identifier);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
    }
+
+   /*---------- Utilities ----------*/
 
    private void checkDelete(String seasonId) {
       final int foundTeams = seasonRepository.countTeamSeasons(seasonId);
@@ -185,13 +203,23 @@ public class SeasonApiController extends ApplicationController {
       }
 
       final SeasonEntry season = seasonRepository.findOne(seasonId);
-      final LocalDateTime startsAt = season.getStartsOn().toDateTimeAtStartOfDay().toLocalDateTime();
-      final LocalDateTime endsAt =
-         season.getEndsOn() == null ? Common.EOT : season.getEndsOn().toDateTimeAtStartOfDay()
-            .toLocalDateTime();
+      final LocalDateTime startsAt = season.getStartsOn()
+         .toDateTimeAtStartOfDay()
+         .toLocalDateTime();
+      final LocalDateTime endsAt = season.getEndsOn() == null ? Common.EOT : season.getEndsOn()
+         .toDateTimeAtStartOfDay()
+         .toLocalDateTime();
       final int foundGames = seasonRepository.countGames(startsAt, endsAt);
       if (foundGames > 0) {
          throw new IllegalArgumentException("Cannot delete season with associated games.");
       }
+   }
+
+   @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+   @ExceptionHandler(value = IllegalArgumentException.class)
+   public ExceptionResource handleExceptions(HttpServletRequest req, IllegalArgumentException ex) {
+      final String url = req.getRequestURL()
+         .toString();
+      return new ExceptionResource(url, ex);
    }
 }
