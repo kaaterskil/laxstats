@@ -4,20 +4,33 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-@RepositoryRestResource(collectionResourceRel = "users", path = "users")
-public interface UserQueryRepository extends
-		PagingAndSortingRepository<UserEntry, String> {
+@RepositoryRestResource
+public interface UserQueryRepository extends PagingAndSortingRepository<UserEntry, String> {
 
-	UserEntry findByEmail(String email);
+   Iterable<UserEntry> findAllByOrderByEmailAsc();
 
-	UserEntry findById(String id);
+   Iterable<UserEntry> findAllByOrderByLastNameAsc();
 
-	@Query("select count (*) from UserEntry ue "
-			+ "where upper(ue.email) = upper(?1)")
-	int uniqueEmail(String email);
+   @Query("select UserEntry eu where ?1 is not null and ue.team.id = cast(?1 as text) "
+      + "order by ue.lastName")
+   Iterable<UserEntry> findByTeamOrderByLastNameAsc(String teamId);
 
-	@Query("select count(*) from UserEntry ue "
-			+ "where ?1 is not null and upper(ue.email) = upper(?1) "
-			+ "and ue.id <> ?2")
-	int updateEmail(String email, String id);
+   UserEntry findByEmail(String email);
+
+   UserEntry findById(String id);
+
+   @Query("select count (*) from UserEntry ue where upper(ue.email) = upper(cast(?1 as text))")
+   int uniqueEmail(String email);
+
+   @Query("select count(*) from UserEntry ue "
+      + "where ?1 is not null and upper(ue.email) = upper(cast(?1 as text)) and ue.id <> ?2")
+   int updateEmail(String email, String id);
+
+   @Query("select count(*) from PlayEntry pe where $1 is not null and "
+      + "(pe.createdBy.id = cast(?1 as text) or pe.modifiedBy.id = cast(?1 as text))")
+   int countPlaysCreatedOrModified(String id);
+
+   @Query("select count(*) from GameEntry ge where $1 is not null and "
+      + "(ge.createdBy.id = cast(?1 as text) or ge.modifiedBy.id = cast(?1 as text))")
+   int countGamesCreatedOrModified(String id);
 }
