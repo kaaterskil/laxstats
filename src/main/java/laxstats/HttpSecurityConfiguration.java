@@ -31,7 +31,7 @@ public class HttpSecurityConfiguration extends WebSecurityConfigurerAdapter {
    private static String ENDPOINT_SHUTDOWN = "/shutdown";
 
    @Value(value = "${app.admin.superadmin.role}")
-   private String adminRole;
+   private String superAdminRole;
 
    @Autowired
    private UserDetailsService loginService;
@@ -75,6 +75,10 @@ public class HttpSecurityConfiguration extends WebSecurityConfigurerAdapter {
          .antMatchers(HttpMethod.POST, "/api/login")
          .permitAll()
 
+         // All requests for users must be authenticated
+         .antMatchers("/api/users/**")
+         .authenticated()
+
          // Allow anonymous GETs to API
          .antMatchers(HttpMethod.GET, "/api/**")
          .permitAll()
@@ -85,7 +89,7 @@ public class HttpSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
          // Authorize requests of Spring-Actuator to only super-administrators
          .antMatchers(actuatorEndpoints())
-         .hasRole(adminRole)
+         .hasRole(superAdminRole)
          .and()
 
          // Custom JSON based authentication by POST of {"username": "<email>", "password":
