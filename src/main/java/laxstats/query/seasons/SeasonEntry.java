@@ -10,7 +10,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import laxstats.api.utils.Common;
 import laxstats.api.utils.Constants;
 import laxstats.query.users.UserEntry;
 
@@ -99,36 +98,44 @@ public class SeasonEntry implements Serializable {
     * @param interval
     * @return
     */
-   public boolean overlaps(Interval interval) {
-      if (interval != null) {
-         final LocalDate otherStart = interval.getStart().toLocalDate();
-         LocalDate otherEnd;
-         try {
-            otherEnd = interval.getEnd().toLocalDate();
-         }
-         catch (final Exception e) {
-            otherEnd = new LocalDate(Long.MAX_VALUE);
-         }
-         return overlaps(otherStart, otherEnd);
-      }
-      return false;
+   public boolean overlaps(Interval otherInterval) {
+      return overlaps(otherInterval.getStartMillis(), otherInterval.getEndMillis());
    }
 
    /**
     * Returns true if the given start and ends dates overlap with the the start and end dates of
-    * this season, false otherwise.
+    * this season, false otherwise. If {@code otherStart} is null, the method will use the current
+    * time. If {@code otherEnd} is null, a long corresponding to the end of time according to the
+    * Java environment is substituted.
     *
     * @param otherStart
     * @param otherEnd
     * @return
     */
    public boolean overlaps(LocalDate otherStart, LocalDate otherEnd) {
-      final LocalDate thisStart = getStartsOn();
-      final LocalDate thisEnd = Common.nvl(endsOn, Common.EOT.toLocalDate());
-      otherEnd = Common.nvl(otherEnd, Common.EOT.toLocalDate());
+      final long otherStartMillis = otherStart.toDateTimeAtStartOfDay()
+         .getMillis();
+      final long otherEndMillis = otherEnd != null ? otherEnd.toDateTimeAtStartOfDay()
+         .getMillis() : Long.MAX_VALUE;
 
-      return (thisStart.isEqual(otherEnd) || thisStart.isBefore(otherEnd)) &&
-         (otherStart.isEqual(thisEnd) || otherStart.isBefore(thisEnd));
+      return overlaps(otherStartMillis, otherEndMillis);
+   }
+
+   /**
+    * Returns true if the given start and end dates (expressed in milliseconds) overlap with the
+    * start and end dates of this season.
+    *
+    * @param otherStart
+    * @param otherEnd
+    * @return
+    */
+   public boolean overlaps(long otherStart, long otherEnd) {
+      final long thisStart = startsOn.toDateTimeAtStartOfDay()
+         .getMillis();
+      final long thisEnd = endsOn == null ? Long.MAX_VALUE : endsOn.toDateTimeAtStartOfDay()
+         .getMillis();
+
+      return thisStart <= otherEnd && otherStart <= thisEnd;
    }
 
    /**

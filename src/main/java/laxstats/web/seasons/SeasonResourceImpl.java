@@ -7,6 +7,8 @@ import laxstats.api.utils.Constants;
 
 import org.joda.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 /**
  * {@code SeasonResource} represents season resource for remote clients.
  */
@@ -18,8 +20,10 @@ public class SeasonResourceImpl implements SeasonResource {
    private String description;
 
    @NotNull
+   @JsonFormat(pattern = "yyyy-MM-dd")
    private String startsOn;
 
+   @JsonFormat(pattern = "yyyy-MM-dd")
    private String endsOn;
 
    /**
@@ -112,7 +116,7 @@ public class SeasonResourceImpl implements SeasonResource {
     */
    @Override
    public LocalDate getStartsOnAsLocalDate() {
-      return startsOn == null ? null : LocalDate.parse(startsOn);
+      return startsOn == null || startsOn.length() == 0 ? null : LocalDate.parse(startsOn);
    }
 
    /**
@@ -128,7 +132,7 @@ public class SeasonResourceImpl implements SeasonResource {
     */
    @Override
    public LocalDate getEndsOnAsLocalDate() {
-      return endsOn == null ? null : LocalDate.parse(endsOn);
+      return endsOn == null || endsOn.length() == 0 ? null : LocalDate.parse(endsOn);
    }
 
    /**
@@ -137,5 +141,14 @@ public class SeasonResourceImpl implements SeasonResource {
    @Override
    public void setEndsOnAsLocalDate(LocalDate endsOn) {
       this.endsOn = endsOn == null ? null : endsOn.toString();
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public String toString() {
+      return String.format("SeasonResourceImpl[id=%s,description=%s,startsOn=%s,endsOn=%s]", id,
+         description, startsOn, endsOn);
    }
 }

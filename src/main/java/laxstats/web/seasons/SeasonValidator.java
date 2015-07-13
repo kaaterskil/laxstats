@@ -7,6 +7,7 @@ import laxstats.api.utils.Common;
 import laxstats.query.seasons.SeasonEntry;
 import laxstats.query.seasons.SeasonQueryRepository;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +19,8 @@ import org.springframework.validation.Validator;
 @Service
 public class SeasonValidator implements Validator {
    private static final Logger logger = LoggerFactory.getLogger(SeasonValidator.class);
-   private static final String PACKAGE_NAME = SeasonValidator.class.getPackage().getName();
+   private static final String PACKAGE_NAME = SeasonValidator.class.getPackage()
+      .getName();
 
    private SeasonQueryRepository seasonQueryRepository;
 
@@ -102,8 +104,8 @@ public class SeasonValidator implements Validator {
          final SeasonEntry season = seasonQueryRepository.findOne(seasonId);
          logger.debug(proc + "30");
 
-         if ((description != null && season.getDescription() == null) ||
-            !season.getDescription().equals(description)) {
+         if ((description != null && season.getDescription() == null) || !season.getDescription()
+            .equals(description)) {
             logger.debug(proc + "40");
 
             found = seasonQueryRepository.updateDescription(description, seasonId);
@@ -124,8 +126,7 @@ public class SeasonValidator implements Validator {
    }
 
    /**
-    * Validates that <code>endsOn</code>, when set, is not less than or equal to the value for
-    * <code>startsOn</code> on the same Season record.
+    * Validates that the season ending date is not less than or equal to the season starting date.
     *
     * @param form
     * @param errors
@@ -148,8 +149,9 @@ public class SeasonValidator implements Validator {
          logger.debug(proc + "30");
 
          // Test if either the startsOn or endsOn dates have changed
-         if (!Common.nvl(season.getEndsOn(), eot).equals(Common.nvl(endsOn, eot)) ||
-            !season.getStartsOn().equals(startsOn)) {
+         if (!Common.nvl(season.getEndsOn(), eot)
+            .equals(Common.nvl(endsOn, eot)) || !season.getStartsOn()
+            .equals(startsOn)) {
             logger.debug(proc + "40");
             doValidation = true;
          }
@@ -159,9 +161,16 @@ public class SeasonValidator implements Validator {
          doValidation = true;
       }
 
-      if (doValidation && startsOn != null &&
-         (startsOn.isAfter(Common.nvl(endsOn, eot)) || startsOn.isEqual(Common.nvl(endsOn, eot)))) {
-         errors.rejectValue("endsOn", "season.endsOn.beforeStart");
+      if (doValidation && startsOn != null) {
+         final long starts = new DateTime(target.getStartsOn()).getMillis();
+         final long ends =
+            target.getEndsOn() != null ? new DateTime(target.getEndsOn()).getMillis()
+               : Long.MAX_VALUE;
+
+         if (starts >= ends) {
+            logger.debug(proc + "55");
+            errors.rejectValue("endsOn", "season.endsOn.beforeStart");
+         }
       }
       logger.debug("Leaving: " + proc + "60");
    }
@@ -176,8 +185,8 @@ public class SeasonValidator implements Validator {
    private void checkDates(SeasonResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkDates.";
       final String seasonId = target.getId();
-      final LocalDate startsOn = target.getStartsOnAsLocalDate();
-      final LocalDate endsOn = target.getEndsOnAsLocalDate();
+      final DateTime startsOn = new DateTime(target.getStartsOn());
+      final DateTime endsOn = target.getEndsOn() == null ? null : new DateTime(target.getEndsOn());
 
       logger.debug("Entering: " + proc + "10");
 
@@ -188,10 +197,16 @@ public class SeasonValidator implements Validator {
       logger.debug(proc + "30");
 
       if (list != null && list.size() > 0) {
+         final long startMillis = startsOn.getMillis();
+         final long endMillis = endsOn == null ? Long.MAX_VALUE : endsOn.getMillis();
+
          if (isUpdating) {
             logger.debug(proc + "40");
             for (final SeasonEntry each : list) {
-               if (!each.getId().equals(seasonId) && each.overlaps(startsOn, endsOn)) {
+               logger.debug(proc + "42");
+               if (!each.getId()
+                  .equals(seasonId) && each.overlaps(startMillis, endMillis)) {
+                  logger.debug(proc + "44");
                   errors.rejectValue("endsOn", "season.overlap");
                   break;
                }
@@ -199,8 +214,11 @@ public class SeasonValidator implements Validator {
          }
          else {
             logger.debug(proc + "50");
+
             for (final SeasonEntry each : list) {
-               if (each.overlaps(startsOn, endsOn)) {
+               logger.debug(proc + "52");
+               if (each.overlaps(startMillis, endMillis)) {
+                  logger.debug(proc + "54");
                   errors.rejectValue("endsOn", "season.overlap");
                   break;
                }
