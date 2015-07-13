@@ -61,6 +61,7 @@ import org.joda.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 
 public class TestUtils {
 
@@ -89,13 +90,14 @@ public class TestUtils {
 
    /**
     * Converts the given object into a JSON document and returns the content as a byte array.
-    * 
+    *
     * @param obj
     * @return
     * @throws IOException
     */
    public static byte[] convertObjectToJson(Object obj) throws IOException {
       final ObjectMapper mapper = new ObjectMapper();
+      mapper.registerModule(new JodaModule());
       mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
       return mapper.writeValueAsBytes(obj);
    }
@@ -468,7 +470,8 @@ public class TestUtils {
     * @return
     */
    public static GameEntry getUnassignedGame() {
-      final String id = IdentifierFactory.getInstance().generateIdentifier();
+      final String id = IdentifierFactory.getInstance()
+         .generateIdentifier();
 
       final GameEntry game = new GameEntry();
       game.setCreatedAt(LocalDateTime.now());
@@ -486,8 +489,10 @@ public class TestUtils {
     * @return
     */
    public static PersonEntry getPersonWithPrimaryAddress() {
-      final String personId = IdentifierFactory.getInstance().generateIdentifier();
-      final String addressId = IdentifierFactory.getInstance().generateIdentifier();
+      final String personId = IdentifierFactory.getInstance()
+         .generateIdentifier();
+      final String addressId = IdentifierFactory.getInstance()
+         .generateIdentifier();
 
       final PersonEntry person = getPerson();
       person.setId(personId);
@@ -505,8 +510,10 @@ public class TestUtils {
     * @return
     */
    public static PersonEntry getPersonWithPrimaryContact() {
-      final String personId = IdentifierFactory.getInstance().generateIdentifier();
-      final String contactId = IdentifierFactory.getInstance().generateIdentifier();
+      final String personId = IdentifierFactory.getInstance()
+         .generateIdentifier();
+      final String contactId = IdentifierFactory.getInstance()
+         .generateIdentifier();
 
       final PersonEntry person = getPerson();
       person.setId(personId);
@@ -578,7 +585,8 @@ public class TestUtils {
     * @return
     */
    public static AddressEntry getSiteAddress() {
-      final String id = IdentifierFactory.getInstance().generateIdentifier();
+      final String id = IdentifierFactory.getInstance()
+         .generateIdentifier();
       final AddressEntry address = new AddressEntry();
       address.setAddress1("40 Rice Street");
       address.setAddressType(AddressType.SITE);
@@ -601,7 +609,8 @@ public class TestUtils {
       final PersonEntry person = getPersonWithPrimaryContact();
       final TeamSeasonEntry teamSeason = getExistingTeamSeason();
 
-      final String id = IdentifierFactory.getInstance().generateIdentifier();
+      final String id = IdentifierFactory.getInstance()
+         .generateIdentifier();
       final PlayerEntry player = new PlayerEntry();
       player.setCaptain(false);
       player.setCreatedAt(LocalDateTime.now());
@@ -638,7 +647,8 @@ public class TestUtils {
     * @return
     */
    public static SeasonEntry getExistingSeason() {
-      final String id = IdentifierFactory.getInstance().generateIdentifier();
+      final String id = IdentifierFactory.getInstance()
+         .generateIdentifier();
       final SeasonEntry season = new SeasonEntry();
       season.setDescription("2013-2014 Season");
       season.setStartsOn(LocalDate.parse("2013-07-01"));
@@ -653,7 +663,8 @@ public class TestUtils {
     * @return
     */
    public static SiteEntry getExistingSite() {
-      final String id = IdentifierFactory.getInstance().generateIdentifier();
+      final String id = IdentifierFactory.getInstance()
+         .generateIdentifier();
       final SiteEntry site = new SiteEntry();
       site.setName("Wellesley High School");
       site.setId(id);
@@ -675,7 +686,8 @@ public class TestUtils {
     * @return
     */
    public static TeamEntry getExistingTeam() {
-      final String id = IdentifierFactory.getInstance().generateIdentifier();
+      final String id = IdentifierFactory.getInstance()
+         .generateIdentifier();
       final TeamEntry team = new TeamEntry();
       team.setAbbreviation("WHS");
       team.setCreatedAt(LocalDateTime.now());
@@ -697,7 +709,8 @@ public class TestUtils {
       final SeasonEntry season = getExistingSeason();
       final TeamEntry team = getExistingTeam();
 
-      final String id = IdentifierFactory.getInstance().generateIdentifier();
+      final String id = IdentifierFactory.getInstance()
+         .generateIdentifier();
       final TeamSeasonEntry teamSeason = new TeamSeasonEntry();
       teamSeason.setCreatedAt(LocalDateTime.now());
       teamSeason.setEndsOn(season.getEndsOn());
