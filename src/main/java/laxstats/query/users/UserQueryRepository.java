@@ -11,8 +11,8 @@ public interface UserQueryRepository extends PagingAndSortingRepository<UserEntr
 
    Iterable<UserEntry> findAllByOrderByLastNameAsc();
 
-   @Query("select UserEntry eu where ?1 is not null and ue.team.id = cast(?1 as text) "
-      + "order by ue.lastName")
+   @Query(value = "select * from users u where ?1 is not null and u.team_id = cast(?1 as text) "
+      + "order by u.last_name", nativeQuery = true)
    Iterable<UserEntry> findByTeamOrderByLastNameAsc(String teamId);
 
    UserEntry findByEmail(String email);
