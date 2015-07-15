@@ -90,10 +90,11 @@ public class UserApiController extends ApplicationController {
       }
 
       for (final UserEntry each : users) {
+         final String teamId = each.getTeam() == null ? null : each.getTeam()
+            .getId();
          final UserResource user =
-            new UserResourceImpl(each.getId(), each.getTeam()
-               .getId(), each.getEmail(), null, each.isEnabled(), each.getFirstName(),
-               each.getLastName(), each.getRole());
+            new UserResourceImpl(each.getId(), teamId, each.getEmail(), null, each.isEnabled(),
+               each.getFirstName(), each.getLastName(), each.getRole());
          list.add(user);
       }
 
@@ -112,9 +113,11 @@ public class UserApiController extends ApplicationController {
       if (user == null) {
          throw new UserNotFoundException(id);
       }
-      return new UserResourceImpl(user.getId(), user.getTeam()
-         .getId(), user.getEmail(), null, user.isEnabled(), user.getFirstName(), user.getLastName(),
-         user.getRole());
+
+      final String teamId = user.getTeam() == null ? null : user.getTeam()
+         .getId();
+      return new UserResourceImpl(user.getId(), teamId, user.getEmail(), null, user.isEnabled(),
+         user.getFirstName(), user.getLastName(), user.getRole());
    }
 
    /**
