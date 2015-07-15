@@ -47,7 +47,7 @@ import laxstats.web.sites.SiteResource;
 import laxstats.web.teamSeasons.TeamSeasonForm;
 import laxstats.web.teamSeasons.TeamSeasonResource;
 import laxstats.web.teams.TeamForm;
-import laxstats.web.teams.TeamResource;
+import laxstats.web.teams.TeamResourceImpl;
 import laxstats.web.users.UserForm;
 import laxstats.web.users.UserResource;
 import laxstats.web.users.UserResourceImpl;
@@ -222,8 +222,8 @@ public class TestUtils {
     *
     * @return
     */
-   public static TeamResource newTeamResource() {
-      final TeamResource resource = new TeamResource();
+   public static TeamResourceImpl newTeamResource() {
+      final TeamResourceImpl resource = new TeamResourceImpl();
       resource.setAbbreviation("WHS");
       resource.setGender(TeamGender.BOYS);
       resource.setLetter(Letter.VARSITY);
