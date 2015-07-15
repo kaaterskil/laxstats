@@ -31,7 +31,7 @@ public class TeamValidatorTests {
 
    @Test
    public void supports() {
-      assertTrue(validator.supports(TeamResource.class));
+      assertTrue(validator.supports(TeamResourceImpl.class));
       assertTrue(validator.supports(TeamForm.class));
       assertFalse(validator.supports(Object.class));
    }
@@ -129,8 +129,9 @@ public class TeamValidatorTests {
       final TeamResource resource = TestUtils.newTeamResource();
 
       Mockito.when(
-         teamQueryRepository.uniqueTeam(resource.getSponsor(), resource.getName(), resource
-            .getGender(), resource.getLetter())).thenReturn(1);
+         teamQueryRepository.uniqueTeam(resource.getSponsor(), resource.getName(),
+            resource.getGender(), resource.getLetter()))
+         .thenReturn(1);
 
       final BindException errors = new BindException(resource, "teamResource");
       ValidationUtils.invokeValidator(validator, resource, errors);
@@ -142,8 +143,9 @@ public class TeamValidatorTests {
       final TeamForm form = TestUtils.newTeamForm();
 
       Mockito.when(
-         teamQueryRepository.uniqueTeam(form.getSponsor(), form.getName(), form.getGender(), form
-            .getLetter())).thenReturn(1);
+         teamQueryRepository.uniqueTeam(form.getSponsor(), form.getName(), form.getGender(),
+            form.getLetter()))
+         .thenReturn(1);
 
       final BindException errors = new BindException(form, "teamForm");
       ValidationUtils.invokeValidator(validator, form, errors);
@@ -158,7 +160,8 @@ public class TeamValidatorTests {
       resource.setHomeSite(homeSite.getId());
       resource.setRegion(Region.GA);
 
-      Mockito.when(siteQueryRepository.findOne(resource.getHomeSite())).thenReturn(homeSite);
+      Mockito.when(siteQueryRepository.findOne(resource.getHomeSite()))
+         .thenReturn(homeSite);
 
       final BindException errors = new BindException(resource, "teamResource");
       ValidationUtils.invokeValidator(validator, resource, errors);
@@ -173,7 +176,8 @@ public class TeamValidatorTests {
       form.setHomeSite(homeSite.getId());
       form.setRegion(Region.GA);
 
-      Mockito.when(siteQueryRepository.findOne(form.getHomeSite())).thenReturn(homeSite);
+      Mockito.when(siteQueryRepository.findOne(form.getHomeSite()))
+         .thenReturn(homeSite);
 
       final BindException errors = new BindException(form, "teamForm");
       ValidationUtils.invokeValidator(validator, form, errors);
@@ -189,15 +193,20 @@ public class TeamValidatorTests {
 
       final TeamResource resource = TestUtils.newTeamResource();
       resource.setId(team.getId());
-      resource.setHomeSite(team.getHomeSite().getId());
+      resource.setHomeSite(team.getHomeSite()
+         .getId());
       resource.setName("Wellesley Tigers");
 
-      Mockito.when(teamQueryRepository.exists(resource.getId())).thenReturn(true);
-      Mockito.when(teamQueryRepository.findOne(resource.getId())).thenReturn(team);
+      Mockito.when(teamQueryRepository.exists(resource.getId()))
+         .thenReturn(true);
+      Mockito.when(teamQueryRepository.findOne(resource.getId()))
+         .thenReturn(team);
       Mockito.when(
-         teamQueryRepository.updateTeam(resource.getSponsor(), resource.getName(), resource
-            .getGender(), resource.getLetter(), resource.getId())).thenReturn(1);
-      Mockito.when(siteQueryRepository.findOne(resource.getHomeSite())).thenReturn(homeSite);
+         teamQueryRepository.updateTeam(resource.getSponsor(), resource.getName(),
+            resource.getGender(), resource.getLetter(), resource.getId()))
+         .thenReturn(1);
+      Mockito.when(siteQueryRepository.findOne(resource.getHomeSite()))
+         .thenReturn(homeSite);
 
       final BindException errors = new BindException(resource, "teamResource");
       ValidationUtils.invokeValidator(validator, resource, errors);
@@ -211,15 +220,20 @@ public class TeamValidatorTests {
 
       final TeamForm form = TestUtils.newTeamForm();
       form.setId(team.getId());
-      form.setHomeSite(team.getHomeSite().getId());
+      form.setHomeSite(team.getHomeSite()
+         .getId());
       form.setName("Wellesley Tigers");
 
-      Mockito.when(teamQueryRepository.exists(form.getId())).thenReturn(true);
-      Mockito.when(teamQueryRepository.findOne(form.getId())).thenReturn(team);
+      Mockito.when(teamQueryRepository.exists(form.getId()))
+         .thenReturn(true);
+      Mockito.when(teamQueryRepository.findOne(form.getId()))
+         .thenReturn(team);
       Mockito.when(
-         teamQueryRepository.updateTeam(form.getSponsor(), form.getName(), form.getGender(), form
-            .getLetter(), form.getId())).thenReturn(1);
-      Mockito.when(siteQueryRepository.findOne(form.getHomeSite())).thenReturn(homeSite);
+         teamQueryRepository.updateTeam(form.getSponsor(), form.getName(), form.getGender(),
+            form.getLetter(), form.getId()))
+         .thenReturn(1);
+      Mockito.when(siteQueryRepository.findOne(form.getHomeSite()))
+         .thenReturn(homeSite);
 
       final BindException errors = new BindException(form, "teamForm");
       ValidationUtils.invokeValidator(validator, form, errors);
@@ -237,9 +251,12 @@ public class TeamValidatorTests {
       resource.setHomeSite(newHomeSite.getId());
       resource.setRegion(Region.GA);
 
-      Mockito.when(teamQueryRepository.exists(resource.getId())).thenReturn(true);
-      Mockito.when(teamQueryRepository.findOne(resource.getId())).thenReturn(team);
-      Mockito.when(siteQueryRepository.findOne(resource.getHomeSite())).thenReturn(newHomeSite);
+      Mockito.when(teamQueryRepository.exists(resource.getId()))
+         .thenReturn(true);
+      Mockito.when(teamQueryRepository.findOne(resource.getId()))
+         .thenReturn(team);
+      Mockito.when(siteQueryRepository.findOne(resource.getHomeSite()))
+         .thenReturn(newHomeSite);
 
       final BindException errors = new BindException(resource, "teamResource");
       ValidationUtils.invokeValidator(validator, resource, errors);
@@ -257,9 +274,12 @@ public class TeamValidatorTests {
       form.setHomeSite(newHomeSite.getId());
       form.setRegion(Region.GA);
 
-      Mockito.when(teamQueryRepository.exists(form.getId())).thenReturn(true);
-      Mockito.when(teamQueryRepository.findOne(form.getId())).thenReturn(team);
-      Mockito.when(siteQueryRepository.findOne(form.getHomeSite())).thenReturn(newHomeSite);
+      Mockito.when(teamQueryRepository.exists(form.getId()))
+         .thenReturn(true);
+      Mockito.when(teamQueryRepository.findOne(form.getId()))
+         .thenReturn(team);
+      Mockito.when(siteQueryRepository.findOne(form.getHomeSite()))
+         .thenReturn(newHomeSite);
 
       final BindException errors = new BindException(form, "teamForm");
       ValidationUtils.invokeValidator(validator, form, errors);
