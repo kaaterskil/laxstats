@@ -15,7 +15,8 @@ import org.springframework.validation.Validator;
 @Service
 public class UserValidator implements Validator {
    private static final Logger logger = LoggerFactory.getLogger(UserValidator.class);
-   private static final String PACKAGE_NAME = UserValidator.class.getPackage().getName();
+   private static final String PACKAGE_NAME = UserValidator.class.getPackage()
+      .getName();
 
    @Autowired
    private UserQueryRepository userRepository;
@@ -51,6 +52,7 @@ public class UserValidator implements Validator {
    private void checkMandatoryArgs(UserResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkMandatoryArgs.";
       final String email = target.getEmail();
+      final String password = target.getPassword();
       final String lastName = target.getLastName();
 
       logger.debug("Entering: " + proc + "10");
@@ -60,10 +62,15 @@ public class UserValidator implements Validator {
       }
       logger.debug(proc + "20");
 
+      if (TestUtils.isEmptyOrWhitespace(password)) {
+         errors.rejectValue("password", "user.password.required");
+      }
+      logger.debug(proc + "30");
+
       if (TestUtils.isEmptyOrWhitespace(lastName)) {
          errors.rejectValue("lastName", "userLastName.required");
       }
-      logger.debug("Leaving: " + proc + "30");
+      logger.debug("Leaving: " + proc + "40");
    }
 
    /**
@@ -88,7 +95,8 @@ public class UserValidator implements Validator {
          final UserEntry user = userRepository.findOne(userId);
          logger.debug(proc + "30");
 
-         if (!user.getEmail().equals(email)) {
+         if (!user.getEmail()
+            .equals(email)) {
             logger.debug(proc + "40");
 
             found = userRepository.updateEmail(email, userId);
