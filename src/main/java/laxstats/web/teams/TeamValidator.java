@@ -19,7 +19,8 @@ import org.springframework.validation.Validator;
 @Service
 public class TeamValidator implements Validator {
    private static final Logger logger = LoggerFactory.getLogger(TeamValidator.class);
-   private static final String PACKAGE_NAME = TeamValidator.class.getPackage().getName();
+   private static final String PACKAGE_NAME = TeamValidator.class.getPackage()
+      .getName();
 
    @Autowired
    private TeamQueryRepository teamRepository;
@@ -29,25 +30,26 @@ public class TeamValidator implements Validator {
 
    @Override
    public boolean supports(Class<?> clazz) {
-      return TeamResource.class.equals(clazz) || TeamForm.class.equals(clazz);
+      return TeamResource.class.isAssignableFrom(clazz);
    }
 
    @Override
    public void validate(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".validate.";
+      final TeamResource resource = (TeamResource)target;
 
       logger.debug("Entering: " + proc + "10");
 
       // Validate mandatory arguments
-      checkMandatoryArgs(target, errors);
+      checkMandatoryArgs(resource, errors);
       logger.debug(proc + "20");
 
       // Validate team/sponsor/gender/letter combination
-      checkTeam(target, errors);
+      checkTeam(resource, errors);
       logger.debug(proc + "30");
 
       // Validate home site
-      checkHomeSite(target, errors);
+      checkHomeSite(resource, errors);
 
       logger.debug("Leaving: " + proc + "40");
    }
@@ -58,30 +60,13 @@ public class TeamValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkMandatoryArgs(Object target, Errors errors) {
+   private void checkMandatoryArgs(TeamResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkMandatoryArgs.";
-      String sponsor = null;
-      String name = null;
-      TeamGender gender = null;
-      Letter letter = null;
-      Region region = null;
-
-      if (target instanceof TeamResource) {
-         final TeamResource resource = (TeamResource)target;
-         sponsor = resource.getSponsor();
-         name = resource.getName();
-         gender = resource.getGender();
-         letter = resource.getLetter();
-         region = resource.getRegion();
-      }
-      else if (target instanceof TeamForm) {
-         final TeamForm form = (TeamForm)target;
-         sponsor = form.getSponsor();
-         name = form.getName();
-         gender = form.getGender();
-         letter = form.getLetter();
-         region = form.getRegion();
-      }
+      final String sponsor = target.getSponsor();
+      final String name = target.getName();
+      final TeamGender gender = target.getGender();
+      final Letter letter = target.getLetter();
+      final Region region = target.getRegion();
 
       logger.debug("Entering: " + proc + "10");
 
@@ -118,31 +103,14 @@ public class TeamValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkTeam(Object target, Errors errors) {
+   private void checkTeam(TeamResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkTeam.";
-      String teamId = null;
-      String sponsor = null;
-      String name = null;
-      TeamGender gender = null;
-      Letter letter = null;
+      final String teamId = target.getId();
+      final String sponsor = target.getSponsor();
+      final String name = target.getName();
+      final TeamGender gender = target.getGender();
+      final Letter letter = target.getLetter();
       int found = 0;
-
-      if (target instanceof TeamResource) {
-         final TeamResource resource = (TeamResource)target;
-         teamId = resource.getId();
-         sponsor = resource.getSponsor();
-         name = resource.getName();
-         gender = resource.getGender();
-         letter = resource.getLetter();
-      }
-      else if (target instanceof TeamForm) {
-         final TeamForm form = (TeamForm)target;
-         teamId = form.getId();
-         sponsor = form.getSponsor();
-         name = form.getName();
-         gender = form.getGender();
-         letter = form.getLetter();
-      }
 
       logger.debug("Entering: " + proc + "10");
 
@@ -153,8 +121,11 @@ public class TeamValidator implements Validator {
          final TeamEntry team = teamRepository.findOne(teamId);
          logger.debug(proc + "30");
 
-         if (!team.getSponsor().equals(sponsor) || !team.getName().equals(name) ||
-            !team.getGender().equals(gender) || !team.getLetter().equals(letter)) {
+         if (!team.getSponsor()
+            .equals(sponsor) || !team.getName()
+            .equals(name) || !team.getGender()
+            .equals(gender) || !team.getLetter()
+            .equals(letter)) {
             logger.debug(proc + "40");
 
             found = teamRepository.updateTeam(sponsor, name, gender, letter, teamId);
@@ -179,24 +150,11 @@ public class TeamValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkHomeSite(Object target, Errors errors) {
+   private void checkHomeSite(TeamResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkHomeSite.";
-      String teamId = null;
-      Region region = null;
-      String siteId = null;
-
-      if (target instanceof TeamResource) {
-         final TeamResource resource = (TeamResource)target;
-         teamId = resource.getId();
-         region = resource.getRegion();
-         siteId = resource.getHomeSite();
-      }
-      else if (target instanceof TeamForm) {
-         final TeamForm form = (TeamForm)target;
-         teamId = form.getId();
-         region = form.getRegion();
-         siteId = form.getHomeSite();
-      }
+      final String teamId = target.getId();
+      final Region region = target.getRegion();
+      final String siteId = target.getHomeSite();
 
       logger.debug("Entering: " + proc + "10");
 
@@ -207,7 +165,8 @@ public class TeamValidator implements Validator {
          if (site.getAddress() != null) {
             logger.debug(proc + "30");
 
-            final Region siteRegion = site.getAddress().getRegion();
+            final Region siteRegion = site.getAddress()
+               .getRegion();
             final boolean isUpdating = apiUpdating(teamId);
             logger.debug(proc + "40");
 
@@ -215,8 +174,8 @@ public class TeamValidator implements Validator {
                logger.debug(proc + "50");
 
                final TeamEntry team = teamRepository.findOne(teamId);
-               if ((team.getHomeSite() == null || !team.getHomeSite().equals(site)) &&
-                  !region.equals(siteRegion)) {
+               if ((team.getHomeSite() == null || !team.getHomeSite()
+                  .equals(site)) && !region.equals(siteRegion)) {
                   errors.rejectValue("homeSite", "team.homeSite.invalid");
                }
             }
