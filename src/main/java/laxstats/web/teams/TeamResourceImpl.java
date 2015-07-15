@@ -1,8 +1,5 @@
 package laxstats.web.teams;
 
-import java.util.Arrays;
-import java.util.List;
-
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -10,10 +7,11 @@ import laxstats.api.Region;
 import laxstats.api.teams.Letter;
 import laxstats.api.teams.TeamGender;
 import laxstats.api.utils.Constants;
-import laxstats.query.leagues.LeagueEntry;
-import laxstats.query.sites.SiteEntry;
 
-public class TeamForm implements TeamResource {
+/**
+ * {@code TeamResource} represents a team resource for remote clients.
+ */
+public class TeamResourceImpl implements TeamResource {
 
    String id;
 
@@ -40,13 +38,37 @@ public class TeamForm implements TeamResource {
    private String homeSite;
    private String league;
 
-   private List<TeamGender> genders;
-   private List<Letter> letters;
-   private List<SiteEntry> sites;
-   private List<Region> regions;
-   private List<LeagueEntry> affiliations;
+   /**
+    * Creates a {@code TeamResource} with the given information.
+    *
+    * @param id
+    * @param sponsor
+    * @param name
+    * @param abbreviation
+    * @param gender
+    * @param letter
+    * @param region
+    * @param homeSite
+    * @param league
+    */
+   public TeamResourceImpl(String id, String sponsor, String name, String abbreviation,
+      TeamGender gender, Letter letter, Region region, String homeSite, String league) {
+      this.id = id;
+      this.sponsor = sponsor;
+      this.name = name;
+      this.abbreviation = abbreviation;
+      this.gender = gender;
+      this.letter = letter;
+      this.region = region;
+      this.homeSite = homeSite;
+      this.league = league;
+   }
 
-   /*---------- Getter/Setters ----------*/
+   /**
+    * Creates an empty {@code TeamResource} for internal use.
+    */
+   public TeamResourceImpl() {
+   }
 
    /**
     * {@inheritDoc}
@@ -77,6 +99,7 @@ public class TeamForm implements TeamResource {
     */
    @Override
    public void setSponsor(String sponsor) {
+      assert sponsor != null;
       this.sponsor = sponsor;
    }
 
@@ -93,6 +116,7 @@ public class TeamForm implements TeamResource {
     */
    @Override
    public void setName(String name) {
+      assert name != null;
       this.name = name;
    }
 
@@ -125,6 +149,7 @@ public class TeamForm implements TeamResource {
     */
    @Override
    public void setGender(TeamGender gender) {
+      assert gender != null;
       this.gender = gender;
    }
 
@@ -141,6 +166,7 @@ public class TeamForm implements TeamResource {
     */
    @Override
    public void setLetter(Letter letter) {
+      assert letter != null;
       this.letter = letter;
    }
 
@@ -157,6 +183,7 @@ public class TeamForm implements TeamResource {
     */
    @Override
    public void setRegion(Region region) {
+      assert region != null;
       this.region = region;
    }
 
@@ -190,44 +217,5 @@ public class TeamForm implements TeamResource {
    @Override
    public void setLeague(String league) {
       this.league = league;
-   }
-
-   /*---------- Drop down lists ----------*/
-
-   public List<TeamGender> getGenders() {
-      if (genders == null) {
-         genders = Arrays.asList(TeamGender.values());
-      }
-      return genders;
-   }
-
-   public List<Letter> getLetters() {
-      if (letters == null) {
-         letters = Arrays.asList(Letter.values());
-      }
-      return letters;
-   }
-
-   public List<Region> getRegions() {
-      if (regions == null) {
-         regions = Arrays.asList(Region.values());
-      }
-      return regions;
-   }
-
-   public void setSites(List<SiteEntry> sites) {
-      this.sites = sites;
-   }
-
-   public List<SiteEntry> getSites() {
-      return sites;
-   }
-
-   public List<LeagueEntry> getAffiliations() {
-      return affiliations;
-   }
-
-   public void setAffiliations(List<LeagueEntry> affiliations) {
-      this.affiliations = affiliations;
    }
 }
