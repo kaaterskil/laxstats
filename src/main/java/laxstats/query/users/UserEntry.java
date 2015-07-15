@@ -79,7 +79,8 @@ public class UserEntry implements UserDetails {
             return 1;
          }
 
-         return g1.getAuthority().compareTo(g2.getAuthority());
+         return g1.getAuthority()
+            .compareTo(g2.getAuthority());
       }
    }
 
@@ -125,9 +126,9 @@ public class UserEntry implements UserDetails {
    @ManyToOne
    private UserEntry modifiedBy;
 
-   private boolean accountNonExpired;
-   private boolean accountNonLocked;
-   private boolean credentialsNonExpired;
+   private boolean accountNonExpired = true;
+   private boolean accountNonLocked = true;
+   private boolean credentialsNonExpired = true;
 
    @Transient
    private Set<? extends GrantedAuthority> authorities;
@@ -235,13 +236,24 @@ public class UserEntry implements UserDetails {
    @Override
    public String toString() {
       final StringBuilder sb = new StringBuilder();
-      sb.append(super.toString()).append(": ");
-      sb.append("Username: ").append(email).append("; ");
+      sb.append(super.toString())
+         .append(": ");
+      sb.append("Username: ")
+         .append(email)
+         .append("; ");
       sb.append("Password: [PROTECTED]; ");
-      sb.append("Enabled: ").append(enabled).append("; ");
-      sb.append("AccountNonExpired: ").append(accountNonExpired).append("; ");
-      sb.append("credentialsNonExpired: ").append(credentialsNonExpired).append("; ");
-      sb.append("AccountNonLocked: ").append(accountNonLocked).append("; ");
+      sb.append("Enabled: ")
+         .append(enabled)
+         .append("; ");
+      sb.append("AccountNonExpired: ")
+         .append(accountNonExpired)
+         .append("; ");
+      sb.append("credentialsNonExpired: ")
+         .append(credentialsNonExpired)
+         .append("; ");
+      sb.append("AccountNonLocked: ")
+         .append(accountNonLocked)
+         .append("; ");
 
       if (!authorities.isEmpty()) {
          sb.append("Granted Authorities: ");
