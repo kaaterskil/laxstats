@@ -106,7 +106,8 @@ public class TeamEntry implements Serializable {
 
       sb.append(sponsor);
       if (name != null) {
-         sb.append(" ").append(name);
+         sb.append(" ")
+            .append(name);
       }
       return sb.toString();
    }
@@ -119,7 +120,11 @@ public class TeamEntry implements Serializable {
     */
    public String getTitle() {
       final StringBuilder sb = new StringBuilder();
-      sb.append(sponsor).append(" ").append(gender.getLabel()).append(" ").append(letter.getLabel());
+      sb.append(sponsor)
+         .append(" ")
+         .append(gender.getLabel())
+         .append(" ")
+         .append(letter.getLabel());
       return sb.toString();
    }
 
@@ -132,7 +137,8 @@ public class TeamEntry implements Serializable {
    public TeamSeasonEntry getSeason(String id) {
       TeamSeasonEntry result = null;
       for (final TeamSeasonEntry each : seasons) {
-         if (each.getId().equals(id)) {
+         if (each.getId()
+            .equals(id)) {
             result = each;
             break;
          }
@@ -170,6 +176,26 @@ public class TeamEntry implements Serializable {
          return seasons.add(season);
       }
       return false;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public boolean equals(Object obj) {
+      if (obj == null || !(obj instanceof TeamEntry)) {
+         return false;
+      }
+      final TeamEntry that = (TeamEntry)obj;
+      return getId().equals(that.getId());
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public int hashCode() {
+      return getId().hashCode();
    }
 
    /**
