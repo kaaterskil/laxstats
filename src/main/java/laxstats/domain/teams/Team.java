@@ -107,7 +107,8 @@ public class Team extends AbstractAnnotatedAggregateRoot<TeamId> {
     */
    public boolean canRegisterSeason(String seasonId) {
       for (final TeamSeasonInfo each : seasons) {
-         if (each.getSeasonId().equals(seasonId)) {
+         if (each.getSeasonId()
+            .equals(seasonId)) {
             return false;
          }
       }
@@ -135,7 +136,8 @@ public class Team extends AbstractAnnotatedAggregateRoot<TeamId> {
       name = dto.getName();
       gender = dto.getGender();
       if (dto.getHomeSite() != null) {
-         homeSiteId = dto.getHomeSite().toString();
+         homeSiteId = dto.getHomeSite()
+            .getId();
       }
    }
 
@@ -150,7 +152,8 @@ public class Team extends AbstractAnnotatedAggregateRoot<TeamId> {
       name = dto.getName();
       gender = dto.getGender();
       if (dto.getHomeSite() != null) {
-         homeSiteId = dto.getHomeSite().toString();
+         homeSiteId = dto.getHomeSite()
+            .toString();
       }
    }
 
@@ -173,9 +176,10 @@ public class Team extends AbstractAnnotatedAggregateRoot<TeamId> {
    protected void handle(TeamSeasonRegistered event) {
       final TeamSeasonDTO dto = event.getTeamSeasonDTO();
 
-      final TeamSeasonInfo vo =
-         new TeamSeasonInfo(dto.getTeamSeasonId().toString(), dto.getTeam().getId(), dto.getSeason()
-            .getId(), dto.getStartsOn(), dto.getEndsOn(), dto.getStatus());
+      final TeamSeasonInfo vo = new TeamSeasonInfo(dto.getTeamSeasonId()
+         .toString(), dto.getTeam()
+         .getId(), dto.getSeason()
+         .getId(), dto.getStartsOn(), dto.getEndsOn(), dto.getStatus());
       seasons.add(vo);
    }
 
@@ -188,16 +192,19 @@ public class Team extends AbstractAnnotatedAggregateRoot<TeamId> {
    @EventSourcingHandler
    protected void handle(TeamSeasonEdited event) {
       final TeamSeasonDTO dto = event.getTeamSeasonDTO();
-      final String id = dto.getTeamSeasonId().toString();
+      final String id = dto.getTeamSeasonId()
+         .toString();
 
       for (final TeamSeasonInfo each : seasons) {
-         if (each.getId().equals(id)) {
+         if (each.getId()
+            .equals(id)) {
             seasons.remove(each);
          }
       }
-      final TeamSeasonInfo vo =
-         new TeamSeasonInfo(dto.getTeamSeasonId().toString(), dto.getTeam().getId(), dto.getSeason()
-            .getId(), dto.getStartsOn(), dto.getEndsOn(), dto.getStatus());
+      final TeamSeasonInfo vo = new TeamSeasonInfo(dto.getTeamSeasonId()
+         .toString(), dto.getTeam()
+         .getId(), dto.getSeason()
+         .getId(), dto.getStartsOn(), dto.getEndsOn(), dto.getStatus());
       seasons.add(vo);
    }
 
