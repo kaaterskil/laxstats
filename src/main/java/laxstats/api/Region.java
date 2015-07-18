@@ -1,12 +1,9 @@
 package laxstats.api;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * {@code Region} enumerates the U.S. states and protectorates.
  */
-@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum Region {
    AL("Alabama"),
    AK("Alaska"),
@@ -73,7 +70,6 @@ public enum Region {
     *
     * @return
     */
-   @JsonProperty("label")
    public String getLabel() {
       return label;
    }
@@ -83,7 +79,6 @@ public enum Region {
     *
     * @return
     */
-   @JsonProperty("value")
    public String getAbbreviation() {
       return name();
    }
