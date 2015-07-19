@@ -70,16 +70,19 @@ public class SiteValidator implements Validator {
       logger.debug("Entering: " + proc + "10");
 
       if (TestUtils.isEmptyOrWhitespace(name)) {
-         errors.reject("name", "site.name.required");
+         logger.debug(proc + "15");
+         errors.rejectValue("name", "site.name.required");
       }
       logger.debug(proc + "20");
 
       if (TestUtils.isEmptyOrWhitespace(city)) {
+         logger.debug(proc + "25");
          errors.rejectValue("city", "site.city.required");
       }
       logger.debug(proc + "30");
 
       if (region == null) {
+         logger.debug(proc + "35");
          errors.rejectValue("region", "site.region.required");
       }
 
@@ -112,8 +115,8 @@ public class SiteValidator implements Validator {
          logger.debug(proc + "30");
 
          final SiteEntry site = siteRepository.findOne(siteId);
-         if (!site.getName()
-            .equals(name) || (site.getAddress() != null && (!site.getAddress()
+         if ((site.getName() != null && !site.getName()
+            .equals(name)) || (site.getAddress() != null && (!site.getAddress()
             .getCity()
             .equals(city) || !site.getAddress()
             .getRegion()
