@@ -10,16 +10,19 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 @RepositoryRestResource(collectionResourceRel = "teamSeasons", path = "teamSeasons")
 public interface TeamSeasonQueryRepository extends
-		PagingAndSortingRepository<TeamSeasonEntry, String>,
-		JpaSpecificationExecutor<TeamSeasonEntry> {
+   PagingAndSortingRepository<TeamSeasonEntry, String>, JpaSpecificationExecutor<TeamSeasonEntry>
+{
 
-	List<TeamSeasonEntry> findBySeasonId(String seasonId, Sort sort);
+   List<TeamSeasonEntry> findBySeasonId(String seasonId, Sort sort);
 
-	@Query("select count(*) from TeamSeasonEntry tse "
-			+ "where tse.team.id = ?1 and tse.season.id = ?2")
-	int uniqueTeamSeason(String teamId, String seasonId);
+   @Query("select true from TeamEntry te where ?1 is not null and te.id = ?1 else false")
+   boolean teamExists(String teamId);
 
-	@Query("select count(*) from TeamSeasonEntry tse "
-			+ "where tse.team.id = ?1 and tse.season.id = ?2 and tse.id <> ?3")
-	int updateSeason(String teamId, String seasonId, String teamSeasonId);
+   @Query("select count(*) from TeamSeasonEntry tse "
+      + "where tse.team.id = ?1 and tse.season.id = ?2")
+   int uniqueTeamSeason(String teamId, String seasonId);
+
+   @Query("select count(*) from TeamSeasonEntry tse "
+      + "where tse.team.id = ?1 and tse.season.id = ?2 and tse.id <> ?3")
+   int updateSeason(String teamId, String seasonId, String teamSeasonId);
 }

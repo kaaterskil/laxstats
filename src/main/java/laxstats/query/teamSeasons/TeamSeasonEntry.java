@@ -49,7 +49,7 @@ import org.joda.time.LocalDateTime;
             @Index(name = "team_season_idx4", columnList = "startsOn, endsOn") },
          uniqueConstraints = { @UniqueConstraint(name = "team_season_uk1", columnNames = {
             "team_id", "season_id" }) })
-public class TeamSeasonEntry implements Serializable {
+public class TeamSeasonEntry implements Serializable, Cloneable {
    private static final long serialVersionUID = 7574720960777194343L;
 
    @Id
@@ -95,7 +95,7 @@ public class TeamSeasonEntry implements Serializable {
    private UserEntry modifiedBy;
 
    @OneToMany(mappedBy = "teamSeason")
-   private final List<PlayerEntry> roster = new ArrayList<PlayerEntry>();
+   private final List<PlayerEntry> roster = new ArrayList<>();
 
    @OneToMany(mappedBy = "teamSeason")
    private final Map<LocalDateTime, TeamEvent> events = new HashMap<>();
@@ -196,6 +196,33 @@ public class TeamSeasonEntry implements Serializable {
       final DateTime instant = datetime.toDateTime();
       final Interval interval = getSeasonInterval();
       return interval.contains(instant);
+   }
+
+   /**
+    * Returns a deep copy of this instance.
+    *
+    * @return
+    */
+   @Override
+   public TeamSeasonEntry clone() {
+      final TeamSeasonEntry clone = new TeamSeasonEntry();
+      clone.createdAt = createdAt;
+      clone.createdBy = createdBy;
+      clone.endsOn = endsOn;
+      clone.id = id;
+      clone.league = league;
+      clone.modifiedAt = modifiedAt;
+      clone.modifiedBy = modifiedBy;
+      clone.name = name;
+      clone.season = season;
+      clone.startsOn = startsOn;
+      clone.status = status;
+      clone.team = team;
+
+      clone.events.putAll(events);
+      clone.roster.addAll(roster);
+
+      return clone;
    }
 
    /**

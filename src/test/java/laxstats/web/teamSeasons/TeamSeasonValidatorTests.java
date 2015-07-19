@@ -126,6 +126,10 @@ public class TeamSeasonValidatorTests {
 
       Mockito.when(seasonQueryRepository.findOne(resource.getSeason()))
          .thenReturn(season);
+      Mockito.when(seasonQueryRepository.exists(resource.getSeason()))
+         .thenReturn(true);
+      Mockito.when(teamSeasonQueryRepository.teamExists(resource.getTeam()))
+         .thenReturn(true);
 
       final BindException errors = new BindException(resource, "teamSeasonResource");
       ValidationUtils.invokeValidator(validator, resource, errors);
@@ -139,6 +143,10 @@ public class TeamSeasonValidatorTests {
 
       Mockito.when(seasonQueryRepository.findOne(form.getSeason()))
          .thenReturn(season);
+      Mockito.when(teamSeasonQueryRepository.teamExists(form.getTeam()))
+         .thenReturn(true);
+      Mockito.when(seasonQueryRepository.exists(form.getSeason()))
+         .thenReturn(true);
 
       final BindException errors = new BindException(form, "teamSeasonForm");
       ValidationUtils.invokeValidator(validator, form, errors);

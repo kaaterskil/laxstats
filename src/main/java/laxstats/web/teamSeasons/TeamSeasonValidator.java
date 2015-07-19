@@ -1,5 +1,6 @@
 package laxstats.web.teamSeasons;
 
+import laxstats.TestUtils;
 import laxstats.api.teamSeasons.TeamStatus;
 import laxstats.api.utils.Common;
 import laxstats.query.seasons.SeasonEntry;
@@ -46,22 +47,30 @@ public class TeamSeasonValidator implements Validator {
       checkNonUpdateableArgs(resource, errors);
       logger.debug(proc + "30");
 
+      // Validate team
+      checkTeam(resource, errors);
+      logger.debug(proc + "40");
+
+      // Validate season
+      checkSeason(resource, errors);
+      logger.debug(proc + "50");
+
       // Validate team/season combination
       checkDuplicate(resource, errors);
-      logger.debug(proc + "40");
+      logger.debug(proc + "60");
 
       // Validate start date
       checkStartDate(resource, errors);
-      logger.debug(proc + "50");
+      logger.debug(proc + "70");
 
       // Validate end date
       checkEndDate(resource, errors);
-      logger.debug(proc + "60");
+      logger.debug(proc + "80");
 
       // Validate start and end dates
       checkDates(resource, errors);
 
-      logger.debug("Leaving: " + proc + "70");
+      logger.debug("Leaving: " + proc + "90");
    }
 
    /**
@@ -78,12 +87,12 @@ public class TeamSeasonValidator implements Validator {
 
       logger.debug("Entering: " + proc + "10");
 
-      if (team == null) {
+      if (TestUtils.isEmptyOrWhitespace(team)) {
          errors.rejectValue("team", "teamSeason.team.required");
       }
       logger.debug(proc + "20");
 
-      if (season == null) {
+      if (TestUtils.isEmptyOrWhitespace(season)) {
          errors.rejectValue("season", "teamSeason.season.required");
       }
       logger.debug(proc + "30");
@@ -133,6 +142,64 @@ public class TeamSeasonValidator implements Validator {
             }
          }
       }
+      logger.debug("Leaving: " + proc + "50");
+   }
+
+   /**
+    * Validates that the given parent team exists.
+    *
+    * @param target
+    * @param errors
+    */
+   private void checkTeam(TeamSeasonResource target, Errors errors) {
+      final String proc = PACKAGE_NAME + ".checkTeam.";
+      final String teamSeasonId = target.getId();
+      final String teamId = target.getTeam();
+
+      logger.debug("Entering: " + proc + "10");
+
+      final boolean isUpdating = apiUpdating(teamSeasonId);
+      logger.debug(proc + "20");
+
+      if (!isUpdating) {
+         logger.debug(proc + "30");
+
+         final boolean exists = teamRepository.teamExists(teamId);
+         if (!exists) {
+            logger.debug(proc + "40");
+            errors.rejectValue("team", "teamSeason.team.notFound");
+         }
+      }
+
+      logger.debug("Leaving: " + proc + "50");
+   }
+
+   /**
+    * Validates that the given season exists.
+    *
+    * @param target
+    * @param errors
+    */
+   private void checkSeason(TeamSeasonResource target, Errors errors) {
+      final String proc = PACKAGE_NAME + ".checkSeason.";
+      final String teamSeasonId = target.getId();
+      final String seasonId = target.getSeason();
+
+      logger.debug("Entering: " + proc + "10");
+
+      final boolean isUpdating = apiUpdating(teamSeasonId);
+      logger.debug(proc + "20");
+
+      if (!isUpdating) {
+         logger.debug(proc + "30");
+
+         final boolean exists = seasonRepository.exists(seasonId);
+         if (!exists) {
+            logger.debug(proc + "40");
+            errors.rejectValue("team", "teamSeason.season.notFound");
+         }
+      }
+
       logger.debug("Leaving: " + proc + "50");
    }
 

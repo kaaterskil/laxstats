@@ -2,6 +2,7 @@ package laxstats.query.teams;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -27,6 +28,7 @@ import laxstats.query.teamSeasons.TeamSeasonEntry;
 import laxstats.query.users.UserEntry;
 
 import org.hibernate.annotations.Type;
+import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
 /**
@@ -106,8 +108,7 @@ public class TeamEntry implements Serializable {
 
       sb.append(sponsor);
       if (name != null) {
-         sb.append(" ")
-            .append(name);
+         sb.append(" ").append(name);
       }
       return sb.toString();
    }
@@ -120,11 +121,7 @@ public class TeamEntry implements Serializable {
     */
    public String getTitle() {
       final StringBuilder sb = new StringBuilder();
-      sb.append(sponsor)
-         .append(" ")
-         .append(gender.getLabel())
-         .append(" ")
-         .append(letter.getLabel());
+      sb.append(sponsor).append(" ").append(gender.getLabel()).append(" ").append(letter.getLabel());
       return sb.toString();
    }
 
@@ -137,8 +134,7 @@ public class TeamEntry implements Serializable {
    public TeamSeasonEntry getSeason(String id) {
       TeamSeasonEntry result = null;
       for (final TeamSeasonEntry each : seasons) {
-         if (each.getId()
-            .equals(id)) {
+         if (each.getId().equals(id)) {
             result = each;
             break;
          }
@@ -456,11 +452,29 @@ public class TeamEntry implements Serializable {
    }
 
    /**
-    * Returns the collection of team seasons.
+    * Returns the collection of team seasons, sorted in descending date order.
     *
     * @return
     */
    public List<TeamSeasonEntry> getSeasons() {
+      seasons.sort(new TeamSeasonComparator());
       return seasons;
+   }
+
+   /**
+    * Sorts team seasons in descending date order.
+    */
+   private static class TeamSeasonComparator implements Comparator<TeamSeasonEntry> {
+
+      @Override
+      public int compare(TeamSeasonEntry o1, TeamSeasonEntry o2) {
+         final LocalDate ts1 =
+            o1.getStartsOn() != null ? o1.getStartsOn() : o1.getSeason().getStartsOn();
+         final LocalDate ts2 =
+            o2.getStartsOn() != null ? o2.getStartsOn() : o2.getSeason().getStartsOn();
+
+         return ts1.isBefore(ts2) ? 1 : ts1.isAfter(ts2) ? -1 : 0;
+      }
+
    }
 }
