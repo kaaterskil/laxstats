@@ -134,7 +134,7 @@ public class TeamSeasonForm implements TeamSeasonResource {
     * {@inheritDoc}
     */
    @Override
-   public void setStartsOn(LocalDate startsOn) {
+   public void setStartsOnFromLocalDate(LocalDate startsOn) {
       this.startsOn = startsOn;
    }
 
@@ -166,7 +166,7 @@ public class TeamSeasonForm implements TeamSeasonResource {
     * {@inheritDoc}
     */
    @Override
-   public void setEndsOn(LocalDate endsOn) {
+   public void setEndsOnFromLocalDate(LocalDate endsOn) {
       this.endsOn = endsOn;
    }
 

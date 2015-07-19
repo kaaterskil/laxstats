@@ -88,7 +88,7 @@ public interface TeamSeasonResource {
     *
     * @param startsOn
     */
-   public void setStartsOn(LocalDate startsOn);
+   public void setStartsOnFromLocalDate(LocalDate startsOn);
 
    /**
     * Returns the season end date, or null.
@@ -116,7 +116,7 @@ public interface TeamSeasonResource {
     *
     * @param endsOn
     */
-   public void setEndsOn(LocalDate endsOn);
+   public void setEndsOnFromLocalDate(LocalDate endsOn);
 
    /**
     * Returns the team season name, or null to default to the team name.

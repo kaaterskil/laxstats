@@ -423,10 +423,10 @@ public class TestUtils {
       final SeasonEntry season = getExistingSeason();
 
       final TeamSeasonForm form = new TeamSeasonForm();
-      form.setEndsOn(LocalDate.parse("2014-06-30"));
+      form.setEndsOnFromLocalDate(LocalDate.parse("2014-06-30"));
       form.setName("Wellesley Raiders");
       form.setSeason(season.getId());
-      form.setStartsOn(LocalDate.parse("2013-07-01"));
+      form.setStartsOnFromLocalDate(LocalDate.parse("2013-07-01"));
       form.setStatus(TeamStatus.ACTIVE);
       form.setTeam(team.getId());
       return form;

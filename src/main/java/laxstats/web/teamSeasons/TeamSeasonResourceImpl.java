@@ -158,7 +158,7 @@ public class TeamSeasonResourceImpl implements TeamSeasonResource {
     * {@inheritDoc}
     */
    @Override
-   public void setStartsOn(LocalDate startsOn) {
+   public void setStartsOnFromLocalDate(LocalDate startsOn) {
       assert startsOn != null;
       this.startsOn = startsOn == null ? null : startsOn.toString();
    }
@@ -191,7 +191,7 @@ public class TeamSeasonResourceImpl implements TeamSeasonResource {
     * {@inheritDoc}
     */
    @Override
-   public void setEndsOn(LocalDate endsOn) {
+   public void setEndsOnFromLocalDate(LocalDate endsOn) {
       this.endsOn = endsOn == null ? null : endsOn.toString();
    }
 

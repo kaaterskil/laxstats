@@ -204,7 +204,7 @@ public class TeamSeasonValidatorTests {
    public void newTeamSeasonEarlyStartDate() {
       final SeasonEntry season = TestUtils.getExistingSeason();
       final TeamSeasonForm form = TestUtils.newTeamSeasonForm();
-      form.setStartsOn(season.getStartsOn()
+      form.setStartsOnFromLocalDate(season.getStartsOn()
          .minusDays(10));
 
       Mockito.when(seasonQueryRepository.findOne(form.getSeason()))
@@ -235,7 +235,7 @@ public class TeamSeasonValidatorTests {
    public void newTeamSeasonLateStartDate() {
       final SeasonEntry season = TestUtils.getExistingSeason();
       final TeamSeasonForm form = TestUtils.newTeamSeasonForm();
-      form.setStartsOn(season.getStartsOn()
+      form.setStartsOnFromLocalDate(season.getStartsOn()
          .plusYears(1));
 
       Mockito.when(seasonQueryRepository.findOne(form.getSeason()))
@@ -266,7 +266,7 @@ public class TeamSeasonValidatorTests {
    public void newTeamSeasonEarlyEndDate() {
       final SeasonEntry season = TestUtils.getExistingSeason();
       final TeamSeasonForm form = TestUtils.newTeamSeasonForm();
-      form.setEndsOn(season.getStartsOn()
+      form.setEndsOnFromLocalDate(season.getStartsOn()
          .minusDays(10));
 
       Mockito.when(seasonQueryRepository.findOne(form.getSeason()))
@@ -297,7 +297,7 @@ public class TeamSeasonValidatorTests {
    public void newTeamSeasonLateEndDate() {
       final SeasonEntry season = TestUtils.getExistingSeason();
       final TeamSeasonForm form = TestUtils.newTeamSeasonForm();
-      form.setEndsOn(season.getEndsOn()
+      form.setEndsOnFromLocalDate(season.getEndsOn()
          .plusDays(10));
 
       Mockito.when(seasonQueryRepository.findOne(form.getSeason()))
@@ -331,9 +331,9 @@ public class TeamSeasonValidatorTests {
    public void newTeamSeasonInvalidDates() {
       final SeasonEntry season = TestUtils.getExistingSeason();
       final TeamSeasonForm form = TestUtils.newTeamSeasonForm();
-      form.setStartsOn(season.getStartsOn()
+      form.setStartsOnFromLocalDate(season.getStartsOn()
          .plusMonths(1));
-      form.setEndsOn(form.getStartsOnAsLocalDate()
+      form.setEndsOnFromLocalDate(form.getStartsOnAsLocalDate()
          .minusDays(3));
 
       Mockito.when(seasonQueryRepository.findOne(form.getSeason()))
@@ -434,7 +434,7 @@ public class TeamSeasonValidatorTests {
          .getId());
       form.setSeason(teamSeason.getSeason()
          .getId());
-      form.setStartsOn(teamSeason.getSeason()
+      form.setStartsOnFromLocalDate(teamSeason.getSeason()
          .getStartsOn()
          .minusDays(10));
 
@@ -485,7 +485,7 @@ public class TeamSeasonValidatorTests {
          .getId());
       form.setSeason(teamSeason.getSeason()
          .getId());
-      form.setStartsOn(teamSeason.getSeason()
+      form.setStartsOnFromLocalDate(teamSeason.getSeason()
          .getStartsOn()
          .plusYears(1));
 
@@ -536,7 +536,7 @@ public class TeamSeasonValidatorTests {
          .getId());
       form.setSeason(teamSeason.getSeason()
          .getId());
-      form.setStartsOn(teamSeason.getSeason()
+      form.setStartsOnFromLocalDate(teamSeason.getSeason()
          .getStartsOn()
          .minusDays(10));
 
@@ -587,7 +587,7 @@ public class TeamSeasonValidatorTests {
          .getId());
       form.setSeason(teamSeason.getSeason()
          .getId());
-      form.setStartsOn(teamSeason.getSeason()
+      form.setStartsOnFromLocalDate(teamSeason.getSeason()
          .getEndsOn()
          .plusDays(10));
 
@@ -641,10 +641,10 @@ public class TeamSeasonValidatorTests {
          .getId());
       form.setSeason(teamSeason.getSeason()
          .getId());
-      form.setStartsOn(teamSeason.getSeason()
+      form.setStartsOnFromLocalDate(teamSeason.getSeason()
          .getStartsOn()
          .plusMonths(1));
-      form.setEndsOn(form.getStartsOnAsLocalDate()
+      form.setEndsOnFromLocalDate(form.getStartsOnAsLocalDate()
          .minusDays(3));
 
       Mockito.when(teamSeasonQueryRepository.exists(form.getId()))
