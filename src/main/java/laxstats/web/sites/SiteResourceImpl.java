@@ -1,8 +1,6 @@
 package laxstats.web.sites;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -10,71 +8,87 @@ import javax.validation.constraints.Size;
 import laxstats.api.Region;
 import laxstats.api.sites.SiteStyle;
 import laxstats.api.sites.Surface;
+import laxstats.api.utils.Constants;
 
 /**
- * {@code SiteForm} contains user-defined information for the creation and update of a site.
+ * {@code SiteResource} represents a playing field resource for remote clients.
  */
-public class SiteForm implements Serializable, SiteResource {
-   private static final long serialVersionUID = -3804992444594924489L;
+public class SiteResourceImpl implements Serializable, SiteResource {
+   private static final long serialVersionUID = 6903405993610427278L;
 
    private String id;
 
    @NotNull
-   @Size(min = 5, max = 100)
+   @Size(min = Constants.MIN_LENGTH_STRING, max = Constants.MAX_LENGTH_TITLE)
    private String name;
 
    private SiteStyle style;
    private Surface surface;
    private String directions;
+
+   @Size(max = Constants.MAX_LENGTH_ADDRESS)
    private String address1;
+
+   @Size(max = Constants.MAX_LENGTH_ADDRESS)
    private String address2;
 
    @NotNull
-   @Size(min = 5, max = 30)
+   @Size(min = Constants.MIN_LENGTH_STRING, max = Constants.MAX_LENGTH_CITY)
    private String city;
 
    @NotNull
    private Region region;
+
+   @Size(max = Constants.MAX_LENGTH_LONG_POSTAL_CODE)
    private String postalCode;
 
-   private List<SiteStyle> styles;
-   private List<Surface> surfaces;
-   private List<Region> regions;
-
    /**
-    * Returns a list of regions for use in a drop-down menu.
+    * Creates a {@code SiteResource} with the given information.
     *
-    * @return
+    * @param id
+    * @param name
+    * @param style
+    * @param surface
+    * @param directions
     */
-   public List<Region> getRegions() {
-      if (regions == null) {
-         regions = Arrays.asList(Region.values());
-      }
-      return regions;
+   public SiteResourceImpl(String id, String name, SiteStyle style, Surface surface,
+      String directions) {
+      this(id, name, style, surface, directions, null, null, null, null, null);
    }
 
    /**
-    * Returns a list of quality designations for use in a drop-down menu,
+    * Creates a {@code SiteResource} with the given information.
     *
-    * @return
+    * @param id
+    * @param name
+    * @param style
+    * @param surface
+    * @param directions
+    * @param address1
+    * @param address2
+    * @param city
+    * @param region
+    * @param postalCode
     */
-   public List<SiteStyle> getStyles() {
-      if (styles == null) {
-         styles = Arrays.asList(SiteStyle.values());
-      }
-      return styles;
+   public SiteResourceImpl(String id, String name, SiteStyle style, Surface surface,
+      String directions, String address1, String address2, String city, Region region,
+      String postalCode) {
+      this.id = id;
+      this.name = name;
+      this.style = style;
+      this.surface = surface;
+      this.directions = directions;
+      this.address1 = address1;
+      this.address2 = address2;
+      this.city = city;
+      this.region = region;
+      this.postalCode = postalCode;
    }
 
    /**
-    * Returns a list of site materials for use in a drop-down menu.
-    *
-    * @return
+    * Creates an empty {@code SiteResource}.
     */
-   public List<Surface> getSurfaces() {
-      if (surfaces == null) {
-         surfaces = Arrays.asList(Surface.values());
-      }
-      return surfaces;
+   public SiteResourceImpl() {
    }
 
    /**
@@ -236,4 +250,5 @@ public class SiteForm implements Serializable, SiteResource {
    public void setPostalCode(String postalCode) {
       this.postalCode = postalCode;
    }
+
 }

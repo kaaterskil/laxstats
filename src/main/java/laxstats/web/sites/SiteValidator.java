@@ -17,7 +17,8 @@ import org.springframework.validation.Validator;
 @Service
 public class SiteValidator implements Validator {
    private static final Logger logger = LoggerFactory.getLogger(SiteValidator.class);
-   private static String PACKAGE_NAME = SiteValidator.class.getPackage().getName();
+   private static String PACKAGE_NAME = SiteValidator.class.getPackage()
+      .getName();
 
    @Autowired
    private SiteQueryRepository siteRepository;
@@ -31,52 +32,40 @@ public class SiteValidator implements Validator {
 
    @Override
    public boolean supports(Class<?> clazz) {
-      return SiteResource.class.equals(clazz) || SiteForm.class.equals(clazz);
+      return SiteResource.class.isAssignableFrom(clazz);
    }
 
    @Override
    public void validate(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".validate.";
+      final SiteResource resource = (SiteResource)target;
 
       logger.debug("Entering: " + proc + "10");
 
       // Validate mandatory arguments
-      checkMandatoryArgs(target, errors);
+      checkMandatoryArgs(resource, errors);
       logger.debug(proc + "20");
 
       // Validate name/city/region combination
-      checkDuplicate(target, errors);
+      checkDuplicate(resource, errors);
       logger.debug(proc + "30");
 
       // Validate postal code
-      checkPostalCode(target, errors);
+      checkPostalCode(resource, errors);
       logger.debug("Leaving: " + proc + "40");
    }
 
    /**
     * Validates that mandatory arguments have been set.
     *
-    * @param form
+    * @param target
     * @param errors
     */
-   private void checkMandatoryArgs(Object target, Errors errors) {
+   private void checkMandatoryArgs(SiteResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkMandatoryArgs.";
-      String name = null;
-      String city = null;
-      Region region = null;
-
-      if (target instanceof SiteResource) {
-         final SiteResource resource = (SiteResource)target;
-         name = resource.getName();
-         city = resource.getCity();
-         region = resource.getRegion();
-      }
-      else if (target instanceof SiteForm) {
-         final SiteForm form = (SiteForm)target;
-         name = form.getName();
-         city = form.getCity();
-         region = form.getRegion();
-      }
+      final String name = target.getName();
+      final String city = target.getCity();
+      final Region region = target.getRegion();
 
       logger.debug("Entering: " + proc + "10");
 
@@ -100,31 +89,16 @@ public class SiteValidator implements Validator {
    /**
     * Validates that the name/region combination is unique.
     *
-    * @param form
+    * @param target
     * @param errors
     */
-   private void checkDuplicate(Object target, Errors errors) {
+   private void checkDuplicate(SiteResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkDuplicate.";
-      String siteId = null;
-      String city = null;
-      String name = null;
-      Region region = null;
+      final String siteId = target.getId();
+      final String city = target.getCity();
+      final String name = target.getName();
+      final Region region = target.getRegion();
       int found = 0;
-
-      if (target instanceof SiteResource) {
-         final SiteResource resource = (SiteResource)target;
-         siteId = resource.getId();
-         name = resource.getName();
-         city = resource.getCity();
-         region = resource.getRegion();
-      }
-      else if (target instanceof SiteForm) {
-         final SiteForm form = (SiteForm)target;
-         siteId = form.getId();
-         name = form.getName();
-         city = form.getCity();
-         region = form.getRegion();
-      }
 
       logger.debug("Entering: " + proc + "10");
 
@@ -138,9 +112,12 @@ public class SiteValidator implements Validator {
          logger.debug(proc + "30");
 
          final SiteEntry site = siteRepository.findOne(siteId);
-         if (!site.getName().equals(name) ||
-            (site.getAddress() != null && (!site.getAddress().getCity().equals(city) || !site
-               .getAddress().getRegion().equals(region)))) {
+         if (!site.getName()
+            .equals(name) || (site.getAddress() != null && (!site.getAddress()
+            .getCity()
+            .equals(city) || !site.getAddress()
+            .getRegion()
+            .equals(region)))) {
             logger.debug(proc + "40");
 
             found = siteRepository.updateName(name, city, region, siteId);
@@ -164,24 +141,13 @@ public class SiteValidator implements Validator {
     * Validates that the postal code is a valid US ZIP Code. IF the given postal code is not null
     * and is a valid US ZIP Code, then processing continues.
     *
-    * @param form
+    * @param target
     * @param errors
     */
-   private void checkPostalCode(Object target, Errors errors) {
+   private void checkPostalCode(SiteResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkPostalCode.";
-      String siteId = null;
-      String postalCode = null;
-
-      if (target instanceof SiteResource) {
-         final SiteResource resource = (SiteResource)target;
-         siteId = resource.getId();
-         postalCode = resource.getPostalCode();
-      }
-      else if (target instanceof SiteForm) {
-         final SiteForm form = (SiteForm)target;
-         siteId = form.getId();
-         postalCode = form.getPostalCode();
-      }
+      final String siteId = target.getId();
+      final String postalCode = target.getPostalCode();
 
       logger.debug("Entering: " + proc + "10");
 
@@ -193,8 +159,8 @@ public class SiteValidator implements Validator {
             logger.debug(proc + "20");
 
             final SiteEntry site = siteRepository.findOne(siteId);
-            if (site.getAddress() != null &&
-               !postalCode.equals(Common.nvl(site.getAddress().getPostalCode(), null))) {
+            if (site.getAddress() != null && !postalCode.equals(Common.nvl(site.getAddress()
+               .getPostalCode(), null))) {
                logger.debug(proc + "30");
 
                if (!postalCodeValidator.isValid(postalCode)) {

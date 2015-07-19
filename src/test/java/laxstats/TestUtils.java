@@ -43,7 +43,7 @@ import laxstats.web.players.PlayerResource;
 import laxstats.web.seasons.SeasonForm;
 import laxstats.web.seasons.SeasonResourceImpl;
 import laxstats.web.sites.SiteForm;
-import laxstats.web.sites.SiteResource;
+import laxstats.web.sites.SiteResourceImpl;
 import laxstats.web.teamSeasons.TeamSeasonForm;
 import laxstats.web.teamSeasons.TeamSeasonResourceImpl;
 import laxstats.web.teams.TeamForm;
@@ -205,8 +205,8 @@ public class TestUtils {
     *
     * @return
     */
-   public static SiteResource newSiteResource() {
-      final SiteResource resource = new SiteResource();
+   public static SiteResourceImpl newSiteResource() {
+      final SiteResourceImpl resource = new SiteResourceImpl();
       resource.setAddress1("40 Rice Street");
       resource.setCity("Wellesley");
       resource.setName("Wellesley High School");
