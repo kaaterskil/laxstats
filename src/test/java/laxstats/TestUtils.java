@@ -45,7 +45,7 @@ import laxstats.web.seasons.SeasonResourceImpl;
 import laxstats.web.sites.SiteForm;
 import laxstats.web.sites.SiteResource;
 import laxstats.web.teamSeasons.TeamSeasonForm;
-import laxstats.web.teamSeasons.TeamSeasonResource;
+import laxstats.web.teamSeasons.TeamSeasonResourceImpl;
 import laxstats.web.teams.TeamForm;
 import laxstats.web.teams.TeamResourceImpl;
 import laxstats.web.users.UserForm;
@@ -238,11 +238,11 @@ public class TestUtils {
     *
     * @return
     */
-   public static TeamSeasonResource newTeamSeasonResource() {
+   public static TeamSeasonResourceImpl newTeamSeasonResource() {
       final TeamEntry team = getExistingTeam();
       final SeasonEntry season = getExistingSeason();
 
-      final TeamSeasonResource resource = new TeamSeasonResource();
+      final TeamSeasonResourceImpl resource = new TeamSeasonResourceImpl();
       resource.setEndsOn("2014-06-30");
       resource.setName("Wellesley Raiders");
       resource.setSeason(season.getId());

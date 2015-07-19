@@ -18,7 +18,8 @@ import org.springframework.validation.Validator;
 @Service
 public class TeamSeasonValidator implements Validator {
    private static final Logger logger = LoggerFactory.getLogger(TeamSeasonValidator.class);
-   private static final String PACKAGE_NAME = TeamSeasonValidator.class.getPackage().getName();
+   private static final String PACKAGE_NAME = TeamSeasonValidator.class.getPackage()
+      .getName();
 
    @Autowired
    private TeamSeasonQueryRepository teamRepository;
@@ -27,37 +28,38 @@ public class TeamSeasonValidator implements Validator {
 
    @Override
    public boolean supports(Class<?> clazz) {
-      return TeamSeasonResource.class.equals(clazz) || TeamSeasonForm.class.equals(clazz);
+      return TeamSeasonResource.class.isAssignableFrom(clazz);
    }
 
    @Override
    public void validate(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".validate.";
+      final TeamSeasonResource resource = (TeamSeasonResource)target;
 
       logger.debug("Entering: " + proc + "10");
 
       // Validate mandatory arguments
-      checkMandatoryArgs(target, errors);
+      checkMandatoryArgs(resource, errors);
       logger.debug(proc + "20");
 
       // Validate non-updateable arguments
-      checkNonUpdateableArgs(target, errors);
+      checkNonUpdateableArgs(resource, errors);
       logger.debug(proc + "30");
 
       // Validate team/season combination
-      checkDuplicate(target, errors);
+      checkDuplicate(resource, errors);
       logger.debug(proc + "40");
 
       // Validate start date
-      checkStartDate(target, errors);
+      checkStartDate(resource, errors);
       logger.debug(proc + "50");
 
       // Validate end date
-      checkEndDate(target, errors);
+      checkEndDate(resource, errors);
       logger.debug(proc + "60");
 
       // Validate start and end dates
-      checkDates(target, errors);
+      checkDates(resource, errors);
 
       logger.debug("Leaving: " + proc + "70");
    }
@@ -68,24 +70,11 @@ public class TeamSeasonValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkMandatoryArgs(Object target, Errors errors) {
+   private void checkMandatoryArgs(TeamSeasonResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkMandatoryArgs.";
-      String team = null;
-      String season = null;
-      TeamStatus status = null;
-
-      if (target instanceof TeamSeasonResource) {
-         final TeamSeasonResource resource = (TeamSeasonResource)target;
-         team = resource.getTeam();
-         season = resource.getSeason();
-         status = resource.getStatus();
-      }
-      else if (target instanceof TeamSeasonForm) {
-         final TeamSeasonForm form = (TeamSeasonForm)target;
-         team = form.getTeam();
-         season = form.getSeason();
-         status = form.getStatus();
-      }
+      final String team = target.getTeam();
+      final String season = target.getSeason();
+      final TeamStatus status = target.getStatus();
 
       logger.debug("Entering: " + proc + "10");
 
@@ -113,24 +102,11 @@ public class TeamSeasonValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkNonUpdateableArgs(Object target, Errors errors) {
+   private void checkNonUpdateableArgs(TeamSeasonResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkNonUpdateableArgs.";
-      String teamSeasonId = null;
-      String teamId = null;
-      String seasonId = null;
-
-      if (target instanceof TeamSeasonResource) {
-         final TeamSeasonResource resource = (TeamSeasonResource)target;
-         teamId = resource.getTeam();
-         seasonId = resource.getSeason();
-         teamSeasonId = resource.getId();
-      }
-      else if (target instanceof TeamSeasonForm) {
-         final TeamSeasonForm form = (TeamSeasonForm)target;
-         teamId = form.getTeam();
-         seasonId = form.getSeason();
-         teamSeasonId = form.getId();
-      }
+      final String teamSeasonId = target.getId();
+      final String teamId = target.getTeam();
+      final String seasonId = target.getSeason();
 
       logger.debug("Entering: " + proc + "10");
 
@@ -139,15 +115,20 @@ public class TeamSeasonValidator implements Validator {
          logger.debug(proc + "20");
 
          final TeamSeasonEntry team = teamRepository.findOne(teamSeasonId);
-         if (team.getEvents().size() > 0) {
+         if (team.getEvents()
+            .size() > 0) {
             logger.debug(proc + "30");
 
-            if (teamId == null || !team.getTeam().getId().equals(teamId)) {
+            if (teamId == null || !team.getTeam()
+               .getId()
+               .equals(teamId)) {
                errors.rejectValue("team", "teamSeason.team.notUpdateable");
             }
             logger.debug(proc + "40");
 
-            if (seasonId == null || !team.getSeason().getId().equals(seasonId)) {
+            if (seasonId == null || !team.getSeason()
+               .getId()
+               .equals(seasonId)) {
                errors.rejectValue("season", "teamSeason.season.notUpdateable");
             }
          }
@@ -161,25 +142,12 @@ public class TeamSeasonValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkDuplicate(Object target, Errors errors) {
+   private void checkDuplicate(TeamSeasonResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkDuplicate.";
-      String teamSeasonId = null;
-      String teamId = null;
-      String seasonId = null;
+      final String teamSeasonId = target.getId();
+      final String teamId = target.getTeam();
+      final String seasonId = target.getSeason();
       int found = 0;
-
-      if (target instanceof TeamSeasonResource) {
-         final TeamSeasonResource resource = (TeamSeasonResource)target;
-         teamId = resource.getTeam();
-         seasonId = resource.getSeason();
-         teamSeasonId = resource.getId();
-      }
-      else if (target instanceof TeamSeasonForm) {
-         final TeamSeasonForm form = (TeamSeasonForm)target;
-         teamId = form.getTeam();
-         seasonId = form.getSeason();
-         teamSeasonId = form.getId();
-      }
 
       logger.debug("Entering: " + proc + "10");
 
@@ -193,7 +161,11 @@ public class TeamSeasonValidator implements Validator {
          logger.debug(proc + "30");
 
          final TeamSeasonEntry team = teamRepository.findOne(teamSeasonId);
-         if (!team.getTeam().getId().equals(teamId) || !team.getSeason().getId().equals(seasonId)) {
+         if (!team.getTeam()
+            .getId()
+            .equals(teamId) || !team.getSeason()
+            .getId()
+            .equals(seasonId)) {
             logger.debug(proc + "40");
 
             found = teamRepository.updateSeason(teamId, seasonId, teamSeasonId);
@@ -219,30 +191,18 @@ public class TeamSeasonValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkStartDate(Object target, Errors errors) {
+   private void checkStartDate(TeamSeasonResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkStartDate.";
-      String teamSeasonId = null;
-      String seasonId = null;
-      LocalDate startsOn = null;
+      final String teamSeasonId = target.getId();
+      final String seasonId = target.getSeason();
+      final LocalDate startsOn = target.getStartsOnAsLocalDate();
       final LocalDate eot = Common.EOT.toLocalDate();
-
-      if (target instanceof TeamSeasonResource) {
-         final TeamSeasonResource resource = (TeamSeasonResource)target;
-         seasonId = resource.getSeason();
-         teamSeasonId = resource.getId();
-         startsOn = LocalDate.parse(resource.getStartsOn());
-      }
-      else if (target instanceof TeamSeasonForm) {
-         final TeamSeasonForm form = (TeamSeasonForm)target;
-         seasonId = form.getSeason();
-         teamSeasonId = form.getId();
-         startsOn = form.getStartsOn();
-      }
       final SeasonEntry season = seasonRepository.findOne(seasonId);
 
       logger.debug("Entering: " + proc + "10");
 
       if (startsOn != null && season != null) {
+
          // Only proceed with validation if the record is new or if the start
          // date has changed.
 
@@ -253,7 +213,8 @@ public class TeamSeasonValidator implements Validator {
             logger.debug(proc + "30");
 
             final TeamSeasonEntry team = teamRepository.findOne(teamSeasonId);
-            if (!team.getStartsOn().equals(startsOn)) {
+            if (!team.getStartsOn()
+               .equals(startsOn)) {
                logger.debug(proc + "40");
 
                if (startsOn.isBefore(season.getStartsOn())) {
@@ -284,25 +245,12 @@ public class TeamSeasonValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkEndDate(Object target, Errors errors) {
+   private void checkEndDate(TeamSeasonResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkEndDate.";
-      String teamSeasonId = null;
-      String seasonId = null;
-      LocalDate endsOn = null;
+      final String teamSeasonId = target.getId();
+      final String seasonId = target.getSeason();
+      final LocalDate endsOn = target.getEndsOnAsLocalDate();
       final LocalDate eot = Common.EOT.toLocalDate();
-
-      if (target instanceof TeamSeasonResource) {
-         final TeamSeasonResource resource = (TeamSeasonResource)target;
-         seasonId = resource.getSeason();
-         teamSeasonId = resource.getId();
-         endsOn = LocalDate.parse(resource.getEndsOn());
-      }
-      else if (target instanceof TeamSeasonForm) {
-         final TeamSeasonForm form = (TeamSeasonForm)target;
-         seasonId = form.getSeason();
-         teamSeasonId = form.getId();
-         endsOn = form.getEndsOn();
-      }
       final SeasonEntry season = seasonRepository.findOne(seasonId);
 
       logger.debug("Entering: " + proc + "10");
@@ -318,13 +266,16 @@ public class TeamSeasonValidator implements Validator {
             logger.debug(proc + "30");
 
             final TeamSeasonEntry team = teamRepository.findOne(teamSeasonId);
-            if (!Common.nvl(team.getEndsOn(), eot).equals(Common.nvl(endsOn, eot))) {
+            if (!Common.nvl(team.getEndsOn(), eot)
+               .equals(Common.nvl(endsOn, eot))) {
                logger.debug(proc + "40");
 
-               if (Common.nvl(endsOn, eot).isBefore(season.getStartsOn())) {
+               if (Common.nvl(endsOn, eot)
+                  .isBefore(season.getStartsOn())) {
                   errors.rejectValue("endsOn", "teamSeason.endsOn.tooEarly");
                }
-               else if (Common.nvl(endsOn, eot).isAfter(Common.nvl(season.getEndsOn(), eot))) {
+               else if (Common.nvl(endsOn, eot)
+                  .isAfter(Common.nvl(season.getEndsOn(), eot))) {
                   errors.rejectValue("endsOn", "teamSeason.endsOn.tooLate");
                }
             }
@@ -332,10 +283,12 @@ public class TeamSeasonValidator implements Validator {
          else {
             logger.debug(proc + "50");
 
-            if (Common.nvl(endsOn, eot).isBefore(season.getStartsOn())) {
+            if (Common.nvl(endsOn, eot)
+               .isBefore(season.getStartsOn())) {
                errors.rejectValue("endsOn", "teamSeason.endsOn.tooEarly");
             }
-            else if (Common.nvl(endsOn, eot).isAfter(Common.nvl(season.getEndsOn(), eot))) {
+            else if (Common.nvl(endsOn, eot)
+               .isAfter(Common.nvl(season.getEndsOn(), eot))) {
                errors.rejectValue("endsOn", "teamSeason.endsOn.tooLate");
             }
          }
@@ -349,25 +302,12 @@ public class TeamSeasonValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkDates(Object target, Errors errors) {
+   private void checkDates(TeamSeasonResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkDates.";
-      String teamSeasonId = null;
-      LocalDate startsOn = null;
-      LocalDate endsOn = null;
+      final String teamSeasonId = target.getId();
+      final LocalDate startsOn = target.getStartsOnAsLocalDate();
+      final LocalDate endsOn = target.getEndsOnAsLocalDate();
       final LocalDate eot = Common.EOT.toLocalDate();
-
-      if (target instanceof TeamSeasonResource) {
-         final TeamSeasonResource resource = (TeamSeasonResource)target;
-         teamSeasonId = resource.getId();
-         startsOn = LocalDate.parse(resource.getStartsOn());
-         endsOn = LocalDate.parse(resource.getEndsOn());
-      }
-      else if (target instanceof TeamSeasonForm) {
-         final TeamSeasonForm form = (TeamSeasonForm)target;
-         teamSeasonId = form.getId();
-         startsOn = form.getStartsOn();
-         endsOn = form.getEndsOn();
-      }
 
       logger.debug("Entering: " + proc + "10");
 
@@ -382,8 +322,9 @@ public class TeamSeasonValidator implements Validator {
             logger.debug(proc + "30");
 
             final TeamSeasonEntry team = teamRepository.findOne(teamSeasonId);
-            if (!team.getStartsOn().equals(startsOn) ||
-               !Common.nvl(team.getEndsOn(), eot).equals(Common.nvl(endsOn, eot))) {
+            if (!team.getStartsOn()
+               .equals(startsOn) || !Common.nvl(team.getEndsOn(), eot)
+               .equals(Common.nvl(endsOn, eot))) {
                logger.debug(proc + "40");
 
                if (startsOn.isAfter(Common.nvl(endsOn, eot))) {

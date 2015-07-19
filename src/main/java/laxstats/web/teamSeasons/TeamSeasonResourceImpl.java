@@ -1,21 +1,15 @@
 package laxstats.web.teamSeasons;
 
-import java.util.Arrays;
-import java.util.List;
-
 import javax.validation.constraints.NotNull;
 
 import laxstats.api.teamSeasons.TeamStatus;
-import laxstats.query.leagues.LeagueEntry;
-import laxstats.query.seasons.SeasonEntry;
 
 import org.joda.time.LocalDate;
-import org.springframework.format.annotation.DateTimeFormat;
 
 /**
- * {@code TeamSeasonForm} contains user-defined information for creating and updating team seasons.
+ * {@code TeamSeasonResource} represents a team season resource for remote clients.
  */
-public class TeamSeasonForm implements TeamSeasonResource {
+public class TeamSeasonResourceImpl implements TeamSeasonResource {
    private String id;
 
    @NotNull
@@ -26,21 +20,48 @@ public class TeamSeasonForm implements TeamSeasonResource {
 
    private String affiliation;
 
-   @DateTimeFormat(pattern = "yyyy-MM-dd")
-   private LocalDate startsOn;
+   @NotNull
+   private String startsOn;
 
-   @DateTimeFormat(pattern = "yyyy-MM-dd")
-   private LocalDate endsOn;
-
+   private String endsOn;
    private String name;
 
    @NotNull
    private TeamStatus status;
 
    private String teamTitle;
-   private List<SeasonEntry> seasons;
-   private List<LeagueEntry> leagues;
-   private List<TeamStatus> statuses;
+
+   /**
+    * Creates a {@code TeamSeasonResource} with the given information.
+    *
+    * @param id
+    * @param team
+    * @param season
+    * @param affiliation
+    * @param startsOn
+    * @param endsOn
+    * @param name
+    * @param status
+    * @param teamTitle
+    */
+   public TeamSeasonResourceImpl(String id, String team, String season, String affiliation,
+      String startsOn, String endsOn, String name, TeamStatus status, String teamTitle) {
+      this.id = id;
+      this.team = team;
+      this.season = season;
+      this.affiliation = affiliation;
+      this.startsOn = startsOn;
+      this.endsOn = endsOn;
+      this.name = name;
+      this.status = status;
+      this.teamTitle = teamTitle;
+   }
+
+   /**
+    * Creates an empty {@code TeamSeasonResource} for internal use.
+    */
+   public TeamSeasonResourceImpl() {
+   }
 
    /**
     * {@inheritDoc}
@@ -71,6 +92,7 @@ public class TeamSeasonForm implements TeamSeasonResource {
     */
    @Override
    public void setTeam(String team) {
+      assert team != null;
       this.team = team;
    }
 
@@ -87,6 +109,7 @@ public class TeamSeasonForm implements TeamSeasonResource {
     */
    @Override
    public void setSeason(String season) {
+      assert season != null;
       this.season = season;
    }
 
@@ -111,22 +134,6 @@ public class TeamSeasonForm implements TeamSeasonResource {
     */
    @Override
    public String getStartsOn() {
-      return startsOn == null ? null : startsOn.toString();
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public void setStartsOn(String startsOn) {
-      this.startsOn = startsOn == null || startsOn.length() == 0 ? null : LocalDate.parse(startsOn);
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public LocalDate getStartsOnAsLocalDate() {
       return startsOn;
    }
 
@@ -134,7 +141,8 @@ public class TeamSeasonForm implements TeamSeasonResource {
     * {@inheritDoc}
     */
    @Override
-   public void setStartsOn(LocalDate startsOn) {
+   public void setStartsOn(String startsOn) {
+      assert startsOn != null;
       this.startsOn = startsOn;
    }
 
@@ -142,23 +150,24 @@ public class TeamSeasonForm implements TeamSeasonResource {
     * {@inheritDoc}
     */
    @Override
+   public LocalDate getStartsOnAsLocalDate() {
+      return startsOn == null || startsOn.length() == 0 ? null : LocalDate.parse(startsOn);
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public void setStartsOn(LocalDate startsOn) {
+      assert startsOn != null;
+      this.startsOn = startsOn == null ? null : startsOn.toString();
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
    public String getEndsOn() {
-      return endsOn == null ? null : endsOn.toString();
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public void setEndsOn(String endsOn) {
-      this.endsOn = endsOn == null || endsOn.length() == 0 ? null : LocalDate.parse(endsOn);
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public LocalDate getEndsOnAsLocalDate() {
       return endsOn;
    }
 
@@ -166,8 +175,24 @@ public class TeamSeasonForm implements TeamSeasonResource {
     * {@inheritDoc}
     */
    @Override
-   public void setEndsOn(LocalDate endsOn) {
+   public void setEndsOn(String endsOn) {
       this.endsOn = endsOn;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public LocalDate getEndsOnAsLocalDate() {
+      return endsOn == null || endsOn.length() == 0 ? null : LocalDate.parse(endsOn);
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public void setEndsOn(LocalDate endsOn) {
+      this.endsOn = endsOn == null ? null : endsOn.toString();
    }
 
    /**
@@ -199,6 +224,7 @@ public class TeamSeasonForm implements TeamSeasonResource {
     */
    @Override
    public void setStatus(TeamStatus status) {
+      assert status != null;
       this.status = status;
    }
 
@@ -211,35 +237,21 @@ public class TeamSeasonForm implements TeamSeasonResource {
    }
 
    /**
-    * Sets the title of the team.
-    *
-    * @param teamTitle
+    * {@inheritDoc}
     */
    @Override
    public void setTeamTitle(String teamTitle) {
       this.teamTitle = teamTitle;
    }
 
-   public List<SeasonEntry> getSeasons() {
-      return seasons;
-   }
-
-   public void setSeasons(List<SeasonEntry> seasons) {
-      this.seasons = seasons;
-   }
-
-   public List<LeagueEntry> getLeagues() {
-      return leagues;
-   }
-
-   public void setLeagues(List<LeagueEntry> leagues) {
-      this.leagues = leagues;
-   }
-
-   public List<TeamStatus> getStatuses() {
-      if (statuses == null) {
-         statuses = Arrays.asList(TeamStatus.values());
-      }
-      return statuses;
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public String toString() {
+      return String.format(
+         "TeamSeasonResourceImpl[id=%s,team=%s,season=%s,affiliation=%s,startsOn=%s,"
+            + "endsOn=%s,name=%s,status=%s,teamTitle=%s]", id, team, season, affiliation, startsOn,
+         endsOn, name, status, teamTitle);
    }
 }
