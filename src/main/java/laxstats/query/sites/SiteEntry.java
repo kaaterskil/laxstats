@@ -154,6 +154,7 @@ public class SiteEntry implements Serializable {
     * @param address
     */
    public void setAddress(AddressEntry address) {
+      address.setSite(this);
       this.address = address;
    }
 
