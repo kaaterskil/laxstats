@@ -15,7 +15,8 @@ public interface TeamSeasonQueryRepository extends
 
    List<TeamSeasonEntry> findBySeasonId(String seasonId, Sort sort);
 
-   @Query("select true from TeamEntry te where ?1 is not null and te.id = ?1 else false")
+   @Query(value = "select exists(select 1 from teams t "
+      + "where ?1 is not null and t.id = cast(?1 as text))", nativeQuery = true)
    boolean teamExists(String teamId);
 
    @Query("select count(*) from TeamSeasonEntry tse "
