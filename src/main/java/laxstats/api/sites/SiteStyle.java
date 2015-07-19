@@ -1,12 +1,9 @@
 package laxstats.api.sites;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * {@code SiteStyle} enumerates the qualities of playing fields.
  */
-@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum SiteStyle {
 
    /**
@@ -30,12 +27,10 @@ public enum SiteStyle {
     *
     * @return
     */
-   @JsonProperty("label")
    public String getLabel() {
       return label;
    }
 
-   @JsonProperty("value")
    public String getValue() {
       return name();
    }
