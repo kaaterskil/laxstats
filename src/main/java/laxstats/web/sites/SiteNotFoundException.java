@@ -1,30 +1,21 @@
 package laxstats.web.sites;
 
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+
 /**
- * Exception thrown when a site cannot be found.
+ * Thrown when the playing field resource with the given identifier cannot be found.
  */
-public class SiteNotFoundException extends RuntimeException {
+public class SiteNotFoundException extends ResourceNotFoundException {
+
    private static final long serialVersionUID = -3902399869005777770L;
 
-   String siteId;
-
    /**
-    * Creates a {@code SiteNotFoundException} with the given primary key.
+    * Creates a {@code SiteNotFoundException} with the given identifier.
     *
-    * @param siteId
+    * @param id
     */
-   public SiteNotFoundException(String siteId) {
-      super("Site not found");
-      this.siteId = siteId;
-   }
-
-   /**
-    * Returns the site's primary key.
-    *
-    * @return
-    */
-   public String getSiteId() {
-      return siteId;
+   public SiteNotFoundException(String id) {
+      super("Playing field not found with id: " + id);
    }
 
 }
