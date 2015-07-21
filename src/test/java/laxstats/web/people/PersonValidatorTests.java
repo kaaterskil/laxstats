@@ -27,7 +27,7 @@ public class PersonValidatorTests {
 
    @Test
    public void supports() {
-      assertTrue(validator.supports(PersonResource.class));
+      assertTrue(validator.supports(PersonResourceImpl.class));
       assertTrue(validator.supports(PersonForm.class));
       assertFalse(validator.supports(Object.class));
    }
@@ -37,7 +37,7 @@ public class PersonValidatorTests {
       final PersonForm form = TestUtils.newPersonForm();
       form.setLastName(null);
 
-      final PersonResource resource = TestUtils.newPersonResource();
+      final PersonResourceImpl resource = TestUtils.newPersonResource();
       resource.setLastName(null);
 
       BindException errors = new BindException(form, "personForm");
@@ -54,7 +54,7 @@ public class PersonValidatorTests {
    @Test
    public void newPersonIsValid() {
       final PersonForm form = TestUtils.newPersonForm();
-      final PersonResource resource = TestUtils.newPersonResource();
+      final PersonResourceImpl resource = TestUtils.newPersonResource();
 
       BindException errors = new BindException(form, "personForm");
       ValidationUtils.invokeValidator(validator, form, errors);
@@ -67,12 +67,13 @@ public class PersonValidatorTests {
 
    @Test
    public void newPersonHasInvalidBirthday() {
-      final LocalDate someFutureDate = LocalDate.now().plusYears(2);
+      final LocalDate someFutureDate = LocalDate.now()
+         .plusYears(2);
 
       final PersonForm form = TestUtils.newPersonForm();
-      form.setBirthdate(someFutureDate);
+      form.setBirthdateFromLocalDate(someFutureDate);
 
-      final PersonResource resource = TestUtils.newPersonResource();
+      final PersonResourceImpl resource = TestUtils.newPersonResource();
       resource.setBirthdate(someFutureDate.toString("yyyy-MM-dd"));
 
       BindException errors = new BindException(form, "personForm");
@@ -89,7 +90,7 @@ public class PersonValidatorTests {
       final PersonForm form = TestUtils.newPersonForm();
       form.setParentReleaseSentOn(null);
 
-      final PersonResource resource = TestUtils.newPersonResource();
+      final PersonResourceImpl resource = TestUtils.newPersonResource();
       resource.setParentReleaseSentOn(null);
 
       BindException errors = new BindException(form, "personForm");
@@ -104,10 +105,11 @@ public class PersonValidatorTests {
    @Test
    public void newPersonHasInvalidReleaseReceivedDate() {
       final PersonForm form = TestUtils.newPersonForm();
-      final LocalDate someInvalidDate = form.getParentReleaseSentOn().minusDays(12);
+      final LocalDate someInvalidDate = form.getParentReleaseSentOn()
+         .minusDays(12);
       form.setParentReleaseReceivedOn(someInvalidDate);
 
-      final PersonResource resource = TestUtils.newPersonResource();
+      final PersonResourceImpl resource = TestUtils.newPersonResource();
       resource.setParentReleaseReceivedOn(someInvalidDate.toString("yyyy-MM-dd"));
 
       BindException errors = new BindException(form, "personForm");
@@ -125,13 +127,17 @@ public class PersonValidatorTests {
    public void existingPersonResourceHasInvalidBirthday() {
       final PersonEntry person = TestUtils.getPersonWithPrimaryContact();
 
-      final String someFutureDate = LocalDate.now().plusYears(2).toString("yyyy-MM-dd");
-      final PersonResource resource = TestUtils.newPersonResource();
+      final String someFutureDate = LocalDate.now()
+         .plusYears(2)
+         .toString("yyyy-MM-dd");
+      final PersonResourceImpl resource = TestUtils.newPersonResource();
       resource.setId(person.getId());
       resource.setBirthdate(someFutureDate);
 
-      Mockito.when(personQueryRepository.exists(resource.getId())).thenReturn(true);
-      Mockito.when(personQueryRepository.findOne(resource.getId())).thenReturn(person);
+      Mockito.when(personQueryRepository.exists(resource.getId()))
+         .thenReturn(true);
+      Mockito.when(personQueryRepository.findOne(resource.getId()))
+         .thenReturn(person);
 
       final BindException errors = new BindException(resource, "personResource");
       ValidationUtils.invokeValidator(validator, resource, errors);
@@ -142,13 +148,16 @@ public class PersonValidatorTests {
    public void existingPersonHasInvalidBirthday() {
       final PersonEntry person = TestUtils.getPersonWithPrimaryContact();
 
-      final LocalDate someFutureDate = LocalDate.now().plusYears(2);
+      final LocalDate someFutureDate = LocalDate.now()
+         .plusYears(2);
       final PersonForm form = TestUtils.newPersonForm();
       form.setId(person.getId());
       form.setBirthdate(someFutureDate);
 
-      Mockito.when(personQueryRepository.exists(form.getId())).thenReturn(true);
-      Mockito.when(personQueryRepository.findOne(form.getId())).thenReturn(person);
+      Mockito.when(personQueryRepository.exists(form.getId()))
+         .thenReturn(true);
+      Mockito.when(personQueryRepository.findOne(form.getId()))
+         .thenReturn(person);
 
       final BindException errors = new BindException(form, "personForm");
       ValidationUtils.invokeValidator(validator, form, errors);
@@ -159,12 +168,14 @@ public class PersonValidatorTests {
    public void existingPersonResourceHasInvalidReleaseSentDate() {
       final PersonEntry person = TestUtils.getPersonWithPrimaryContact();
 
-      final PersonResource resource = TestUtils.newPersonResource();
+      final PersonResourceImpl resource = TestUtils.newPersonResource();
       resource.setId(person.getId());
       resource.setParentReleaseSentOn(null);
 
-      Mockito.when(personQueryRepository.exists(resource.getId())).thenReturn(true);
-      Mockito.when(personQueryRepository.findOne(resource.getId())).thenReturn(person);
+      Mockito.when(personQueryRepository.exists(resource.getId()))
+         .thenReturn(true);
+      Mockito.when(personQueryRepository.findOne(resource.getId()))
+         .thenReturn(person);
 
       final BindException errors = new BindException(resource, "personResource");
       ValidationUtils.invokeValidator(validator, resource, errors);
@@ -179,8 +190,10 @@ public class PersonValidatorTests {
       form.setId(person.getId());
       form.setParentReleaseSentOn(null);
 
-      Mockito.when(personQueryRepository.exists(form.getId())).thenReturn(true);
-      Mockito.when(personQueryRepository.findOne(form.getId())).thenReturn(person);
+      Mockito.when(personQueryRepository.exists(form.getId()))
+         .thenReturn(true);
+      Mockito.when(personQueryRepository.findOne(form.getId()))
+         .thenReturn(person);
 
       final BindException errors = new BindException(form, "personForm");
       ValidationUtils.invokeValidator(validator, form, errors);
@@ -191,15 +204,18 @@ public class PersonValidatorTests {
    public void existingPersonResourceHasInvalidReleaseReceivedDate() {
       final PersonEntry person = TestUtils.getPersonWithPrimaryContact();
 
-      final PersonResource resource = TestUtils.newPersonResource();
-      final String someInvalidDate =
-         LocalDate.parse(resource.getParentReleaseSentOn()).minusDays(1).toString("yyyy-MM-dd");
+      final PersonResourceImpl resource = TestUtils.newPersonResource();
+      final String someInvalidDate = LocalDate.parse(resource.getParentReleaseSentOn())
+         .minusDays(1)
+         .toString("yyyy-MM-dd");
 
       resource.setId(person.getId());
       resource.setParentReleaseReceivedOn(someInvalidDate);
 
-      Mockito.when(personQueryRepository.exists(resource.getId())).thenReturn(true);
-      Mockito.when(personQueryRepository.findOne(resource.getId())).thenReturn(person);
+      Mockito.when(personQueryRepository.exists(resource.getId()))
+         .thenReturn(true);
+      Mockito.when(personQueryRepository.findOne(resource.getId()))
+         .thenReturn(person);
 
       final BindException errors = new BindException(resource, "personResource");
       ValidationUtils.invokeValidator(validator, resource, errors);
@@ -212,10 +228,13 @@ public class PersonValidatorTests {
 
       final PersonForm form = TestUtils.newPersonForm();
       form.setId(person.getId());
-      form.setParentReleaseReceivedOn(form.getParentReleaseSentOn().minusDays(1));
+      form.setParentReleaseReceivedOn(form.getParentReleaseSentOn()
+         .minusDays(1));
 
-      Mockito.when(personQueryRepository.exists(form.getId())).thenReturn(true);
-      Mockito.when(personQueryRepository.findOne(form.getId())).thenReturn(person);
+      Mockito.when(personQueryRepository.exists(form.getId()))
+         .thenReturn(true);
+      Mockito.when(personQueryRepository.findOne(form.getId()))
+         .thenReturn(person);
 
       final BindException errors = new BindException(form, "personForm");
       ValidationUtils.invokeValidator(validator, form, errors);

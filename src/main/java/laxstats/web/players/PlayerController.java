@@ -53,9 +53,11 @@ public class PlayerController extends ApplicationController {
       final PlayerId playerId = new PlayerId();
 
       final PlayerDTO dto =
-               new PlayerDTO(playerId, person, teamSeason, person.getFullName(), form.getRole(),
-                  form.getStatus(), form.getJerseyNumber(), form.getPosition(), form.isCaptain(),
-                  form.getDepth(), form.getHeight(), form.getWeight(), now, user, now, user);
+         new PlayerDTO(playerId, person, teamSeason, person.getFullName(), form.getRole(),
+            form.getStatus(), form.getJerseyNumber(), form.getPosition(), form.isCaptain(),
+            form.getDepth(), form.getHeight(), form.getWeight(), form.isReleased(),
+            form.getParentReleaseSentOnAsLocalDate(), form.getParentReleaseReceivedOnAsLocalDate(),
+            now, user, now, user);
 
       final RegisterPlayer payload = new RegisterPlayer(identifier, dto);
       try {
@@ -65,8 +67,8 @@ public class PlayerController extends ApplicationController {
          result.reject(e.getMessage());
          return "players/newPlayer";
       }
-      return "redirect:/admin/teams/" + teamSeason.getTeam().getId() + "/seasons/" +
-      teamSeason.getId();
+      return "redirect:/admin/teams/" + teamSeason.getTeam()
+         .getId() + "/seasons/" + teamSeason.getId();
    }
 
    @RequestMapping(value = "/admin/teamSeasons/{teamSeasonId}/roster/{playerId}",
@@ -84,9 +86,11 @@ public class PlayerController extends ApplicationController {
       final PlayerId playerIdentifier = new PlayerId(playerId);
 
       final PlayerDTO dto =
-               new PlayerDTO(playerIdentifier, person, teamSeason, person.getFullName(), form.getRole(),
-                  form.getStatus(), form.getJerseyNumber(), form.getPosition(), form.isCaptain(),
-                  form.getDepth(), form.getHeight(), form.getWeight(), now, user);
+         new PlayerDTO(playerIdentifier, person, teamSeason, person.getFullName(), form.getRole(),
+            form.getStatus(), form.getJerseyNumber(), form.getPosition(), form.isCaptain(),
+            form.getDepth(), form.getHeight(), form.getWeight(), form.isReleased(),
+            form.getParentReleaseSentOnAsLocalDate(), form.getParentReleaseReceivedOnAsLocalDate(),
+            now, user);
 
       final EditPlayer payload = new EditPlayer(identifier, dto);
       try {
@@ -96,8 +100,8 @@ public class PlayerController extends ApplicationController {
          result.reject(e.getMessage());
          return "players/editPlayer";
       }
-      return "redirect:/admin/teams/" + teamSeason.getTeam().getId() + "/seasons/" +
-      teamSeason.getId();
+      return "redirect:/admin/teams/" + teamSeason.getTeam()
+         .getId() + "/seasons/" + teamSeason.getId();
    }
 
    @RequestMapping(value = "/admin/teamSeasons/{teamSeasonId}/roster/{playerId}",
@@ -109,8 +113,8 @@ public class PlayerController extends ApplicationController {
       final PlayerId playerIdentifier = new PlayerId(playerId);
       final DropPlayer payload = new DropPlayer(identifier, playerIdentifier);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
-      return "redirect:/admin/teams/" + teamSeason.getTeam().getId() + "/seasons/" +
-      teamSeason.getId();
+      return "redirect:/admin/teams/" + teamSeason.getTeam()
+         .getId() + "/seasons/" + teamSeason.getId();
    }
 
    @RequestMapping(value = "/admin/teamSeasons/{teamSeasonId}/roster/new",
@@ -132,7 +136,8 @@ public class PlayerController extends ApplicationController {
    {
 
       final PlayerForm form = new PlayerForm();
-      form.setPerson(player.getPerson().getId());
+      form.setPerson(player.getPerson()
+         .getId());
       form.setJerseyNumber(player.getJerseyNumber());
       form.setPosition(player.getPosition());
       form.setRole(player.getRole());
@@ -141,6 +146,9 @@ public class PlayerController extends ApplicationController {
       form.setDepth(player.getDepth());
       form.setHeight(player.getHeight());
       form.setWeight(player.getWeight());
+      form.setReleased(player.isParentReleased());
+      form.setParentReleaseSentOnFromLocalDate(player.getParentReleaseSentOn());
+      form.setParentReleaseReceivedOnFromLocalDate(player.getParentReleaseReceivedOn());
 
       model.addAttribute("playerForm", form);
       model.addAttribute("teamSeason", teamSeason);

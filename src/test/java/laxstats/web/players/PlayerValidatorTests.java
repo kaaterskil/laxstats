@@ -32,7 +32,7 @@ public class PlayerValidatorTests {
 
    @Test
    public void supports() {
-      assertTrue(validator.supports(PlayerResource.class));
+      assertTrue(validator.supports(PlayerResourceImpl.class));
       assertTrue(validator.supports(PlayerForm.class));
       assertFalse(validator.supports(Object.class));
    }
@@ -40,7 +40,7 @@ public class PlayerValidatorTests {
    @Test
    public void playerResourceMissingPerson() {
       final TeamSeasonEntry teamSeason = TestUtils.getExistingTeamSeason();
-      final PlayerResource resource = TestUtils.newPlayerResource();
+      final PlayerResourceImpl resource = TestUtils.newPlayerResource();
       resource.setTeamSeason(teamSeason.getId());
 
       Mockito.when(teamSeasonQueryRepository.findOne(resource.getTeamSeason())).thenReturn(
@@ -71,7 +71,7 @@ public class PlayerValidatorTests {
       final PlayerForm form = TestUtils.newPlayerForm();
       form.setPerson(person.getId());
 
-      final PlayerResource resource = TestUtils.newPlayerResource();
+      final PlayerResourceImpl resource = TestUtils.newPlayerResource();
       resource.setPerson(person.getId());
 
       BindException errors = new BindException(form, "playerForm");
@@ -88,7 +88,7 @@ public class PlayerValidatorTests {
       final PersonEntry person = TestUtils.getPersonWithPrimaryContact();
       final TeamSeasonEntry teamSeason = TestUtils.getExistingTeamSeason();
 
-      final PlayerResource resource = TestUtils.newPlayerResource();
+      final PlayerResourceImpl resource = TestUtils.newPlayerResource();
       resource.setPerson(person.getId());
       resource.setTeamSeason(teamSeason.getId());
       resource.setRole(null);
@@ -122,7 +122,7 @@ public class PlayerValidatorTests {
       final PersonEntry person = TestUtils.getPersonWithPrimaryContact();
       final TeamSeasonEntry teamSeason = TestUtils.getExistingTeamSeason();
 
-      final PlayerResource resource = TestUtils.newPlayerResource();
+      final PlayerResourceImpl resource = TestUtils.newPlayerResource();
       resource.setPerson(person.getId());
       resource.setTeamSeason(teamSeason.getId());
       resource.setStatus(null);
@@ -156,7 +156,7 @@ public class PlayerValidatorTests {
       final PersonEntry person = TestUtils.getPersonWithPrimaryContact();
       final TeamSeasonEntry teamSeason = TestUtils.getExistingTeamSeason();
 
-      final PlayerResource resource = TestUtils.newPlayerResource();
+      final PlayerResourceImpl resource = TestUtils.newPlayerResource();
       resource.setPerson(person.getId());
       resource.setTeamSeason(teamSeason.getId());
       resource.setPosition(null);
@@ -192,7 +192,7 @@ public class PlayerValidatorTests {
       final PersonEntry person = TestUtils.getPersonWithPrimaryContact();
       final TeamSeasonEntry teamSeason = TestUtils.getExistingTeamSeason();
 
-      final PlayerResource resource = TestUtils.newPlayerResource();
+      final PlayerResourceImpl resource = TestUtils.newPlayerResource();
       resource.setPerson(person.getId());
       resource.setTeamSeason(teamSeason.getId());
 
@@ -225,7 +225,7 @@ public class PlayerValidatorTests {
       final TeamSeasonEntry teamSeason = TestUtils.getExistingTeamSeason();
       teamSeason.setStatus(TeamStatus.INACTIVE);
 
-      final PlayerResource resource = TestUtils.newPlayerResource();
+      final PlayerResourceImpl resource = TestUtils.newPlayerResource();
       resource.setPerson(person.getId());
       resource.setTeamSeason(teamSeason.getId());
 
@@ -263,7 +263,7 @@ public class PlayerValidatorTests {
       final TeamSeasonEntry newTeamSeason = TestUtils.getExistingTeamSeason();
       newTeamSeason.setStatus(TeamStatus.INACTIVE);
 
-      final PlayerResource resource = TestUtils.newPlayerResource();
+      final PlayerResourceImpl resource = TestUtils.newPlayerResource();
       resource.setId(player.getId());
       resource.setPerson(player.getPerson().getId());
       resource.setTeamSeason(newTeamSeason.getId());

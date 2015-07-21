@@ -6,6 +6,7 @@ import laxstats.query.people.PersonEntry;
 import laxstats.query.teamSeasons.TeamSeasonEntry;
 import laxstats.query.users.UserEntry;
 
+import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
 /**
@@ -26,6 +27,9 @@ public class PlayerDTO implements Serializable {
    private final int depth;
    private final int height;
    private final int weight;
+   private final boolean isParentReleased;
+   private final LocalDate parentReleaseSentOn;
+   private final LocalDate parentReleaseReceivedOn;
    private final LocalDateTime createdAt;
    private final UserEntry createdBy;
    private final LocalDateTime modifiedAt;
@@ -46,6 +50,9 @@ public class PlayerDTO implements Serializable {
     * @param depth
     * @param height
     * @param weight
+    * @param isParentReleased
+    * @param parentReleaseSentOn
+    * @param parentReleaseReceivedOn
     * @param createdAt
     * @param createdBy
     * @param modifiedAt
@@ -53,7 +60,8 @@ public class PlayerDTO implements Serializable {
     */
    public PlayerDTO(PlayerId id, PersonEntry person, TeamSeasonEntry team, String fullName,
       Role role, PlayerStatus status, String jerseyNumber, Position position, boolean isCaptain,
-      int depth, int height, int weight, LocalDateTime createdAt, UserEntry createdBy,
+      int depth, int height, int weight, boolean isParentReleased, LocalDate parentReleaseSentOn,
+      LocalDate parentReleaseReceivedOn, LocalDateTime createdAt, UserEntry createdBy,
       LocalDateTime modifiedAt, UserEntry modifiedBy) {
       this.id = id;
       this.person = person;
@@ -67,6 +75,9 @@ public class PlayerDTO implements Serializable {
       this.depth = depth;
       this.height = height;
       this.weight = weight;
+      this.isParentReleased = isParentReleased;
+      this.parentReleaseSentOn = parentReleaseSentOn;
+      this.parentReleaseReceivedOn = parentReleaseReceivedOn;
       this.createdAt = createdAt;
       this.createdBy = createdBy;
       this.modifiedAt = modifiedAt;
@@ -88,14 +99,19 @@ public class PlayerDTO implements Serializable {
     * @param depth
     * @param height
     * @param weight
+    * @param isParentReleased
+    * @param parentReleaseSentOn
+    * @param parentReleaseReceivedOn
     * @param modifiedAt
     * @param modifiedBy
     */
    public PlayerDTO(PlayerId id, PersonEntry person, TeamSeasonEntry team, String fullName,
       Role role, PlayerStatus status, String jerseyNumber, Position position, boolean isCaptain,
-      int depth, int height, int weight, LocalDateTime modifiedAt, UserEntry modifiedBy) {
+      int depth, int height, int weight, boolean isParentReleased, LocalDate parentReleaseSentOn,
+      LocalDate parentReleaseReceivedOn, LocalDateTime modifiedAt, UserEntry modifiedBy) {
       this(id, person, team, fullName, role, status, jerseyNumber, position, isCaptain, depth,
-         height, weight, null, null, modifiedAt, modifiedBy);
+         height, weight, isParentReleased, parentReleaseSentOn, parentReleaseReceivedOn, null, null,
+         modifiedAt, modifiedBy);
    }
 
    /**
@@ -204,6 +220,33 @@ public class PlayerDTO implements Serializable {
     */
    public int getWeight() {
       return weight;
+   }
+
+   /**
+    * Returns true if the person has received a parental release, false otherwise.
+    *
+    * @return
+    */
+   public boolean isParentReleased() {
+      return isParentReleased;
+   }
+
+   /**
+    * Returns the date on which the person's parental release was sent.
+    *
+    * @return
+    */
+   public LocalDate getParentReleaseSentOn() {
+      return parentReleaseSentOn;
+   }
+
+   /**
+    * Returns the date on which the person's parental release was received, or null if none.
+    *
+    * @return
+    */
+   public LocalDate getParentReleaseReceivedOn() {
+      return parentReleaseReceivedOn;
    }
 
    /**

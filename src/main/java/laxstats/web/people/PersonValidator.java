@@ -21,41 +21,35 @@ import org.springframework.validation.Validator;
 @Service
 public class PersonValidator implements Validator {
    private static final Logger logger = LoggerFactory.getLogger(PersonValidator.class);
-   private static final String PACKAGE_NAME = PersonValidator.class.getPackage().getName();
+   private static final String PACKAGE_NAME = PersonValidator.class.getPackage()
+      .getName();
 
    @Autowired
    PersonQueryRepository personRepository;
 
    @Override
    public boolean supports(Class<?> clazz) {
-      return PersonResource.class.equals(clazz) || PersonForm.class.equals(clazz);
+      return PersonResource.class.isAssignableFrom(clazz);
    }
 
    @Override
    public void validate(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".validate.";
+      final PersonResource resource = (PersonResource)target;
 
       logger.debug("Entering: " + proc + "10");
 
       // Validate mandatory args
-      checkMandatoryArgs(target, errors);
+      checkMandatoryArgs(resource, errors);
       logger.debug(proc + "20");
 
       // Validate birth date
-      checkBirthDate(target, errors);
+      checkBirthDate(resource, errors);
       logger.debug(proc + "30");
 
       // Check gender
-      checkGender(target, errors);
-      logger.debug(proc + "40");
-
-      // Check parent release sent date
-      checkParentReleaseSentOn(target, errors);
-      logger.debug(proc + "50");
-
-      // Check parent release received date
-      checkParentReleaseReceivedOn(target, errors);
-      logger.debug("Leaving: " + proc + "60");
+      checkGender(resource, errors);
+      logger.debug("Leaving: " + proc + "40");
    }
 
    /**
@@ -64,16 +58,9 @@ public class PersonValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkMandatoryArgs(Object target, Errors errors) {
+   private void checkMandatoryArgs(PersonResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkMandatoryArgs.";
-      String lastName = null;
-
-      if (target instanceof PersonResource) {
-         lastName = ((PersonResource)target).getLastName();
-      }
-      else if (target instanceof PersonForm) {
-         lastName = ((PersonForm)target).getLastName();
-      }
+      final String lastName = target.getLastName();
 
       logger.debug("Entering: " + proc + "10");
 
@@ -90,22 +77,11 @@ public class PersonValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkBirthDate(Object target, Errors errors) {
+   private void checkBirthDate(PersonResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkBirthDate.";
-      String personId = null;
-      LocalDate birthDate = null;
+      final String personId = target.getId();
+      final LocalDate birthDate = target.getBirthdateAsLocalDate();
       final LocalDate eot = Common.EOT.toLocalDate();
-
-      if (target instanceof PersonResource) {
-         final PersonResource r = (PersonResource)target;
-         personId = r.getId();
-         birthDate = r.getBirthdate() == null ? null : LocalDate.parse(r.getBirthdate());
-      }
-      else if (target instanceof PersonForm) {
-         final PersonForm form = (PersonForm)target;
-         personId = form.getId();
-         birthDate = form.getBirthdate();
-      }
 
       logger.debug("Entering: " + proc + "10");
 
@@ -121,13 +97,15 @@ public class PersonValidator implements Validator {
             final PersonEntry person = personRepository.findOne(personId);
             LocalDate startsOn = LocalDate.now();
 
-            if (!person.getPlayedSeasons().isEmpty() &&
-               !Common.nvl(person.getBirthdate(), eot).equals(birthDate)) {
+            if (!person.getPlayedSeasons()
+               .isEmpty() && !Common.nvl(person.getBirthdate(), eot)
+               .equals(birthDate)) {
                logger.debug(proc + "50");
 
                for (final PlayerEntry each : person.getPlayedSeasons()) {
                   final TeamSeasonEntry team = each.getTeamSeason();
-                  if (team.getStartsOn().isBefore(startsOn)) {
+                  if (team.getStartsOn()
+                     .isBefore(startsOn)) {
                      startsOn = team.getStartsOn();
                   }
                }
@@ -154,22 +132,11 @@ public class PersonValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkGender(Object target, Errors errors) {
+   private void checkGender(PersonResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkGender.";
-      String personId = null;
-      Gender gender = null;
+      final String personId = target.getId();
+      final Gender gender = target.getGender();
       Gender teamGender = null;
-
-      if (target instanceof PersonResource) {
-         final PersonResource resource = (PersonResource)target;
-         personId = resource.getId();
-         gender = resource.getGender();
-      }
-      else if (target instanceof PersonForm) {
-         final PersonForm form = (PersonForm)target;
-         personId = form.getId();
-         gender = form.getGender();
-      }
 
       logger.debug("Entering: " + proc + "10");
 
@@ -180,7 +147,8 @@ public class PersonValidator implements Validator {
          logger.debug(proc + "30");
 
          final PersonEntry person = personRepository.findOne(personId);
-         if (!person.getPlayedSeasons().isEmpty()) {
+         if (!person.getPlayedSeasons()
+            .isEmpty()) {
             logger.debug(proc + "40");
 
             final TeamGender genderType = personRepository.getTeamGender(personId, Role.ATHLETE);
@@ -200,130 +168,6 @@ public class PersonValidator implements Validator {
          }
       }
       logger.debug("Leaving: " + proc + "60");
-   }
-
-   /**
-    * Validates that the date the parent release was sent. If the parent release sent date is before
-    * the received on date , or if the received on date is null, the processing continues.
-    *
-    * @param form
-    * @param errors
-    */
-   private void checkParentReleaseSentOn(Object target, Errors errors) {
-      final String proc = PACKAGE_NAME + ".checkParentReleaseSentOn.";
-      String personId = null;
-      LocalDate sentOn = null;
-      LocalDate receivedOn = null;
-      final LocalDate eot = Common.EOT.toLocalDate();
-
-      if (target instanceof PersonResource) {
-         final PersonResource r = (PersonResource)target;
-         personId = r.getId();
-         sentOn =
-            r.getParentReleaseSentOn() == null ? null : LocalDate.parse(r.getParentReleaseSentOn());
-         receivedOn =
-            r.getParentReleaseReceivedOn() == null ? null : LocalDate.parse(r
-               .getParentReleaseReceivedOn());
-      }
-      else if (target instanceof PersonForm) {
-         final PersonForm form = (PersonForm)target;
-         personId = form.getId();
-         sentOn = form.getParentReleaseSentOn();
-         receivedOn = form.getParentReleaseReceivedOn();
-      }
-
-      logger.debug("Entering: " + proc + "10");
-
-      final boolean isUpdating = apiUpdating(personId);
-      logger.debug(proc + "20");
-
-      if (isUpdating) {
-         logger.debug(proc + "30");
-
-         final PersonEntry person = personRepository.findOne(personId);
-         if (!Common.nvl(person.getParentReleaseSentOn(), eot).equals(Common.nvl(sentOn, eot))) {
-            logger.debug(proc + "40");
-
-            if (Common.nvl(sentOn, eot).isAfter(Common.nvl(receivedOn, eot))) {
-               errors.rejectValue("parentReleaseSentOn", "person.parentReleaseSentOn.invalid");
-            }
-         }
-      }
-      else {
-         logger.debug(proc + "50");
-         if (Common.nvl(sentOn, eot).isAfter(Common.nvl(receivedOn, eot))) {
-            errors.rejectValue("parentReleaseSentOn", "person.parentReleaseSentOn.invalid");
-         }
-      }
-      logger.debug("Leaving: " + proc + "60");
-   }
-
-   /**
-    * Validates the date the parent release was received. If the parent release received date is
-    * after the sent date, the processing continues.
-    *
-    * @param form
-    * @param errors
-    */
-   private void checkParentReleaseReceivedOn(Object target, Errors errors) {
-      final String proc = PACKAGE_NAME + ".checkParentReleaseReceivedOn.";
-      String personId = null;
-      LocalDate sentOn = null;
-      LocalDate receivedOn = null;
-      final LocalDate eot = Common.EOT.toLocalDate();
-
-      if (target instanceof PersonResource) {
-         final PersonResource r = (PersonResource)target;
-         personId = r.getId();
-         sentOn =
-            r.getParentReleaseSentOn() == null ? null : LocalDate.parse(r.getParentReleaseSentOn());
-         receivedOn =
-            r.getParentReleaseReceivedOn() == null ? null : LocalDate.parse(r
-               .getParentReleaseReceivedOn());
-      }
-      else if (target instanceof PersonForm) {
-         final PersonForm form = (PersonForm)target;
-         personId = form.getId();
-         sentOn = form.getParentReleaseSentOn();
-         receivedOn = form.getParentReleaseReceivedOn();
-      }
-
-      logger.debug("Entering: " + proc + "10");
-
-      if (receivedOn != null) {
-         logger.debug(proc + "20");
-
-         if (sentOn == null) {
-            errors.rejectValue("parentReleaseSentOn", "person.parentReleaseSentOn.required");
-         }
-
-         final boolean isUpdating = apiUpdating(personId);
-         logger.debug(proc + "30");
-
-         if (isUpdating) {
-            logger.debug(proc + "40");
-
-            final PersonEntry person = personRepository.findOne(personId);
-            if (!Common.nvl(person.getParentReleaseReceivedOn(), eot).equals(
-               Common.nvl(receivedOn, eot))) {
-               logger.debug(proc + "50");
-
-               if (Common.nvl(receivedOn, eot).isBefore(Common.nvl(sentOn, eot))) {
-                  errors.rejectValue("parentReleaseReceivedOn",
-                     "person.parentReleaseReceivedOn.invalid");
-               }
-            }
-
-         }
-         else {
-            logger.debug(proc + "60");
-            if (Common.nvl(receivedOn, eot).isBefore(Common.nvl(sentOn, eot))) {
-               errors.rejectValue("parentReleaseReceivedOn",
-                  "person.parentReleaseReceivedOn.invalid");
-            }
-         }
-      }
-      logger.debug("Leaving: " + proc + "70");
    }
 
    /**

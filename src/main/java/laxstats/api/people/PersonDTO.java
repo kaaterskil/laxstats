@@ -23,9 +23,6 @@ public class PersonDTO implements Serializable {
    private final String fullName;
    private final Gender gender;
    private final DominantHand dominantHand;
-   private final boolean isParentReleased;
-   private final LocalDate parentReleaseSentOn;
-   private final LocalDate parentReleaseReceivedOn;
    private final LocalDate birthdate;
    private final String college;
    private final UserEntry createdBy;
@@ -46,9 +43,6 @@ public class PersonDTO implements Serializable {
     * @param fullName
     * @param gender
     * @param dominantHand
-    * @param isParentReleased
-    * @param parentReleaseSentOn
-    * @param parentReleaseReceivedOn
     * @param birthdate
     * @param college
     * @param createdBy
@@ -58,8 +52,7 @@ public class PersonDTO implements Serializable {
     */
    public PersonDTO(PersonId personId, String prefix, String firstName, String middleName,
       String lastName, String suffix, String nickname, String fullName, Gender gender,
-      DominantHand dominantHand, boolean isParentReleased, LocalDate parentReleaseSentOn,
-      LocalDate parentReleaseReceivedOn, LocalDate birthdate, String college, UserEntry createdBy,
+      DominantHand dominantHand, LocalDate birthdate, String college, UserEntry createdBy,
       LocalDateTime createdAt, UserEntry modifiedBy, LocalDateTime modifiedAt) {
       this.personId = personId;
       this.prefix = prefix;
@@ -71,9 +64,6 @@ public class PersonDTO implements Serializable {
       this.fullName = fullName;
       this.gender = gender;
       this.dominantHand = dominantHand;
-      this.isParentReleased = isParentReleased;
-      this.parentReleaseSentOn = parentReleaseSentOn;
-      this.parentReleaseReceivedOn = parentReleaseReceivedOn;
       this.birthdate = birthdate;
       this.college = college;
       this.createdBy = createdBy;
@@ -95,9 +85,6 @@ public class PersonDTO implements Serializable {
     * @param fullName
     * @param gender
     * @param dominantHand
-    * @param isParentReleased
-    * @param parentReleaseSentOn
-    * @param parentReleaseReceivedOn
     * @param birthdate
     * @param college
     * @param modifiedBy
@@ -105,17 +92,15 @@ public class PersonDTO implements Serializable {
     */
    public PersonDTO(PersonId personId, String prefix, String firstName, String middleName,
       String lastName, String suffix, String nickname, String fullName, Gender gender,
-      DominantHand dominantHand, boolean isParentReleased, LocalDate parentReleaseSentOn,
-      LocalDate parentReleaseReceivedOn, LocalDate birthdate, String college, UserEntry modifiedBy,
+      DominantHand dominantHand, LocalDate birthdate, String college, UserEntry modifiedBy,
       LocalDateTime modifiedAt) {
       this(personId, prefix, firstName, middleName, lastName, suffix, nickname, fullName, gender,
-         dominantHand, isParentReleased, parentReleaseSentOn, parentReleaseReceivedOn, birthdate,
-         college, null, null, modifiedBy, modifiedAt);
+         dominantHand, birthdate, college, null, null, modifiedBy, modifiedAt);
    }
 
    /**
     * Computes and returns a concatenation of the person's full name.
-    * 
+    *
     * @return
     */
    public String fullName() {
@@ -244,33 +229,6 @@ public class PersonDTO implements Serializable {
     */
    public DominantHand getDominantHand() {
       return dominantHand;
-   }
-
-   /**
-    * Returns true if the person has received a parental release, false otherwise.
-    *
-    * @return
-    */
-   public boolean isParentReleased() {
-      return isParentReleased;
-   }
-
-   /**
-    * Returns the date on which the person's parental release was sent.
-    *
-    * @return
-    */
-   public LocalDate getParentReleaseSentOn() {
-      return parentReleaseSentOn;
-   }
-
-   /**
-    * Returns the date on which the person's parental release was received, or null if none.
-    *
-    * @return
-    */
-   public LocalDate getParentReleaseReceivedOn() {
-      return parentReleaseReceivedOn;
    }
 
    /**

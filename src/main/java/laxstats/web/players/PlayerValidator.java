@@ -5,11 +5,13 @@ import laxstats.api.players.PlayerStatus;
 import laxstats.api.players.Position;
 import laxstats.api.players.Role;
 import laxstats.api.teamSeasons.TeamStatus;
+import laxstats.api.utils.Common;
 import laxstats.query.players.PlayerEntry;
 import laxstats.query.players.PlayerQueryRepository;
 import laxstats.query.teamSeasons.TeamSeasonEntry;
 import laxstats.query.teamSeasons.TeamSeasonQueryRepository;
 
+import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +20,8 @@ import org.springframework.validation.Validator;
 
 public class PlayerValidator implements Validator {
    private static Logger logger = LoggerFactory.getLogger(PlayerValidator.class);
-   private static String PACKAGE_NAME = PlayerValidator.class.getPackage().getName();
+   private static String PACKAGE_NAME = PlayerValidator.class.getPackage()
+      .getName();
 
    @Autowired
    TeamSeasonQueryRepository teamSeasonQueryRepository;
@@ -27,23 +30,31 @@ public class PlayerValidator implements Validator {
 
    @Override
    public boolean supports(Class<?> clazz) {
-      return PlayerResource.class.equals(clazz) || PlayerForm.class.equals(clazz);
+      return PlayerResource.class.isAssignableFrom(clazz);
    }
 
    @Override
    public void validate(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".validate.";
+      final PlayerResource resource = (PlayerResource)target;
 
       logger.debug("Entering: " + proc + "10");
 
       // Validate mandatory arguments
-      checkMandatoryArgs(target, errors);
+      checkMandatoryArgs(resource, errors);
       logger.debug(proc + "20");
 
       // Validates that the team is not inactive
-      checkTeamStatus(target, errors);
+      checkTeamStatus(resource, errors);
+      logger.debug(proc + "30");
 
-      logger.debug("Leaving: " + proc + "30");
+      // Check parent release sent date
+      checkParentReleaseSentOn(resource, errors);
+      logger.debug(proc + "40");
+
+      // Check parent release received date
+      checkParentReleaseReceivedOn(resource, errors);
+      logger.debug("Leaving: " + proc + "50");
    }
 
    /**
@@ -52,30 +63,13 @@ public class PlayerValidator implements Validator {
     * @param form
     * @param errors0
     */
-   private void checkMandatoryArgs(Object target, Errors errors) {
+   private void checkMandatoryArgs(PlayerResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkMandatoryArgs.";
-      String personId = null;
-      String teamSeasonId = null;
-      Role role = null;
-      PlayerStatus status = null;
-      Position position = null;
-
-      if (target instanceof PlayerResource) {
-         final PlayerResource resource = (PlayerResource)target;
-         personId = resource.getPerson();
-         teamSeasonId = resource.getTeamSeason();
-         role = resource.getRole();
-         status = resource.getStatus();
-         position = resource.getPosition();
-      }
-      else if (target instanceof PlayerForm) {
-         final PlayerForm form = (PlayerForm)target;
-         personId = form.getPerson();
-         teamSeasonId = form.getTeamSeason();
-         role = form.getRole();
-         status = form.getStatus();
-         position = form.getPosition();
-      }
+      final String personId = target.getPerson();
+      final String teamSeasonId = target.getTeamSeason();
+      final Role role = target.getRole();
+      final PlayerStatus status = target.getStatus();
+      final Position position = target.getPosition();
 
       logger.debug("Entering: " + proc + "10");
 
@@ -112,22 +106,11 @@ public class PlayerValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkTeamStatus(Object target, Errors errors) {
+   private void checkTeamStatus(PlayerResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkTeamStatus.";
-      String playerId = null;
-      String teamSeasonId = null;
+      final String playerId = target.getId();
+      final String teamSeasonId = target.getTeamSeason();
       boolean doValidation = false;
-
-      if (target instanceof PlayerResource) {
-         final PlayerResource resource = (PlayerResource)target;
-         playerId = resource.getId();
-         teamSeasonId = resource.getTeamSeason();
-      }
-      else if (target instanceof PlayerForm) {
-         final PlayerForm form = (PlayerForm)target;
-         playerId = form.getId();
-         teamSeasonId = form.getTeamSeason();
-      }
       final TeamSeasonEntry teamSeason = teamSeasonQueryRepository.findOne(teamSeasonId);
 
       logger.debug("Entering: " + proc + "10");
@@ -140,7 +123,8 @@ public class PlayerValidator implements Validator {
          logger.debug(proc + "30");
 
          final PlayerEntry player = playerQueryRepository.findOne(playerId);
-         if (!teamSeasonId.equals(player.getTeamSeason().getId())) {
+         if (!teamSeasonId.equals(player.getTeamSeason()
+            .getId())) {
             doValidation = true;
          }
       }
@@ -153,12 +137,110 @@ public class PlayerValidator implements Validator {
       if (doValidation && teamSeason != null) {
          logger.debug(proc + "50");
 
-         if (teamSeason.getStatus().equals(TeamStatus.INACTIVE)) {
+         if (teamSeason.getStatus()
+            .equals(TeamStatus.INACTIVE)) {
             errors.rejectValue("status", "player.status.inactiveTeamSeason");
          }
       }
 
       logger.debug("Leaving: " + proc + "60");
+   }
+
+   /**
+    * Validates that the date the parent release was sent. If the parent release sent date is before
+    * the received on date , or if the received on date is null, the processing continues.
+    *
+    * @param form
+    * @param errors
+    */
+   private void checkParentReleaseSentOn(PlayerResource target, Errors errors) {
+      final String proc = PACKAGE_NAME + ".checkParentReleaseSentOn.";
+      final String playerId = target.getId();
+      final LocalDate sentOn = target.getParentReleaseSentOnAsLocalDate();
+      final LocalDate receivedOn = target.getParentReleaseReceivedOnAsLocalDate();
+      final LocalDate eot = Common.EOT.toLocalDate();
+
+      logger.debug("Entering: " + proc + "10");
+
+      final boolean isUpdating = apiUpdating(playerId);
+      logger.debug(proc + "20");
+
+      if (isUpdating) {
+         logger.debug(proc + "30");
+
+         final PlayerEntry player = playerQueryRepository.findOne(playerId);
+         if (!Common.nvl(player.getParentReleaseSentOn(), eot)
+            .equals(Common.nvl(sentOn, eot))) {
+            logger.debug(proc + "40");
+
+            if (Common.nvl(sentOn, eot)
+               .isAfter(Common.nvl(receivedOn, eot))) {
+               errors.rejectValue("parentReleaseSentOn", "player.parentReleaseSentOn.invalid");
+            }
+         }
+      }
+      else {
+         logger.debug(proc + "50");
+         if (Common.nvl(sentOn, eot)
+            .isAfter(Common.nvl(receivedOn, eot))) {
+            errors.rejectValue("parentReleaseSentOn", "player.parentReleaseSentOn.invalid");
+         }
+      }
+      logger.debug("Leaving: " + proc + "60");
+   }
+
+   /**
+    * Validates the date the parent release was received. If the parent release received date is
+    * after the sent date, the processing continues.
+    *
+    * @param form
+    * @param errors
+    */
+   private void checkParentReleaseReceivedOn(PlayerResource target, Errors errors) {
+      final String proc = PACKAGE_NAME + ".checkParentReleaseReceivedOn.";
+      final String playerId = target.getId();
+      final LocalDate sentOn = target.getParentReleaseSentOnAsLocalDate();
+      final LocalDate receivedOn = target.getParentReleaseReceivedOnAsLocalDate();
+      final LocalDate eot = Common.EOT.toLocalDate();
+
+      logger.debug("Entering: " + proc + "10");
+
+      if (receivedOn != null) {
+         logger.debug(proc + "20");
+
+         if (sentOn == null) {
+            errors.rejectValue("parentReleaseSentOn", "player.parentReleaseSentOn.required");
+         }
+
+         final boolean isUpdating = apiUpdating(playerId);
+         logger.debug(proc + "30");
+
+         if (isUpdating) {
+            logger.debug(proc + "40");
+
+            final PlayerEntry player = playerQueryRepository.findOne(playerId);
+            if (!Common.nvl(player.getParentReleaseReceivedOn(), eot)
+               .equals(Common.nvl(receivedOn, eot))) {
+               logger.debug(proc + "50");
+
+               if (Common.nvl(receivedOn, eot)
+                  .isBefore(Common.nvl(sentOn, eot))) {
+                  errors.rejectValue("parentReleaseReceivedOn",
+                     "player.parentReleaseReceivedOn.invalid");
+               }
+            }
+
+         }
+         else {
+            logger.debug(proc + "60");
+            if (Common.nvl(receivedOn, eot)
+               .isBefore(Common.nvl(sentOn, eot))) {
+               errors.rejectValue("parentReleaseReceivedOn",
+                  "player.parentReleaseReceivedOn.invalid");
+            }
+         }
+      }
+      logger.debug("Leaving: " + proc + "70");
    }
 
    /**

@@ -1,9 +1,5 @@
 package laxstats.web.people;
 
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
-
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -12,13 +8,11 @@ import laxstats.api.people.Gender;
 import laxstats.api.utils.Constants;
 
 import org.joda.time.LocalDate;
-import org.springframework.format.annotation.DateTimeFormat;
 
 /**
- * {@code PersonForm} contains user-defined information with which to create and update a person.
+ * {@code PersonResource} represents a person resource for remote clients.
  */
-public class PersonForm implements Serializable, PersonResource {
-   private static final long serialVersionUID = 3610106010025451930L;
+public class PersonResourceImpl implements PersonResource {
 
    /**
     * Returns a concatenated string of the given person's full name.
@@ -26,7 +20,7 @@ public class PersonForm implements Serializable, PersonResource {
     * @param form
     * @return
     */
-   public static String fullName(PersonForm form) {
+   public static String fullName(PersonResourceImpl form) {
       final StringBuilder sb = new StringBuilder();
       boolean needsSpace = false;
 
@@ -82,20 +76,52 @@ public class PersonForm implements Serializable, PersonResource {
    @Size(max = Constants.MAX_LENGTH_NAME_PREFIX_OR_SUFFIX)
    private String suffix;
 
-   @Size(max = 20)
+   @Size(max = Constants.MAX_LENGTH_FIRST_OR_MIDDLE_NAME)
    private String nickname;
 
    private Gender gender;
    private DominantHand dominantHand;
+   private String birthdate;
 
-   @DateTimeFormat(pattern = Constants.PATTERN_DATE_FORMAT)
-   private LocalDate birthdate;
-
-   @Size(max = 100)
+   @Size(max = Constants.MAX_LENGTH_TITLE)
    private String college;
 
-   List<Gender> genders;
-   List<DominantHand> dominantHands;
+   /**
+    * Creates a {@code PersonResource} with the given information.
+    *
+    * @param id
+    * @param prefix
+    * @param firstName
+    * @param middleName
+    * @param lastName
+    * @param suffix
+    * @param nickname
+    * @param gender
+    * @param dominantHand
+    * @param birthdate
+    * @param college
+    */
+   public PersonResourceImpl(String id, String prefix, String firstName, String middleName,
+      String lastName, String suffix, String nickname, Gender gender, DominantHand dominantHand,
+      String birthdate, String college) {
+      this.id = id;
+      this.prefix = prefix;
+      this.firstName = firstName;
+      this.middleName = middleName;
+      this.lastName = lastName;
+      this.suffix = suffix;
+      this.nickname = nickname;
+      this.gender = gender;
+      this.dominantHand = dominantHand;
+      this.birthdate = birthdate;
+      this.college = college;
+   }
+
+   /**
+    * Creates an empty {@code PersonResource}.
+    */
+   public PersonResourceImpl() {
+   }
 
    /**
     * {@inheritDoc}
@@ -138,9 +164,7 @@ public class PersonForm implements Serializable, PersonResource {
    }
 
    /**
-    * Sets the person's first name. Use null if not known.
-    *
-    * @param firstName
+    * {@inheritDoc}
     */
    @Override
    public void setFirstName(String firstName) {
@@ -217,7 +241,7 @@ public class PersonForm implements Serializable, PersonResource {
     */
    @Override
    public String getFullName() {
-      return PersonForm.fullName(this);
+      return PersonResourceImpl.fullName(this);
    }
 
    /**
@@ -257,22 +281,6 @@ public class PersonForm implements Serializable, PersonResource {
     */
    @Override
    public String getBirthdate() {
-      return birthdate == null ? null : birthdate.toString();
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public void setBirthdate(String birthdate) {
-      this.birthdate = birthdate == null ? null : LocalDate.parse(birthdate);
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public LocalDate getBirthdateAsLocalDate() {
       return birthdate;
    }
 
@@ -280,8 +288,24 @@ public class PersonForm implements Serializable, PersonResource {
     * {@inheritDoc}
     */
    @Override
-   public void setBirthdateFromLocalDate(LocalDate birthdate) {
+   public void setBirthdate(String birthdate) {
       this.birthdate = birthdate;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public LocalDate getBirthdateAsLocalDate() {
+      return birthdate == null ? null : LocalDate.parse(birthdate);
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public void setBirthdateFromLocalDate(LocalDate birthdate) {
+      this.birthdate = birthdate == null ? null : birthdate.toString();
    }
 
    /**
@@ -293,27 +317,11 @@ public class PersonForm implements Serializable, PersonResource {
    }
 
    /**
-    * Sets the name of the person's college. Use null for none or unknown.
-    *
-    * @param college
+    * {@inheritDoc}
     */
    @Override
    public void setCollege(String college) {
       this.college = college;
-   }
-
-   public List<Gender> getGenders() {
-      if (genders == null) {
-         genders = Arrays.asList(Gender.values());
-      }
-      return genders;
-   }
-
-   public List<DominantHand> getDominantHands() {
-      if (dominantHands == null) {
-         dominantHands = Arrays.asList(DominantHand.values());
-      }
-      return dominantHands;
    }
 
 }

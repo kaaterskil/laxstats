@@ -79,7 +79,8 @@ public class PersonEntry implements Serializable {
          sb.append(person.getLastName());
       }
       if (person.getSuffix() != null) {
-         sb.append(", ").append(person.getSuffix());
+         sb.append(", ")
+            .append(person.getSuffix());
       }
       return sb.toString();
    }
@@ -116,14 +117,6 @@ public class PersonEntry implements Serializable {
    @Enumerated(EnumType.STRING)
    @Column(length = Constants.MAX_LENGTH_ENUM_STRING)
    private DominantHand dominantHand;
-
-   private boolean isParentReleased = false;
-
-   @Type(type = Constants.LOCAL_DATE_DATABASE_TYPE)
-   private LocalDate parentReleaseSentOn;
-
-   @Type(type = Constants.LOCAL_DATE_DATABASE_TYPE)
-   private LocalDate parentReleaseReceivedOn;
 
    @Type(type = Constants.LOCAL_DATE_DATABASE_TYPE)
    private LocalDate birthdate;
@@ -193,7 +186,8 @@ public class PersonEntry implements Serializable {
    public Set<PersonEntry> getChildren(RelationshipType type) {
       final Set<PersonEntry> result = new HashSet<>();
       for (final RelationshipEntry each : childRelationships) {
-         if (type == null || each.getType().equals(type)) {
+         if (type == null || each.getType()
+            .equals(type)) {
             result.add(each.getChild());
          }
       }
@@ -209,7 +203,8 @@ public class PersonEntry implements Serializable {
    public Set<PersonEntry> getParents(RelationshipType type) {
       final Set<PersonEntry> result = new HashSet<>();
       for (final RelationshipEntry each : parentRelationships) {
-         if (type == null || each.getType().equals(type)) {
+         if (type == null || each.getType()
+            .equals(type)) {
             result.add(each.getParent());
          }
       }
@@ -244,7 +239,8 @@ public class PersonEntry implements Serializable {
     */
    public AddressEntry getAddress(String id) {
       for (final AddressEntry each : addresses) {
-         if (each.getId().equals(id)) {
+         if (each.getId()
+            .equals(id)) {
             return each;
          }
       }
@@ -259,7 +255,8 @@ public class PersonEntry implements Serializable {
     */
    public ContactEntry getContact(String id) {
       for (final ContactEntry each : contacts) {
-         if (each.getId().equals(id)) {
+         if (each.getId()
+            .equals(id)) {
             return each;
          }
       }
@@ -529,60 +526,6 @@ public class PersonEntry implements Serializable {
     */
    public void setDominantHand(DominantHand dominantHand) {
       this.dominantHand = dominantHand;
-   }
-
-   /**
-    * Returns true if this person has a parental release, false otherwise.
-    *
-    * @return
-    */
-   public boolean isParentReleased() {
-      return isParentReleased;
-   }
-
-   /**
-    * Sets a flag to determine if the person has a parental release.
-    *
-    * @param isParentReleased
-    */
-   public void setParentReleased(boolean isParentReleased) {
-      this.isParentReleased = isParentReleased;
-   }
-
-   /**
-    * Returns the date this person's parental release request was sent, or null.
-    *
-    * @return
-    */
-   public LocalDate getParentReleaseSentOn() {
-      return parentReleaseSentOn;
-   }
-
-   /**
-    * Sets the date this person's parental release request was sent. Use null if not used or known.
-    *
-    * @param parentReleaseSentOn
-    */
-   public void setParentReleaseSentOn(LocalDate parentReleaseSentOn) {
-      this.parentReleaseSentOn = parentReleaseSentOn;
-   }
-
-   /**
-    * Returns the date this person's parental release was received, or null.
-    *
-    * @return
-    */
-   public LocalDate getParentReleaseReceivedOn() {
-      return parentReleaseReceivedOn;
-   }
-
-   /**
-    * Sets the date this person's parental release was received. Use null if not used or known.
-    *
-    * @param parentReleaseReceivedOn
-    */
-   public void setParentReleaseReceivedOn(LocalDate parentReleaseReceivedOn) {
-      this.parentReleaseReceivedOn = parentReleaseReceivedOn;
    }
 
    /**

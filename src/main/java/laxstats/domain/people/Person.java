@@ -48,9 +48,6 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
    private String fullName;
    private Gender gender;
    private DominantHand dominantHand;
-   private boolean released = false;
-   private LocalDate parentReleaseSentOn;
-   private LocalDate parentReleaseReceivedOn;
    private LocalDate birthdate;
    private String college;
    private final Set<RelationshipInfo> childRelationships = new HashSet<>();
@@ -64,7 +61,7 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
 
    /**
     * Applies the given aggregate identifier and information to a newly created person.
-    * 
+    *
     * @param personId
     * @param personDTO
     */
@@ -80,7 +77,7 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
 
    /**
     * Instructs the framework to update and persits changes to this person.
-    * 
+    *
     * @param personId
     * @param personDTO
     */
@@ -90,7 +87,7 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
 
    /**
     * Instructs the framework to mark this person for deletion.
-    * 
+    *
     * @param personId
     */
    public void delete(PersonId personId) {
@@ -167,7 +164,8 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
     */
    private boolean addressExists(String id) {
       for (final Address a : addresses) {
-         if (a.getId().equals(id)) {
+         if (a.getId()
+            .equals(id)) {
             return true;
          }
       }
@@ -243,7 +241,8 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
     */
    private boolean contactExists(String id) {
       for (final Contact c : contacts) {
-         if (c.getId().equals(id)) {
+         if (c.getId()
+            .equals(id)) {
             return true;
          }
       }
@@ -293,9 +292,6 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
       gender = dto.getGender();
       dominantHand = dto.getDominantHand();
       birthdate = dto.getBirthdate();
-      released = dto.isParentReleased();
-      parentReleaseSentOn = dto.getParentReleaseSentOn();
-      parentReleaseReceivedOn = dto.getParentReleaseReceivedOn();
    }
 
    /**
@@ -316,9 +312,6 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
       gender = dto.getGender();
       dominantHand = dto.getDominantHand();
       birthdate = dto.getBirthdate();
-      released = dto.isParentReleased();
-      parentReleaseSentOn = dto.getParentReleaseSentOn();
-      parentReleaseReceivedOn = dto.getParentReleaseReceivedOn();
    }
 
    /**
@@ -368,7 +361,8 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
       final Iterator<Address> iter = addresses.iterator();
       while (iter.hasNext()) {
          final Address each = iter.next();
-         if (each.getId().equals(addressId)) {
+         if (each.getId()
+            .equals(addressId)) {
             iter.remove();
             return true;
          }
@@ -410,7 +404,8 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
       final Iterator<Contact> iter = contacts.iterator();
       while (iter.hasNext()) {
          final Contact each = iter.next();
-         if (each.getId().equals(contactId)) {
+         if (each.getId()
+            .equals(contactId)) {
             iter.remove();
             return true;
          }
@@ -505,33 +500,6 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
     */
    public DominantHand getDominantHand() {
       return dominantHand;
-   }
-
-   /**
-    * Returns if the person has a parental release, false otherwise.
-    *
-    * @return
-    */
-   public boolean isReleased() {
-      return released;
-   }
-
-   /**
-    * Returns the date the person's parental release was sent.
-    *
-    * @return
-    */
-   public LocalDate getParentReleaseSentOn() {
-      return parentReleaseSentOn;
-   }
-
-   /**
-    * Returns the date the person's parental release was received.
-    *
-    * @return
-    */
-   public LocalDate getParentReleaseReceivedOn() {
-      return parentReleaseReceivedOn;
    }
 
    /**

@@ -29,13 +29,15 @@ public class PlayerListener {
    @EventHandler
    protected void handle(PlayerCreated event) {
       final PlayerDTO dto = event.getPlayerDTO();
-      final String id = event.getPlayerId().toString();
+      final String id = event.getPlayerId()
+         .toString();
 
       final PlayerEntry entity = new PlayerEntry();
       entity.setId(id);
       entity.setPerson(dto.getPerson());
       entity.setTeamSeason(dto.getTeam());
-      entity.setFullName(dto.getPerson().getFullName());
+      entity.setFullName(dto.getPerson()
+         .getFullName());
       entity.setRole(dto.getRole());
       entity.setStatus(dto.getStatus());
       entity.setJerseyNumber(dto.getJerseyNumber());
@@ -44,6 +46,9 @@ public class PlayerListener {
       entity.setDepth(dto.getDepth());
       entity.setHeight(dto.getHeight());
       entity.setWeight(dto.getWeight());
+      entity.setParentReleased(dto.isParentReleased());
+      entity.setParentReleaseSentOn(dto.getParentReleaseSentOn());
+      entity.setParentReleaseReceivedOn(dto.getParentReleaseReceivedOn());
       entity.setCreatedAt(dto.getCreatedAt());
       entity.setCreatedBy(dto.getCreatedBy());
       entity.setModifiedAt(dto.getModifiedAt());
@@ -59,12 +64,14 @@ public class PlayerListener {
    @EventHandler
    protected void handle(PlayerUpdated event) {
       final PlayerDTO dto = event.getPlayerDTO();
-      final String id = event.getPlayerId().toString();
+      final String id = event.getPlayerId()
+         .toString();
 
       final PlayerEntry entity = repository.findOne(id);
       entity.setPerson(dto.getPerson());
       entity.setTeamSeason(dto.getTeam());
-      entity.setFullName(dto.getPerson().getFullName());
+      entity.setFullName(dto.getPerson()
+         .getFullName());
       entity.setRole(dto.getRole());
       entity.setStatus(dto.getStatus());
       entity.setJerseyNumber(dto.getJerseyNumber());
@@ -73,6 +80,9 @@ public class PlayerListener {
       entity.setDepth(dto.getDepth());
       entity.setHeight(dto.getHeight());
       entity.setWeight(dto.getWeight());
+      entity.setParentReleased(dto.isParentReleased());
+      entity.setParentReleaseSentOn(dto.getParentReleaseSentOn());
+      entity.setParentReleaseReceivedOn(dto.getParentReleaseReceivedOn());
       entity.setModifiedAt(dto.getModifiedAt());
       entity.setModifiedBy(dto.getModifiedBy());
       repository.save(entity);
@@ -85,7 +95,8 @@ public class PlayerListener {
     */
    @EventHandler
    protected void handle(PlayerDeleted event) {
-      final String id = event.getPlayerId().toString();
+      final String id = event.getPlayerId()
+         .toString();
       final PlayerEntry entity = repository.findOne(id);
       repository.delete(entity);
    }

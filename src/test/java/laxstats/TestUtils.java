@@ -37,9 +37,9 @@ import laxstats.web.people.AddressResource;
 import laxstats.web.people.ContactForm;
 import laxstats.web.people.ContactResource;
 import laxstats.web.people.PersonForm;
-import laxstats.web.people.PersonResource;
+import laxstats.web.people.PersonResourceImpl;
 import laxstats.web.players.PlayerForm;
-import laxstats.web.players.PlayerResource;
+import laxstats.web.players.PlayerResourceImpl;
 import laxstats.web.seasons.SeasonForm;
 import laxstats.web.seasons.SeasonResourceImpl;
 import laxstats.web.sites.SiteForm;
@@ -157,8 +157,8 @@ public class TestUtils {
     *
     * @return
     */
-   public static PersonResource newPersonResource() {
-      final PersonResource resource = new PersonResource();
+   public static PersonResourceImpl newPersonResource() {
+      final PersonResourceImpl resource = new PersonResourceImpl();
       resource.setBirthdate("1988-09-30");
       resource.setCollege("Colgate University");
       resource.setDominantHand(DominantHand.RIGHT);
@@ -167,9 +167,6 @@ public class TestUtils {
       resource.setLastName("Caple");
       resource.setMiddleName("NMI");
       resource.setNickname("Stan");
-      resource.setParentReleaseReceivedOn("2014-10-12");
-      resource.setParentReleaseSentOn("2014-10-05");
-      resource.setReleased(true);
       return resource;
    }
 
@@ -179,11 +176,14 @@ public class TestUtils {
     *
     * @return
     */
-   public static PlayerResource newPlayerResource() {
-      final PlayerResource resource = new PlayerResource();
+   public static PlayerResourceImpl newPlayerResource() {
+      final PlayerResourceImpl resource = new PlayerResourceImpl();
       resource.setCaptain(false);
       resource.setJerseyNumber("18");
       resource.setPosition(Position.ATTACK);
+      resource.setParentReleaseReceivedOn("2014-10-12");
+      resource.setParentReleaseSentOn("2014-10-05");
+      resource.setReleased(true);
       return resource;
    }
 
@@ -339,7 +339,7 @@ public class TestUtils {
     */
    public static PersonForm newPersonForm() {
       final PersonForm form = new PersonForm();
-      form.setBirthdate(LocalDate.parse("1988-09-30"));
+      form.setBirthdate("1988-09-30");
       form.setCollege("Colgate University");
       form.setDominantHand(DominantHand.RIGHT);
       form.setFirstName("Stanley");
@@ -347,9 +347,6 @@ public class TestUtils {
       form.setLastName("Caple");
       form.setMiddleName("NMI");
       form.setNickname("Stan");
-      form.setParentReleaseReceivedOn(LocalDate.parse("2014-10-12"));
-      form.setParentReleaseSentOn(LocalDate.parse("2014-10-05"));
-      form.setReleased(true);
       return form;
    }
 
@@ -364,6 +361,9 @@ public class TestUtils {
       form.setCaptain(false);
       form.setJerseyNumber("18");
       form.setPosition(Position.ATTACK);
+      form.setParentReleaseReceivedOn("2014-10-12");
+      form.setParentReleaseSentOn("2014-10-05");
+      form.setReleased(true);
       return form;
    }
 
@@ -542,9 +542,6 @@ public class TestUtils {
       person.setMiddleName("NMI");
       person.setModifiedAt(LocalDateTime.now());
       person.setNickname("Stan");
-      person.setParentReleased(true);
-      person.setParentReleaseSentOn(LocalDate.parse("2014-10-05"));
-      person.setParentReleaseReceivedOn(LocalDate.parse("2014-10-12"));
 
       return person;
    }
@@ -622,6 +619,9 @@ public class TestUtils {
       player.setPosition(Position.ATTACK);
       player.setRole(Role.ATHLETE);
       player.setStatus(PlayerStatus.ACTIVE);
+      player.setParentReleased(true);
+      player.setParentReleaseSentOn(LocalDate.parse("2014-10-05"));
+      player.setParentReleaseReceivedOn(LocalDate.parse("2014-10-12"));
 
       teamSeason.addPlayerToRoster(player);
 

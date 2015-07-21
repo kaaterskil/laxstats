@@ -1,24 +1,17 @@
 package laxstats.web.players;
 
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
-
 import javax.validation.constraints.NotNull;
 
 import laxstats.api.players.PlayerStatus;
 import laxstats.api.players.Position;
 import laxstats.api.players.Role;
-import laxstats.api.utils.Constants;
 
 import org.joda.time.LocalDate;
-import org.springframework.format.annotation.DateTimeFormat;
 
 /**
- * {@code PlayerForm} contains user-defined information to create or update a player.
+ * {@code PlayerResource} represents a player resource for remote clients.
  */
-public class PlayerForm implements Serializable, PlayerResource {
-   private static final long serialVersionUID = -1822868866195304483L;
+public class PlayerResourceImpl implements PlayerResource {
 
    private String id;
 
@@ -36,21 +29,57 @@ public class PlayerForm implements Serializable, PlayerResource {
 
    private String jerseyNumber;
    private Position position;
-   private boolean captain;
-   private int depth = 1;
+   private boolean captain = false;
+   private int depth;
    private int height;
    private int weight;
    private boolean released;
+   private String parentReleaseSentOn;
+   private String parentReleaseReceivedOn;
 
-   @DateTimeFormat(pattern = Constants.PATTERN_DATE_FORMAT)
-   private LocalDate parentReleaseSentOn;
+   /**
+    * Creates a {@code PlayerResource} with the given information.
+    *
+    * @param id
+    * @param person
+    * @param teamSeason
+    * @param role
+    * @param status
+    * @param jerseyNumber
+    * @param position
+    * @param captain
+    * @param depth
+    * @param height
+    * @param weight
+    * @param released
+    * @param parentReleaseSentOn
+    * @param parentReleaseReceivedOn
+    */
+   public PlayerResourceImpl(String id, String person, String teamSeason, Role role,
+      PlayerStatus status, String jerseyNumber, Position position, boolean captain, int depth,
+      int height, int weight, boolean released, String parentReleaseSentOn,
+      String parentReleaseReceivedOn) {
+      this.id = id;
+      this.person = person;
+      this.teamSeason = teamSeason;
+      this.role = role;
+      this.status = status;
+      this.jerseyNumber = jerseyNumber;
+      this.position = position;
+      this.captain = captain;
+      this.depth = depth;
+      this.height = height;
+      this.weight = weight;
+      this.released = released;
+      this.parentReleaseSentOn = parentReleaseSentOn;
+      this.parentReleaseReceivedOn = parentReleaseReceivedOn;
+   }
 
-   @DateTimeFormat(pattern = Constants.PATTERN_DATE_FORMAT)
-   private LocalDate parentReleaseReceivedOn;
-
-   private List<Role> roles;
-   private List<PlayerStatus> statuses;
-   private List<Position> positions;
+   /**
+    * Creates an empty {@code PlayerResource} for internal use.
+    */
+   public PlayerResourceImpl() {
+   }
 
    /**
     * {@inheritDoc}
@@ -81,6 +110,7 @@ public class PlayerForm implements Serializable, PlayerResource {
     */
    @Override
    public void setPerson(String person) {
+      assert person != null;
       this.person = person;
    }
 
@@ -97,6 +127,7 @@ public class PlayerForm implements Serializable, PlayerResource {
     */
    @Override
    public void setTeamSeason(String teamSeason) {
+      assert teamSeason != null;
       this.teamSeason = teamSeason;
    }
 
@@ -113,6 +144,7 @@ public class PlayerForm implements Serializable, PlayerResource {
     */
    @Override
    public void setRole(Role role) {
+      assert role != null;
       this.role = role;
    }
 
@@ -129,6 +161,7 @@ public class PlayerForm implements Serializable, PlayerResource {
     */
    @Override
    public void setStatus(PlayerStatus status) {
+      assert status != null;
       this.status = status;
    }
 
@@ -181,9 +214,7 @@ public class PlayerForm implements Serializable, PlayerResource {
    }
 
    /**
-    * Returns the player's depth on the roster, or zero if not known.
-    *
-    * @return
+    * {@inheritDoc}
     */
    @Override
    public int getDepth() {
@@ -251,7 +282,7 @@ public class PlayerForm implements Serializable, PlayerResource {
     */
    @Override
    public String getParentReleaseSentOn() {
-      return parentReleaseSentOn == null ? null : parentReleaseSentOn.toString();
+      return parentReleaseSentOn;
    }
 
    /**
@@ -259,8 +290,23 @@ public class PlayerForm implements Serializable, PlayerResource {
     */
    @Override
    public void setParentReleaseSentOn(String parentReleaseSentOn) {
-      this.parentReleaseSentOn =
-         parentReleaseSentOn == null ? null : LocalDate.parse(parentReleaseSentOn);
+      this.parentReleaseSentOn = parentReleaseSentOn;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public LocalDate getParentReleaseSentOnAsLocalDate() {
+      return parentReleaseSentOn == null ? null : LocalDate.parse(parentReleaseSentOn);
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public void setParentReleaseSentOnFromLocalDate(LocalDate parentReleaseSentOn) {
+      this.parentReleaseSentOn = parentReleaseSentOn == null ? null : parentReleaseSentOn.toString();
    }
 
    /**
@@ -268,7 +314,7 @@ public class PlayerForm implements Serializable, PlayerResource {
     */
    @Override
    public String getParentReleaseReceivedOn() {
-      return parentReleaseReceivedOn == null ? null : parentReleaseReceivedOn.toString();
+      return parentReleaseReceivedOn;
    }
 
    /**
@@ -276,51 +322,23 @@ public class PlayerForm implements Serializable, PlayerResource {
     */
    @Override
    public void setParentReleaseReceivedOn(String parentReleaseReceivedOn) {
-      this.parentReleaseReceivedOn =
-         parentReleaseReceivedOn == null ? null : LocalDate.parse(parentReleaseReceivedOn);
-   }
-
-   @Override
-   public LocalDate getParentReleaseSentOnAsLocalDate() {
-      return parentReleaseSentOn;
-   }
-
-   @Override
-   public void setParentReleaseSentOnFromLocalDate(LocalDate parentReleaseSentOn) {
-      this.parentReleaseSentOn = parentReleaseSentOn;
-
-   }
-
-   @Override
-   public LocalDate getParentReleaseReceivedOnAsLocalDate() {
-      return parentReleaseReceivedOn;
-   }
-
-   @Override
-   public void setParentReleaseReceivedOnFromLocalDate(LocalDate parentReleaseReceivedOn) {
       this.parentReleaseReceivedOn = parentReleaseReceivedOn;
    }
 
-   /*---------- Select element option values ----------*/
-
-   public List<Role> getRoles() {
-      if (roles == null) {
-         roles = Arrays.asList(Role.values());
-      }
-      return roles;
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public LocalDate getParentReleaseReceivedOnAsLocalDate() {
+      return parentReleaseReceivedOn == null ? null : LocalDate.parse(parentReleaseReceivedOn);
    }
 
-   public List<PlayerStatus> getStatuses() {
-      if (statuses == null) {
-         statuses = Arrays.asList(PlayerStatus.values());
-      }
-      return statuses;
-   }
-
-   public List<Position> getPositions() {
-      if (positions == null) {
-         positions = Arrays.asList(Position.values());
-      }
-      return positions;
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public void setParentReleaseReceivedOnFromLocalDate(LocalDate parentReleaseReceivedOn) {
+      this.parentReleaseReceivedOn =
+         parentReleaseReceivedOn == null ? null : parentReleaseReceivedOn.toString();
    }
 }

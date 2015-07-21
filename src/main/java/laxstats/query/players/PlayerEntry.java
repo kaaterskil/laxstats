@@ -22,6 +22,7 @@ import laxstats.query.teamSeasons.TeamSeasonEntry;
 import laxstats.query.users.UserEntry;
 
 import org.hibernate.annotations.Type;
+import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
 /**
@@ -78,6 +79,13 @@ public class PlayerEntry implements Serializable {
    private int depth;
    private int height;
    private int weight;
+   private boolean isParentReleased = false;
+
+   @Type(type = Constants.LOCAL_DATE_DATABASE_TYPE)
+   private LocalDate parentReleaseSentOn;
+
+   @Type(type = Constants.LOCAL_DATE_DATABASE_TYPE)
+   private LocalDate parentReleaseReceivedOn;
 
    @Type(type = Constants.LOCAL_DATETIME_DATABASE_TYPE)
    private LocalDateTime createdAt;
@@ -309,6 +317,60 @@ public class PlayerEntry implements Serializable {
     */
    public void setWeight(int weight) {
       this.weight = weight;
+   }
+
+   /**
+    * Returns true if this person has a parental release, false otherwise.
+    *
+    * @return
+    */
+   public boolean isParentReleased() {
+      return isParentReleased;
+   }
+
+   /**
+    * Sets a flag to determine if the person has a parental release.
+    *
+    * @param isParentReleased
+    */
+   public void setParentReleased(boolean isParentReleased) {
+      this.isParentReleased = isParentReleased;
+   }
+
+   /**
+    * Returns the date this person's parental release request was sent, or null.
+    *
+    * @return
+    */
+   public LocalDate getParentReleaseSentOn() {
+      return parentReleaseSentOn;
+   }
+
+   /**
+    * Sets the date this person's parental release request was sent. Use null if not used or known.
+    *
+    * @param parentReleaseSentOn
+    */
+   public void setParentReleaseSentOn(LocalDate parentReleaseSentOn) {
+      this.parentReleaseSentOn = parentReleaseSentOn;
+   }
+
+   /**
+    * Returns the date this person's parental release was received, or null.
+    *
+    * @return
+    */
+   public LocalDate getParentReleaseReceivedOn() {
+      return parentReleaseReceivedOn;
+   }
+
+   /**
+    * Sets the date this person's parental release was received. Use null if not used or known.
+    *
+    * @param parentReleaseReceivedOn
+    */
+   public void setParentReleaseReceivedOn(LocalDate parentReleaseReceivedOn) {
+      this.parentReleaseReceivedOn = parentReleaseReceivedOn;
    }
 
    /**

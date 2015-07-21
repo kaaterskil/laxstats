@@ -12,6 +12,7 @@ import laxstats.api.players.Role;
 import org.axonframework.eventsourcing.annotation.AbstractAnnotatedAggregateRoot;
 import org.axonframework.eventsourcing.annotation.AggregateIdentifier;
 import org.axonframework.eventsourcing.annotation.EventSourcingHandler;
+import org.joda.time.LocalDate;
 
 /**
  * {@code Player} represents a domain object model of a person assigned to a particular team season
@@ -35,6 +36,9 @@ public class Player extends AbstractAnnotatedAggregateRoot<PlayerId> {
    private int depth;
    private int height;
    private int weight;
+   private boolean released = false;
+   private LocalDate parentReleaseSentOn;
+   private LocalDate parentReleaseReceivedOn;
 
    /**
     * Creates a {@code Player} and applies the given aggregate identifier and player information.
@@ -79,8 +83,10 @@ public class Player extends AbstractAnnotatedAggregateRoot<PlayerId> {
       final PlayerDTO dto = event.getPlayerDTO();
 
       id = identifier;
-      personId = dto.getPerson().getId();
-      teamSeasonId = dto.getTeam().getId();
+      personId = dto.getPerson()
+         .getId();
+      teamSeasonId = dto.getTeam()
+         .getId();
       role = dto.getRole();
       status = dto.getStatus();
       jerseyNumber = dto.getJerseyNumber();
@@ -89,6 +95,9 @@ public class Player extends AbstractAnnotatedAggregateRoot<PlayerId> {
       depth = dto.getDepth();
       height = dto.getHeight();
       weight = dto.getWeight();
+      released = dto.isParentReleased();
+      parentReleaseSentOn = dto.getParentReleaseSentOn();
+      parentReleaseReceivedOn = dto.getParentReleaseReceivedOn();
    }
 
    /**
@@ -100,8 +109,10 @@ public class Player extends AbstractAnnotatedAggregateRoot<PlayerId> {
    protected void handle(PlayerUpdated event) {
       final PlayerDTO dto = event.getPlayerDTO();
 
-      personId = dto.getPerson().getId();
-      teamSeasonId = dto.getTeam().getId();
+      personId = dto.getPerson()
+         .getId();
+      teamSeasonId = dto.getTeam()
+         .getId();
       role = dto.getRole();
       status = dto.getStatus();
       jerseyNumber = dto.getJerseyNumber();
@@ -110,6 +121,9 @@ public class Player extends AbstractAnnotatedAggregateRoot<PlayerId> {
       depth = dto.getDepth();
       height = dto.getHeight();
       weight = dto.getWeight();
+      released = dto.isParentReleased();
+      parentReleaseSentOn = dto.getParentReleaseSentOn();
+      parentReleaseReceivedOn = dto.getParentReleaseReceivedOn();
    }
 
    /**
@@ -219,5 +233,32 @@ public class Player extends AbstractAnnotatedAggregateRoot<PlayerId> {
     */
    public int getWeight() {
       return weight;
+   }
+
+   /**
+    * Returns if the person has a parental release, false otherwise.
+    *
+    * @return
+    */
+   public boolean isReleased() {
+      return released;
+   }
+
+   /**
+    * Returns the date the person's parental release was sent.
+    *
+    * @return
+    */
+   public LocalDate getParentReleaseSentOn() {
+      return parentReleaseSentOn;
+   }
+
+   /**
+    * Returns the date the person's parental release was received.
+    *
+    * @return
+    */
+   public LocalDate getParentReleaseReceivedOn() {
+      return parentReleaseReceivedOn;
    }
 }

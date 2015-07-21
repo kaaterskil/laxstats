@@ -32,7 +32,7 @@ public class PersonListener {
 
    /**
     * Creates and persists a new person from information contained in the given event.
-    * 
+    *
     * @param event
     */
    @EventHandler
@@ -40,7 +40,8 @@ public class PersonListener {
       final PersonDTO dto = event.getPersonDTO();
 
       final PersonEntry aggregate = new PersonEntry();
-      aggregate.setId(event.getPersonId().toString());
+      aggregate.setId(event.getPersonId()
+         .toString());
       aggregate.setPrefix(dto.getPrefix());
       aggregate.setFirstName(dto.getFirstName());
       aggregate.setMiddleName(dto.getMiddleName());
@@ -51,9 +52,6 @@ public class PersonListener {
       aggregate.setGender(dto.getGender());
       aggregate.setDominantHand(dto.getDominantHand());
       aggregate.setBirthdate(dto.getBirthdate());
-      aggregate.setParentReleased(dto.isParentReleased());
-      aggregate.setParentReleaseSentOn(dto.getParentReleaseSentOn());
-      aggregate.setParentReleaseReceivedOn(dto.getParentReleaseReceivedOn());
       aggregate.setCollege(dto.getCollege());
       aggregate.setCreatedAt(dto.getCreatedAt());
       aggregate.setCreatedBy(dto.getCreatedBy());
@@ -65,12 +63,13 @@ public class PersonListener {
 
    /**
     * Updates and persists changes to a person with information contained in the given event.
-    * 
+    *
     * @param event
     */
    @EventHandler
    protected void handle(PersonUpdated event) {
-      final String id = event.getPersonId().toString();
+      final String id = event.getPersonId()
+         .toString();
       final PersonDTO dto = event.getPersonDTO();
 
       final PersonEntry aggregate = personRepository.findOne(id);
@@ -84,9 +83,6 @@ public class PersonListener {
       aggregate.setGender(dto.getGender());
       aggregate.setDominantHand(dto.getDominantHand());
       aggregate.setBirthdate(dto.getBirthdate());
-      aggregate.setParentReleased(dto.isParentReleased());
-      aggregate.setParentReleaseSentOn(dto.getParentReleaseSentOn());
-      aggregate.setParentReleaseReceivedOn(dto.getParentReleaseReceivedOn());
       aggregate.setCollege(dto.getCollege());
       aggregate.setModifiedAt(dto.getModifiedAt());
       aggregate.setModifiedBy(dto.getModifiedBy());
@@ -94,12 +90,13 @@ public class PersonListener {
 
    /**
     * Deletes the person matching the identifier contained in the given event.
-    * 
+    *
     * @param event
     */
    @EventHandler
    protected void handle(PersonDeleted event) {
-      final String id = event.getPersonId().toString();
+      final String id = event.getPersonId()
+         .toString();
       personRepository.delete(id);
    }
 
@@ -107,13 +104,14 @@ public class PersonListener {
 
    /**
     * Creates and persists an address from information contained in the given event.
-    * 
+    *
     * @param event
     */
    @EventHandler
    protected void handle(AddressAdded event) {
       final AddressDTO dto = event.getAddress();
-      final PersonEntry aggregate = personRepository.findOne(event.getPersonId().toString());
+      final PersonEntry aggregate = personRepository.findOne(event.getPersonId()
+         .toString());
 
       final AddressEntry address = new AddressEntry();
       address.setId(dto.getId());
@@ -136,7 +134,7 @@ public class PersonListener {
 
    /**
     * Updates and persists changes to an address with information contained in the given event.
-    * 
+    *
     * @param event
     */
    @EventHandler
@@ -162,12 +160,13 @@ public class PersonListener {
 
    /**
     * Deletes the address matching the identifier contained in the given event.
-    * 
+    *
     * @param event
     */
    @EventHandler
    protected void handle(AddressDeleted event) {
-      final String personId = event.getPersonId().toString();
+      final String personId = event.getPersonId()
+         .toString();
       final PersonEntry entity = personRepository.findOne(personId);
       final AddressEntry address = entity.getAddress(event.getAddressId());
 
@@ -184,7 +183,8 @@ public class PersonListener {
     */
    @EventHandler
    protected void handle(ContactAdded event) {
-      final String personId = event.getPersonId().toString();
+      final String personId = event.getPersonId()
+         .toString();
       final ContactDTO dto = event.getContact();
       final PersonEntry entity = personRepository.findOne(personId);
 
@@ -210,7 +210,8 @@ public class PersonListener {
     */
    @EventHandler
    protected void handle(ContactChanged event) {
-      final String personId = event.getPersonId().toString();
+      final String personId = event.getPersonId()
+         .toString();
       final ContactDTO dto = event.getContact();
       final PersonEntry entity = personRepository.findOne(personId);
 
@@ -232,7 +233,8 @@ public class PersonListener {
     */
    @EventHandler
    protected void handle(ContactDeleted event) {
-      final String personId = event.getPersonId().toString();
+      final String personId = event.getPersonId()
+         .toString();
       final PersonEntry entity = personRepository.findOne(personId);
       final ContactEntry contact = entity.getContact(event.getContactId());
 
