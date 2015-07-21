@@ -41,7 +41,7 @@ public class AddressValidatorTests {
 
    @Test
    public void supports() {
-      assertTrue(validator.supports(AddressResource.class));
+      assertTrue(validator.supports(AddressResourceImpl.class));
       assertTrue(validator.supports(AddressForm.class));
       assertFalse(validator.supports(Object.class));
    }
@@ -52,7 +52,7 @@ public class AddressValidatorTests {
       Mockito.when(zipCodeQueryRepository.exists("01776")).thenReturn(true);
       Mockito.when(personQueryRepository.findOne(personId)).thenReturn(TestUtils.getPerson());
 
-      final AddressResource resource = TestUtils.newAddressResource();
+      final AddressResourceImpl resource = TestUtils.newAddressResource();
       resource.setType(null);
       resource.setPersonId(personId);
 
@@ -82,7 +82,7 @@ public class AddressValidatorTests {
       Mockito.when(zipCodeQueryRepository.exists("01776")).thenReturn(true);
       Mockito.when(personQueryRepository.findOne(personId)).thenReturn(TestUtils.getPerson());
 
-      final AddressResource resource = TestUtils.newAddressResource();
+      final AddressResourceImpl resource = TestUtils.newAddressResource();
       resource.setCity(null);
       resource.setPersonId(personId);
 
@@ -114,7 +114,7 @@ public class AddressValidatorTests {
       Mockito.when(zipCodeQueryRepository.exists("01776")).thenReturn(true);
       Mockito.when(personQueryRepository.findOne(personId)).thenReturn(TestUtils.getPerson());
 
-      final AddressResource resource = TestUtils.newAddressResource();
+      final AddressResourceImpl resource = TestUtils.newAddressResource();
       resource.setPersonId(personId);
 
       final BindException errors = new BindException(resource, "addressResource");
@@ -139,7 +139,7 @@ public class AddressValidatorTests {
    @Test
    public void newResourceDuplicateAddress() {
       final String personId = IdentifierFactory.getInstance().generateIdentifier();
-      final AddressResource resource = TestUtils.newAddressResource();
+      final AddressResourceImpl resource = TestUtils.newAddressResource();
       resource.setPersonId(personId);
 
       Mockito.when(zipCodeQueryRepository.exists("01776")).thenReturn(true);
@@ -175,7 +175,7 @@ public class AddressValidatorTests {
    @Test
    public void newAddressResourceButPrimaryAlreadyAssigned() {
       final String personId = IdentifierFactory.getInstance().generateIdentifier();
-      final AddressResource resource = TestUtils.newAddressResource();
+      final AddressResourceImpl resource = TestUtils.newAddressResource();
       resource.setAddress1("123 Main Street");
       resource.setPersonId(personId);
 
@@ -196,7 +196,7 @@ public class AddressValidatorTests {
       final String personId = IdentifierFactory.getInstance().generateIdentifier();
       Mockito.when(personQueryRepository.findOne(personId)).thenReturn(TestUtils.getPerson());
 
-      final AddressResource resource = TestUtils.newAddressResource();
+      final AddressResourceImpl resource = TestUtils.newAddressResource();
       resource.setPersonId(personId);
       resource.setPostalCode("0000");
 
@@ -226,7 +226,7 @@ public class AddressValidatorTests {
       final PersonEntry person = TestUtils.getPersonWithPrimaryAddress();
       final String addressId = person.getAddresses().get(0).getId();
 
-      final AddressResource resource = TestUtils.newAddressResource();
+      final AddressResourceImpl resource = TestUtils.newAddressResource();
       resource.setId(addressId);
       resource.setAddress1("This is a duplicate address");
       resource.setPrimary(false);
@@ -279,7 +279,7 @@ public class AddressValidatorTests {
       secondAddress.setAddressType(AddressType.VACATION);
       person.addAddress(secondAddress);
 
-      final AddressResource resource = TestUtils.newAddressResource();
+      final AddressResourceImpl resource = TestUtils.newAddressResource();
       resource.setId(addressId);
       resource.setPrimary(true);
       resource.setType(AddressType.VACATION);
@@ -332,7 +332,7 @@ public class AddressValidatorTests {
       final PersonEntry person = TestUtils.getPersonWithPrimaryAddress();
       final String addressId = person.getAddresses().get(0).getId();
 
-      final AddressResource resource = TestUtils.newAddressResource();
+      final AddressResourceImpl resource = TestUtils.newAddressResource();
       resource.setId(addressId);
       resource.setPrimary(false);
       resource.setPersonId(person.getId());

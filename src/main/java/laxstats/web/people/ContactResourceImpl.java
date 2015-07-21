@@ -1,9 +1,5 @@
 package laxstats.web.people;
 
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
-
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -11,10 +7,9 @@ import laxstats.api.people.ContactMethod;
 import laxstats.api.utils.Constants;
 
 /**
- * {@code ContactForm} contains user-defined information with which to create or update a contact.
+ * {@code ContactResource} represents a contact resource for remote clients.
  */
-public class ContactForm implements Serializable, ContactResource {
-   private static final long serialVersionUID = 5552593715712624548L;
+public class ContactResourceImpl implements ContactResource {
 
    private String id;
 
@@ -25,14 +20,37 @@ public class ContactForm implements Serializable, ContactResource {
    private ContactMethod method;
 
    @NotNull
-   @Size(min = 3, max = Constants.MAX_LENGTH_CONTACT_VALUE)
+   @Size(min = Constants.MIN_LENGTH_STRING, max = Constants.MAX_LENGTH_CONTACT_VALUE)
    private String value;
 
    private boolean isPrimary = false;
-
    private boolean doNotUse = false;
 
-   private List<ContactMethod> contactMethods;
+   /**
+    * Creates a {@code ContactResource} with the given information.
+    *
+    * @param id
+    * @param personId
+    * @param method
+    * @param value
+    * @param isPrimary
+    * @param doNotUse
+    */
+   public ContactResourceImpl(String id, String personId, ContactMethod method, String value,
+      boolean isPrimary, boolean doNotUse) {
+      this.id = id;
+      this.personId = personId;
+      this.method = method;
+      this.value = value;
+      this.isPrimary = isPrimary;
+      this.doNotUse = doNotUse;
+   }
+
+   /**
+    * Creates an empty {@code ContactResource}.
+    */
+   public ContactResourceImpl() {
+   }
 
    /**
     * {@inheritDoc}
@@ -131,13 +149,6 @@ public class ContactForm implements Serializable, ContactResource {
    public void setValue(String value) {
       assert value != null;
       this.value = value;
-   }
-
-   public List<ContactMethod> getContactMethods() {
-      if (contactMethods == null) {
-         contactMethods = Arrays.asList(ContactMethod.values());
-      }
-      return contactMethods;
    }
 
 }

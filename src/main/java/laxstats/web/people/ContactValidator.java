@@ -18,7 +18,8 @@ import org.springframework.validation.Validator;
 @Service
 public class ContactValidator implements Validator {
    private static final Logger logger = LoggerFactory.getLogger(ContactValidator.class);
-   private static final String PACKAGE_NAME = ContactValidator.class.getPackage().getName();
+   private static final String PACKAGE_NAME = ContactValidator.class.getPackage()
+      .getName();
 
    PersonQueryRepository personQueryRepository;
 
@@ -29,29 +30,30 @@ public class ContactValidator implements Validator {
 
    @Override
    public boolean supports(Class<?> clazz) {
-      return ContactResource.class.equals(clazz) || ContactForm.class.equals(clazz);
+      return ContactResource.class.isAssignableFrom(clazz);
    }
 
    @Override
    public void validate(Object target, Errors errors) {
       final String proc = PACKAGE_NAME + ".validate.";
+      final ContactResource resource = (ContactResource)target;
 
       logger.debug("Entering: " + proc + "10");
 
       // Validate mandatory arguments
-      checkMandatoryArgs(target, errors);
+      checkMandatoryArgs(resource, errors);
       logger.debug(proc + "20");
 
       // Validate method/value combination
-      checkDuplicate(target, errors);
+      checkDuplicate(resource, errors);
       logger.debug(proc + "30");
 
       // Validate primary designation
-      checkPrimary(target, errors);
+      checkPrimary(resource, errors);
       logger.debug(proc + "40");
 
       // Validate value
-      checkValue(target, errors);
+      checkValue(resource, errors);
       logger.debug("Leaving: " + proc + "50");
    }
 
@@ -61,21 +63,10 @@ public class ContactValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkMandatoryArgs(Object target, Errors errors) {
+   private void checkMandatoryArgs(ContactResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkMandatoryArgs.";
-      ContactMethod method = null;
-      String value = null;
-
-      if (target instanceof ContactResource) {
-         final ContactResource resource = (ContactResource)target;
-         method = resource.getMethod();
-         value = resource.getValue();
-      }
-      else if (target instanceof ContactForm) {
-         final ContactForm form = (ContactForm)target;
-         method = form.getMethod();
-         value = form.getValue();
-      }
+      final ContactMethod method = target.getMethod();
+      final String value = target.getValue();
 
       logger.debug("Entering: " + proc + "10");
 
@@ -96,28 +87,13 @@ public class ContactValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkDuplicate(Object target, Errors errors) {
+   private void checkDuplicate(ContactResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkDuplicate.";
-      String contactId = null;
-      ContactMethod method = null;
-      String value = null;
-      String personId = null;
+      final String contactId = target.getId();
+      final ContactMethod method = target.getMethod();
+      final String value = target.getValue();
+      final String personId = target.getPersonId();
       int found = 0;
-
-      if (target instanceof ContactResource) {
-         final ContactResource resource = (ContactResource)target;
-         contactId = resource.getId();
-         personId = resource.getPersonId();
-         method = resource.getMethod();
-         value = resource.getValue();
-      }
-      else if (target instanceof ContactForm) {
-         final ContactForm form = (ContactForm)target;
-         contactId = form.getId();
-         personId = form.getPersonId();
-         method = form.getMethod();
-         value = form.getValue();
-      }
 
       logger.debug("Entering: " + proc + "10");
 
@@ -132,7 +108,9 @@ public class ContactValidator implements Validator {
 
          final PersonEntry person = personQueryRepository.findOne(personId);
          final ContactEntry contact = person.getContact(contactId);
-         if (!contact.getMethod().equals(method) || !contact.getValue().equalsIgnoreCase(value)) {
+         if (!contact.getMethod()
+            .equals(method) || !contact.getValue()
+            .equalsIgnoreCase(value)) {
             logger.debug(proc + "40");
 
             found = personQueryRepository.updateContact(method, value, personId, contactId);
@@ -160,24 +138,11 @@ public class ContactValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkPrimary(Object target, Errors errors) {
+   private void checkPrimary(ContactResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkPrimary.";
-      String contactId = null;
-      String personId = null;
-      boolean isPrimary = false;
-
-      if (target instanceof ContactResource) {
-         final ContactResource resource = (ContactResource)target;
-         contactId = resource.getId();
-         personId = resource.getPersonId();
-         isPrimary = resource.isPrimary();
-      }
-      else if (target instanceof ContactForm) {
-         final ContactForm form = (ContactForm)target;
-         contactId = form.getId();
-         personId = form.getPersonId();
-         isPrimary = form.isPrimary();
-      }
+      final String contactId = target.getId();
+      final String personId = target.getPersonId();
+      final boolean isPrimary = target.isPrimary();
 
       logger.debug("Entering: " + proc + "10");
 
@@ -197,7 +162,8 @@ public class ContactValidator implements Validator {
 
             if (isUpdating) {
                logger.debug(proc + "50");
-               if (oldPrimaryContact.isPrimary() && !oldPrimaryContact.getId().equals(contactId)) {
+               if (oldPrimaryContact.isPrimary() && !oldPrimaryContact.getId()
+                  .equals(contactId)) {
                   errors.rejectValue("primary", "contact.primary.multiplePrimary");
                }
             }
@@ -219,28 +185,13 @@ public class ContactValidator implements Validator {
     * @param form
     * @param errors
     */
-   private void checkValue(Object target, Errors errors) {
+   private void checkValue(ContactResource target, Errors errors) {
       final String proc = PACKAGE_NAME + ".checkValue.";
-      String contactId = null;
-      ContactMethod method = null;
-      String value = null;
-      String personId = null;
+      final String contactId = target.getId();
+      final ContactMethod method = target.getMethod();
+      final String value = target.getValue();
+      final String personId = target.getPersonId();
       boolean doValidation = false;
-
-      if (target instanceof ContactResource) {
-         final ContactResource resource = (ContactResource)target;
-         contactId = resource.getId();
-         personId = resource.getPersonId();
-         method = resource.getMethod();
-         value = resource.getValue();
-      }
-      else if (target instanceof ContactForm) {
-         final ContactForm form = (ContactForm)target;
-         contactId = form.getId();
-         personId = form.getPersonId();
-         method = form.getMethod();
-         value = form.getValue();
-      }
 
       logger.debug("Entering: " + proc + "10");
 
@@ -255,7 +206,8 @@ public class ContactValidator implements Validator {
 
          final PersonEntry person = personQueryRepository.findOne(personId);
          final ContactEntry contact = person.getContact(contactId);
-         if (!contact.getValue().equalsIgnoreCase(value)) {
+         if (!contact.getValue()
+            .equalsIgnoreCase(value)) {
             logger.debug(proc + "40");
             doValidation = true;
          }

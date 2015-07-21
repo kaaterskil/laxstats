@@ -28,7 +28,7 @@ public class ContactValidatorTests {
 
    @Test
    public void supports() {
-      assertTrue(validator.supports(ContactResource.class));
+      assertTrue(validator.supports(ContactResourceImpl.class));
       assertTrue(validator.supports(ContactForm.class));
       assertFalse(validator.supports(Object.class));
    }
@@ -37,7 +37,7 @@ public class ContactValidatorTests {
    public void contactResourceMissingMethod() {
       final PersonEntry person = TestUtils.getPerson();
 
-      final ContactResource resource = TestUtils.newContactResource();
+      final ContactResourceImpl resource = TestUtils.newContactResource();
       resource.setPersonId(person.getId());
       resource.setMethod(null);
 
@@ -65,7 +65,7 @@ public class ContactValidatorTests {
    @Test
    public void contactResourceMissingValue() {
       final PersonEntry person = TestUtils.getPerson();
-      final ContactResource resource = TestUtils.newContactResource();
+      final ContactResourceImpl resource = TestUtils.newContactResource();
       resource.setPersonId(person.getId());
       resource.setValue("   ");
 
@@ -95,7 +95,7 @@ public class ContactValidatorTests {
    @Test
    public void newContactResourceIsValid() {
       final PersonEntry person = TestUtils.getPerson();
-      final ContactResource resource = TestUtils.newContactResource();
+      final ContactResourceImpl resource = TestUtils.newContactResource();
       resource.setPersonId(person.getId());
 
       Mockito.when(personQueryRepository.findOne(resource.getPersonId())).thenReturn(person);
@@ -121,7 +121,7 @@ public class ContactValidatorTests {
    @Test
    public void newResourceDuplicateContact() {
       final PersonEntry person = TestUtils.getPerson();
-      final ContactResource resource = TestUtils.newContactResource();
+      final ContactResourceImpl resource = TestUtils.newContactResource();
       resource.setPersonId(person.getId());
 
       Mockito.when(personQueryRepository.findOne(resource.getPersonId())).thenReturn(person);
@@ -153,7 +153,7 @@ public class ContactValidatorTests {
    @Test
    public void newResourceDuplicatePrimaryContact() {
       final PersonEntry person = TestUtils.getPersonWithPrimaryContact();
-      final ContactResource resource = TestUtils.newContactResource();
+      final ContactResourceImpl resource = TestUtils.newContactResource();
       resource.setPersonId(person.getId());
 
       Mockito.when(personQueryRepository.findOne(resource.getPersonId())).thenReturn(person);
@@ -169,7 +169,7 @@ public class ContactValidatorTests {
    @Test
    public void newContactResourceInvalidValue() {
       final PersonEntry person = TestUtils.getPerson();
-      final ContactResource resource = TestUtils.newContactResource();
+      final ContactResourceImpl resource = TestUtils.newContactResource();
       resource.setPersonId(person.getId());
       resource.setValue("555-123");
 
@@ -201,7 +201,7 @@ public class ContactValidatorTests {
       final PersonEntry person = TestUtils.getPersonWithPrimaryContact();
       person.getContacts().get(0).setPrimary(true);
 
-      final ContactResource resource = TestUtils.newContactResource();
+      final ContactResourceImpl resource = TestUtils.newContactResource();
       resource.setPersonId(person.getId());
       resource.setId(person.primaryContact().getId());
       resource.setValue("888-555-1234");
@@ -248,7 +248,7 @@ public class ContactValidatorTests {
       secondContact.setValue("212-555-1212");
       person.addContact(secondContact);
 
-      final ContactResource resource = TestUtils.newContactResource();
+      final ContactResourceImpl resource = TestUtils.newContactResource();
       resource.setPersonId(person.getId());
       resource.setPrimary(false);
       resource.setId(contactId);
@@ -302,7 +302,7 @@ public class ContactValidatorTests {
       secondContact.setPrimary(false);
       person.addContact(secondContact);
 
-      final ContactResource resource = TestUtils.newContactResource();
+      final ContactResourceImpl resource = TestUtils.newContactResource();
       resource.setPersonId(person.getId());
       secondContact.setValue("212-555-1212");
       resource.setPrimary(true);
@@ -360,7 +360,7 @@ public class ContactValidatorTests {
       secondContact.setPrimary(false);
       person.addContact(secondContact);
 
-      final ContactResource resource = TestUtils.newContactResource();
+      final ContactResourceImpl resource = TestUtils.newContactResource();
       resource.setPersonId(person.getId());
       secondContact.setValue("212-555");
       resource.setId(contactId);

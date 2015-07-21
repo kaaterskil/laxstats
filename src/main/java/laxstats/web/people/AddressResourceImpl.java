@@ -1,9 +1,5 @@
 package laxstats.web.people;
 
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
-
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -13,11 +9,9 @@ import laxstats.api.people.AddressType;
 import laxstats.api.utils.Constants;
 
 /**
- * {@code AddressForm} contains user-defined information with which to create and update a postal
- * address.
+ * {@code AddressResource} represents a postal address resource for remote clients.
  */
-public class AddressForm implements Serializable, AddressResource {
-   private static final long serialVersionUID = -3473572483235250762L;
+public class AddressResourceImpl implements AddressResource {
 
    private String id;
 
@@ -34,9 +28,10 @@ public class AddressForm implements Serializable, AddressResource {
    private String address2;
 
    @NotNull
-   @Size(min = 3, max = Constants.MAX_LENGTH_CITY)
+   @Size(min = Constants.MIN_LENGTH_STRING, max = Constants.MAX_LENGTH_CITY)
    private String city;
 
+   @NotNull
    private Region region;
 
    @Size(max = Constants.MAX_LENGTH_LONG_POSTAL_CODE)
@@ -47,8 +42,40 @@ public class AddressForm implements Serializable, AddressResource {
 
    private boolean doNotUse = false;
 
-   private List<AddressType> addressTypes;
-   private List<Region> regions;
+   /**
+    * Creates an {@code AddressResource} with the given information.
+    *
+    * @param id
+    * @param personId
+    * @param type
+    * @param address1
+    * @param address2
+    * @param city
+    * @param region
+    * @param postalCode
+    * @param primary
+    * @param doNotUse
+    */
+   public AddressResourceImpl(String id, String personId, AddressType type, String address1,
+      String address2, String city, Region region, String postalCode, boolean primary,
+      boolean doNotUse) {
+      this.id = id;
+      this.personId = personId;
+      this.type = type;
+      this.address1 = address1;
+      this.address2 = address2;
+      this.city = city;
+      this.region = region;
+      this.postalCode = postalCode;
+      this.primary = primary;
+      this.doNotUse = doNotUse;
+   }
+
+   /**
+    * Creates an empty {@code AddressResource}.
+    */
+   public AddressResourceImpl() {
+   }
 
    /**
     * {@inheritDoc}
@@ -162,6 +189,7 @@ public class AddressForm implements Serializable, AddressResource {
     */
    @Override
    public void setRegion(Region region) {
+      assert region != null;
       this.region = region;
    }
 
@@ -211,20 +239,6 @@ public class AddressForm implements Serializable, AddressResource {
    @Override
    public void setDoNotUse(boolean doNotUse) {
       this.doNotUse = doNotUse;
-   }
-
-   public List<AddressType> getAddressTypes() {
-      if (addressTypes == null) {
-         addressTypes = Arrays.asList(AddressType.values());
-      }
-      return addressTypes;
-   }
-
-   public List<Region> getRegions() {
-      if (regions == null) {
-         regions = Arrays.asList(Region.values());
-      }
-      return regions;
    }
 
 }

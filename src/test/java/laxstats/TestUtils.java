@@ -33,9 +33,9 @@ import laxstats.query.violations.ViolationEntry;
 import laxstats.web.games.GameForm;
 import laxstats.web.games.GameResourceImpl;
 import laxstats.web.people.AddressForm;
-import laxstats.web.people.AddressResource;
+import laxstats.web.people.AddressResourceImpl;
 import laxstats.web.people.ContactForm;
-import laxstats.web.people.ContactResource;
+import laxstats.web.people.ContactResourceImpl;
 import laxstats.web.people.PersonForm;
 import laxstats.web.people.PersonResourceImpl;
 import laxstats.web.players.PlayerForm;
@@ -109,8 +109,8 @@ public class TestUtils {
     *
     * @return
     */
-   public static AddressResource newAddressResource() {
-      final AddressResource resource = new AddressResource();
+   public static AddressResourceImpl newAddressResource() {
+      final AddressResourceImpl resource = new AddressResourceImpl();
       resource.setAddress1("340 Tall Pine Drive");
       resource.setAddress2("Unit 32");
       resource.setCity("Sudbury");
@@ -127,8 +127,8 @@ public class TestUtils {
     *
     * @return
     */
-   public static ContactResource newContactResource() {
-      final ContactResource resource = new ContactResource();
+   public static ContactResourceImpl newContactResource() {
+      final ContactResourceImpl resource = new ContactResourceImpl();
       resource.setMethod(ContactMethod.TELEPHONE);
       resource.setValue("888-555-1212");
       resource.setPrimary(true);
