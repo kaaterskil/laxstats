@@ -37,9 +37,6 @@ import org.joda.time.LocalDateTime;
  */
 @Entity
 @Table(name = "people", indexes = { @Index(name = "people_idx1", columnList = "lastName"),
-   @Index(name = "people_idx2", columnList = "isParentReleased"),
-   @Index(name = "people_idx3", columnList = "parentReleaseSentOn"),
-   @Index(name = "people_idx4", columnList = "parentReleaseReceivedOn"),
    @Index(name = "people_idx5", columnList = "lastName, firstName") })
 public class PersonEntry implements Serializable {
    private static final long serialVersionUID = 7491763841222491421L;

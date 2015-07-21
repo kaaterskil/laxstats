@@ -39,7 +39,10 @@ import org.joda.time.LocalDateTime;
             @Index(name = "player_idx4", columnList = "role"),
             @Index(name = "player_idx5", columnList = "status"),
             @Index(name = "player_idx6", columnList = "isCaptain"),
-            @Index(name = "player_idx7", columnList = "depth") },
+            @Index(name = "player_idx7", columnList = "depth"),
+            @Index(name = "player_idx8", columnList = "isParentReleased"),
+            @Index(name = "player_idx9", columnList = "parentReleaseSentOn"),
+            @Index(name = "player_idx10", columnList = "parentReleaseReceivedOn") },
          uniqueConstraints = { @UniqueConstraint(name = "player_uk1", columnNames = { "id",
             "team_season_id", "person_id" }) })
 public class PlayerEntry implements Serializable {
