@@ -341,6 +341,15 @@ public class PersonEntry implements Serializable {
    }
 
    /**
+    * Returns true if the person has played a season with a team, false otherwise.
+    * 
+    * @return
+    */
+   public boolean hasPlayedSeasons() {
+      return playedSeasons.size() > 0;
+   }
+
+   /**
     * Returns the primary key.
     *
     * @return

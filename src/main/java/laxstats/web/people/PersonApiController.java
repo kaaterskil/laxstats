@@ -1,0 +1,221 @@
+package laxstats.web.people;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.validation.Valid;
+
+import laxstats.api.people.CreatePerson;
+import laxstats.api.people.DeletePerson;
+import laxstats.api.people.PersonDTO;
+import laxstats.api.people.PersonId;
+import laxstats.api.people.UpdatePerson;
+import laxstats.query.people.PersonEntry;
+import laxstats.query.people.PersonQueryRepository;
+import laxstats.query.users.UserEntry;
+import laxstats.query.users.UserQueryRepository;
+import laxstats.web.ApplicationController;
+
+import org.axonframework.commandhandling.CommandBus;
+import org.axonframework.commandhandling.GenericCommandMessage;
+import org.joda.time.LocalDateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+/**
+ * {@code PersonApiController} is a RESTful controller providing endpoints for remote clients
+ * accessing person resources. Security restrictions apply.
+ */
+public class PersonApiController extends ApplicationController {
+
+   /**
+    * Returns a {@code Sort} object capable of ordering people by last name, first name, in
+    * ascending order.
+    *
+    * @return
+    */
+   private static Sort personSortInstance() {
+      final List<Sort.Order> orders = new ArrayList<>();
+      orders.add(new Sort.Order(Sort.Direction.ASC, "lastName"));
+      orders.add(new Sort.Order(Sort.Direction.ASC, "firstName"));
+      return new Sort(orders);
+   }
+
+   private final PersonQueryRepository personRepository;
+
+   @Autowired
+   private PersonValidator personValidator;
+   @Autowired
+   private AddressValidator addressValidator;
+   @Autowired
+   private ContactValidator contactValidator;
+
+   /**
+    * Creates a {@code PersonApiController} with the given arguments.
+    *
+    * @param userRepository
+    * @param commandBus
+    * @param personRepository
+    */
+   @Autowired
+   public PersonApiController(UserQueryRepository userRepository, CommandBus commandBus,
+      PersonQueryRepository personRepository) {
+      super(userRepository, commandBus);
+      this.personRepository = personRepository;
+   }
+
+   @InitBinder(value = "personResource")
+   protected void personInitBinder(WebDataBinder binder) {
+      binder.setValidator(personValidator);
+   }
+
+   @InitBinder(value = "addressResource")
+   protected void addressInitBinder(WebDataBinder binder) {
+      binder.setValidator(addressValidator);
+   }
+
+   @InitBinder(value = "contactResource")
+   protected void contactInitBinder(WebDataBinder binder) {
+      binder.setValidator(contactValidator);
+   }
+
+   /*---------- Public action methods ----------*/
+
+   /**
+    * GET Returns a collection of people ordered by last name, first name.
+    *
+    * @return
+    */
+   @RequestMapping(value = "/api/people", method = RequestMethod.GET)
+   public List<PersonResource> index() {
+      final Iterable<PersonEntry> people = personRepository.findAll(personSortInstance());
+
+      final List<PersonResource> list = new ArrayList<>();
+      for (final PersonEntry each : people) {
+         final PersonResource resource =
+            new PersonResourceImpl(each.getId(), each.getPrefix(), each.getFirstName(),
+               each.getMiddleName(), each.getLastName(), each.getSuffix(), each.getNickname(),
+               each.getGender(), each.getDominantHand(), each.getBirthdate()
+                  .toString(), each.getCollege());
+         list.add(resource);
+      }
+      return list;
+   }
+
+   /**
+    * GET Returns the person resource matching the given identifier.
+    *
+    * @param id
+    * @return
+    */
+   @RequestMapping(value = "/api/people/{id}", method = RequestMethod.GET)
+   public PersonResource show(@PathVariable("id") String id) {
+      final PersonEntry entity = personRepository.findOne(id);
+      if (entity == null) {
+         throw new PersonNotFoundException(id);
+      }
+
+      return new PersonResourceImpl(entity.getId(), entity.getPrefix(), entity.getFirstName(),
+         entity.getMiddleName(), entity.getLastName(), entity.getSuffix(), entity.getNickname(),
+         entity.getGender(), entity.getDominantHand(), entity.getBirthdate()
+            .toString(), entity.getCollege());
+   }
+
+   /*---------- Admin action methods ----------*/
+
+   /**
+    * POST
+    *
+    * @param resource
+    * @return
+    */
+   @RequestMapping(value = "/api/people", method = RequestMethod.POST)
+   public ResponseEntity<?> create(@Valid @RequestBody PersonResourceImpl resource) {
+      final LocalDateTime now = LocalDateTime.now();
+      final UserEntry user = getCurrentUser();
+      final PersonId identifier = new PersonId();
+
+      final PersonDTO dto =
+         new PersonDTO(identifier, resource.getPrefix(), resource.getFirstName(),
+            resource.getMiddleName(), resource.getLastName(), resource.getSuffix(),
+            resource.getNickname(), resource.getFullName(), resource.getGender(),
+            resource.getDominantHand(), resource.getBirthdateAsLocalDate(), resource.getCollege(),
+            user, now, user, now);
+
+      final CreatePerson payload = new CreatePerson(identifier, dto);
+      commandBus.dispatch(new GenericCommandMessage<>(payload));
+
+      resource.setId(identifier.toString());
+      return new ResponseEntity<>(resource, HttpStatus.CREATED);
+   }
+
+   /**
+    * PUT
+    *
+    * @param id
+    * @param resource
+    * @return
+    */
+   @RequestMapping(value = "/api/people/{id}", method = RequestMethod.PUT)
+   public ResponseEntity<?> update(@PathVariable("id") String id,
+      @Valid @RequestBody PersonResourceImpl resource)
+   {
+      final boolean exists = personRepository.exists(id);
+      if (!exists) {
+         throw new PersonNotFoundException(id);
+      }
+
+      final LocalDateTime now = LocalDateTime.now();
+      final UserEntry user = getCurrentUser();
+      final PersonId identifier = new PersonId(id);
+
+      final PersonDTO dto =
+         new PersonDTO(identifier, resource.getPrefix(), resource.getFirstName(),
+            resource.getMiddleName(), resource.getLastName(), resource.getSuffix(),
+            resource.getNickname(), resource.getFullName(), resource.getGender(),
+            resource.getDominantHand(), resource.getBirthdateAsLocalDate(), resource.getCollege(),
+            user, now);
+
+      final UpdatePerson payload = new UpdatePerson(identifier, dto);
+      commandBus.dispatch(new GenericCommandMessage<>(payload));
+
+      return new ResponseEntity<>(resource, HttpStatus.OK);
+   }
+
+   /**
+    * DELETE
+    *
+    * @param id
+    */
+   @RequestMapping(value = "/api/people/{id}", method = RequestMethod.DELETE)
+   @ResponseStatus(value = HttpStatus.OK)
+   public void delete(@PathVariable("id") String id) {
+      final PersonEntry entity = personRepository.findOne(id);
+      if (entity == null) {
+         throw new PersonNotFoundException(id);
+      }
+
+      checkDelete(entity);
+
+      final DeletePerson payload = new DeletePerson(new PersonId(id));
+      commandBus.dispatch(new GenericCommandMessage<>(payload));
+   }
+
+   /*---------- Utilities ----------*/
+
+   private void checkDelete(PersonEntry person) {
+      // Test if the person associated entries in a team roster
+      if (person.hasPlayedSeasons()) {
+         throw new DeletePersonWithTeamHistoryException();
+      }
+   }
+}

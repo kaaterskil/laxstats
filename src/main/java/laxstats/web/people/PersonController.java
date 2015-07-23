@@ -451,14 +451,14 @@ public class PersonController extends ApplicationController {
 
    /*---------- Ajax methods ----------*/
 
-   @RequestMapping(value = "/api/people/search", method = RequestMethod.POST)
+   @RequestMapping(value = "/api/void/people/search", method = RequestMethod.POST)
    public String searchPeople(@RequestBody SearchPeopleForm form, Model model) {
       final List<SearchResult> results = doSearch(form);
       model.addAttribute("results", results);
       return "people/searchResults :: resultList";
    }
 
-   @RequestMapping(value = "/api/people/searchData", method = RequestMethod.POST)
+   @RequestMapping(value = "/api/void/people/searchData", method = RequestMethod.POST)
    public String searchPeopleData(@RequestBody SearchPeopleForm form, Model model) {
       final List<SearchResult> results = doSearch(form);
       model.addAttribute("results", results);
