@@ -113,6 +113,13 @@ public interface PersonResource {
    public String getFullName();
 
    /**
+    * Sets the person's full name, or null if not used.
+    * 
+    * @param fullName
+    */
+   public void setFullName(String fullName);
+
+   /**
     * Returns the person's gender or null if not used.
     *
     * @return

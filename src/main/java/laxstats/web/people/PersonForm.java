@@ -224,6 +224,14 @@ public class PersonForm implements Serializable, PersonResource {
     * {@inheritDoc}
     */
    @Override
+   public void setFullName(String fullName) {
+      // Noop
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
    public Gender getGender() {
       return gender;
    }

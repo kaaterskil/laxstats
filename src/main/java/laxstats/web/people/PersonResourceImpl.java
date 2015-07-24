@@ -14,50 +14,6 @@ import org.joda.time.LocalDate;
  */
 public class PersonResourceImpl implements PersonResource {
 
-   /**
-    * Returns a concatenated string of the given person's full name.
-    *
-    * @param form
-    * @return
-    */
-   public static String fullName(PersonResourceImpl form) {
-      final StringBuilder sb = new StringBuilder();
-      boolean needsSpace = false;
-
-      if (form.prefix.length() > 0) {
-         sb.append(form.prefix);
-         needsSpace = true;
-      }
-      if (form.firstName.length() > 0) {
-         if (needsSpace) {
-            sb.append(" ");
-         }
-         sb.append(form.firstName);
-         needsSpace = true;
-      }
-      if (form.middleName.length() > 0) {
-         if (needsSpace) {
-            sb.append(" ");
-         }
-         sb.append(form.middleName);
-         needsSpace = true;
-      }
-      if (form.lastName.length() > 0) {
-         if (needsSpace) {
-            sb.append(" ");
-         }
-         sb.append(form.lastName);
-         needsSpace = true;
-      }
-      if (form.suffix.length() > 0) {
-         if (needsSpace) {
-            sb.append(" ");
-         }
-         sb.append(form.suffix);
-      }
-      return sb.toString();
-   }
-
    private String id;
 
    @Size(max = Constants.MAX_LENGTH_NAME_PREFIX_OR_SUFFIX)
@@ -79,6 +35,9 @@ public class PersonResourceImpl implements PersonResource {
    @Size(max = Constants.MAX_LENGTH_FIRST_OR_MIDDLE_NAME)
    private String nickname;
 
+   @Size(max = Constants.MAX_LENGTH_TITLE)
+   private String fullName;
+
    private Gender gender;
    private DominantHand dominantHand;
    private String birthdate;
@@ -96,14 +55,15 @@ public class PersonResourceImpl implements PersonResource {
     * @param lastName
     * @param suffix
     * @param nickname
+    * @param fullName
     * @param gender
     * @param dominantHand
     * @param birthdate
     * @param college
     */
    public PersonResourceImpl(String id, String prefix, String firstName, String middleName,
-      String lastName, String suffix, String nickname, Gender gender, DominantHand dominantHand,
-      String birthdate, String college) {
+      String lastName, String suffix, String nickname, String fullName, Gender gender,
+      DominantHand dominantHand, String birthdate, String college) {
       this.id = id;
       this.prefix = prefix;
       this.firstName = firstName;
@@ -111,6 +71,7 @@ public class PersonResourceImpl implements PersonResource {
       this.lastName = lastName;
       this.suffix = suffix;
       this.nickname = nickname;
+      this.fullName = fullName;
       this.gender = gender;
       this.dominantHand = dominantHand;
       this.birthdate = birthdate;
@@ -241,7 +202,15 @@ public class PersonResourceImpl implements PersonResource {
     */
    @Override
    public String getFullName() {
-      return PersonResourceImpl.fullName(this);
+      return fullName;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public void setFullName(String fullName) {
+      this.fullName = fullName;
    }
 
    /**
