@@ -25,8 +25,8 @@ public interface PersonQueryRepository extends PagingAndSortingRepository<Person
       + "order by p.lastName, p.firstName, a.region, a.city")
    List<PersonEntry> searchPeople(String firstName, String LastName);
 
-   @Query("select exists(select 1 from AddressEntry ae where ?1 is not null "
-      + "and ae.id = cast(?1 as text))")
+   @Query(value = "select exists(select 1 from AddressEntry ae where ?1 is not null "
+      + "and ae.id = cast(?1 as text))", nativeQuery = true)
    boolean checkAddressExists(String addressId);
 
    @Query("select count(*) from AddressEntry ae " + "where ae.addressType = ?1 "
@@ -41,8 +41,8 @@ public interface PersonQueryRepository extends PagingAndSortingRepository<Person
    int updateAddress(AddressType type, String address1, String city, Region region, String personId,
       String addressId);
 
-   @Query("select exists(select 1 from ContactEntry ce where ?1 is not null "
-      + "and ce.id = cast(?1 as text))")
+   @Query(value = "select exists(select 1 from contacts ce where ?1 is not null "
+      + "and ce.id = cast(?1 as text))", nativeQuery = true)
    boolean checkContactExists(String contactId);
 
    @Query("select count(*) from ContactEntry ce "
