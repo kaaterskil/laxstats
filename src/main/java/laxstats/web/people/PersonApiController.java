@@ -5,10 +5,18 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import laxstats.api.people.AddressDTO;
+import laxstats.api.people.ContactDTO;
 import laxstats.api.people.CreatePerson;
+import laxstats.api.people.DeleteAddress;
+import laxstats.api.people.DeleteContact;
 import laxstats.api.people.DeletePerson;
 import laxstats.api.people.PersonDTO;
 import laxstats.api.people.PersonId;
+import laxstats.api.people.RegisterAddress;
+import laxstats.api.people.RegisterContact;
+import laxstats.api.people.UpdateAddress;
+import laxstats.api.people.UpdateContact;
 import laxstats.api.people.UpdatePerson;
 import laxstats.query.people.PersonEntry;
 import laxstats.query.people.PersonQueryRepository;
@@ -18,6 +26,7 @@ import laxstats.web.ApplicationController;
 
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.commandhandling.GenericCommandMessage;
+import org.axonframework.domain.IdentifierFactory;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -207,6 +216,198 @@ public class PersonApiController extends ApplicationController {
       checkDelete(entity);
 
       final DeletePerson payload = new DeletePerson(new PersonId(id));
+      commandBus.dispatch(new GenericCommandMessage<>(payload));
+   }
+
+   /**
+    * POST
+    *
+    * @param personId
+    * @param resource
+    * @return
+    */
+   @RequestMapping(value = "/api/people/{personId}/addresses", method = RequestMethod.POST)
+   public ResponseEntity<?> createAddress(@PathVariable("personId") String personId,
+      @Valid @RequestBody AddressResourceImpl resource)
+   {
+      final PersonEntry person = personRepository.findOne(personId);
+      if (person == null) {
+         throw new PersonNotFoundException(personId);
+      }
+
+      final LocalDateTime now = LocalDateTime.now();
+      final UserEntry user = getCurrentUser();
+      final PersonId identifier = new PersonId(personId);
+      final String addressId = IdentifierFactory.getInstance()
+         .generateIdentifier();
+
+      final AddressDTO dto =
+         new AddressDTO(addressId, null, person, resource.getType(), resource.getAddress1(),
+            resource.getAddress2(), resource.getCity(), resource.getRegion(),
+            resource.getPostalCode(), resource.isPrimary(), resource.isDoNotUse(), user, now, user,
+            now);
+
+      final RegisterAddress payload = new RegisterAddress(identifier, dto);
+      commandBus.dispatch(new GenericCommandMessage<>(payload));
+
+      return new ResponseEntity<>(resource, HttpStatus.CREATED);
+   }
+
+   /**
+    * PUT
+    *
+    * @param personId
+    * @param addressId
+    * @param resource
+    * @return
+    */
+   @RequestMapping(value = "/api/people/{personId}/addresses/{addressId}",
+            method = RequestMethod.PUT)
+   public ResponseEntity<?> updateAddress(@PathVariable("personId") String personId,
+      @PathVariable("addressId") String addressId, @Valid @RequestBody AddressResourceImpl resource)
+   {
+      final PersonEntry person = personRepository.findOne(personId);
+      if (person == null) {
+         throw new PersonNotFoundException(personId);
+      }
+      final boolean exists = personRepository.checkAddressExists(addressId);
+      if (!exists) {
+         throw new AddressNotFoundException(addressId);
+      }
+
+      final LocalDateTime now = LocalDateTime.now();
+      final UserEntry user = getCurrentUser();
+      final PersonId identifier = new PersonId(personId);
+
+      final AddressDTO dto =
+         new AddressDTO(addressId, null, person, resource.getType(), resource.getAddress1(),
+            resource.getAddress2(), resource.getCity(), resource.getRegion(),
+            resource.getPostalCode(), resource.isPrimary(), resource.isDoNotUse(), user, now);
+
+      final UpdateAddress payload = new UpdateAddress(identifier, dto);
+      commandBus.dispatch(new GenericCommandMessage<>(payload));
+
+      return new ResponseEntity<>(resource, HttpStatus.OK);
+   }
+
+   /**
+    * DELETE
+    *
+    * @param personId
+    * @param addressId
+    */
+   @RequestMapping(value = "/api/people/{personId}/addresses/{addressId}",
+            method = RequestMethod.DELETE)
+   @ResponseStatus(value = HttpStatus.OK)
+   public void deleteAddress(@PathVariable("personId") String personId,
+      @PathVariable("addressId") String addressId)
+   {
+      final boolean personExists = personRepository.exists(personId);
+      if (!personExists) {
+         throw new PersonNotFoundException(personId);
+      }
+      final boolean addressExists = personRepository.checkAddressExists(addressId);
+      if (!addressExists) {
+         throw new AddressNotFoundException(addressId);
+      }
+
+      final PersonId identifier = new PersonId(personId);
+      final DeleteAddress payload = new DeleteAddress(identifier, addressId);
+      commandBus.dispatch(new GenericCommandMessage<>(payload));
+   }
+
+   /**
+    * POST
+    *
+    * @param personId
+    * @param resource
+    * @return
+    */
+   @RequestMapping(value = "/api/people/{personId}/contacts", method = RequestMethod.POST)
+   public ResponseEntity<?> createContact(@PathVariable("personId") String personId,
+      @Valid @RequestBody ContactResourceImpl resource)
+   {
+      final PersonEntry person = personRepository.findOne(personId);
+      if (person == null) {
+         throw new PersonNotFoundException(personId);
+      }
+
+      final LocalDateTime now = LocalDateTime.now();
+      final UserEntry user = getCurrentUser();
+      final PersonId identifier = new PersonId(personId);
+      final String contactId = IdentifierFactory.getInstance()
+         .generateIdentifier();
+
+      final ContactDTO dto =
+         new ContactDTO(contactId, person, resource.getMethod(), resource.getValue(),
+            resource.isPrimary(), resource.isDoNotUse(), now, user, now, user);
+
+      final RegisterContact payload = new RegisterContact(identifier, dto);
+      commandBus.dispatch(new GenericCommandMessage<>(payload));
+
+      return new ResponseEntity<>(resource, HttpStatus.CREATED);
+   }
+
+   /**
+    * PUT
+    *
+    * @param personId
+    * @param contactId
+    * @param resource
+    * @return
+    */
+   @RequestMapping(value = "/api/people/{personId}/contacts/{contactId}", method = RequestMethod.PUT)
+   public
+      ResponseEntity<?> updateContact(@PathVariable("personId") String personId,
+         @PathVariable("contactId") String contactId,
+         @Valid @RequestBody ContactResourceImpl resource)
+   {
+      final PersonEntry person = personRepository.findOne(personId);
+      if (person == null) {
+         throw new PersonNotFoundException(personId);
+      }
+      final boolean exists = personRepository.checkContactExists(contactId);
+      if (!exists) {
+         throw new ContactNotFoundException(contactId);
+      }
+
+      final LocalDateTime now = LocalDateTime.now();
+      final UserEntry user = getCurrentUser();
+      final PersonId identifier = new PersonId(personId);
+
+      final ContactDTO dto =
+         new ContactDTO(contactId, person, resource.getMethod(), resource.getValue(),
+            resource.isPrimary(), resource.isDoNotUse(), now, user);
+
+      final UpdateContact payload = new UpdateContact(identifier, dto);
+      commandBus.dispatch(new GenericCommandMessage<>(payload));
+
+      return new ResponseEntity<>(resource, HttpStatus.OK);
+   }
+
+   /**
+    * DELETE
+    *
+    * @param personId
+    * @param contactId
+    */
+   @RequestMapping(value = "/api/people/{personId}/contacts/{contactId}",
+            method = RequestMethod.DELETE)
+   @ResponseStatus(value = HttpStatus.OK)
+   public void deleteContact(@PathVariable("personId") String personId,
+      @PathVariable("contactId") String contactId)
+   {
+      final boolean personExists = personRepository.exists(personId);
+      if (!personExists) {
+         throw new PersonNotFoundException(personId);
+      }
+      final boolean contactExists = personRepository.checkContactExists(contactId);
+      if (!contactExists) {
+         throw new ContactNotFoundException(contactId);
+      }
+
+      final PersonId identifier = new PersonId(personId);
+      final DeleteContact payload = new DeleteContact(identifier, contactId);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
    }
 
