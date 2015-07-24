@@ -39,11 +39,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * {@code PersonApiController} is a RESTful controller providing endpoints for remote clients
  * accessing person resources. Security restrictions apply.
  */
+@RestController
 public class PersonApiController extends ApplicationController {
 
    /**
@@ -113,7 +115,7 @@ public class PersonApiController extends ApplicationController {
          final PersonResource resource =
             new PersonResourceImpl(each.getId(), each.getPrefix(), each.getFirstName(),
                each.getMiddleName(), each.getLastName(), each.getSuffix(), each.getNickname(),
-               each.getGender(), each.getDominantHand(), each.getBirthdate()
+               each.getFullName(), each.getGender(), each.getDominantHand(), each.getBirthdate()
                   .toString(), each.getCollege());
          list.add(resource);
       }
@@ -135,7 +137,7 @@ public class PersonApiController extends ApplicationController {
 
       return new PersonResourceImpl(entity.getId(), entity.getPrefix(), entity.getFirstName(),
          entity.getMiddleName(), entity.getLastName(), entity.getSuffix(), entity.getNickname(),
-         entity.getGender(), entity.getDominantHand(), entity.getBirthdate()
+         entity.getFullName(), entity.getGender(), entity.getDominantHand(), entity.getBirthdate()
             .toString(), entity.getCollege());
    }
 

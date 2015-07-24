@@ -17,7 +17,7 @@ logging:
     laxstats: DEBUG
     
   # Sets the logging file location
-  file: C:/www/laxstats/log/laxstats-test.log
+  file: C:/www/net.laxstats.server/log/laxstats-test.log
   
 log4j:
   root-category: INFO, stdout
