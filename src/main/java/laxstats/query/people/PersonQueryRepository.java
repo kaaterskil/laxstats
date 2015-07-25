@@ -25,7 +25,7 @@ public interface PersonQueryRepository extends PagingAndSortingRepository<Person
       + "order by p.lastName, p.firstName, a.region, a.city")
    List<PersonEntry> searchPeople(String firstName, String LastName);
 
-   @Query(value = "select exists(select 1 from AddressEntry ae where ?1 is not null "
+   @Query(value = "select exists(select 1 from addresses ae where ?1 is not null "
       + "and ae.id = cast(?1 as text))", nativeQuery = true)
    boolean checkAddressExists(String addressId);
 
