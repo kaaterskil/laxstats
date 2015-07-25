@@ -107,32 +107,32 @@ public class PersonDTO implements Serializable {
       final StringBuilder sb = new StringBuilder();
       boolean needsSpace = false;
 
-      if (prefix.length() > 0) {
+      if (prefix != null && prefix.length() > 0) {
          sb.append(prefix);
          needsSpace = true;
       }
-      if (firstName.length() > 0) {
+      if (firstName != null && firstName.length() > 0) {
          if (needsSpace) {
             sb.append(" ");
          }
          sb.append(firstName);
          needsSpace = true;
       }
-      if (middleName.length() > 0) {
+      if (middleName != null && middleName.length() > 0) {
          if (needsSpace) {
             sb.append(" ");
          }
          sb.append(middleName);
          needsSpace = true;
       }
-      if (lastName.length() > 0) {
+      if (lastName != null && lastName.length() > 0) {
          if (needsSpace) {
             sb.append(" ");
          }
          sb.append(lastName);
          needsSpace = true;
       }
-      if (suffix.length() > 0) {
+      if (suffix != null && suffix.length() > 0) {
          if (needsSpace) {
             sb.append(" ");
          }
