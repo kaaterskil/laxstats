@@ -111,10 +111,12 @@ public class AddressEntry implements Contactable, Serializable {
       }
       sb.append(city);
       if (region != null) {
-         sb.append(", ").append(region.getAbbreviation());
+         sb.append(", ")
+            .append(region.getAbbreviation());
       }
       if (postalCode != null) {
-         sb.append(" ").append(postalCode);
+         sb.append(" ")
+            .append(postalCode);
       }
       return sb.toString();
    }
@@ -143,10 +145,12 @@ public class AddressEntry implements Contactable, Serializable {
       }
       sb.append(city);
       if (region != null) {
-         sb.append(", ").append(region.getAbbreviation());
+         sb.append(", ")
+            .append(region.getAbbreviation());
       }
       if (postalCode != null) {
-         sb.append(" ").append(postalCode);
+         sb.append(" ")
+            .append(postalCode);
       }
       return sb.toString();
    }

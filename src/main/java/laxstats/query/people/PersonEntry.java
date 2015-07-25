@@ -134,11 +134,11 @@ public class PersonEntry implements Serializable {
    private UserEntry modifiedBy;
 
    @OneToMany(cascade = { CascadeType.ALL })
-   @JoinColumn(name = "person")
+   @JoinColumn(name = "person_id")
    private final List<AddressEntry> addresses = new ArrayList<>();
 
    @OneToMany(cascade = { CascadeType.ALL })
-   @JoinColumn(name = "person")
+   @JoinColumn(name = "person_id")
    private final List<ContactEntry> contacts = new ArrayList<>();
 
    @OneToMany(cascade = CascadeType.ALL, mappedBy = "parent")
@@ -342,7 +342,7 @@ public class PersonEntry implements Serializable {
 
    /**
     * Returns true if the person has played a season with a team, false otherwise.
-    * 
+    *
     * @return
     */
    public boolean hasPlayedSeasons() {
