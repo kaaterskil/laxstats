@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import laxstats.TestUtils;
+import laxstats.api.people.ContactMethod;
 import laxstats.api.people.DominantHand;
 import laxstats.api.people.Gender;
 import laxstats.api.people.PersonId;
@@ -101,7 +102,7 @@ public class PersonApiControllerIT extends AbstractIntegrationTest {
       final PersonResource resource = TestUtils.newPersonResource();
 
       mockMvc.perform(post(BASE_REQUEST_URL).with(superadmin)
-         .header("X-AUTH-TOKEN", createTokenForUser())
+         .header(AUTH_HEADER_NAME, createTokenForUser())
          .contentType(contentType)
          .content(TestUtils.convertObjectToJson(resource)))
          .andExpect(status().isCreated())
@@ -115,7 +116,7 @@ public class PersonApiControllerIT extends AbstractIntegrationTest {
       resource.setLastName(null);
 
       mockMvc.perform(post(BASE_REQUEST_URL).with(superadmin)
-         .header("X-AUTH-TOKEN", createTokenForUser())
+         .header(AUTH_HEADER_NAME, createTokenForUser())
          .contentType(contentType)
          .content(TestUtils.convertObjectToJson(resource)))
          .andExpect(status().isBadRequest())
@@ -138,7 +139,7 @@ public class PersonApiControllerIT extends AbstractIntegrationTest {
       resource.setDominantHand(DominantHand.RIGHT);
 
       mockMvc.perform(put(putUrl).with(superadmin)
-         .header("X-AUTH-TOKEN", createTokenForUser())
+         .header(AUTH_HEADER_NAME, createTokenForUser())
          .contentType(contentType)
          .content(TestUtils.convertObjectToJson(resource)))
          .andExpect(status().isOk())
@@ -161,7 +162,7 @@ public class PersonApiControllerIT extends AbstractIntegrationTest {
       resource.setLastName(null);
 
       mockMvc.perform(put(putUrl).with(superadmin)
-         .header("X-AUTH-TOKEN", createTokenForUser())
+         .header(AUTH_HEADER_NAME, createTokenForUser())
          .contentType(contentType)
          .content(TestUtils.convertObjectToJson(resource)))
          .andExpect(status().isBadRequest())
@@ -175,8 +176,188 @@ public class PersonApiControllerIT extends AbstractIntegrationTest {
       final String deleteUrl = BASE_REQUEST_URL + entity.getId();
 
       mockMvc.perform(delete(deleteUrl).with(superadmin)
-         .header("X-AUTH-TOKEN", createTokenForUser()))
+         .header(AUTH_HEADER_NAME, createTokenForUser()))
          .andExpect(status().isOk());
+   }
+
+   /*--------- Address method tests ----------*/
+
+   @Test
+   public void createAddress() throws Exception {
+      final PersonResource person = newPerson();
+
+      final AddressResource resource = TestUtils.newAddressResource();
+      final String personId = person.getId();
+      final String postUrl = BASE_REQUEST_URL + personId + "/addresses";
+
+      mockMvc.perform(post(postUrl).with(superadmin)
+         .header(AUTH_HEADER_NAME, createTokenForUser())
+         .contentType(contentType)
+         .content(TestUtils.convertObjectToJson(resource)))
+         .andExpect(status().isCreated())
+         .andExpect(content().contentType(contentType))
+         .andExpect(jsonPath("$.address1", is(resource.getAddress1())));
+   }
+
+   @Test
+   public void updateAddress() throws Exception {
+      final AddressResource resource = newAddress();
+      resource.setAddress1("123 Main Street");
+
+      final String putUrl =
+         BASE_REQUEST_URL + resource.getPersonId() + "/addresses/" + resource.getId();
+
+      mockMvc.perform(put(putUrl).with(superadmin)
+         .header(AUTH_HEADER_NAME, createTokenForUser())
+         .contentType(contentType)
+         .content(TestUtils.convertObjectToJson(resource)))
+         .andExpect(status().isOk())
+         .andExpect(jsonPath("$.id", is(resource.getId())))
+         .andExpect(jsonPath("$.address1", is(resource.getAddress1())));
+   }
+
+   @Test
+   public void updateAddressWithInvalidValue() throws Exception {
+      final AddressResource resource = newAddress();
+      resource.setPostalCode("0000");
+
+      final String putUrl =
+         BASE_REQUEST_URL + resource.getPersonId() + "/addresses/" + resource.getId();
+
+      mockMvc.perform(put(putUrl).with(superadmin)
+         .header(AUTH_HEADER_NAME, createTokenForUser())
+         .contentType(contentType)
+         .content(TestUtils.convertObjectToJson(resource)))
+         .andExpect(status().isBadRequest())
+         .andExpect(content().contentType(contentType))
+         .andExpect(jsonPath("$.fieldErrors", hasSize(1)));
+   }
+
+   @Test
+   public void deleteAddress() throws Exception {
+      final AddressResource resource = newAddress();
+      final String deleteUrl =
+         BASE_REQUEST_URL + resource.getPersonId() + "/addresses/" + resource.getId();
+
+      mockMvc.perform(delete(deleteUrl).with(superadmin)
+         .header(AUTH_HEADER_NAME, createTokenForUser()))
+         .andExpect(status().isOk());
+   }
+
+   /*---------- Contact method tests ----------*/
+
+   @Test
+   public void createContact() throws Exception {
+      final PersonResource person = newPerson();
+      final String personId = person.getId();
+
+      final ContactResource resource = TestUtils.newContactResource();
+      resource.setPersonId(personId);
+      final String postUrl = BASE_REQUEST_URL + personId + "/contacts";
+
+      mockMvc.perform(post(postUrl).with(superadmin)
+         .header(AUTH_HEADER_NAME, createTokenForUser())
+         .contentType(contentType)
+         .content(TestUtils.convertObjectToJson(resource)))
+         .andExpect(status().isCreated())
+         .andExpect(content().contentType(contentType))
+         .andExpect(jsonPath("$.value", is(resource.getValue())));
+   }
+
+   @Test
+   public void updateContact() throws Exception {
+      final ContactResource resource = newContact();
+      resource.setMethod(ContactMethod.EMAIL);
+      resource.setValue("john@example.com");
+
+      final String putUrl =
+         BASE_REQUEST_URL + resource.getPersonId() + "/contacts/" + resource.getId();
+
+      mockMvc.perform(put(putUrl).with(superadmin)
+         .header(AUTH_HEADER_NAME, createTokenForUser())
+         .contentType(contentType)
+         .content(TestUtils.convertObjectToJson(resource)))
+         .andExpect(status().isOk())
+         .andExpect(jsonPath("$.id", is(resource.getId())))
+         .andExpect(jsonPath("$.value", is(resource.getValue())));
+   }
+
+   @Test
+   public void updateContactWithInvalidValue() throws Exception {
+      final ContactResource resource = newContact();
+      resource.setValue(null);
+
+      final String putUrl =
+         BASE_REQUEST_URL + resource.getPersonId() + "/contacts/" + resource.getId();
+
+      mockMvc.perform(put(putUrl).with(superadmin)
+         .header(AUTH_HEADER_NAME, createTokenForUser())
+         .contentType(contentType)
+         .content(TestUtils.convertObjectToJson(resource)))
+         .andExpect(status().isBadRequest())
+         .andExpect(content().contentType(contentType))
+         .andExpect(jsonPath("$.fieldErrors", hasSize(1)));
+   }
+
+   @Test
+   public void deleteContact() throws Exception {
+      final ContactResource resource = newContact();
+      final String deleteUrl =
+         BASE_REQUEST_URL + resource.getPersonId() + "/contacts/" + resource.getId();
+
+      mockMvc.perform(delete(deleteUrl).with(superadmin)
+         .header(AUTH_HEADER_NAME, createTokenForUser()))
+         .andExpect(status().isOk());
+   }
+
+   /*---------- Utilities ----------*/
+
+   private PersonResource newPerson() throws Exception {
+      final PersonResource person = TestUtils.newPersonResource();
+      final byte[] result = mockMvc.perform(post(BASE_REQUEST_URL).with(superadmin)
+         .header(AUTH_HEADER_NAME, createTokenForUser())
+         .contentType(contentType)
+         .content(TestUtils.convertObjectToJson(person)))
+         .andReturn()
+         .getResponse()
+         .getContentAsByteArray();
+      return (PersonResource)TestUtils.convertJsonToObject(result, PersonResourceImpl.class);
+
+   }
+
+   private AddressResource newAddress() throws Exception {
+      final PersonResource person = newPerson();
+
+      final AddressResource resource = TestUtils.newAddressResource();
+      final String personId = person.getId();
+      final String postUrl = BASE_REQUEST_URL + personId + "/addresses";
+
+      final byte[] result = mockMvc.perform(post(postUrl).with(superadmin)
+         .header(AUTH_HEADER_NAME, createTokenForUser())
+         .contentType(contentType)
+         .content(TestUtils.convertObjectToJson(resource)))
+         .andReturn()
+         .getResponse()
+         .getContentAsByteArray();
+      return (AddressResource)TestUtils.convertJsonToObject(result, AddressResourceImpl.class);
+   }
+
+   private ContactResource newContact() throws Exception {
+      final PersonResource person = newPerson();
+      final String personId = person.getId();
+
+      final ContactResource resource = TestUtils.newContactResource();
+      resource.setPersonId(personId);
+      final String postUrl = BASE_REQUEST_URL + personId + "/contacts";
+
+      final byte[] result = mockMvc.perform(post(postUrl).with(superadmin)
+         .header(AUTH_HEADER_NAME, createTokenForUser())
+         .contentType(contentType)
+         .content(TestUtils.convertObjectToJson(resource)))
+         .andReturn()
+         .getResponse()
+         .getContentAsByteArray();
+      return (ContactResource)TestUtils.convertJsonToObject(result, ContactResourceImpl.class);
    }
 
 }

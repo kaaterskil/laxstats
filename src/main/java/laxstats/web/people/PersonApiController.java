@@ -252,6 +252,8 @@ public class PersonApiController extends ApplicationController {
       final RegisterAddress payload = new RegisterAddress(identifier, dto);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
 
+      resource.setId(addressId);
+      resource.setPersonId(personId);
       return new ResponseEntity<>(resource, HttpStatus.CREATED);
    }
 
@@ -347,6 +349,8 @@ public class PersonApiController extends ApplicationController {
       final RegisterContact payload = new RegisterContact(identifier, dto);
       commandBus.dispatch(new GenericCommandMessage<>(payload));
 
+      resource.setId(contactId);
+      resource.setPersonId(personId);
       return new ResponseEntity<>(resource, HttpStatus.CREATED);
    }
 
