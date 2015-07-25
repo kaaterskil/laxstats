@@ -60,6 +60,8 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 
@@ -100,6 +102,14 @@ public class TestUtils {
       mapper.registerModule(new JodaModule());
       mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
       return mapper.writeValueAsBytes(obj);
+   }
+
+   public static Object convertJsonToObject(byte[] src, Class<?> valueType)
+      throws JsonParseException, JsonMappingException, IOException
+   {
+      final ObjectMapper mapper = new ObjectMapper();
+      mapper.registerModule(new JodaModule());
+      return mapper.readValue(src, valueType);
    }
 
    /*---------- Resources ----------*/
@@ -167,6 +177,7 @@ public class TestUtils {
       resource.setLastName("Caple");
       resource.setMiddleName("NMI");
       resource.setNickname("Stan");
+      resource.setFullName("Stanley Caple");
       return resource;
    }
 
