@@ -9,6 +9,8 @@ import laxstats.api.utils.Constants;
 
 import org.joda.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * {@code PersonResource} represents a person resource for remote clients.
  */
@@ -264,6 +266,7 @@ public class PersonResourceImpl implements PersonResource {
    /**
     * {@inheritDoc}
     */
+   @JsonIgnore
    @Override
    public LocalDate getBirthdateAsLocalDate() {
       return birthdate == null ? null : LocalDate.parse(birthdate);
@@ -272,6 +275,7 @@ public class PersonResourceImpl implements PersonResource {
    /**
     * {@inheritDoc}
     */
+   @JsonIgnore
    @Override
    public void setBirthdateFromLocalDate(LocalDate birthdate) {
       this.birthdate = birthdate == null ? null : birthdate.toString();
