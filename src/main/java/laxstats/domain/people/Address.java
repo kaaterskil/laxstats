@@ -27,7 +27,7 @@ public class Address extends AbstractAnnotatedEntity implements Contactable {
 
    /**
     * Returns a concatenated string.
-    * 
+    *
     * @return
     */
    public String getAddress() {
@@ -58,7 +58,8 @@ public class Address extends AbstractAnnotatedEntity implements Contactable {
          sb.append(region.getAbbreviation());
       }
       if (postalCode != null) {
-         sb.append(" ").append(postalCode);
+         sb.append(" ")
+            .append(postalCode);
       }
       return sb.toString();
    }
@@ -71,7 +72,8 @@ public class Address extends AbstractAnnotatedEntity implements Contactable {
     */
    @EventHandler
    protected void handle(AddressChanged event) {
-      if (!id.equals(event.getAddressDTO().getId())) {
+      if (id != null && !id.equals(event.getAddressDTO()
+         .getId())) {
          return;
       }
 
@@ -87,7 +89,7 @@ public class Address extends AbstractAnnotatedEntity implements Contactable {
    }
 
    /**
-    * Returns the unique odentifieir of this {@code Address}
+    * Returns the unique identifier of this {@code Address}
     *
     * @return
     */

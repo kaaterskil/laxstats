@@ -27,7 +27,8 @@ public class Contact extends AbstractAnnotatedEntity implements Contactable {
     */
    @EventHandler
    protected void handle(ContactChanged event) {
-      if (!id.equals(event.getContact().getId())) {
+      if (id != null && !id.equals(event.getContact()
+         .getId())) {
          return;
       }
 

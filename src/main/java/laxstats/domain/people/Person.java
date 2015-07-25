@@ -335,6 +335,7 @@ public class Person extends AbstractAnnotatedAggregateRoot<PersonId> {
       final AddressDTO dto = event.getAddress();
 
       final Address address = new Address();
+      address.setId(dto.getId());
       address.setPersonId(id.toString());
       address.setAddress1(dto.getAddress1());
       address.setAddress2(dto.getAddress2());
