@@ -15,9 +15,11 @@ import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+@Service
 public class PlayerValidator implements Validator {
    private static Logger logger = LoggerFactory.getLogger(PlayerValidator.class);
    private static String PACKAGE_NAME = PlayerValidator.class.getPackage()
