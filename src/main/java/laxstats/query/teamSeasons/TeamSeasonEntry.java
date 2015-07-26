@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -94,10 +95,10 @@ public class TeamSeasonEntry implements Serializable, Cloneable {
    @ManyToOne
    private UserEntry modifiedBy;
 
-   @OneToMany(mappedBy = "teamSeason")
+   @OneToMany(cascade = CascadeType.ALL, mappedBy = "teamSeason")
    private final List<PlayerEntry> roster = new ArrayList<>();
 
-   @OneToMany(mappedBy = "teamSeason")
+   @OneToMany(cascade = CascadeType.ALL, mappedBy = "teamSeason")
    private final Map<LocalDateTime, TeamEvent> events = new HashMap<>();
 
    /**
@@ -109,9 +110,12 @@ public class TeamSeasonEntry implements Serializable, Cloneable {
    public String getFullName() {
       if (name != null) {
          final StringBuilder sb = new StringBuilder();
-         sb.append(team.getSponsor()).append(" ").append(name);
+         sb.append(team.getSponsor())
+            .append(" ")
+            .append(name);
          if (season.getDescription() != "") {
-            sb.append(" ").append(season.getDescription());
+            sb.append(" ")
+               .append(season.getDescription());
          }
          return sb.toString();
       }
@@ -126,14 +130,16 @@ public class TeamSeasonEntry implements Serializable, Cloneable {
    public String getShortName() {
       if (name != null) {
          final StringBuilder sb = new StringBuilder();
-         sb.append(team.getSponsor()).append(" ").append(name);
+         sb.append(team.getSponsor())
+            .append(" ")
+            .append(name);
          return sb.toString();
       }
       return team.getTitle();
    }
 
    /**
-    * Returns the season startand end dates as an {@code Interval}, with dates converted to
+    * Returns the season start and end dates as an {@code Interval}, with dates converted to
     * timestamps at the start of each day.
     *
     * @return
@@ -161,7 +167,8 @@ public class TeamSeasonEntry implements Serializable, Cloneable {
     */
    public PlayerEntry getPlayer(String id) {
       for (final PlayerEntry each : roster) {
-         if (each.getId().equals(id)) {
+         if (each.getId()
+            .equals(id)) {
             return each;
          }
       }
@@ -234,8 +241,10 @@ public class TeamSeasonEntry implements Serializable, Cloneable {
       public int compare(PlayerEntry o1, PlayerEntry o2) {
          final PersonEntry p1 = o1.getPerson();
          final PersonEntry p2 = o2.getPerson();
-         final int result = p1.getLastName().compareToIgnoreCase(p2.getLastName());
-         return result == 0 ? p1.getFirstName().compareToIgnoreCase(p2.getFirstName()) : result;
+         final int result = p1.getLastName()
+            .compareToIgnoreCase(p2.getLastName());
+         return result == 0 ? p1.getFirstName()
+            .compareToIgnoreCase(p2.getFirstName()) : result;
       }
 
    }
