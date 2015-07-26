@@ -8,6 +8,8 @@ import laxstats.api.players.Role;
 
 import org.joda.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * {@code PlayerResource} represents a player resource for remote clients.
  */
@@ -27,6 +29,7 @@ public class PlayerResourceImpl implements PlayerResource {
    @NotNull
    private PlayerStatus status = PlayerStatus.ACTIVE;
 
+   private String fullName;
    private String jerseyNumber;
    private Position position;
    private boolean captain = false;
@@ -55,13 +58,14 @@ public class PlayerResourceImpl implements PlayerResource {
     * @param parentReleaseSentOn
     * @param parentReleaseReceivedOn
     */
-   public PlayerResourceImpl(String id, String person, String teamSeason, Role role,
-      PlayerStatus status, String jerseyNumber, Position position, boolean captain, int depth,
-      int height, int weight, boolean released, String parentReleaseSentOn,
+   public PlayerResourceImpl(String id, String person, String teamSeason, String fullName,
+      Role role, PlayerStatus status, String jerseyNumber, Position position, boolean captain,
+      int depth, int height, int weight, boolean released, String parentReleaseSentOn,
       String parentReleaseReceivedOn) {
       this.id = id;
       this.person = person;
       this.teamSeason = teamSeason;
+      this.fullName = fullName;
       this.role = role;
       this.status = status;
       this.jerseyNumber = jerseyNumber;
@@ -129,6 +133,22 @@ public class PlayerResourceImpl implements PlayerResource {
    public void setTeamSeason(String teamSeason) {
       assert teamSeason != null;
       this.teamSeason = teamSeason;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public String getFullName() {
+      return fullName;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public void setFullName(String fullName) {
+      this.fullName = fullName;
    }
 
    /**
@@ -296,6 +316,7 @@ public class PlayerResourceImpl implements PlayerResource {
    /**
     * {@inheritDoc}
     */
+   @JsonIgnore
    @Override
    public LocalDate getParentReleaseSentOnAsLocalDate() {
       return parentReleaseSentOn == null ? null : LocalDate.parse(parentReleaseSentOn);
@@ -304,6 +325,7 @@ public class PlayerResourceImpl implements PlayerResource {
    /**
     * {@inheritDoc}
     */
+   @JsonIgnore
    @Override
    public void setParentReleaseSentOnFromLocalDate(LocalDate parentReleaseSentOn) {
       this.parentReleaseSentOn = parentReleaseSentOn == null ? null : parentReleaseSentOn.toString();
@@ -328,6 +350,7 @@ public class PlayerResourceImpl implements PlayerResource {
    /**
     * {@inheritDoc}
     */
+   @JsonIgnore
    @Override
    public LocalDate getParentReleaseReceivedOnAsLocalDate() {
       return parentReleaseReceivedOn == null ? null : LocalDate.parse(parentReleaseReceivedOn);
@@ -336,6 +359,7 @@ public class PlayerResourceImpl implements PlayerResource {
    /**
     * {@inheritDoc}
     */
+   @JsonIgnore
    @Override
    public void setParentReleaseReceivedOnFromLocalDate(LocalDate parentReleaseReceivedOn) {
       this.parentReleaseReceivedOn =

@@ -51,6 +51,20 @@ public interface PlayerResource {
    public void setTeamSeason(String teamSeason);
 
    /**
+    * Returns the player's full name.
+    * 
+    * @return
+    */
+   public String getFullName();
+
+   /**
+    * Sets the player's full name.
+    * 
+    * @param fullName
+    */
+   public void setFullName(String fullName);
+
+   /**
     * Returns the player's role. Never null.
     *
     * @return

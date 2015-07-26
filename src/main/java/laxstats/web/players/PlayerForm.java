@@ -34,6 +34,7 @@ public class PlayerForm implements Serializable, PlayerResource {
    @NotNull
    private PlayerStatus status = PlayerStatus.ACTIVE;
 
+   private String fullName;
    private String jerseyNumber;
    private Position position;
    private boolean captain;
@@ -98,6 +99,22 @@ public class PlayerForm implements Serializable, PlayerResource {
    @Override
    public void setTeamSeason(String teamSeason) {
       this.teamSeason = teamSeason;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public String getFullName() {
+      return fullName;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public void setFullName(String fullName) {
+      this.fullName = fullName;
    }
 
    /**
