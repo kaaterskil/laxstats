@@ -550,7 +550,6 @@ public class TestUtils {
       person.setFirstName("Stanley");
       person.setGender(Gender.MALE);
       person.setLastName("Caple");
-      person.setMiddleName("NMI");
       person.setModifiedAt(LocalDateTime.now());
       person.setNickname("Stan");
 
