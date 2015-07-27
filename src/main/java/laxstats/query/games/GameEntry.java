@@ -75,7 +75,7 @@ public class GameEntry implements Serializable {
    @Column(length = Constants.MAX_LENGTH_ENUM_STRING)
    private Conditions conditions;
 
-   @Column(nullable = false)
+   @Column
    private String description;
 
    @Type(type = Constants.LOCAL_DATETIME_DATABASE_TYPE)
@@ -157,7 +157,9 @@ public class GameEntry implements Serializable {
 
       final List<PlayEntry> list = new ArrayList<>();
       for (final PlayEntry each : getPlays().values()) {
-         if (each.getTeam().getId().equals(teamSeasonId)) {
+         if (each.getTeam()
+            .getId()
+            .equals(teamSeasonId)) {
             list.add(each);
          }
       }
@@ -175,7 +177,9 @@ public class GameEntry implements Serializable {
 
       final List<PlayEntry> list = new ArrayList<>();
       for (final PlayEntry each : getPlays().values()) {
-         if (each.getTeam().getId().equals(teamSeasonId)) {
+         if (each.getTeam()
+            .getId()
+            .equals(teamSeasonId)) {
             list.add(each);
          }
       }
@@ -196,7 +200,8 @@ public class GameEntry implements Serializable {
 
          final List<AttendeeEntry> list = new ArrayList<AttendeeEntry>();
          for (final AttendeeEntry attendee : eventAttendees.values()) {
-            if (attendee.getTeamSeason().equals(tse)) {
+            if (attendee.getTeamSeason()
+               .equals(tse)) {
                list.add(attendee);
             }
          }
@@ -220,10 +225,12 @@ public class GameEntry implements Serializable {
          for (final TeamEvent teamEvent : teams) {
             final TeamSeasonEntry tse = teamEvent.getTeamSeason();
 
-            if (tse.getId().equals(teamSeason.getId())) {
+            if (tse.getId()
+               .equals(teamSeason.getId())) {
                final List<AttendeeEntry> list = new ArrayList<AttendeeEntry>();
                for (final AttendeeEntry attendee : eventAttendees.values()) {
-                  if (attendee.getTeamSeason().equals(tse)) {
+                  if (attendee.getTeamSeason()
+                     .equals(tse)) {
                      list.add(attendee);
                   }
                }
@@ -245,10 +252,14 @@ public class GameEntry implements Serializable {
       if (teams.size() == 0) {
          return null;
       }
-      else if (teams.size() == 2 && teams.get(1).getAlignment().equals(Alignment.HOME)) {
-         return teams.get(1).getTeamSeason();
+      else if (teams.size() == 2 && teams.get(1)
+         .getAlignment()
+         .equals(Alignment.HOME)) {
+         return teams.get(1)
+            .getTeamSeason();
       }
-      return teams.get(0).getTeamSeason();
+      return teams.get(0)
+         .getTeamSeason();
    }
 
    /**
@@ -262,7 +273,9 @@ public class GameEntry implements Serializable {
       if (teams.size() == 0) {
          return null;
       }
-      else if (teams.size() == 2 && teams.get(1).getAlignment().equals(Alignment.HOME)) {
+      else if (teams.size() == 2 && teams.get(1)
+         .getAlignment()
+         .equals(Alignment.HOME)) {
          return teams.get(1);
       }
       return teams.get(0);
@@ -279,10 +292,14 @@ public class GameEntry implements Serializable {
       if (teams.size() < 2) {
          return null;
       }
-      else if (!teams.get(0).getAlignment().equals(Alignment.HOME)) {
-         return teams.get(0).getTeamSeason();
+      else if (!teams.get(0)
+         .getAlignment()
+         .equals(Alignment.HOME)) {
+         return teams.get(0)
+            .getTeamSeason();
       }
-      return teams.get(1).getTeamSeason();
+      return teams.get(1)
+         .getTeamSeason();
    }
 
    /**
@@ -296,7 +313,9 @@ public class GameEntry implements Serializable {
       if (teams.size() == 0) {
          return null;
       }
-      else if (!teams.get(0).getAlignment().equals(Alignment.HOME)) {
+      else if (!teams.get(0)
+         .getAlignment()
+         .equals(Alignment.HOME)) {
          return teams.get(0);
       }
       return teams.get(1);
@@ -311,7 +330,8 @@ public class GameEntry implements Serializable {
    public TeamSeasonEntry getTeam(String teamSeasonId) {
       for (final TeamEvent te : teams) {
          final TeamSeasonEntry tse = te.getTeamSeason();
-         if (tse.getId().equals(teamSeasonId)) {
+         if (tse.getId()
+            .equals(teamSeasonId)) {
             return tse;
          }
       }
@@ -584,10 +604,10 @@ public class GameEntry implements Serializable {
    private static class PenaltyComparator implements Comparator<PenaltyEntry> {
       @Override
       public int compare(PenaltyEntry o1, PenaltyEntry o2) {
-         final Seconds t1 =
-            PlayUtils.getTotalElapsedTime(o1.getPeriod(), o1.getElapsedTime()).toStandardSeconds();
-         final Seconds t2 =
-            PlayUtils.getTotalElapsedTime(o2.getPeriod(), o2.getElapsedTime()).toStandardSeconds();
+         final Seconds t1 = PlayUtils.getTotalElapsedTime(o1.getPeriod(), o1.getElapsedTime())
+            .toStandardSeconds();
+         final Seconds t2 = PlayUtils.getTotalElapsedTime(o2.getPeriod(), o2.getElapsedTime())
+            .toStandardSeconds();
          final int s1 = t1.getSeconds();
          final int s2 = t2.getSeconds();
          return s1 > s2 ? 1 : s1 < s2 ? -1 : 0;
@@ -611,8 +631,12 @@ public class GameEntry implements Serializable {
             return 1;
          }
          else if (o1.getElapsedTime() != null && o2.getElapsedTime() != null) {
-            final int s1 = o1.getElapsedTime().toStandardSeconds().getSeconds();
-            final int s2 = o2.getElapsedTime().toStandardSeconds().getSeconds();
+            final int s1 = o1.getElapsedTime()
+               .toStandardSeconds()
+               .getSeconds();
+            final int s2 = o2.getElapsedTime()
+               .toStandardSeconds()
+               .getSeconds();
             return s1 < s2 ? -1 : (s1 > s2 ? 1 : 0);
          }
 
